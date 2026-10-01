@@ -69,11 +69,11 @@ export default function ClipadTopNav({ forceMobile = false }) {
         {/* Top Bar AI Pill Button */}
         <button 
           onClick={() => window.dispatchEvent(new CustomEvent("toggle-clipad-orbit"))}
-          className="flex-shrink-0 group relative p-[1px] rounded-full bg-[#00beac] shadow-[0_2px_12px_rgba(0,190,172,0.25)] hover:shadow-[0_4px_20px_rgba(0,190,172,0.45)] transition-all active:scale-95 cursor-pointer"
+          className="flex-shrink-0 group relative p-[1px] rounded-full bg-[#fad503] shadow-[0_4px_20px_rgba(250,213,3,0.35)] hover:shadow-[0_6px_24px_rgba(250,213,3,0.5)] transition-all duration-300 active:scale-95 cursor-pointer"
         >
-          <div className="flex items-center h-9 bg-[#00beac] text-white border border-transparent rounded-full px-4 gap-1.5 shadow-inner">
-            <Sparkles className="w-[17px] h-[17px] text-white group-hover:rotate-12 transition-transform duration-300" />
-            <span className="text-[13px] font-black text-white uppercase tracking-wider">AI</span>
+          <div className="flex items-center h-9 bg-[#fad503] text-[#006065] border border-transparent rounded-full px-4 gap-1.5 shadow-inner">
+            <Sparkles className="w-[17px] h-[17px] text-[#006065] group-hover:rotate-12 transition-transform duration-300" />
+            <span className="text-[13px] font-black text-[#006065] uppercase tracking-wider">AI</span>
           </div>
         </button>
       </div>

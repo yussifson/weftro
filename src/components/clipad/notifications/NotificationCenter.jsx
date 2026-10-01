@@ -150,8 +150,8 @@ export default function NotificationCenter() {
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
-      <DropdownMenuTrigger className="relative p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20">
-        <Bell className="w-5 h-5 text-slate-700 dark:text-foreground" />
+      <DropdownMenuTrigger className="flex items-center justify-center w-[38px] h-[38px] rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-all relative cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/20">
+        <Bell className="w-5 h-5" />
         {unreadCount > 0 && (
           <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white shadow-sm ring-2 ring-white dark:ring-slate-900">
             {unreadCount > 99 ? '99+' : unreadCount}
