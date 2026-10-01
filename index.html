@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/clipad-logo-green.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CliPad - #1 Enterprise AI-Powered Organizational Memory Platform</title>
+    <meta name="description" content="CliPad is an enterprise-grade collaborative productivity workspace that unifies chat, spaces, video meetings, and action items in one place." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:wght@400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="manifest" href="/manifest.json" />
+    <script>
+      (function() {
+        try {
+          if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            document.documentElement.style.backgroundColor = '#0B0F14';
+          } else {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.style.backgroundColor = '#ffffff';
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #022c22; /* Slate dark forest green */
+      }
+      body { top: 0px !important; }
+      
+      /* Pre-loader styles */
+      .app-preloader {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #ffffff;
+        z-index: 999999;
+        color: #0f172a;
+      }
+      html.dark .app-preloader { background: #0B0F14; color: #ffffff; }
+      html.dark .app-preloader-text { color: #94a3b8; }
+      .app-preloader-logo {
+        width: 64px;
+        height: 64px;
+        margin-bottom: 24px;
+        object-fit: contain;
+        animation: logoBreathe 2.5s ease-in-out infinite;
+      }
+      .app-preloader-spinner {
+        width: 32px;
+        height: 32px;
+        border: 2px solid rgba(16, 185, 129, 0.15); /* very light emerald */
+        border-radius: 50%;
+        border-top-color: #10B981; /* emerald-500 */
+        animation: spin 1s linear infinite;
+        margin-bottom: 16px;
+      }
+      .app-preloader-text {
+        font-size: 12px;
+        font-weight: 500;
+        color: #71717a;
+        letter-spacing: 0.04em;
+      }
+      @keyframes logoBreathe {
+        0%, 100% { opacity: 0.9; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.05); }
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      /* Google Translate Overrides */
+      .skiptranslate, .goog-te-banner-frame, .goog-te-balloon-frame { display: none !important; visibility: hidden !important; }
+      #goog-gt-tt { display: none !important; visibility: hidden !important; }
+      .goog-text-highlight { background-color: transparent !important; box-shadow: none !important; }
+      #google_translate_element { display: none !important; height: 0; width: 0; overflow: hidden; }
+      .VIpgJd-ZVi9od-ORHb-OEVmcd { display: none !important; }
+      .VIpgJd-ZVi9od-aZ2wEe-wOHMyf { display: none !important; }
+    </style>
+    <script>
+      // Prevent React from crashing when Google Translate mutates the DOM
+      if (typeof Node === 'function' && Node.prototype) {
+        const originalRemoveChild = Node.prototype.removeChild;
+        Node.prototype.removeChild = function (child) {
+          if (child.parentNode !== this) {
+            return child;
+          }
+          return originalRemoveChild.apply(this, arguments);
+        };
+        const originalInsertBefore = Node.prototype.insertBefore;
+        Node.prototype.insertBefore = function (newNode, referenceNode) {
+          if (referenceNode && referenceNode.parentNode !== this) {
+            return newNode;
+          }
+          return originalInsertBefore.apply(this, arguments);
+        };
+      }
+    </script>
+  </head>
+  <body>
+    <div id="google_translate_element" style="display:none;"></div>
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement({pageLanguage: 'en', autoDisplay: false}, 'google_translate_element');
+      }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <div id="root">
+      <div class="app-preloader">
+        <img src="/slate-logo.png" alt="Loading" class="app-preloader-logo" id="dynamic-preloader-logo" />
+        <div class="app-preloader-spinner"></div>
+        <div class="app-preloader-text">Loading...</div>
+      </div>
+    </div>
+    <script>
+      (function() {
+        var host = window.location.hostname.toLowerCase();
+        var isCapacitor = !!window.Capacitor || navigator.userAgent.toLowerCase().includes('capacitor');
+        var isClipad = host.includes('clipad');
+        var isSlate = host.includes('slate');
+        
+        var appTitle = 'Workspace';
+        var faviconHref = '/optavel-favicon.svg';
+        var logoSrc = '/logo.png';
+
+        if (isClipad) {
+          appTitle = 'CliPad - #1 Enterprise AI-Powered Organizational Memory Platform';
+          faviconHref = '/clipad-logo.svg';
+          logoSrc = '/clipad-logo-green.svg';
+        } else if (isSlate) {
+          appTitle = 'Slate - The Unified Workspace That Turns AI Into Clear Profit';
+          faviconHref = '/slate-favicon.svg';
+          logoSrc = '/slate-logo.png';
+        } else {
+          // Account / Optavel / Default
+          appTitle = 'Optavel - Experience Infinite Scale With Next-Gen Enterprise Products';
+          faviconHref = '/optavel-favicon.svg'; // Main company favicon
+          logoSrc = '/optavel-favicon.svg'; // Main company logo
+        }
+
+        document.title = appTitle;
+        var link = document.querySelector("link[rel~='icon']");
+        if (link) {
+          link.href = faviconHref;
+        } else {
+          link = document.createElement('link');
+          link.rel = 'icon';
+          link.href = faviconHref;
+          document.head.appendChild(link);
+        }
+
+        var logoEl = document.getElementById('dynamic-preloader-logo');
+        if (logoEl) {
+          logoEl.src = logoSrc;
+        }
+      })();
+    </script>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

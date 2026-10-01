@@ -1,0 +1,883 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base Styles */
+html, body {
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none; /* Prevents pull-to-refresh bounce on body */
+  background-color: var(--background);
+}
+
+/* Ensure text selection is enabled */
+*, html, body, input, textarea, [contenteditable="true"] {
+  -webkit-user-select: auto;
+  user-select: auto;
+}
+
+/* Safe area variables with fallbacks */
+:root {
+  --sat: env(safe-area-inset-top, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+}
+
+@layer base {
+  :root, .light {
+    --font-inter: 'Inter', sans-serif;
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 149 100% 33%; /* Vibrant Emerald Green */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222 47% 11%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 149 100% 33%;
+    --chart-1: 152 76% 41%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 38 92% 50%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    --radius: 0.75rem;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222 47% 15%;
+    --sidebar-primary: 149 100% 33%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 40% 96%;
+    --sidebar-accent-foreground: 222 47% 15%;
+    --sidebar-border: 214 32% 91%;
+    --sidebar-ring: 152 76% 41%;
+    --bg-base-rgb: 255, 255, 255;
+
+    /* ────────────────────────────────── */
+    /* HOTEL VERTICAL — Premium Hospitality Palette */
+    /* ────────────────────────────────── */
+    --hotel-primary: 12 100% 50%;      /* Luxe Deep Burgundy */
+    --hotel-secondary: 342 92% 54%;    /* Rose Accent */
+    --hotel-accent: 34 100% 50%;       /* Gold Highlight */
+    --hotel-success: 152 76% 41%;      /* Emerald (standard) */
+    --hotel-alert: 38 92% 50%;         /* Warm Amber */
+    --hotel-critical: 0 84% 60%;       /* Red (standard) */
+
+    /* ────────────────────────────────── */
+    /* LOGISTICS VERTICAL — Professional Transport Palette */
+    /* ────────────────────────────────── */
+    --logistics-primary: 210 100% 45%;    /* Ocean Blue */
+    --logistics-secondary: 200 60% 45%;   /* Sky Teal */
+    --logistics-accent: 160 84% 39%;      /* Mint Green */
+    --logistics-success: 152 76% 41%;     /* Emerald (standard) */
+    --logistics-alert: 38 92% 50%;        /* Warm Amber */
+    --logistics-critical: 0 84% 60%;      /* Red (standard) */
+  }
+
+  .dark {
+    --bg-base-rgb-dark: 15, 20, 32;
+
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+    /* SaaSPO Style - Main Background #0F1420 */
+    --background: 222 36% 9.2%;
+    
+    /* Primary White Typography #FFFFFF */
+    --foreground: 0 0% 100%;
+    
+    /* Secondary Surface / Card Background #151c2d */
+    --card: 222 30% 13%;
+    --card-foreground: 0 0% 100%;
+    --popover: 222 36% 9.2%;
+    --popover-foreground: 0 0% 100%;
+    
+    /* Brand Green Accent #0AF395 */
+    --primary: 156 92% 50%;
+    --primary-foreground: 222 36% 9.2%; /* Dark text on bright green */
+    
+    /* Secondary Surface elements */
+    --secondary: 222 30% 13%;
+    --secondary-foreground: 0 0% 100%;
+    
+    /* Secondary Text #A7B0BA */
+    --muted: 222 30% 13%;
+    --muted-foreground: 212 11% 69%;
+    
+    /* Hover / Borders / Divider Color #222b3e */
+    --accent: 222 25% 18%;
+    --accent-foreground: 0 0% 100%;
+    
+    /* Destructive Accents */
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 0 0% 98%;
+    
+    /* Border / Divider Color #222b3e */
+    --border: 222 25% 18%;
+    --input: 222 25% 18%;
+    --ring: 156 92% 50%;
+    
+    --chart-1: 156 92% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 38 92% 50%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    
+    /* Sidebar matching the SaaSPO palette */
+    --sidebar-background: 222 36% 9.2%;
+    --sidebar-foreground: 212 11% 69%;
+    --sidebar-primary: 156 92% 50%;
+    --sidebar-primary-foreground: 213 29% 6%;
+    --sidebar-accent: 209 31% 16%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 209 31% 16%;
+    --sidebar-ring: 156 92% 50%;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/5 backdrop-blur-md border border-white/10;
+  }
+  .glass-card {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10;
+  }
+  
+  .bg-noise {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar { width: 5px; height: 5px; display: none; }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-primary::-webkit-scrollbar { width: 8px; height: 8px; }
+  .scrollbar-primary::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar-primary::-webkit-scrollbar-thumb { background: hsl(var(--primary)); border-radius: 999px; }
+  .scrollbar-primary::-webkit-scrollbar-thumb:hover { background: hsl(var(--primary) / 0.8); }
+  .scrollbar-primary {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--primary)) transparent;
+  }
+  
+  /* Premium Global Custom Scrollbar */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  /* Dynamic View Switcher Logic */
+  .hide-default > :not(.view-header):not(.generic-view) {
+    display: none !important;
+  }
+  .generic-view {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 999px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.25); }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+
+  /* Premium Stat Card Effects */
+  .stat-card-premium {
+    @apply relative overflow-hidden transition-all duration-300 ease-out;
+  }
+  .stat-card-premium:hover {
+    @apply -translate-y-1.5 border-primary/30 z-10;
+  }
+
+  /* Dashboard Animations */
+  @keyframes page-enter {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes card-enter {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes list-item-enter {
+    from {
+      opacity: 0;
+      transform: translateX(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  /* Premium entrance animations */
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slide-down {
+    from {
+      opacity: 0;
+      transform: translateY(-16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.92);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+  }
+
+  @keyframes pulse-soft {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+
+  @keyframes slide-right {
+    from {
+      opacity: 0;
+      transform: translateX(-16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes count-up {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes skeleton-shimmer {
+    0% {
+      background-position: -1000px 0;
+    }
+    100% {
+      background-position: 1000px 0;
+    }
+  }
+
+  .page-enter {
+    animation: page-enter 300ms ease-out;
+  }
+
+  .card-enter {
+    animation: card-enter 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .card-enter-stagger {
+    animation: card-enter 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .list-item-enter {
+    animation: list-item-enter 300ms ease-out;
+  }
+
+  .list-item-enter-stagger {
+    animation: list-item-enter 300ms ease-out;
+  }
+
+  /* Premium animation utility classes */
+  .animate-fade-in {
+    animation: fade-in 400ms ease-out;
+  }
+
+  .animate-slide-up {
+    animation: slide-up 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .animate-slide-down {
+    animation: slide-down 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .animate-scale-in {
+    animation: scale-in 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .animate-pulse-soft {
+    animation: pulse-soft 2s ease-in-out infinite;
+  }
+
+  .animate-slide-right {
+    animation: slide-right 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* Stagger delays */
+  .animation-delay-0 { animation-delay: 0ms; }
+  .animation-delay-75 { animation-delay: 75ms; }
+  .animation-delay-100 { animation-delay: 100ms; }
+  .animation-delay-150 { animation-delay: 150ms; }
+  .animation-delay-200 { animation-delay: 200ms; }
+  .animation-delay-300 { animation-delay: 300ms; }
+  .animation-delay-500 { animation-delay: 500ms; }
+
+  .count-up {
+    animation: count-up 1000ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .skeleton-shimmer {
+    background: linear-gradient(90deg, hsl(var(--muted)) 0%, hsl(var(--muted-foreground) / 0.1) 50%, hsl(var(--muted)) 100%);
+    background-size: 1000px 100%;
+    animation: skeleton-shimmer 1.5s infinite;
+  }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* Dashboard zone animations - stagger children */
+  .zone-1 > * {
+    animation: card-enter 300ms ease-out backwards;
+  }
+
+  .zone-1 > *:nth-child(1) { animation-delay: 0ms; }
+  .zone-1 > *:nth-child(2) { animation-delay: 60ms; }
+  .zone-1 > *:nth-child(3) { animation-delay: 120ms; }
+  .zone-1 > *:nth-child(4) { animation-delay: 180ms; }
+
+  .zone-3 > * {
+    animation: card-enter 300ms ease-out backwards;
+  }
+
+  .zone-3 > *:nth-child(1) { animation-delay: 300ms; }
+  .zone-3 > *:nth-child(2) { animation-delay: 360ms; }
+  .zone-3 > *:nth-child(3) { animation-delay: 420ms; }
+  .zone-3 > *:nth-child(4) { animation-delay: 480ms; }
+  .stat-card-premium::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-br from-white/40 to-transparent dark:from-white/5 opacity-0 transition-opacity duration-300 pointer-events-none;
+  }
+  .stat-card-premium:hover::before {
+    @apply opacity-100;
+  }
+  /* Shimmer effect on hover */
+  .stat-card-premium::after {
+    content: '';
+    @apply absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent dark:via-white/10 opacity-0 transition-all duration-700 ease-in-out pointer-events-none;
+  }
+  .stat-card-premium:hover::after {
+    @apply translate-x-full opacity-100;
+    transition: all 0.7s ease-in-out;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html, body {
+    overflow-x: hidden;
+  }
+
+  body {
+    @apply bg-background text-foreground font-inter relative min-h-screen;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overscroll-behavior-y: none;
+    line-height: 1.6;
+  }
+  
+  .dark body {
+    /* Removed SVG cross background image to prevent refresh flash */
+  }
+
+
+
+  /* Global Enterprise Table & Material Design 3 Styling */
+  table {
+    @apply w-full border-collapse border-spacing-0;
+  }
+  thead {
+    @apply bg-muted/40 backdrop-blur-md sticky top-0 z-20;
+  }
+  th {
+    @apply px-6 py-4 text-left text-[11px] uppercase tracking-[0.06em] font-medium text-muted-foreground border-b border-border;
+  }
+  td {
+    @apply px-6 py-4 border-b border-border/40 text-sm align-middle transition-colors duration-200;
+  }
+  tbody tr {
+    @apply transition-all duration-300 hover:bg-primary/5 relative z-0 hover:z-10 bg-card;
+  }
+  
+  /* Global Input and Button Google/Material Reskin */
+  button {
+    @apply transition-all duration-200 ease-out active:scale-[0.98];
+  }
+  button:not([class*="p-1.5"]):not([class*="p-2"]) {
+    /* Exclude small icon buttons from being pill-shaped universally to preserve layouts */
+    @apply rounded-full;
+  }
+  button[class*="bg-primary"], button[class*="bg-blue"] {
+    @apply hover:-translate-y-0.5;
+  }
+  input, select, textarea {
+    @apply transition-all duration-200 ease-out hover:border-primary/40 focus:border-primary focus:ring-4 focus:ring-primary/10 rounded-2xl;
+  }
+}
+
+/* Global Module Colors to prevent breaking variables that dashboards depend on */
+@layer base {
+  :root, .light {
+    --color-module-orbit: hsl(152 76% 41%);
+    --color-module-academic: hsl(152 76% 41%);
+    --color-module-admissions: hsl(152 76% 41%);
+    --color-module-courses: hsl(152 76% 41%);
+    --color-module-students: hsl(152 76% 41%);
+    --color-module-exams: hsl(152 76% 41%);
+    --color-module-faculty: hsl(152 76% 41%);
+    --color-module-research: hsl(152 76% 41%);
+    --color-module-library: hsl(152 76% 41%);
+    --color-module-hostel: hsl(152 76% 41%);
+    --color-module-finance: hsl(152 76% 41%);
+    --color-module-career: hsl(152 76% 41%);
+    --color-module-lms: hsl(152 76% 41%);
+    --color-module-online: hsl(152 76% 41%);
+    --color-accent-primary: hsl(25 95% 53%);
+    --color-accent-subtle: hsl(25 95% 53% / 0.1);
+    
+    /* Additional surface colors */
+    --color-surface-0: #FFFFFF;
+    --color-surface-1: #FFFFFF;
+    --color-surface-2: #F6FFF9;
+    --color-surface-3: #E6F8F0;
+    --color-surface-4: #D1F0E1;
+  }
+
+  .dark {
+
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+    --color-module-orbit: hsl(152 76% 50%);
+    --color-module-academic: hsl(152 76% 50%);
+    --color-module-admissions: hsl(152 76% 50%);
+    --color-module-courses: hsl(152 76% 50%);
+    --color-module-students: hsl(152 76% 50%);
+    --color-module-exams: hsl(152 76% 50%);
+    --color-module-faculty: hsl(152 76% 50%);
+    --color-module-research: hsl(152 76% 50%);
+    --color-module-library: hsl(152 76% 50%);
+    --color-module-hostel: hsl(152 76% 50%);
+    --color-module-finance: hsl(152 76% 50%);
+    --color-module-career: hsl(152 76% 50%);
+    --color-module-lms: hsl(152 76% 50%);
+    --color-module-online: hsl(152 76% 50%);
+    --color-accent-primary: hsl(25 95% 53%);
+    --color-accent-subtle: hsl(25 95% 53% / 0.2);
+
+    /* Additional surface colors */
+    --color-surface-0: transparent;
+    --color-surface-1: rgba(255, 255, 255, 0.03);
+    --color-surface-2: rgba(255, 255, 255, 0.05);
+    --color-surface-3: rgba(255, 255, 255, 0.08);
+    --color-surface-4: rgba(255, 255, 255, 0.12);
+  }
+}
+
+
+@keyframes progress {
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
+
+
+
+/* PREMIUM UI POLISH GLOBAL STYLES */
+
+/* Focus States */
+*:focus-visible {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(25, 184, 110, 0.15) !important;
+}
+
+.dark *:focus-visible {
+  box-shadow: 0 0 0 3px rgba(31, 224, 134, 0.15) !important;
+}
+
+/* Button Refinements */
+button {
+  transition: opacity 150ms ease, transform 150ms ease, background 150ms ease, border-color 150ms ease !important;
+}
+button:active {
+  transform: translateY(0) !important;
+  opacity: 1 !important;
+}
+button[class*="bg-primary"]:hover, button[class*="bg-blue"]:hover, button[class*="primary"]:hover {
+  opacity: 0.92 !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Input Refinements */
+input, select, textarea {
+  transition: border-color 150ms ease, box-shadow 150ms ease !important;
+}
+input:focus, select:focus, textarea:focus {
+  box-shadow: 0 0 0 3px rgba(25, 184, 110, 0.12) !important;
+  border-color: rgba(25, 184, 110, 0.5) !important;
+  outline: none !important;
+}
+.dark input:focus, .dark select:focus, .dark textarea:focus {
+  box-shadow: 0 0 0 3px rgba(31, 224, 134, 0.12) !important;
+  border-color: rgba(31, 224, 134, 0.5) !important;
+}
+
+/* Interactive Rows and Lists */
+tr:not(:has(th)), li, [class*="card"][role="button"], a[class*="card"] {
+  transition: background 120ms ease !important;
+}
+tr:not(:has(th)):hover, li:hover, [class*="card"][role="button"]:hover, a[class*="card"]:hover {
+  background: rgba(0,0,0,0.02);
+}
+.dark tr:not(:has(th)):hover, .dark li:hover, .dark [class*="card"][role="button"]:hover, .dark a[class*="card"]:hover {
+  background: rgba(255,255,255,0.03);
+}
+
+/* Animations */
+@keyframes modal-enter {
+  from { opacity: 0; transform: scale(0.97) translateY(6px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes dropdown-enter {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+[role="dialog"], .modal-content, [class*="Modal"] {
+  animation: modal-enter 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[role="menu"], .dropdown-content, [class*="DropdownMenu"] {
+  animation: dropdown-enter 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+/* =============================================
+   ROUND 2 — WORLD-CLASS UI ELEVATION
+   ============================================= */
+
+/* 1. TYPOGRAPHY — Final Layer */
+
+/* Page titles — the largest text on each page */
+h1, [class*="text-3xl"], [class*="text-4xl"], [class*="text-5xl"] {
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+/* Section headings / card titles */
+h2, h3, [class*="text-xl"], [class*="text-2xl"] {
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+/* Metric / KPI numbers — tabular alignment for dashboards */
+[class*="tabular-nums"], .stat-value, [data-metric] {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+  font-weight: 600;
+}
+
+/* Captions, helper text, timestamps, metadata */
+.text-\[11px\], .text-\[10px\], time, [class*="timestamp"], [class*="helper"], [class*="caption"] {
+  letter-spacing: 0.01em;
+}
+
+/* Monospace: IDs, reference numbers, code, API keys */
+code, kbd, samp, pre, [class*="font-mono"], [class*="monospace"] {
+  font-feature-settings: "tnum";
+  letter-spacing: 0.02em;
+}
+
+/* 2. INTERACTIVE ELEMENTS — Micro-interactions */
+
+/* Button active (click) state — the press-down feel */
+button:active {
+  transform: scale(0.98) !important;
+  opacity: 0.9 !important;
+  transition: transform 80ms ease, opacity 80ms ease !important;
+}
+
+/* Icon buttons — consistent hover surface */
+button[class*="w-8"][class*="h-8"],
+button[class*="w-9"][class*="h-9"],
+button[class*="w-10"][class*="h-10"],
+button[class*="size-icon"],
+button:has(> svg:only-child) {
+  border-radius: 6px;
+  transition: background 120ms ease, transform 80ms ease !important;
+}
+button[class*="w-8"][class*="h-8"]:hover,
+button[class*="w-9"][class*="h-9"]:hover,
+button[class*="w-10"][class*="h-10"]:hover,
+button[class*="size-icon"]:hover,
+button:has(> svg:only-child):hover {
+  background: rgba(0,0,0,0.06);
+}
+.dark button[class*="w-8"][class*="h-8"]:hover,
+.dark button[class*="w-9"][class*="h-9"]:hover,
+.dark button[class*="w-10"][class*="h-10"]:hover,
+.dark button[class*="size-icon"]:hover,
+.dark button:has(> svg:only-child):hover {
+  background: rgba(255,255,255,0.08);
+}
+
+/* 4. TABLE — Enterprise refinements */
+
+/* Fixed 48px row height for data rows */
+tbody tr {
+  height: 48px;
+}
+tbody td {
+  vertical-align: middle;
+}
+
+/* Action column: hide at rest, show on row hover */
+td:last-child > button,
+td:last-child > div > button,
+td[class*="action"] button,
+[class*="action-cell"] button {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease !important;
+}
+tr:hover td:last-child > button,
+tr:hover td:last-child > div > button,
+tr:hover td[class*="action"] button,
+tr:hover [class*="action-cell"] button {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* 7. BADGES — Dot indicator size standardization */
+[class*="badge"] span[class*="rounded-full"],
+[class*="Badge"] span[class*="rounded-full"],
+[class*="status"] span[class*="rounded-full"] {
+  width: 5px !important;
+  height: 5px !important;
+  min-width: 5px;
+  min-height: 5px;
+}
+
+/* 10. LOADING — Premium spinner */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.premium-spinner,
+[class*="animate-spin"] {
+  border-radius: 50%;
+}
+
+/* Native select override */
+select:not([class*="hidden"]):not([multiple]) {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 32px;
+  cursor: pointer;
+}
+
+
+/* ── Orbit Loader ─────────────────────────────────────────── */
+
+.orbit-loader__arc {
+  animation: orbit-spin 900ms infinite;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center;
+}
+
+@keyframes orbit-spin {
+  0%   { 
+    stroke-dashoffset: 0;
+    transform: rotate(0deg);
+  }
+  50% {
+    stroke-dashoffset: -8;
+  }
+  100% { 
+    stroke-dashoffset: 0;
+    transform: rotate(360deg);
+  }
+}
+
+.orbit-loader svg {
+  animation: orbit-rotate 900ms linear infinite;
+}
+
+.orbit-loader__arc {
+  animation: orbit-arc-dash 900ms cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes orbit-rotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes orbit-arc-dash {
+  0%   { stroke-dashoffset: 56; }
+  50%  { stroke-dashoffset: 14; }
+  100% { stroke-dashoffset: 56; }
+}
+
+.orbit-loader--sm .orbit-loader__arc {
+  animation: orbit-arc-dash-sm 900ms cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+.orbit-loader--md .orbit-loader__arc {
+  animation: orbit-arc-dash-md 900ms cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+.orbit-loader--lg .orbit-loader__arc {
+  animation: orbit-arc-dash-lg 900ms cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes orbit-arc-dash-sm {
+  0%   { stroke-dashoffset: 32; }
+  50%  { stroke-dashoffset: 8;  }
+  100% { stroke-dashoffset: 32; }
+}
+@keyframes orbit-arc-dash-md {
+  0%   { stroke-dashoffset: 48; }
+  50%  { stroke-dashoffset: 12; }
+  100% { stroke-dashoffset: 48; }
+}
+@keyframes orbit-arc-dash-lg {
+  0%   { stroke-dashoffset: 84; }
+  50%  { stroke-dashoffset: 21; }
+  100% { stroke-dashoffset: 84; }
+}
+
+@keyframes overlay-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes page-loader-text {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+[data-theme="dark"] .loading-overlay, .dark .loading-overlay {
+  background: rgba(var(--bg-base-rgb-dark, 12,12,13), 0.7) !important;
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-ghost,
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-primary .orbit-loader__arc,
+.btn-primary .orbit-loader circle,
+[class*="bg-primary"] .orbit-loader__arc,
+[class*="bg-primary"] .orbit-loader circle {
+  stroke: currentColor;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orbit-loader svg,
+  .orbit-loader__arc {
+    animation: none !important;
+  }
+  .orbit-loader__arc {
+    opacity: 0.6;
+    stroke-dashoffset: 14;
+  }
+}
+
+/* Custom Primary Scrollbar for Sidebar and Panels */
+.scrollbar-primary::-webkit-scrollbar {
+  width: 6px;
+}
+.scrollbar-primary::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-primary::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary));
+  border-radius: 4px;
+}
+.scrollbar-primary::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary) / 0.8);
+}
+
+/* Hide native password reveal button in Edge/Windows to prevent shaking */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}

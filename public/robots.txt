@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+Allow: /login
+Allow: /signup
+Allow: /features
+Allow: /pricing
+Allow: /about
+
+# Disallow authenticated app routes from being crawled
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /app/*
+Disallow: /settings
+Disallow: /api/*
+
+Sitemap: https://optavel.com/sitemap.xml

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <g transform="translate(60,60)">
+    <!-- Person 1: Orange -->
+    <g transform="rotate(0)" opacity="0.95">
+      <circle cx="-22" cy="-22" r="10" fill="#f97316" />
+      <path d="M -45 5 A 35 35 0 0 1 5 -45 A 25 25 0 0 0 -30 -10 Z" fill="#f97316" />
+    </g>
+    <!-- Person 2: Purple -->
+    <g transform="rotate(90)" opacity="0.95">
+      <circle cx="-22" cy="-22" r="10" fill="#8b5cf6" />
+      <path d="M -45 5 A 35 35 0 0 1 5 -45 A 25 25 0 0 0 -30 -10 Z" fill="#8b5cf6" />
+    </g>
+    <!-- Person 3: Cyan -->
+    <g transform="rotate(180)" opacity="0.95">
+      <circle cx="-22" cy="-22" r="10" fill="#06b6d4" />
+      <path d="M -45 5 A 35 35 0 0 1 5 -45 A 25 25 0 0 0 -30 -10 Z" fill="#06b6d4" />
+    </g>
+    <!-- Person 4: Green -->
+    <g transform="rotate(270)" opacity="0.95">
+      <circle cx="-22" cy="-22" r="10" fill="#84cc16" />
+      <path d="M -45 5 A 35 35 0 0 1 5 -45 A 25 25 0 0 0 -30 -10 Z" fill="#84cc16" />
+    </g>
+  </g>
+</svg>

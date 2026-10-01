@@ -1,0 +1,4 @@
+owner: optavel
+repo: slate-desktop-releases
+provider: github
+updaterCacheDirName: slate-updater

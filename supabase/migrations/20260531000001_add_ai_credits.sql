@@ -1,0 +1,1 @@
+ALTER TABLE public.companies ADD COLUMN IF NOT EXISTS ai_credits_used INTEGER DEFAULT 0;

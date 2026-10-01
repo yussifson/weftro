@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">CliPad</string>
+    <string name="title_activity_main">CliPad</string>
+    <string name="package_name">com.optavel.clipad</string>
+    <string name="custom_url_scheme">com.optavel.clipad</string>
+</resources>

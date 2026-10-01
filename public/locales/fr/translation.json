@@ -1,0 +1,10 @@
+{
+  "welcome": "Bienvenue sur Airflake",
+  "dashboard": "Tableau de Bord",
+  "automations": "Automatisations",
+  "settings": "Paramètres",
+  "orbit_ai": "Orbit IA",
+  "orbit_build": "Orbit Build",
+  "ask_ai": "Demander à l'IA",
+  "search_across_all_records_inst": "Recherchez dans tous les enregistrements instantanément. Tapez un nom, un numéro de dossier ou un titre de tâche pour commencer. Les résultats peuvent être ouverts ou envoyés directement à Orbit IA."
+}

@@ -1,0 +1,10 @@
+{
+  "welcome": "Welcome to Airflake",
+  "dashboard": "Dashboard",
+  "automations": "Automations",
+  "settings": "Settings",
+  "orbit_ai": "Orbit AI",
+  "orbit_build": "Orbit Build",
+  "ask_ai": "Ask AI",
+  "search_across_all_records_inst": "Search across all records instantly. Type a name, case number, or task title to begin. Results can be opened or sent directly to Orbit AI."
+}
