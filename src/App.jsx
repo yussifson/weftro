@@ -6,7 +6,8 @@ import { Toaster as HotToaster } from "react-hot-toast";
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClientInstance } from '@/lib/query-client';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
-import { ThemeProvider } from '@/lib/ThemeContext';
+import { ImpersonationProvider } from '@/lib/ImpersonationContext';
+import { ThemeProvider } from '@/lib/ThemeContext';`nimport { VideoProvider } from '@/lib/VideoContext';
 import { HelmetProvider } from 'react-helmet-async';
 import { PowerSyncContext } from '@powersync/react';
 import { powerSync } from './api/PowerSyncConnector';
@@ -70,8 +71,10 @@ function App() {
         <QueryClientProvider client={queryClientInstance}>
           <PowerSyncContext.Provider value={powerSync}>
             
+              <ImpersonationProvider>
               <AuthProvider>
                 <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+                  <VideoProvider>
                   <BrowserRouter>
                     <React.Suspense fallback={<div>Loading...</div>}>
                       <Routes>
@@ -125,8 +128,10 @@ function App() {
                     </React.Suspense>
                   </BrowserRouter>
               
+                </VideoProvider>
                 </ThemeProvider>
               </AuthProvider>
+              </ImpersonationProvider>
             <Toaster />
             <SonnerToaster />
             <HotToaster position="top-right" />
