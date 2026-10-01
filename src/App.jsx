@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import { Toaster } from "@/components/ui/toaster";
@@ -7,7 +8,8 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClientInstance } from '@/lib/query-client';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import { ImpersonationProvider } from '@/lib/ImpersonationContext';
-import { ThemeProvider } from '@/lib/ThemeContext';`nimport { VideoProvider } from '@/lib/VideoContext';
+import { ThemeProvider } from '@/lib/ThemeContext';
+import { VideoProvider } from '@/lib/VideoContext';
 import { HelmetProvider } from 'react-helmet-async';
 import { PowerSyncContext } from '@powersync/react';
 import { powerSync } from './api/PowerSyncConnector';
