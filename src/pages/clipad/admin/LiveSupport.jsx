@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { formatDistanceToNow } from 'date-fns';
 import { MessageSquare, PhoneCall, CheckCircle2, Clock, Mail, ChevronDown, Headset } from 'lucide-react';
@@ -234,7 +234,7 @@ export default function LiveSupport() {
                     </>
                   )}
                   {req.status === 'contacted' && (
-                    <button onClick={() => updateStatus(req.id, 'resolved')} className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold transition-colors">
+                    <button onClick={() => updateStatus(req.id, 'resolved')} className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-[#006065] hover:bg-[#004e52] text-white rounded-xl text-sm font-semibold transition-colors">
                       <CheckCircle2 className="w-4 h-4" /> Mark Resolved
                     </button>
                   )}
@@ -259,3 +259,4 @@ export default function LiveSupport() {
     </div>
   );
 }
+

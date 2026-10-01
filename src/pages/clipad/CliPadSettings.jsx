@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/lib/AuthContext';
 import { hasFeature } from '@/lib/clipadPricing';
@@ -127,7 +127,7 @@ export default function CliPadSettings() {
                 onClick={() => {
                   setActiveTab(tab.id);
                 }}
-                className={`whitespace-nowrap flex-shrink-0 md:w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all border active:scale-95 ${activeTab === tab.id ? 'bg-[#00beac] text-[#00beac] border-[#00beac] shadow-md' : 'bg-[#006065] text-white/80 border-white/10 hover:bg-white/10 hover:text-white'}`}>
+                className={`whitespace-nowrap flex-shrink-0 md:w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all border active:scale-95 ${activeTab === tab.id ? 'bg-[#fad503] text-[#006065] border-[#00beac] shadow-md' : 'bg-[#006065] text-white/80 border-white/10 hover:bg-white/10 hover:text-white'}`}>
                 <tab.icon className={`w-4 h-4 ${activeTab === tab.id ? 'text-[#00beac]' : 'text-white/70'}`} /> {tab.label}
               </button>
             ))}
@@ -157,7 +157,7 @@ export default function CliPadSettings() {
                 <h3 className="font-bold text-white flex items-center gap-2">Branded Meeting Rooms {hasFeature(plan, 'hasBrandedRooms') && <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded-md bg-[#00beac]/20 text-[#fad503]">Active</span>}</h3>
                 <p className="text-sm text-white/70 mt-1">Customize your clipboard meeting rooms with company logos and colors.</p>
               </div>
-              {!hasFeature(plan, 'hasBrandedRooms') && <button onClick={() => setActiveTab('billing')} className="px-4 py-2 rounded-xl bg-[#00beac] text-[#00beac] text-sm font-bold hover:bg-[#00beac]/90 transition-colors">Upgrade</button>}
+              {!hasFeature(plan, 'hasBrandedRooms') && <button onClick={() => setActiveTab('billing')} className="px-4 py-2 rounded-xl bg-[#fad503] text-[#006065] text-sm font-bold hover:bg-[#fad503]/90 transition-colors">Upgrade</button>}
               {hasFeature(plan, 'hasBrandedRooms') && <button onClick={() => toast({title: "Branding", description: "Company branding is automatically applied from your company profile settings."})} className="px-4 py-2 rounded-xl bg-white/10 border border-white/15 text-white text-sm font-bold hover:bg-white/20 transition-colors">Configure</button>}
             </div>
 
@@ -166,7 +166,7 @@ export default function CliPadSettings() {
                 <h3 className="font-bold text-white flex items-center gap-2"><Headphones className="w-4 h-4"/> SLA & Dedicated Support {hasFeature(plan, 'hasSLA') && <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded-md bg-[#00beac]/20 text-[#fad503]">Active</span>}</h3>
                 <p className="text-sm text-white/70 mt-1">24/7 priority support and guaranteed uptime SLA.</p>
               </div>
-              {!hasFeature(plan, 'hasSLA') && <button onClick={() => setActiveTab('billing')} className="px-4 py-2 rounded-xl bg-[#00beac] text-[#00beac] text-sm font-bold hover:bg-[#00beac]/90 transition-colors">Upgrade</button>}
+              {!hasFeature(plan, 'hasSLA') && <button onClick={() => setActiveTab('billing')} className="px-4 py-2 rounded-xl bg-[#fad503] text-[#006065] text-sm font-bold hover:bg-[#fad503]/90 transition-colors">Upgrade</button>}
               {hasFeature(plan, 'hasSLA') && <button onClick={() => { window.location.href = "mailto:support@optavel.com"; toast({title: "Support", description: "Opening your email client to contact our enterprise support team."})}} className="px-4 py-2 rounded-xl bg-white/10 border border-white/15 text-white text-sm font-bold hover:bg-white/20 transition-colors">Contact Support</button>}
             </div>
 
@@ -175,7 +175,7 @@ export default function CliPadSettings() {
                 <h3 className="font-bold text-white flex items-center gap-2"><Lock className="w-4 h-4"/> SSO & Compliance Recording {hasFeature(plan, 'hasComplianceRecording') && <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded-md bg-[#00beac]/20 text-[#fad503]">Active</span>}</h3>
                 <p className="text-sm text-white/70 mt-1">Single Sign-On enforcement and mandatory compliance recordings.</p>
               </div>
-              {!hasFeature(plan, 'hasComplianceRecording') && <button onClick={() => setActiveTab('billing')} className="px-4 py-2 rounded-xl bg-[#00beac] text-[#00beac] text-sm font-bold hover:bg-[#00beac]/90 transition-colors">Upgrade</button>}
+              {!hasFeature(plan, 'hasComplianceRecording') && <button onClick={() => setActiveTab('billing')} className="px-4 py-2 rounded-xl bg-[#fad503] text-[#006065] text-sm font-bold hover:bg-[#fad503]/90 transition-colors">Upgrade</button>}
               {hasFeature(plan, 'hasComplianceRecording') && <button onClick={() => toast({title: "SSO Config", description: "SSO settings have been verified and applied to your company workspace."})} className="px-4 py-2 rounded-xl bg-white/10 border border-white/15 text-white text-sm font-bold hover:bg-white/20 transition-colors">Configure</button>}
             </div>
 
@@ -184,7 +184,7 @@ export default function CliPadSettings() {
                 <h3 className="font-bold text-white flex items-center gap-2"><Puzzle className="w-4 h-4"/> Custom Integrations <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded-md bg-[#00beac]/20 text-[#fad503]">Coming Soon</span></h3>
                 <p className="text-sm text-white/70 mt-1">Connect CliPad directly into your proprietary internal systems.</p>
               </div>
-              {!hasFeature(plan, 'hasCustomIntegrations') && <button onClick={() => setActiveTab('billing')} className="px-4 py-2 rounded-xl bg-[#00beac] text-[#00beac] text-sm font-bold hover:bg-[#00beac]/90 transition-colors">Upgrade</button>}
+              {!hasFeature(plan, 'hasCustomIntegrations') && <button onClick={() => setActiveTab('billing')} className="px-4 py-2 rounded-xl bg-[#fad503] text-[#006065] text-sm font-bold hover:bg-[#fad503]/90 transition-colors">Upgrade</button>}
               {hasFeature(plan, 'hasCustomIntegrations') && <button className="px-4 py-2 rounded-xl bg-white/10 border border-white/15 text-white/50 text-sm font-bold disabled:opacity-50" disabled>Configure</button>}
             </div>
           </div>
@@ -340,7 +340,7 @@ export default function CliPadSettings() {
               <button onClick={handleSignOut} className="flex items-center gap-2 px-4 py-2 rounded-xl text-rose-300 hover:text-white hover:bg-rose-500/20 transition-colors text-sm font-semibold">
                 <LogOut className="w-4 h-4" /> Sign Out
               </button>
-              <button onClick={handleSave} disabled={saving} className="flex items-center gap-2 px-8 py-3 rounded-xl bg-[#00beac] hover:bg-[#00beac]/90 text-[#00beac] font-bold shadow-lg transition-all disabled:opacity-70 active:scale-95">
+              <button onClick={handleSave} disabled={saving} className="flex items-center gap-2 px-8 py-3 rounded-xl bg-[#fad503] hover:bg-[#fad503]/90 text-[#006065] font-bold shadow-lg transition-all disabled:opacity-70 active:scale-95">
                 {saving ? <div className="w-4 h-4 border-2 border-slate-800/30 border-t-[#006065] rounded-full animate-spin" /> : <CheckCircle className="w-4 h-4" />}
                 Save Changes
               </button>
@@ -351,3 +351,5 @@ export default function CliPadSettings() {
     </div>
   );
 }
+
+

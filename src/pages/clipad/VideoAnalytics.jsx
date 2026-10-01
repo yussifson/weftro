@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
@@ -420,7 +420,7 @@ export default function VideoAnalytics() {
                 </p>
                 <button 
                   onClick={() => navigate('/clipad/billing')}
-                  className="relative z-10 px-6 py-2.5 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm shadow-xl shadow-emerald-500/20 hover:-translate-y-0.5 active:scale-95 transition-all"
+                  className="relative z-10 px-6 py-2.5 rounded-full bg-[#006065] hover:bg-[#004e52] text-white font-bold text-sm shadow-xl shadow-emerald-500/20 hover:-translate-y-0.5 active:scale-95 transition-all"
                 >
                   Upgrade to Pro
                 </button>
@@ -496,3 +496,4 @@ export default function VideoAnalytics() {
       </div>
   );
 }
+

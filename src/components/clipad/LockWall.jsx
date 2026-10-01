@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Lock, Clock, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 /**
- * LockWall — displayed when content is locked (manually or scheduled).
+ * LockWall â€” displayed when content is locked (manually or scheduled).
  * Props:
  *   type: 'manual' | 'scheduled' | 'private' | 'not-found'
  *   unlockAt: Date | null  (for scheduled locks)
@@ -158,7 +158,7 @@ export default function LockWall({ type = 'manual', unlockAt = null, title = 'th
             className={`group flex items-center gap-2 px-6 py-3 rounded-xl text-white text-sm font-bold transition-all hover:-translate-y-0.5 active:translate-y-0 ${
               isNotFound 
                 ? 'bg-rose-500 hover:bg-rose-600 shadow-md shadow-rose-500/20 hover:shadow-xl' 
-                : 'bg-emerald-500 hover:bg-emerald-600 shadow-md shadow-emerald-500/20 hover:shadow-xl'
+                : 'bg-[#006065] hover:bg-[#004e52] shadow-md shadow-emerald-500/20 hover:shadow-xl'
             }`}
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
@@ -169,3 +169,4 @@ export default function LockWall({ type = 'manual', unlockAt = null, title = 'th
     </div>
   );
 }
+

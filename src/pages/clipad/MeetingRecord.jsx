@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
@@ -103,7 +103,7 @@ export default function MeetingRecord() {
   const [meeting, setMeeting] = useState(null);
   const [actionItems, setActionItems] = useState([]);
   const [transcript, setTranscript] = useState([]);
-  const EMOJIS = ['👍', '🎉', '🧠', '👀', '💡', '🔥', '🚀'];
+  const EMOJIS = ['ðŸ‘', 'ðŸŽ‰', 'ðŸ§ ', 'ðŸ‘€', 'ðŸ’¡', 'ðŸ”¥', 'ðŸš€'];
   const [comments, setComments] = useState([]);
   const [reactions, setReactions] = useState([]);
   const [commentText, setCommentText] = useState('');
@@ -437,7 +437,7 @@ export default function MeetingRecord() {
               className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-foreground text-xs font-bold shadow-lg shadow-pink-500/20 transition-all disabled:opacity-60"
             >
               {generatingAI
-                ? <><div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Generating…</>
+                ? <><div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Generatingâ€¦</>
                 : <><Sparkles className="w-3.5 h-3.5" /> Generate AI Summary</>
               }
             </button>
@@ -579,7 +579,7 @@ export default function MeetingRecord() {
                             body: { meetingId: meeting.id }
                           });
                           if (error) throw error;
-                          toast({ title: 'Follow-ups Sent! 🎉', description: data?.message || 'Smart follow-up emails have been queued.' });
+                          toast({ title: 'Follow-ups Sent! ðŸŽ‰', description: data?.message || 'Smart follow-up emails have been queued.' });
                         } catch (err) {
                           toast({ title: 'Error', description: 'Failed to send follow-ups. Please try again.', variant: 'destructive' });
                         } finally {
@@ -606,7 +606,7 @@ export default function MeetingRecord() {
               </p>
               <button 
                 onClick={() => navigate('/clipad/billing')}
-                className="relative z-10 px-6 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-xl transition-colors"
+                className="relative z-10 px-6 py-2.5 rounded-full bg-[#006065] hover:bg-[#004e52] text-white font-bold text-sm shadow-xl transition-colors"
               >
                 Upgrade to Pro
               </button>
@@ -692,7 +692,7 @@ export default function MeetingRecord() {
           icon={CheckCircle}
           iconColor="from-emerald-500 to-teal-500"
           title="Action Items"
-          badge={`${openItems.length} open · ${doneItems.length} done`}
+          badge={`${openItems.length} open Â· ${doneItems.length} done`}
         >
           {actionItems.length === 0 ? (
             <div className="py-8 text-center">
@@ -700,7 +700,7 @@ export default function MeetingRecord() {
               <p className="text-sm text-muted-foreground">No action items yet.</p>
               {!meeting.ai_summary && (
                 <button onClick={generateAISummary} disabled={generatingAI} className="mt-3 text-xs text-primary hover:text-primary/80 transition-colors">
-                  Generate AI summary to extract action items →
+                  Generate AI summary to extract action items â†’
                 </button>
               )}
             </div>
@@ -878,3 +878,4 @@ export default function MeetingRecord() {
           </div>
   );
 }
+

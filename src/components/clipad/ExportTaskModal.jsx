@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { ExternalLink, CheckCircle, Copy, Share2, Sparkles, X } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 const PM_TOOLS = [
-  { id: 'jira', name: 'Jira', color: 'bg-blue-600 text-white', icon: '⚡' },
-  { id: 'linear', name: 'Linear', color: 'bg-purple-600 text-white', icon: '📐' },
-  { id: 'clickup', name: 'ClickUp', color: 'bg-pink-600 text-white', icon: '🎯' },
-  { id: 'asana', name: 'Asana', color: 'bg-rose-500 text-white', icon: '🔴' },
-  { id: 'trello', name: 'Trello', color: 'bg-sky-600 text-white', icon: '📊' },
+  { id: 'jira', name: 'Jira', color: 'bg-blue-600 text-white', icon: 'âš¡' },
+  { id: 'linear', name: 'Linear', color: 'bg-purple-600 text-white', icon: 'ðŸ“' },
+  { id: 'clickup', name: 'ClickUp', color: 'bg-pink-600 text-white', icon: 'ðŸŽ¯' },
+  { id: 'asana', name: 'Asana', color: 'bg-rose-500 text-white', icon: 'ðŸ”´' },
+  { id: 'trello', name: 'Trello', color: 'bg-sky-600 text-white', icon: 'ðŸ“Š' },
 ];
 
 export default function ExportTaskModal({ isOpen, onClose, task, meetingTitle, meetingId }) {
@@ -55,7 +55,7 @@ export default function ExportTaskModal({ isOpen, onClose, task, meetingTitle, m
           <p className="font-medium text-slate-800 dark:text-slate-200 text-sm">{task.title || task.name}</p>
           {meetingTitle && (
             <p className="text-slate-400 text-[11px] flex items-center gap-1">
-              🔗 Linked to: <span className="font-medium text-emerald-600 dark:text-emerald-400">{meetingTitle}</span>
+              ðŸ”— Linked to: <span className="font-medium text-emerald-600 dark:text-emerald-400">{meetingTitle}</span>
             </p>
           )}
         </div>
@@ -89,7 +89,7 @@ export default function ExportTaskModal({ isOpen, onClose, task, meetingTitle, m
           </button>
           <button
             onClick={handleExport}
-            className="flex-1 py-2.5 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 transition-transform active:scale-95"
+            className="flex-1 py-2.5 rounded-xl text-xs font-bold bg-[#006065] hover:bg-[#004e52] text-white shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 transition-transform active:scale-95"
           >
             {exported ? <CheckCircle className="w-4 h-4" /> : <ExternalLink className="w-4 h-4" />}
             {exported ? 'Exported!' : `Export Task`}
@@ -99,3 +99,4 @@ export default function ExportTaskModal({ isOpen, onClose, task, meetingTitle, m
     </div>
   );
 }
+

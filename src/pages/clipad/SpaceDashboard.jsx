@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/api/supabaseClient';
 import { getLimit, hasFeature } from '@/lib/clipadPricing';
@@ -325,7 +325,7 @@ export default function SpaceDashboard() {
           status: 'active',
           meeting_type: 'instant'
         });
-      } catch (_) { /* db insert failed — meeting still works */ }
+      } catch (_) { /* db insert failed â€” meeting still works */ }
 
       try {
         await supabase.from('clipad_spaces').update({ meeting_url: roomData?.url || `https://optavel.daily.co/${targetRoomName}` }).eq('id', spaceId);
@@ -419,9 +419,9 @@ export default function SpaceDashboard() {
 
   const getDailyNatureElement = () => {
     const nature = [
-      '🌿', '🌸', '🏔️', '🍁', '🍃', '🌲', '🌴', '🌾', '🌵', '🌻',
-      '🌼', '🍄', '🌳', '🍂', '⛅', '🌈', '🪴', '🌊', '❄️', '🪵',
-      '🌺', '🍀', '🌷', '🌱', '🏵️', '💐', '🎋', '🪴', '🌅', '🌌', '🌠'
+      'ðŸŒ¿', 'ðŸŒ¸', 'ðŸ”ï¸', 'ðŸ', 'ðŸƒ', 'ðŸŒ²', 'ðŸŒ´', 'ðŸŒ¾', 'ðŸŒµ', 'ðŸŒ»',
+      'ðŸŒ¼', 'ðŸ„', 'ðŸŒ³', 'ðŸ‚', 'â›…', 'ðŸŒˆ', 'ðŸª´', 'ðŸŒŠ', 'â„ï¸', 'ðŸªµ',
+      'ðŸŒº', 'ðŸ€', 'ðŸŒ·', 'ðŸŒ±', 'ðŸµï¸', 'ðŸ’', 'ðŸŽ‹', 'ðŸª´', 'ðŸŒ…', 'ðŸŒŒ', 'ðŸŒ '
     ];
     const day = new Date().getDate(); // 1-31
     return nature[(day - 1) % nature.length];
@@ -441,7 +441,7 @@ export default function SpaceDashboard() {
         <div className="text-center">
           <Layers className="w-12 h-12 text-gray-700 mx-auto mb-3" />
           <p className="text-muted-foreground">Space not found.</p>
-          <button onClick={() => navigate('/spaces')} className="mt-4 text-primary hover:text-primary/80 text-sm transition-colors">← Back to Spaces</button>
+          <button onClick={() => navigate('/spaces')} className="mt-4 text-primary hover:text-primary/80 text-sm transition-colors">â† Back to Spaces</button>
         </div>
       </div>
     );
@@ -705,7 +705,7 @@ export default function SpaceDashboard() {
                   ? <div className="flex-1 flex flex-col items-center justify-center p-8 rounded-2xl border border-dashed border-black/10 dark:border-white/10 text-center bg-white/5/50 dark:bg-[#006065]/50 backdrop-blur-sm min-h-[220px]">
                       <Camera className="w-8 h-8 text-white/50 dark:text-white/80 mb-3" />
                       <p className="text-white/70 dark:text-muted-foreground text-sm font-medium">No videos yet.</p>
-                      <button className="mt-4 text-primary font-bold hover:text-primary/80 transition-colors text-sm" onClick={() => navigate('/record')}>Record one →</button>
+                      <button className="mt-4 text-primary font-bold hover:text-primary/80 transition-colors text-sm" onClick={() => navigate('/record')}>Record one â†’</button>
                     </div>
                   : <div className="grid grid-cols-2 gap-3 md:gap-4">{videos.slice(0,4).map(v => <VideoCard key={v.id} video={v} onClick={() => navigate(`/watch/${v.id}`)} />)}</div>
                 }
@@ -991,7 +991,7 @@ export default function SpaceDashboard() {
                           <div className="flex items-center gap-1.5 mt-0.5">
                             <p className="text-xs text-white/70">{p.email}</p>
                             {isSpacemanMember && (
-                              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-teal-50 text-teal-700 dark:bg-teal-500/10 dark:text-teal-400 border border-teal-200 dark:border-teal-500/30">🚀 Spaceman</span>
+                              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-teal-50 text-teal-700 dark:bg-teal-500/10 dark:text-teal-400 border border-teal-200 dark:border-teal-500/30">ðŸš€ Spaceman</span>
                             )}
                           </div>
                         </div>
@@ -1021,7 +1021,7 @@ export default function SpaceDashboard() {
             </div>
             
             <div className="mt-4 pt-4 border-t border-white/15 dark:border-white/15 flex justify-end">
-              <button onClick={() => setShowMembers(false)} className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm transition-colors shadow-sm">Done</button>
+              <button onClick={() => setShowMembers(false)} className="px-5 py-2.5 rounded-xl bg-[#006065] hover:bg-[#004e52] text-white font-bold text-sm transition-colors shadow-sm">Done</button>
             </div>
           </div>
         </div>
@@ -1030,3 +1030,4 @@ export default function SpaceDashboard() {
           </div>
   );
 }
+

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
 import { Bell, Trash2, Check, X } from 'lucide-react';
@@ -181,7 +181,7 @@ export default function NotificationsDropdown() {
                         <Button 
                           size="sm" 
                           onClick={(e) => handleGroupRequest(notification, 'accept', e)} 
-                          className="h-7 text-[10px] px-2.5 rounded bg-emerald-500 hover:bg-emerald-600 text-white"
+                          className="h-7 text-[10px] px-2.5 rounded bg-[#006065] hover:bg-[#004e52] text-white"
                         >
                           <Check className="w-3 h-3 mr-1"/> Accept
                         </Button>
@@ -217,3 +217,4 @@ export default function NotificationsDropdown() {
     </Popover>
   );
 }
+

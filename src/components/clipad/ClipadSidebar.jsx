@@ -168,8 +168,8 @@ export default function ClipadSidebar({ forceMobile }) {
         ) : (
           <>
             <div className="flex items-center gap-3 cursor-pointer group" onClick={() => navigate('/dashboard')}>
-              <div className="w-9 h-9 rounded-xl bg-[#00beac] flex items-center justify-center shadow-md text-white group-hover:scale-105 transition-transform">
-                <CliPadLogo size={20} className="text-white" />
+              <div className="w-9 h-9 rounded-xl bg-[#00beac] flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
+                <CliPadLogo size={20} color="#ffffff" />
               </div>
               <div>
                 <span className="font-black text-[16px] text-white truncate block leading-tight">{workspaceName}</span>
