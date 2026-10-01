@@ -1,4 +1,4 @@
-﻿// src/lib/clipadAIProvider.js
+// src/lib/clipadAIProvider.js
 // Clipad V3 Modular AI Provider Abstraction Interface
 // Unifies LLM generation, streaming, embeddings, entity extraction, and classification.
 
@@ -62,7 +62,7 @@ export class AIProvider {
    */
   async classify(text, categories = [], options = {}) {
     if (!text || categories.length === 0) return categories[0] || 'Unclassified';
-    const prompt = \Classify the following text into ONE of these categories: \.\nText: "\"\nRespond ONLY with the exact category name.\;
+    const prompt = `Classify the following text into ONE of these categories: ${categories.join(', ')}.\nText: "${text.substring(0, 2000)}"\nRespond ONLY with the exact category name.`;
     const res = await this.generate([{ role: 'user', content: prompt }]);
     const matched = categories.find(c => c.toLowerCase() === (res.text || '').trim().toLowerCase());
     return matched || categories[0];
@@ -72,13 +72,13 @@ export class AIProvider {
    * Structured Entity Extraction (JSON)
    */
   async extract(text, schemaDescription, options = {}) {
-    const prompt = \Extract structured data from the text according to this schema:\n\\n\nTEXT:\n\\n\nRespond ONLY with valid JSON.\;
+    const prompt = `Extract structured data from the text according to this schema:\n${schemaDescription}\n\nTEXT:\n${text.substring(0, 4000)}\n\nRespond ONLY with valid JSON.`;
     const res = await this.generate([
       { role: 'system', content: 'You are an extraction AI. Output strictly raw valid JSON.' },
       { role: 'user', content: prompt }
     ]);
     try {
-      const cleaned = (res.text || '').replace(/\\\json|\\\/g, '').trim();
+      const cleaned = (res.text || '').replace(/```json|```/g, '').trim();
       return JSON.parse(cleaned);
     } catch {
       return {};
@@ -89,11 +89,11 @@ export class AIProvider {
    * Enforced Type-Safe Structured Output
    */
   async structuredOutput(messages, jsonSchema, options = {}) {
-    const prompt = \Fulfill the request and output ONLY valid JSON matching this schema:\n\\;
+    const prompt = `Fulfill the request and output ONLY valid JSON matching this schema:\n${JSON.stringify(jsonSchema, null, 2)}`;
     const fullMessages = [...messages, { role: 'user', content: prompt }];
     const res = await this.generate(fullMessages, options);
     try {
-      return JSON.parse((res.text || '').replace(/\\\json|\\\/g, '').trim());
+      return JSON.parse((res.text || '').replace(/```json|```/g, '').trim());
     } catch {
       return null;
     }
