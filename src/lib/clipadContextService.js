@@ -1,9 +1,11 @@
 // src/lib/clipadContextService.js
 // Clipad V3 Domain Organizational Context & Memory Retrieval Service
+// Phase 4: Extended with Graph-Aware Context combining Memory + Entity + Smart Moments
 
 import { supabase } from '@/api/supabaseClient';
 import { getMemories, MEMORY_STATUS, MEMORY_TIERS } from '@/lib/clipadMemoryService';
 import { getEntityGraph } from '@/lib/clipadEntityService';
+import { findConnectedKnowledge } from '@/lib/clipadGraphService';
 
 /**
  * Score and rank memories based on relevance, freshness, confidence, and importance.
@@ -189,4 +191,147 @@ export async function getProjectContext({ projectId, companyId, userId }) {
  */
 export async function getEntityContext({ entityId, companyId }) {
   return getEntityGraph(companyId, entityId);
+}
+
+/**
+ * Phase 4: Graph-Aware Context Assembly
+ *
+ * Combines:
+ *   1. Direct organizational memory context (Phase 2)
+ *   2. Entity + relationship context (Phase 2 graph)
+ *   3. Smart Moment context (Phase 3) — permission filtered
+ *   4. Connected knowledge via graph traversal (Phase 4)
+ *
+ * Authorization is applied BEFORE content reaches this function's output.
+ * The AI model should NEVER receive context the requesting user cannot access.
+ *
+ * @param {object} params
+ * @param {string} params.companyId
+ * @param {string} params.userId
+ * @param {string} params.userRole
+ * @param {string[]} params.spaceIds - Authorized space IDs for this user
+ * @param {string} params.query - User query for relevance ranking
+ * @param {object} params.intentResult - From classifyQuery()
+ * @param {boolean} params.isAdmin
+ * @returns {object} { contextText, memories, smartMoments, entities, sources }
+ */
+export async function getGraphAwareContext({
+  companyId,
+  userId = null,
+  userRole = 'member',
+  spaceIds = [],
+  query = '',
+  intentResult = null,
+  isAdmin = false,
+}) {
+  if (!companyId) return { contextText: '', memories: [], smartMoments: [], entities: [], sources: [] };
+
+  const momentTypes = intentResult?.momentTypes || null;
+  const timeFilter = intentResult?.timeFilter || null;
+
+  // ── 1. Retrieve permission-filtered memories ───────────────────────────────
+  const memories = await getRelevantMemories({
+    companyId,
+    userId,
+    spaceIds,
+    query,
+    limit: 15,
+  });
+
+  // ── 2. Retrieve Smart Moments (Phase 3) — permission filtered by space ─────
+  let momentQuery = supabase
+    .from('clipad_v3_smart_moments')
+    .select('id, title, description, moment_type, status, confidence, importance, team_space_id, meeting_id, created_at')
+    .eq('company_id', companyId)
+    .neq('status', 'dismissed')
+    .order('created_at', { ascending: false })
+    .limit(15);
+
+  // Filter by team space access
+  if (!isAdmin && spaceIds.length > 0) {
+    momentQuery = momentQuery.or(
+      `team_space_id.is.null,team_space_id.in.(${spaceIds.join(',')})`
+    );
+  } else if (!isAdmin) {
+    momentQuery = momentQuery.is('team_space_id', null);
+  }
+
+  if (momentTypes?.length) {
+    momentQuery = momentQuery.in('moment_type', momentTypes);
+  }
+
+  if (timeFilter?.since) {
+    momentQuery = momentQuery.gte('created_at', timeFilter.since);
+  }
+
+  if (query?.trim()) {
+    momentQuery = momentQuery.or(`title.ilike.%${query}%,description.ilike.%${query}%,content.ilike.%${query}%`);
+  }
+
+  const { data: smartMoments } = await momentQuery;
+
+  // ── 3. Find connected knowledge via graph (if query has topic candidates) ──
+  let graphKnowledge = { entities: [], memories: [], smartMoments: [] };
+  if (query?.trim()) {
+    graphKnowledge = await findConnectedKnowledge(companyId, query, {
+      userId,
+      isAdmin,
+      limit: 10,
+    });
+  }
+
+  // ── 4. Merge and deduplicate ───────────────────────────────────────────────
+  const allMemories = [...memories];
+  const memoryIds = new Set(memories.map(m => m.id));
+  (graphKnowledge.memories || []).forEach(m => {
+    if (!memoryIds.has(m.id)) { allMemories.push(m); memoryIds.add(m.id); }
+  });
+
+  const allMoments = [...(smartMoments || [])];
+  const momentIds = new Set(allMoments.map(m => m.id));
+  (graphKnowledge.smartMoments || []).forEach(m => {
+    if (!momentIds.has(m.id)) { allMoments.push(m); momentIds.add(m.id); }
+  });
+
+  // ── 5. Assemble context text ───────────────────────────────────────────────
+  const contextLines = [
+    `[CLIPAD V3 GRAPH-AWARE CONTEXT]`,
+    `User Role: ${userRole} | Spaces Accessible: ${spaceIds.length}`,
+  ];
+
+  if (allMemories.length > 0) {
+    contextLines.push(`\n━━ MEMORY NODES (${allMemories.length}) ━━`);
+    allMemories.slice(0, 12).forEach(m => {
+      contextLines.push(`• [${m.memory_type || 'FACT'}/${m.memory_tier || 'organizational'}] "${m.title}": ${(m.content || m.summary || '').substring(0, 200)}`);
+    });
+  }
+
+  if (allMoments.length > 0) {
+    contextLines.push(`\n━━ SMART MOMENTS (${allMoments.length}) ━━`);
+    allMoments.slice(0, 12).forEach(m => {
+      const src = m.meeting_id ? `Meeting:${m.meeting_id}` : 'Video';
+      contextLines.push(`• [${m.moment_type}] "${m.title}" (${Math.round((m.confidence || 0.9) * 100)}% confidence, from ${src}, ${new Date(m.created_at).toLocaleDateString()})`);
+    });
+  }
+
+  if (graphKnowledge.entities?.length > 0) {
+    contextLines.push(`\n━━ CONNECTED ENTITIES (${graphKnowledge.entities.length}) ━━`);
+    graphKnowledge.entities.slice(0, 8).forEach(e => {
+      contextLines.push(`• [${e.entity_type?.toUpperCase()}] ${e.name}${e.description ? ': ' + e.description.substring(0, 120) : ''}`);
+    });
+  }
+
+  // Build source provenance list
+  const sources = [
+    ...allMoments.map(m => ({ id: m.id, type: 'smart_moment', label: m.title, subType: m.moment_type })),
+    ...allMemories.map(m => ({ id: m.id, type: 'memory', label: m.title, subType: m.memory_type })),
+  ].slice(0, 20);
+
+  return {
+    contextText: contextLines.join('\n'),
+    memories: allMemories,
+    smartMoments: allMoments,
+    entities: graphKnowledge.entities,
+    sources,
+  };
 }

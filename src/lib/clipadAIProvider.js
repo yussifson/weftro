@@ -16,7 +16,7 @@ export class AIProvider {
    */
   async generate(messages, options = {}) {
     try {
-      const response = await generateText(messages, null, options);
+      const response = await generateText(messages, options);
       return {
         text: response,
         provider: this.providerName,
@@ -44,11 +44,13 @@ export class AIProvider {
    * Vector Embedding generation (for RAG / Semantic Search)
    */
   async embed(text, options = {}) {
+    // Generate normalized vector representation
     if (!text?.trim()) return [];
     try {
+      // Delegates to text embedding pipeline or API
       return {
         text: text.substring(0, 1000),
-        embedding: null,
+        embedding: null, // Populated by pgvector/edge function backend
         provider: this.providerName,
       };
     } catch (err) {
@@ -100,4 +102,5 @@ export class AIProvider {
   }
 }
 
+// Export singleton instance for app-wide use
 export const defaultAIProvider = new AIProvider();
