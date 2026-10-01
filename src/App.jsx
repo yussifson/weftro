@@ -96,7 +96,7 @@ function App() {
                           <Route path="/decisions" element={<DecisionLedger />} />
                           <Route path="/graph" element={<KnowledgeGraph />} />
                           <Route path="/action-items" element={<ActionItems />} />
-                          <Route path="/knowledge-journey" element={<KnowledgeJourney />} />
+                          <Route path="/knowledge" element={<KnowledgeJourney />} />
                           <Route path="/integration-analytics" element={<IntegrationAnalytics />} />
                           <Route path="/capture" element={<MeetingRecord />} />
                           <Route path="/save-meeting" element={<SaveMeetingPage />} />

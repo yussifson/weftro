@@ -164,7 +164,7 @@ export default function KnowledgeHealth() {
   }
 
   if (!isUserAdmin) {
-    return <Navigate to="/clipad" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
 
@@ -314,7 +314,7 @@ export default function KnowledgeHealth() {
       </div>
 
       {/* Proactive Insights Feed */}
-      {insights && insights.length > 0 && (
+      {Array.isArray(insights) && insights.length > 0 && (
         <div className="mt-8 mb-8">
           <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-white dark:text-white">
             <Sparkles className="w-5 h-5 text-amber-500" />
@@ -350,7 +350,7 @@ export default function KnowledgeHealth() {
       )}
 
       {/* Organizational Risks Feed */}
-      {risks && risks.length > 0 && (
+      {Array.isArray(risks) && risks.length > 0 && (
         <div className="mt-8 mb-8">
           <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-white dark:text-white">
             <AlertTriangle className="w-5 h-5 text-rose-500" />

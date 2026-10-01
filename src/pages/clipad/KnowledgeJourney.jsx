@@ -187,36 +187,36 @@ export default function KnowledgeJourney() {
   );
 
   return (
-    <div className="min-h-full bg-background text-foreground pb-12 font-sans page-enter">
+    <div className="min-h-full bg-background text-white pb-12 font-sans page-enter">
       {/* Header */}
-      <div className="relative overflow-hidden border-b border-border bg-gradient-to-br from-blue-500/5 via-background to-background px-6 py-10">
+      <div className="relative overflow-hidden border-b border-white/15 bg-[#006065] text-white px-6 py-10">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(59,130,246,0.07),transparent_60%)] pointer-events-none" />
         <div className="max-w-5xl mx-auto relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <button onClick={() => navigate('/integrations')} className="w-8 h-8 rounded-full bg-secondary hover:bg-secondary/80 flex items-center justify-center transition-colors shrink-0">
-                <ArrowLeft className="w-4 h-4 text-muted-foreground" />
+              <button onClick={() => navigate('/integrations')} className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/10/80 flex items-center justify-center transition-colors shrink-0">
+                <ArrowLeft className="w-4 h-4 text-white/70" />
               </button>
               <div className="w-10 h-10 rounded-2xl bg-blue-500/10 flex items-center justify-center">
                 <GitBranch className="w-5 h-5 text-blue-500" />
               </div>
-              <h1 className="text-2xl font-bold text-foreground">Knowledge Journey</h1>
+              <h1 className="text-2xl font-bold text-white">Knowledge Journey</h1>
             </div>
-            <p className="text-sm text-muted-foreground max-w-xl">
+            <p className="text-sm text-white/70 max-w-xl">
               Trace how ideas, decisions, and work items flow across your organization â€” from a Slack message to a Notion doc to a GitHub release.
             </p>
           </div>
           <div className="flex items-center gap-3">
             <div className="relative">
-              <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-white/70" />
               <input
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Search journeys..."
-                className="pl-8 pr-3 py-1.5 text-xs bg-card border border-border rounded-xl focus:outline-none focus:border-blue-500 w-52"
+                className="pl-8 pr-3 py-1.5 text-xs bg-[#006065] border border-white/15 rounded-xl focus:outline-none focus:border-blue-500 w-52"
               />
             </div>
-            <button onClick={loadJourneys} className="flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded-xl text-sm font-medium transition-colors">
+            <button onClick={loadJourneys} className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/10/80 text-white rounded-xl text-sm font-medium transition-colors">
               <RefreshCw className="w-4 h-4" />
             </button>
           </div>
@@ -231,16 +231,16 @@ export default function KnowledgeJourney() {
             ))}
           </div>
         ) : filtered.length === 0 ? (
-          <div className="text-center p-12 border border-dashed border-border rounded-2xl bg-card max-w-2xl mx-auto">
-            <GitBranch className="w-8 h-8 text-muted-foreground mx-auto mb-3 opacity-50" />
-            <h3 className="font-semibold text-foreground mb-1">No knowledge journeys yet</h3>
-            <p className="text-sm text-muted-foreground">
+          <div className="text-center p-12 border border-dashed border-white/15 rounded-2xl bg-[#006065] max-w-2xl mx-auto">
+            <GitBranch className="w-8 h-8 text-white/70 mx-auto mb-3 opacity-50" />
+            <h3 className="font-semibold text-white mb-1">No knowledge journeys yet</h3>
+            <p className="text-sm text-white/70">
               As the AI detects relationships between your synced knowledge items, cross-system knowledge journeys will appear here â€” showing how ideas flow from a Slack message to a decision to a code commit.
             </p>
           </div>
         ) : (
           <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">{filtered.length} knowledge journey{filtered.length !== 1 ? 's' : ''} detected</p>
+            <p className="text-sm text-white/70">{filtered.length} knowledge journey{filtered.length !== 1 ? 's' : ''} detected</p>
             {filtered.map((journey, idx) => (
               <JourneyCard
                 key={journey.item.id}
@@ -260,8 +260,8 @@ export default function KnowledgeJourney() {
 function JourneyCard({ journey, onSelect, isSelected }) {
   return (
     <div
-      className={`bg-card border rounded-2xl overflow-hidden transition-all cursor-pointer ${
-        isSelected ? 'border-blue-500/50 shadow-md' : 'border-border hover:border-blue-500/30 hover:shadow-sm'
+      className={`bg-[#006065] border rounded-2xl overflow-hidden transition-all cursor-pointer ${
+        isSelected ? 'border-blue-500/50 shadow-md' : 'border-white/15 hover:border-blue-500/30 hover:shadow-sm'
       }`}
       onClick={onSelect}
     >
@@ -279,8 +279,8 @@ function JourneyCard({ journey, onSelect, isSelected }) {
             transition={{ duration: 0.25 }}
             className="overflow-hidden"
           >
-            <div className="border-t border-border bg-secondary/20 p-5">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">Full Knowledge Chain</h4>
+            <div className="border-t border-white/15 bg-white/10/20 p-5">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-white/70 mb-3">Full Knowledge Chain</h4>
               <DetailChain node={journey} depth={0} />
             </div>
           </motion.div>
@@ -295,7 +295,7 @@ function ChainPreview({ node, depth }) {
   const intg = INTEGRATIONS.find(i => i.id === node.item.provider || i.provider === node.item.provider);
   const color = getColor(node.item.provider);
 
-  if (depth > 3) return <span className="text-muted-foreground text-xs">â€¦</span>;
+  if (depth > 3) return <span className="text-white/70 text-xs">â€¦</span>;
 
   return (
     <div className="flex items-center gap-2 flex-wrap">
@@ -306,14 +306,14 @@ function ChainPreview({ node, depth }) {
         <span>{intg?.icon || 'ðŸ“„'}</span>
         <span className="capitalize">{node.item.provider?.replace('_', ' ')}</span>
       </div>
-      <p className="text-xs text-foreground font-medium max-w-xs truncate">{node.item.title}</p>
+      <p className="text-xs text-white font-medium max-w-xs truncate">{node.item.title}</p>
       {node.children.length > 0 && (
         <>
-          <ChevronRight className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-          <span className="text-[10px] italic text-muted-foreground">
+          <ChevronRight className="w-3.5 h-3.5 text-white/70 shrink-0" />
+          <span className="text-[10px] italic text-white/70">
             {RELATION_VERBS[node.children[0].rel] || node.children[0].rel}
           </span>
-          <ChevronRight className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+          <ChevronRight className="w-3.5 h-3.5 text-white/70 shrink-0" />
           <ChainPreview node={node.children[0].node} depth={depth + 1} />
         </>
       )}
@@ -342,13 +342,13 @@ function DetailChain({ node, depth }) {
           <div className="flex items-center gap-2 mb-1">
             <span className="text-base">{intg?.icon || 'ðŸ“„'}</span>
             <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color }}>{node.item.provider?.replace('_', ' ')}</span>
-            <span className="text-[10px] text-muted-foreground ml-auto">
+            <span className="text-[10px] text-white/70 ml-auto">
               {node.item.imported_at ? format(new Date(node.item.imported_at), 'MMM d, yyyy') : ''}
             </span>
           </div>
-          <p className="text-sm font-semibold text-foreground">{node.item.title || 'Untitled'}</p>
+          <p className="text-sm font-semibold text-white">{node.item.title || 'Untitled'}</p>
           {node.item.ai_summary && (
-            <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{node.item.ai_summary}</p>
+            <p className="text-xs text-white/70 mt-1 line-clamp-2">{node.item.ai_summary}</p>
           )}
           {node.item.url && (
             <a href={node.item.url} target="_blank" rel="noopener noreferrer"
@@ -370,7 +370,7 @@ function DetailChain({ node, depth }) {
             style={{ marginLeft: (depth + 1) * 16 }}
           >
             <div className="w-px h-4 bg-border" />
-            <span className="text-[10px] font-bold text-muted-foreground italic">
+            <span className="text-[10px] font-bold text-white/70 italic">
               {RELATION_VERBS[child.rel] || child.rel} ({Math.round(child.confidence * 100)}% confidence)
             </span>
           </div>

@@ -150,38 +150,38 @@ export default function DecisionLedger() {
   return (
     <div className="min-h-full bg-[#f8fafc] text-white font-sans page-enter pb-12">
       {/* Header */}
-      <div className="relative overflow-hidden border-b border-border bg-gradient-to-br from-amber-500/5 via-background to-background px-6 py-10">
+      <div className="relative overflow-hidden border-b border-white/15 bg-[#006065] text-white px-6 py-10">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(245,158,11,0.08),transparent_60%)] pointer-events-none" />
         <div className="max-w-5xl mx-auto relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <button onClick={() => navigate('/integrations')} className="w-8 h-8 rounded-full bg-secondary hover:bg-secondary/80 flex items-center justify-center transition-colors shrink-0">
-                <ArrowLeft className="w-4 h-4 text-muted-foreground" />
+              <button onClick={() => navigate('/integrations')} className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/10/80 flex items-center justify-center transition-colors shrink-0">
+                <ArrowLeft className="w-4 h-4 text-white/70" />
               </button>
               <div className="w-10 h-10 rounded-2xl bg-amber-500/10 flex items-center justify-center">
                 <Scale className="w-5 h-5 text-amber-500" />
               </div>
-              <h1 className="text-2xl font-bold text-foreground">Decision Ledger</h1>
+              <h1 className="text-2xl font-bold text-white">Decision Ledger</h1>
             </div>
-            <p className="text-sm text-muted-foreground max-w-xl">
+            <p className="text-sm text-white/70 max-w-xl">
               An AI-powered ledger of every key decision extracted from your meetings, chats, docs, and tickets across all connected integrations.
             </p>
           </div>
 
           <div className="flex items-center gap-3">
             <div className="relative w-full md:w-64">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-white/70" />
               <input
                 type="text"
                 placeholder="Search decisions..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-card border border-border rounded-xl pl-9 pr-4 py-2 text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all shadow-sm"
+                className="w-full bg-[#006065] border border-white/15 rounded-xl pl-9 pr-4 py-2 text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all shadow-sm"
               />
             </div>
             <button
               onClick={loadDecisions}
-              className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-xl text-sm font-medium hover:bg-secondary/80 transition-colors shrink-0"
+              className="flex items-center gap-2 px-4 py-2 bg-white/10 text-white rounded-xl text-sm font-medium hover:bg-white/10/80 transition-colors shrink-0"
             >
               <RefreshCw className="w-4 h-4" />
             </button>
@@ -191,7 +191,7 @@ export default function DecisionLedger() {
         {/* Filters Row */}
         {!loading && availableProviders.length > 0 && (
           <div className="max-w-5xl mx-auto relative z-10 mt-6 flex flex-wrap items-center gap-2">
-            <span className="text-xs font-semibold text-muted-foreground flex items-center gap-1 mr-2 uppercase tracking-wider">
+            <span className="text-xs font-semibold text-white/70 flex items-center gap-1 mr-2 uppercase tracking-wider">
               <Filter className="w-3 h-3" /> Source
             </span>
             <button
@@ -199,7 +199,7 @@ export default function DecisionLedger() {
               className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
                 filterProvider === 'all' 
                   ? 'bg-emerald-600 text-white shadow-sm' 
-                  : 'bg-card border border-border text-muted-foreground hover:bg-secondary'
+                  : 'bg-[#006065] border border-white/15 text-white/70 hover:bg-white/10'
               }`}
             >
               All Sources
@@ -213,7 +213,7 @@ export default function DecisionLedger() {
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
                     filterProvider === provider 
                       ? 'bg-emerald-600 text-white shadow-sm' 
-                      : 'bg-card border border-border text-muted-foreground hover:bg-secondary'
+                      : 'bg-[#006065] border border-white/15 text-white/70 hover:bg-white/10'
                   }`}
                 >
                   {intg?.icon && <span className="w-4 h-4 flex items-center justify-center shrink-0">{intg.icon}</span>}
@@ -233,10 +233,10 @@ export default function DecisionLedger() {
             ))}
           </div>
         ) : filteredDecisions.length === 0 ? (
-          <div className="text-center p-12 border border-dashed border-border rounded-2xl bg-card max-w-2xl mx-auto mt-10">
-            <AlertCircle className="w-8 h-8 text-muted-foreground mx-auto mb-3 opacity-50" />
-            <h3 className="font-semibold text-foreground mb-1">No decisions found</h3>
-            <p className="text-sm text-muted-foreground">
+          <div className="text-center p-12 border border-dashed border-white/15 rounded-2xl bg-[#006065] max-w-2xl mx-auto mt-10">
+            <AlertCircle className="w-8 h-8 text-white/70 mx-auto mb-3 opacity-50" />
+            <h3 className="font-semibold text-white mb-1">No decisions found</h3>
+            <p className="text-sm text-white/70">
               {searchQuery || filterProvider !== 'all' 
                 ? "No decisions match your current filters. Try adjusting your search or source."
                 : "As your connected integrations sync and the AI processes your data, detected decisions will appear here."}
@@ -244,13 +244,13 @@ export default function DecisionLedger() {
           </div>
         ) : (
           <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">{filteredDecisions.length} decision record{filteredDecisions.length !== 1 ? 's' : ''} found.</p>
+            <p className="text-sm text-white/70">{filteredDecisions.length} decision record{filteredDecisions.length !== 1 ? 's' : ''} found.</p>
             {filteredDecisions.map((item) => {
               const intg = INTEGRATIONS.find(i => i.id === item.provider || i.provider === item.provider);
               const aiDecisions = getDecisionText(item);
 
               return (
-                <div key={item.id} className="bg-card border border-border rounded-2xl p-5 hover:border-amber-500/30 transition-all hover:shadow-sm">
+                <div key={item.id} className="bg-[#006065] border border-white/15 rounded-2xl p-5 hover:border-amber-500/30 transition-all hover:shadow-sm">
                   <div className="flex flex-col md:flex-row md:items-start gap-4">
                     <div className="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center shrink-0 border border-amber-500/20">
                       <CheckCircle2 className="w-6 h-6 text-amber-500" />
@@ -261,7 +261,7 @@ export default function DecisionLedger() {
                         <span className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider bg-amber-500/10 px-2 py-0.5 rounded-md">
                           {item._type === 'native' ? 'ðŸ¤– AI-Detected' : 'ðŸ“„ Knowledge Source'}
                         </span>
-                        <span className="text-xs text-muted-foreground flex items-center gap-1">
+                        <span className="text-xs text-white/70 flex items-center gap-1">
                           <Calendar className="w-3 h-3" /> {format(new Date(item.imported_at), 'MMM d, yyyy')}
                         </span>
                         {item.outcome_status && (
@@ -275,16 +275,16 @@ export default function DecisionLedger() {
                           </span>
                         )}
                         {item.importance_score && (
-                          <span className="text-xs text-muted-foreground">Impact: <span className="font-bold text-foreground">{item.importance_score}/10</span></span>
+                          <span className="text-xs text-white/70">Impact: <span className="font-bold text-white">{item.importance_score}/10</span></span>
                         )}
                         {intg && (
-                          <span className="text-xs flex items-center gap-1.5 text-muted-foreground font-medium">
+                          <span className="text-xs flex items-center gap-1.5 text-white/70 font-medium">
                             <span className="w-4 h-4 flex items-center justify-center shrink-0">{intg.icon}</span> {intg.name}
                           </span>
                         )}
                       </div>
 
-                      <h3 className="text-base font-bold text-foreground mb-3">
+                      <h3 className="text-base font-bold text-white mb-3">
                         {item.title || 'Decision Artifact'}
                       </h3>
 
@@ -293,16 +293,16 @@ export default function DecisionLedger() {
                           {aiDecisions.map((d, i) => (
                             <div key={i} className="flex items-start gap-2.5 bg-amber-500/5 border border-amber-500/15 rounded-xl px-4 py-2.5">
                               <Sparkles className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
-                              <p className="text-sm text-foreground leading-relaxed">{d}</p>
+                              <p className="text-sm text-white leading-relaxed">{d}</p>
                             </div>
                           ))}
                         </div>
                       )}
 
                       {item.ai_summary && (
-                        <div className="bg-secondary/30 rounded-xl px-4 py-3 border border-border/50 mb-3">
-                          <p className="text-xs font-semibold text-muted-foreground mb-1">Context</p>
-                          <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
+                        <div className="bg-white/10/30 rounded-xl px-4 py-3 border border-white/15/50 mb-3">
+                          <p className="text-xs font-semibold text-white/70 mb-1">Context</p>
+                          <p className="text-sm text-white/70 leading-relaxed line-clamp-2">
                             {item.ai_summary}
                           </p>
                         </div>
@@ -310,17 +310,17 @@ export default function DecisionLedger() {
 
                       <div className="flex flex-wrap items-center gap-4 text-xs mt-2">
                         {item.author && (
-                          <div className="flex items-center gap-1.5 text-muted-foreground">
+                          <div className="flex items-center gap-1.5 text-white/70">
                             <Users className="w-3.5 h-3.5" />
-                            <span>Owner: <span className="font-medium text-foreground">{item.author}</span></span>
+                            <span>Owner: <span className="font-medium text-white">{item.author}</span></span>
                           </div>
                         )}
-                        <div className="flex items-center gap-1.5 text-muted-foreground">
+                        <div className="flex items-center gap-1.5 text-white/70">
                           <Target className="w-3.5 h-3.5" />
-                          <span>Source: <span className="font-medium text-foreground capitalize">{item.provider}</span></span>
+                          <span>Source: <span className="font-medium text-white capitalize">{item.provider}</span></span>
                         </div>
                         {item.content_type && (
-                          <span className="capitalize text-muted-foreground bg-secondary px-2 py-0.5 rounded-md">{item.content_type}</span>
+                          <span className="capitalize text-white/70 bg-white/10 px-2 py-0.5 rounded-md">{item.content_type}</span>
                         )}
                         {item._type === 'native' && (
                           <button
