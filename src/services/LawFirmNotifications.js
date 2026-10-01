@@ -1,4 +1,4 @@
-import { supabase } from '../api/supabase';
+import { supabase } from '../api/supabaseClient';
 
 // In a real production setup with Novu, this would either hit an Edge Function
 // or hit Novu directly from backend. Since we are doing it from the client securely
