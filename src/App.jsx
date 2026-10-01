@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "@/components/ui/sonner";
@@ -69,8 +69,9 @@ function App() {
       <HelmetProvider>
         <QueryClientProvider client={queryClientInstance}>
           <PowerSyncContext.Provider value={powerSync}>
-            <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+            
               <AuthProvider>
+                <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
                   <BrowserRouter>
                     <React.Suspense fallback={<div>Loading...</div>}>
                       <Routes>
@@ -123,8 +124,9 @@ function App() {
                       </Routes>
                     </React.Suspense>
                   </BrowserRouter>
+              
+                </ThemeProvider>
               </AuthProvider>
-            </ThemeProvider>
             <Toaster />
             <SonnerToaster />
             <HotToaster position="top-right" />
