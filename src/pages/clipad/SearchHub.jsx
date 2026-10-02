@@ -779,9 +779,9 @@ export default function SearchHub() {
                                     <span className="text-xs font-bold text-slate-600 dark:text-slate-300">{firstName.charAt(0)}</span>
                                   </div>
                                ) : (
-                                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-sm">
-                                    <Sparkles className="w-4 h-4 text-white" />
-                                  </div>
+                                  <div className="w-8 h-8 rounded-xl bg-[#006065] flex items-center justify-center shadow-md">
+       <CliPadLogo size={18} color="#ffffff" />
+     </div>
                                )}
                             </div>
 
@@ -790,11 +790,11 @@ export default function SearchHub() {
                                  {msg.role === 'user' ? 'You' : 'Orbit AI'}
                                </span>
                                
-                               <div className={`p-4 text-sm leading-relaxed ${msg.role === 'user' ? 'bg-[#006065] text-white shadow-sm rounded-2xl rounded-tr-sm' : 'bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-sm'}`}>
+                               <div className={`text-sm leading-relaxed ${msg.role === 'user' ? 'px-5 py-3 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm rounded-3xl rounded-tr-sm' : 'py-2 text-slate-800 dark:text-slate-200'}`}>
                                   {msg.role === 'assistant' ? (
                                      <ReactMarkdown 
                                        remarkPlugins={[remarkGfm]}
-                                       className="prose prose-sm dark:prose-invert max-w-none prose-p:leading-relaxed prose-pre:bg-slate-900 prose-pre:border prose-pre:border-slate-700 prose-code:text-[#006065] dark:prose-code:text-indigo-400 prose-a:text-[#006065]"
+                                       className="prose prose-sm dark:prose-invert max-w-none prose-p:leading-relaxed prose-pre:bg-slate-900 prose-pre:border prose-pre:border-slate-700 prose-code:text-slate-900 dark:prose-code:text-slate-200 prose-code:bg-slate-100 dark:prose-code:bg-slate-800 prose-code:px-1 prose-code:rounded prose-code:before:content-none prose-code:after:content-none prose-a:text-[#006065]"
                                      >
                                         {msg.content}
                                      </ReactMarkdown>
@@ -828,13 +828,13 @@ export default function SearchHub() {
                    {isSynthesizing && (
                       <div className="flex gap-4 max-w-3xl mr-auto">
                          <div className="shrink-0 mt-1">
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-sm">
-                              <Sparkles className="w-4 h-4 text-white animate-pulse" />
-                            </div>
+                            <div className="w-8 h-8 rounded-xl bg-[#006065] flex items-center justify-center shadow-md animate-pulse">
+       <CliPadLogo size={18} color="#ffffff" />
+     </div>
                          </div>
                          <div className="flex flex-col gap-1.5 items-start">
                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-1">Orbit AI</span>
-                            <div className="p-4 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl rounded-tl-sm flex items-center gap-2">
+                            <div className="py-2 flex items-center gap-2">
                                <Loader2 className="w-4 h-4 text-[#006065] animate-spin" />
                                <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Synthesizing insights...</span>
                             </div>

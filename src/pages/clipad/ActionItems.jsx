@@ -190,9 +190,9 @@ export default function ActionItems() {
   const doneCount = items.filter(i => localStatus[i.id] === 'done').length;
 
   return (
-    <div className="min-h-full bg-background text-white pb-12 font-sans page-enter">
+    <div className="min-h-full bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-12 font-sans page-enter">
       {/* Header */}
-      <div className="relative overflow-hidden border-b border-white/15 bg-[#006065] text-white px-6 py-10">
+      <div className="relative overflow-hidden border-b border-slate-200 dark:border-slate-800 bg-[#006065] text-white px-6 py-10">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(16,185,129,0.07),transparent_60%)] pointer-events-none" />
         <div className="max-w-5xl mx-auto relative z-10">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -201,8 +201,8 @@ export default function ActionItems() {
                 <button onClick={() => navigate('/integrations')} className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/10/80 flex items-center justify-center transition-colors shrink-0">
                   <ArrowLeft className="w-4 h-4 text-white/70" />
                 </button>
-                <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 flex items-center justify-center">
-                  <CheckSquare className="w-5 h-5 text-emerald-500" />
+                <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center">
+                  <CheckSquare className="w-5 h-5 text-[#fad503]" />
                 </div>
                 <h1 className="text-2xl font-bold text-white">Action Items</h1>
               </div>
@@ -213,8 +213,8 @@ export default function ActionItems() {
 
             <div className="flex items-center gap-4">
               <div className="text-center">
-                <div className="text-2xl font-black text-emerald-500">{doneCount}/{items.length}</div>
-                <div className="text-xs text-white/70">Resolved</div>
+                <div className="text-2xl font-black text-[#006065] dark:text-[#fad503]">{doneCount}/{items.length}</div>
+                <div className="text-xs text-slate-500 dark:text-slate-400">Resolved</div>
               </div>
               <button onClick={loadItems} className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/10/80 text-white rounded-xl text-sm font-medium transition-colors">
                 <RefreshCw className="w-4 h-4" />
@@ -235,18 +235,18 @@ export default function ActionItems() {
           {/* Filters */}
           <div className="flex flex-wrap items-center gap-3 mt-4">
             <div className="relative">
-              <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-white/70" />
+              <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400" />
               <input
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Search action items..."
-                className="pl-8 pr-3 py-1.5 text-xs bg-[#006065] border border-white/15 rounded-xl focus:outline-none focus:border-emerald-500 w-52"
+                className="pl-8 pr-3 py-1.5 text-xs bg-white/10 text-white border border-white/20 rounded-xl focus:outline-none focus:border-[#fad503] w-52 placeholder:text-white/50"
               />
             </div>
             <select
               value={providerFilter}
               onChange={e => setProviderFilter(e.target.value)}
-              className="px-3 py-1.5 text-xs bg-[#006065] border border-white/15 rounded-xl focus:outline-none"
+              className="px-3 py-1.5 text-xs bg-[#006065] border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none"
             >
               <option value="all">All Sources</option>
               {providers.map(p => <option key={p} value={p}>{p}</option>)}
@@ -254,7 +254,7 @@ export default function ActionItems() {
             <select
               value={statusFilter}
               onChange={e => setStatusFilter(e.target.value)}
-              className="px-3 py-1.5 text-xs bg-[#006065] border border-white/15 rounded-xl focus:outline-none"
+              className="px-3 py-1.5 text-xs bg-[#006065] border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none"
             >
               <option value="all">All Status</option>
               <option value="todo">Todo</option>
@@ -269,20 +269,20 @@ export default function ActionItems() {
         {loading ? (
           <div className="space-y-4 animate-pulse">
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="bg-[#006065] text-white dark:bg-[#006065] border border-white/10 dark:border-white/5 rounded-2xl h-20"></div>
+              <div key={i} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl h-20"></div>
             ))}
           </div>
         ) : filtered.length === 0 ? (
-          <div className="text-center p-12 border border-dashed border-white/15 rounded-2xl bg-[#006065] max-w-2xl mx-auto">
-            <AlertCircle className="w-8 h-8 text-white/70 mx-auto mb-3 opacity-50" />
-            <h3 className="font-semibold text-white mb-1">No action items found</h3>
-            <p className="text-sm text-white/70">
+          <div className="text-center p-12 border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900 max-w-2xl mx-auto">
+            <AlertCircle className="w-8 h-8 text-slate-500 dark:text-slate-400 mx-auto mb-3 opacity-50" />
+            <h3 className="font-semibold text-slate-900 dark:text-white mb-1">No action items found</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               Action items are automatically extracted by AI as your integrations sync. Connect integrations in the Integrations Hub to get started.
             </p>
           </div>
         ) : (
           <div className="space-y-3">
-            <p className="text-sm text-white/70">{filtered.length} action item{filtered.length !== 1 ? 's' : ''}</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">{filtered.length} action item{filtered.length !== 1 ? 's' : ''}</p>
             {filtered.map(item => {
               const isDone = localStatus[item.id] === 'done';
               const isExported = localStatus[item.id] === 'exported';
@@ -293,40 +293,40 @@ export default function ActionItems() {
                 <div
                   key={item.id}
                   className={`bg-[#006065] border rounded-2xl p-4 transition-all ${
-                    isDone ? 'border-emerald-500/30 opacity-60' : 'border-white/15 hover:border-emerald-500/30 hover:shadow-sm'
+                    isDone ? 'border-emerald-500/30 opacity-60' : 'border-slate-200 dark:border-slate-800 hover:border-[#006065]/50 hover:shadow-sm'
                   }`}
                 >
                   <div className="flex items-start gap-3">
                     {/* Checkbox */}
                     <button
                       onClick={() => toggleStatus(item.id)}
-                      className="mt-0.5 shrink-0 text-white/70 hover:text-emerald-500 transition-colors"
+                      className="mt-0.5 shrink-0 text-slate-500 dark:text-slate-400 hover:text-[#006065] dark:text-[#fad503] transition-colors"
                     >
                       {isDone
-                        ? <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                        ? <CheckCircle2 className="w-5 h-5 text-[#006065] dark:text-[#fad503]" />
                         : <Circle className="w-5 h-5" />
                       }
                     </button>
 
                     <div className="flex-1 min-w-0">
-                      <p className={`text-sm font-medium leading-relaxed ${isDone ? 'line-through text-white/70' : 'text-white'}`}>
+                      <p className={`text-sm font-medium leading-relaxed ${isDone ? 'line-through text-slate-500 dark:text-slate-400' : 'text-white'}`}>
                         {item.text}
                       </p>
 
                       <div className="flex flex-wrap items-center gap-3 mt-2">
-                        <span className="flex items-center gap-1 text-[10px] text-white/70">
+                        <span className="flex items-center gap-1 text-[10px] text-slate-500 dark:text-slate-400">
                           {intg?.icon && <span>{intg.icon}</span>}
                           <span className="capitalize">{item.provider}</span>
                         </span>
-                        <span className="text-[10px] text-white/70 truncate max-w-xs">
+                        <span className="text-[10px] text-slate-500 dark:text-slate-400 truncate max-w-xs">
                           {item.sourceTitle}
                         </span>
-                        <span className="text-[10px] text-white/70 flex items-center gap-0.5">
+                        <span className="text-[10px] text-slate-500 dark:text-slate-400 flex items-center gap-0.5">
                           <Clock className="w-3 h-3" />
                           {format(new Date(item.importedAt), 'MMM d')}
                         </span>
                         {isExported && (
-                          <span className="text-[10px] font-bold text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded-full">Exported</span>
+                          <span className="text-[10px] font-bold text-[#006065] dark:text-[#fad503] bg-[#006065]/10 dark:bg-[#006065]/30 px-2 py-0.5 rounded-full">Exported</span>
                         )}
                       </div>
                     </div>
@@ -336,7 +336,7 @@ export default function ActionItems() {
                       <div className="relative shrink-0 group">
                         <button
                           onClick={() => setExpandedItem(isExpanded ? null : item.id)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-xl text-xs font-semibold transition-colors"
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#006065]/10 dark:bg-[#006065]/30 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-xl text-xs font-semibold transition-colors"
                         >
                           <Send className="w-3.5 h-3.5" />
                           Export
@@ -348,7 +348,7 @@ export default function ActionItems() {
 
                   {/* Export targets dropdown */}
                   {isExpanded && (
-                    <div className="mt-3 ml-8 flex flex-wrap gap-2 border-t border-white/15 pt-3">
+                    <div className="mt-3 ml-8 flex flex-wrap gap-2 border-t border-slate-200 dark:border-slate-800 pt-3">
                       {EXPORT_TARGETS.map(target => {
                         const key = `${item.id}-${target.id}`;
                         const isExportingThis = exporting[key];
@@ -357,7 +357,7 @@ export default function ActionItems() {
                             key={target.id}
                             onClick={() => handleExport(item, target.id)}
                             disabled={isExportingThis}
-                            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#006065] border border-white/15 rounded-xl text-xs font-semibold hover:bg-white/10 transition-colors disabled:opacity-50"
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#006065] border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold hover:bg-white/10 transition-colors disabled:opacity-50"
                             style={{ color: target.color }}
                           >
                             {isExportingThis
