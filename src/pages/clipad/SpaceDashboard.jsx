@@ -140,6 +140,7 @@ export default function SpaceDashboard() {
   const [videos, setVideos] = useState([]);
   const [meetings, setMeetings] = useState([]);
   const [tasks, setTasks] = useState([]);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isLive, setIsLive] = useState(false);
   const [showNewTask, setShowNewTask] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState('');
@@ -455,7 +456,6 @@ export default function SpaceDashboard() {
   const isSpacemanHere = isSpacemanInSpace(user, spaceMembers);
   const canEdit = isAdmin(user) || isSpacemanHere;
   const isMember = spaceMembers.some(m => m.user_id === user?.id);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   return (
     <div style={{ fontFamily: "'Inter', sans-serif" }} className="flex h-screen bg-slate-50 dark:bg-slate-950 overflow-hidden text-slate-900 dark:text-slate-100">
