@@ -333,7 +333,7 @@ export default function ClipadChat({ isDockedMode = false }) {
  const firstName = user?.full_name?.split(' ')[0] || user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'there';
 
  return (
-   <div style={{ fontFamily: "'Inter', sans-serif" }} className="flex flex-col h-[100dvh] bg-[#f8fafc] dark:bg-[#006065] overflow-hidden page-enter">
+   <div style={{ fontFamily: "'Inter', sans-serif" }} className="flex flex-col h-[100dvh] bg-slate-50 dark:bg-slate-950 overflow-hidden page-enter">
 
 
      {/* Main layout below nav */}
@@ -604,11 +604,11 @@ export default function ClipadChat({ isDockedMode = false }) {
   {/* Chat Header */}
   <div className="p-4 border-b border-white/10 flex items-center justify-between bg-[#006065] text-white sticky top-0 z-10 shadow-md">
     <div className="flex items-center gap-3">
-      <button onClick={() => setActiveRoomId(null)} className="md:hidden mr-1 p-2 rounded-full hover:bg-secondary text-white/80 hover:text-white">
+      <button onClick={() => setActiveRoomId(null)} className="md:hidden mr-1 p-2 rounded-full hover:bg-secondary text-slate-500 hover:text-slate-900 dark:hover:text-white">
         <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 4l1.4 1.4L7.8 11H20v2H7.8l5.6 5.6L12 20l-8-8 8-8z"></path></svg>
       </button>
       {isDockedMode && (
-        <button onClick={() => setActiveRoomId(null)} className="p-1 rounded hover:bg-secondary/50 text-white/80 hover:text-white">
+        <button onClick={() => setActiveRoomId(null)} className="p-1 rounded hover:bg-secondary/50 text-slate-500 hover:text-slate-900 dark:hover:text-white">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 4l1.4 1.4L7.8 11H20v2H7.8l5.6 5.6L12 20l-8-8 8-8z"></path></svg>
         </button>
       )}
@@ -649,14 +649,14 @@ export default function ClipadChat({ isDockedMode = false }) {
                   toast({ title: 'Contact Info', description: otherProfile ? `${otherProfile.full_name} (${otherProfile.email || 'No email'})` : `Contact Info: ${roomNameForInfo}` });
                 }
               }}>{roomName}</h3>
-              <p className="text-[12px] text-white/70">{activeRoom?.room_type === 'group' ? 'View group info' : 'View contact info'}</p>
+              <p className="text-[12px] text-slate-500 dark:text-slate-400">{activeRoom?.room_type === 'group' ? 'View group info' : 'View contact info'}</p>
             </div>
           </>
         );
       })()}
     </div>
     
-    <div className="flex items-center gap-4 text-white/80 hover:text-white">
+    <div className="flex items-center gap-4 text-slate-500 hover:text-slate-900 dark:hover:text-white">
       <button onClick={() => {
         toggleChatDock();
         if (!isChatDocked && location.pathname === '/chat') navigate('/dashboard');
@@ -748,17 +748,17 @@ export default function ClipadChat({ isDockedMode = false }) {
  )}
 
  <div className={cn(
- "relative px-3.5 py-2 text-[14.5px] leading-snug rounded-[14px] shadow-sm",
+ "relative px-4 py-2.5 text-[14.5px] leading-relaxed rounded-2xl shadow-sm",
  isMe 
- ? "bg-[#00beac] text-[#00beac] font-medium rounded-tr-none" 
- : "bg-[#006065] text-white border border-white/15 rounded-tl-none border border-black/5 dark:border-white/5"
+ ? "bg-[#006065] text-[#fad503] font-medium rounded-br-sm shadow-[0_2px_10px_rgba(0,96,101,0.2)]" 
+ : "bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-800 rounded-bl-sm"
  )}>
  {msg.reply_to_id && (
- <div className="bg-black/20 border-l-4 border-[#00beac] rounded-md p-2 mb-1.5 text-xs opacity-90 cursor-pointer tracking-[0.02em] hover:shadow-[0_2px_8px_rgba(0,0,0,0.07)] transition-shadow duration-200" onClick={() => {
+ <div className="bg-black/10 dark:bg-white/10 border-l-4 border-current rounded-md p-2 mb-1.5 text-xs opacity-90 cursor-pointer tracking-[0.02em] hover:shadow-[0_2px_8px_rgba(0,0,0,0.07)] transition-shadow duration-200" onClick={() => {
  const el = document.getElementById(`msg-${msg.reply_to_id}`);
  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center'});
 }}>
- <span className="font-bold text-[#fad503] block">{participantProfiles[messages.find(m => m.id === msg.reply_to_id)?.sender_id]?.full_name || 'User'}</span>
+ <span className="font-bold text-current opacity-90 block">{participantProfiles[messages.find(m => m.id === msg.reply_to_id)?.sender_id]?.full_name || 'User'}</span>
  <span className="truncate block max-w-[200px]">{messages.find(m => m.id === msg.reply_to_id)?.content || 'Message'}</span>
  </div>
  )}
@@ -767,12 +767,7 @@ export default function ClipadChat({ isDockedMode = false }) {
  <div className="text-[11px] font-bold text-[#fad503] mb-0.5">{senderName}</div>
  )}
 
- {showTail && (
- <svg viewBox="0 0 8 13" width="8" height="13" className={cn("absolute top-0", isMe ? "-right-2 text-[#d9fdd3] dark:text-primary/80" : "-left-2 text-[#00beac]")}>
- <path opacity="0.13" d="M5.188 1H0v11.193l6.467-8.625C7.526 2.156 6.958 1 5.188 1z" />
- <path fill="currentColor" d="M5.188 0H0v11.193l6.467-8.625C7.526 1.156 6.958 0 5.188 0z" />
- </svg>
- )}
+ 
  
   {msg.content.startsWith('[Attachment|') ? (
   <div className="pr-12 pt-1 pb-1 w-full">
@@ -878,7 +873,7 @@ export default function ClipadChat({ isDockedMode = false }) {
  
  <Popover open={showEmojiPicker} onOpenChange={setShowEmojiPicker}>
  <PopoverTrigger asChild>
- <Button variant="ghost" size="icon" className="w-11 h-11 rounded-full text-white/80 hover:text-white hover:bg-black/5 dark:hover:bg-white/10 shrink-0 transition-colors">
+ <Button variant="ghost" size="icon" className="w-11 h-11 rounded-full text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 shrink-0 transition-colors">
  <Smile className="w-6 h-6" />
  </Button>
  </PopoverTrigger>
@@ -889,7 +884,7 @@ export default function ClipadChat({ isDockedMode = false }) {
 
  <Popover open={showAttachMenu} onOpenChange={setShowAttachMenu}>
  <PopoverTrigger asChild>
- <Button variant="ghost" size="icon" className="w-11 h-11 rounded-full text-white/80 hover:text-white hover:bg-black/5 dark:hover:bg-white/10 shrink-0 transition-colors">
+ <Button variant="ghost" size="icon" className="w-11 h-11 rounded-full text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 shrink-0 transition-colors">
  {isUploading ? <OrbitLoader size="md" /> : <Paperclip className="w-6 h-6" />}
  </Button>
  </PopoverTrigger>

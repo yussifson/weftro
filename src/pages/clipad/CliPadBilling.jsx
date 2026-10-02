@@ -223,7 +223,7 @@ export default function CliPadBilling() {
     }
   };
   if (initializing) {
-    return <div className="flex justify-center p-12"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
+    return <div className="flex justify-center p-12"><Loader2 className="w-8 h-8 animate-spin text-[#006065] dark:text-[#fad503]" /></div>;
   }
 
   const planRank = { free: 0, pro: 1, enterprise: 2, custom: 3 };
@@ -279,7 +279,7 @@ export default function CliPadBilling() {
 
       {/* Billing Cycle Progress */}
       {currentPlan !== 'free' && subscriptionData && (
-        <div className="p-6 rounded-2xl border border-border bg-card">
+        <div className="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex justify-between items-center mb-2">
             <h3 className="font-semibold text-foreground">Current Billing Cycle</h3>
             <span className="text-sm font-medium text-muted-foreground">
@@ -328,7 +328,7 @@ export default function CliPadBilling() {
       )}
 
       {/* Storage Progress */}
-      <div className="p-6 rounded-2xl border border-border bg-card">
+      <div className="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:shadow-md transition-shadow">
         <div className="flex justify-between items-center mb-2">
           <h3 className="font-semibold text-foreground">This Month's Storage Usage</h3>
           <span className="text-sm text-muted-foreground">
@@ -337,7 +337,7 @@ export default function CliPadBilling() {
         </div>
         <div className="w-full bg-white/10 dark:bg-secondary rounded-full h-3 mb-1 overflow-hidden">
           <div 
-            className={`h-3 rounded-full transition-all duration-500 ${PLAN_LIMITS[currentPlan]?.maxStorageGB !== Infinity && (usedStorageGB / PLAN_LIMITS[currentPlan]?.maxStorageGB) > 0.9 ? 'bg-red-500' : 'bg-primary'}`}
+            className={`h-3 rounded-full transition-all duration-500 ${PLAN_LIMITS[currentPlan]?.maxStorageGB !== Infinity && (usedStorageGB / PLAN_LIMITS[currentPlan]?.maxStorageGB) > 0.9 ? 'bg-red-500' : 'bg-[#006065]'}`}
             style={{ width: `${PLAN_LIMITS[currentPlan]?.maxStorageGB === Infinity ? (usedStorageGB > 0 ? 5 : 0) : Math.min(100, (usedStorageGB / PLAN_LIMITS[currentPlan]?.maxStorageGB) * 100)}%` }}
           ></div>
         </div>
@@ -346,28 +346,28 @@ export default function CliPadBilling() {
         )}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 md:gap-8 w-full items-stretch">
         {/* FREE PLAN */}
-        <div className={`p-6 rounded-2xl border ${currentPlan === 'free' ? 'border-primary bg-primary/5' : 'border-border bg-card'}`}>
+        <div className={`p-8 flex flex-col rounded-2xl border ${currentPlan === 'free' ? 'border-[#006065] bg-[#006065]/5 dark:bg-[#006065]/20 shadow-md ring-1 ring-[#006065]' : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:shadow-md transition-shadow'}`}>
           <h3 className="text-xl font-bold">Free</h3>
           <p className="text-3xl font-bold mt-4">$0<span className="text-sm font-normal text-muted-foreground">/mo</span></p>
           <ul className="mt-6 space-y-3">
-            <li className="flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-green-500" /> 10 Video Meetings</li>
-            <li className="flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-green-500" /> Basic AI Summaries</li>
-            <li className="flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-green-500" /> 2GB Max Cloud Storage</li>
+            <li className="flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-[#006065] dark:text-[#fad503]" /> 10 Video Meetings</li>
+            <li className="flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-[#006065] dark:text-[#fad503]" /> Basic AI Summaries</li>
+            <li className="flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-[#006065] dark:text-[#fad503]" /> 2GB Max Cloud Storage</li>
           </ul>
           <button 
             onClick={() => handlePlanClick('free')}
             disabled={currentPlan === 'free' || loading}
-            className={`w-full mt-8 py-2 rounded-xl font-semibold border ${currentPlan === 'free' ? 'bg-secondary text-foreground border-border' : 'bg-background text-foreground hover:bg-secondary border-border'}`}>
+            className={`w-full mt-auto py-3.5 rounded-xl font-bold transition-all shadow-sm ${currentPlan === 'free' ? 'bg-slate-100 dark:bg-slate-800 text-slate-500 cursor-default' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-[#006065] dark:hover:border-[#fad503] text-slate-900 dark:text-white'}`}>
             {getButtonText('free')}
           </button>
         </div>
 
         {/* PRO PLAN */}
-        <div className={`relative p-6 rounded-2xl border ${currentPlan === 'pro' ? 'border-primary bg-primary/5' : 'border-primary/50 bg-card shadow-lg'}`}>
+        <div className={`relative p-8 flex flex-col rounded-2xl border ${currentPlan === 'pro' ? 'border-[#006065] bg-[#006065]/5 dark:bg-[#006065]/20 shadow-md ring-1 ring-[#006065]' : 'border-[#006065]/30 dark:border-[#fad503]/30 bg-white dark:bg-slate-900 shadow-md hover:shadow-lg transition-all'}`}>
           {currentPlan !== 'pro' && (
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary text-white text-xs font-bold rounded-full flex items-center gap-1">
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-[#006065] text-white text-xs font-bold rounded-full flex items-center gap-1">
               <Sparkles className="w-3 h-3" /> Recommended
             </div>
           )}
@@ -377,51 +377,51 @@ export default function CliPadBilling() {
             Billed in GHS ({Math.ceil(15 * exchangeRate)} GHS)
           </p>
           <ul className="mt-6 space-y-3">
-            <li className="flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-green-500" /> Unlimited Meetings</li>
-            <li className="flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-green-500" /> Advanced AI Action Items</li>
-            <li className="flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-green-500" /> 15GB Max Cloud Storage</li>
+            <li className="flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-[#006065] dark:text-[#fad503]" /> Unlimited Meetings</li>
+            <li className="flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-[#006065] dark:text-[#fad503]" /> Advanced AI Action Items</li>
+            <li className="flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-[#006065] dark:text-[#fad503]" /> 15GB Max Cloud Storage</li>
           </ul>
           <button 
             onClick={() => handlePlanClick('pro')}
             disabled={currentPlan === 'pro' || loading}
-            className={`w-full mt-8 py-2 rounded-xl font-semibold transition-all ${currentPlan === 'pro' ? 'bg-secondary text-foreground border border-border' : 'bg-primary text-white hover:bg-primary/90'}`}>
+            className={`w-full mt-8 py-2 rounded-xl font-semibold transition-all ${currentPlan === 'pro' ? 'bg-secondary text-foreground border border-border' : 'bg-[#006065] text-white hover:bg-[#006065]/90'}`}>
             {getButtonText('pro')}
           </button>
         </div>
 
         {/* ENTERPRISE PLAN */}
-        <div className={`p-6 rounded-2xl border ${currentPlan === 'enterprise' ? 'border-primary bg-primary/5' : 'border-border bg-card'}`}>
+        <div className={`p-8 flex flex-col rounded-2xl border ${currentPlan === 'enterprise' ? 'border-[#006065] bg-[#006065]/5 dark:bg-[#006065]/20 shadow-md ring-1 ring-[#006065]' : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:shadow-md transition-shadow'}`}>
           <h3 className="text-xl font-bold">Enterprise</h3>
           <p className="text-3xl font-bold mt-4">$39<span className="text-sm font-normal text-muted-foreground">/mo</span></p>
           <p className="text-xs text-muted-foreground mt-1">
             Billed in GHS ({Math.ceil(39 * exchangeRate)} GHS)
           </p>
           <ul className="mt-6 space-y-3">
-            <li className="flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-green-500" /> Dedicated Account Manager</li>
-            <li className="flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-green-500" /> Custom Payment Subdomains</li>
-            <li className="flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-green-500" /> Enterprise SLAs</li>
-            <li className="flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-green-500" /> 50GB Max Cloud Storage</li>
+            <li className="flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-[#006065] dark:text-[#fad503]" /> Dedicated Account Manager</li>
+            <li className="flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-[#006065] dark:text-[#fad503]" /> Custom Payment Subdomains</li>
+            <li className="flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-[#006065] dark:text-[#fad503]" /> Enterprise SLAs</li>
+            <li className="flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-[#006065] dark:text-[#fad503]" /> 50GB Max Cloud Storage</li>
           </ul>
           <button 
             onClick={() => handlePlanClick('enterprise')}
             disabled={currentPlan === 'enterprise' || loading}
-            className={`w-full mt-8 py-2 rounded-xl font-semibold border ${currentPlan === 'enterprise' ? 'bg-secondary text-foreground border-border' : 'bg-background text-foreground hover:bg-secondary border-border'}`}>
+            className={`w-full mt-auto py-3.5 rounded-xl font-bold transition-all shadow-sm ${currentPlan === 'enterprise' ? 'bg-slate-100 dark:bg-slate-800 text-slate-500 cursor-default' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-[#006065] dark:hover:border-[#fad503] text-slate-900 dark:text-white'}`}>
             {getButtonText('enterprise')}
           </button>
         </div>
 
         {/* CUSTOM PLAN */}
-        <div className={`p-6 rounded-2xl border ${currentPlan === 'custom' ? 'border-primary bg-primary/5' : 'border-border bg-card'}`}>
+        <div className={`p-8 flex flex-col rounded-2xl border ${currentPlan === 'custom' ? 'border-[#006065] bg-[#006065]/5 dark:bg-[#006065]/20 shadow-md ring-1 ring-[#006065]' : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:shadow-md transition-shadow'}`}>
           <h3 className="text-xl font-bold">Custom</h3>
           <p className="text-3xl font-bold mt-4">Contact Us</p>
           <p className="text-xs text-muted-foreground mt-1">
             Tailored deployment & licensing
           </p>
           <ul className="mt-6 space-y-3">
-            <li className="flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-green-500" /> Dedicated Infrastructure / On-Prem</li>
-            <li className="flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-green-500" /> Custom AI Models & Fine-Tuning</li>
-            <li className="flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-green-500" /> Bespoke Integrations & SLAs</li>
-            <li className="flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-green-500" /> Unlimited Cloud Storage</li>
+            <li className="flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-[#006065] dark:text-[#fad503]" /> Dedicated Infrastructure / On-Prem</li>
+            <li className="flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-[#006065] dark:text-[#fad503]" /> Custom AI Models & Fine-Tuning</li>
+            <li className="flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-[#006065] dark:text-[#fad503]" /> Bespoke Integrations & SLAs</li>
+            <li className="flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-[#006065] dark:text-[#fad503]" /> Unlimited Cloud Storage</li>
           </ul>
           <button 
             onClick={() => handlePlanClick('custom')}
@@ -479,7 +479,7 @@ export default function CliPadBilling() {
                       <td className="px-6 py-4 text-right">
                         <button 
                           onClick={() => setReceiptDetails({ companyName: rDetails.companyName || companyName, email: rDetails.email || user?.email, ...rDetails })}
-                          className="text-primary hover:text-primary/80 font-semibold flex items-center justify-end gap-1 w-full"
+                          className="text-[#006065] dark:text-[#fad503] hover:text-[#006065] dark:text-[#fad503]/80 font-semibold flex items-center justify-end gap-1 w-full"
                         >
                           View Receipt <ArrowUpRight className="w-4 h-4" />
                         </button>

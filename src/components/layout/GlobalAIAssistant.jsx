@@ -1080,7 +1080,7 @@ RULES FOR MULTI-STEP REASONING & AUTOMATIONS:
  )}
  
  <div 
- className={`flex bg-white dark:bg-[#0A0F1C] z-[70] transition-all duration-300 overflow-hidden ${
+ className={`flex bg-slate-50 dark:bg-slate-950 z-[70] transition-all duration-300 overflow-hidden ${
  // Mobile: Fullscreen native view
  isOpen ? "max-md:fixed max-md:inset-0 max-md:h-[100dvh] max-md:w-full max-md:flex-col max-md:translate-y-0 max-md:opacity-100 max-md:shadow-2xl" : "max-md:fixed max-md:inset-x-0 max-md:bottom-0 max-md:h-0 max-md:translate-y-full max-md:opacity-0 max-md:pointer-events-none"
  } ${
@@ -1097,7 +1097,7 @@ RULES FOR MULTI-STEP REASONING & AUTOMATIONS:
  <div className="flex h-full w-full">
  {/* History Sidebar */}
  {showHistory && (
- <div className="w-52 shrink-0 border-r border-primary/40 bg-muted/20 flex flex-col">
+ <div className="w-52 shrink-0 border-r border-primary/40 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col">
  <div className="px-3 py-2.5 border-b border-primary/40 flex items-center justify-between">
  <span className="text-[11px] font-semibold uppercase tracking-wider text-[#71717a] dark:text-gray-400 tracking-[0.04em]">{t("chat_history", "Chat History")}</span>
  <div className="flex items-center gap-2">
@@ -1144,13 +1144,13 @@ RULES FOR MULTI-STEP REASONING & AUTOMATIONS:
  <div className="flex-1 flex flex-col min-w-0 relative">
 
   {/* Header â€” Solid Sticky Controls */}
-  <div className="bg-white/95 dark:bg-[#0A0F1C]/95 md:bg-slate-50/95 md:dark:bg-[#0A0F1C]/95 backdrop-blur-md px-4 py-3 flex justify-between items-center shrink-0 sticky top-0 z-[101] border-b border-slate-100 dark:border-white/5">
+  <div className="bg-[#006065] text-white backdrop-blur-md px-4 py-3 flex justify-between items-center shrink-0 sticky top-0 z-[101] border-b border-[#006065]/50">
     <div className="flex-1"></div>
     <div className="flex items-center gap-1.5 justify-end">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button 
-            className="w-8 h-8 rounded-full bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 flex items-center justify-center transition-all"
+            className="w-8 h-8 rounded-full bg-transparent hover:bg-white/10 text-white/80 hover:text-white flex items-center justify-center transition-all"
             title="Orbit Options"
           >
             <LayoutGrid className="w-4 h-4" />
@@ -1190,24 +1190,24 @@ RULES FOR MULTI-STEP REASONING & AUTOMATIONS:
   </div>
 
  {/* Messages */}
- <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6 relative bg-white dark:bg-[#0A0F1C] md:bg-slate-50/50 md:dark:bg-transparent md:scrollbar-primary">
+ <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6 relative bg-slate-50 dark:bg-slate-950 md:scrollbar-primary">
  <div className="relative z-10 space-y-6">
  {messages.filter(m => m.role !== 'system').map((msg, i) => {
  return (
  <div key={i} className={`flex gap-3 max-w-full items-start ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
   {msg.role === 'user' ? (
-    <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-450 border border-slate-200 dark:border-white/10">
+    <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm bg-[#006065] text-[#fad503] font-bold border border-[#006065]/20 text-xs">
       <User className="w-4 h-4" />
     </div>
   ) : (
-    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20 mt-0.5">
-      <CliPadLogo size={18} className="text-primary" />
+    <div className="w-8 h-8 rounded-full bg-transparent flex items-center justify-center shrink-0 mt-0.5 shadow-sm border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+      <img src="/clipad-app-icon.png" alt="CliPad" className="w-5 h-5 object-contain" />
     </div>
   )}
-  <div className={`px-5 py-3 rounded-xl text-[13px] leading-relaxed max-w-[80%] shadow-sm break-words ${
+  <div className={`px-5 py-3.5 rounded-2xl text-[14px] leading-relaxed max-w-[85%] break-words ${
   msg.role === 'user'
-  ? 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100'
-  : 'bg-white dark:bg-[#131A2B] border border-slate-100 dark:border-white/5 text-slate-700 dark:text-foreground'
+  ? 'bg-[#f1f1f1] dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-sm'
+  : 'bg-transparent text-slate-800 dark:text-slate-200 w-full px-0 shadow-none'
   }`}>
  {msg.content === '...' ? (
     <div className="flex items-center gap-1.5 py-1.5 min-w-[36px]">
@@ -1294,7 +1294,7 @@ RULES FOR MULTI-STEP REASONING & AUTOMATIONS:
  )}
 
  {/* Input */}
- <div className="px-4 py-4 bg-white dark:bg-[#0A0F1C] border-t border-slate-100 dark:border-white/5 shrink-0 relative z-10">
+ <div className="px-4 py-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 shadow-[0_-10px_40px_rgba(0,0,0,0.03)] shrink-0 relative z-10">
    <div className="relative rounded-2xl bg-slate-50 dark:bg-[#131A2B] border border-slate-200 dark:border-slate-800 shadow-sm focus-within:ring-1 focus-within:ring-slate-300 transition-all duration-300 flex flex-col p-2">
      
      <div className="flex items-center relative">

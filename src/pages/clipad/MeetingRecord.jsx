@@ -24,7 +24,7 @@ function CopyButton({ text }) {
     setTimeout(() => setCopied(false), 2000);
   };
   return (
-    <button onClick={copy} className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg transition-all ${copied ? 'text-emerald-500 bg-emerald-500/10' : 'text-muted-foreground hover:text-gray-300 bg-secondary hover:bg-secondary'}`}>
+    <button onClick={copy} className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg transition-all ${copied ? 'text-emerald-500 bg-emerald-500/10' : 'text-muted-foreground hover:text-slate-600 dark:text-slate-300 bg-secondary hover:bg-secondary'}`}>
       {copied ? <><Check className="w-3 h-3" /> Copied</> : <><Copy className="w-3 h-3" /> Copy</>}
     </button>
   );
@@ -33,16 +33,16 @@ function CopyButton({ text }) {
 function SectionCard({ icon: Icon, iconColor, title, badge, defaultOpen = true, children }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="bg-card border border-border rounded-2xl overflow-hidden">
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-6 py-4 hover:bg-white/[0.02] transition-colors"
+        className="w-full flex items-center justify-between px-6 py-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
       >
         <div className="flex items-center gap-3">
           <div className={`w-8 h-8 rounded-xl bg-gradient-to-br ${iconColor} flex items-center justify-center`}>
             <Icon className="w-4 h-4 text-foreground" />
           </div>
-          <span className="font-bold text-foreground">{title}</span>
+          <span className="font-bold text-slate-900 dark:text-white">{title}</span>
           {badge && <span className="px-2 py-0.5 rounded-full bg-secondary text-muted-foreground text-xs">{badge}</span>}
         </div>
         {open ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
@@ -423,11 +423,11 @@ export default function MeetingRecord() {
   const canEdit = meeting?.created_by === user?.id || meeting?.host_id === user?.id || isAdmin;
 
   return (
-    <div style={{ fontFamily: "'Inter', sans-serif" }} className="min-h-full bg-[#f0f2f5]  page-enter text-white dark:text-slate-100 overflow-x-hidden pb-24 md:pb-8">
+    <div style={{ fontFamily: "'Inter', sans-serif" }} className="min-h-full bg-slate-50 dark:bg-slate-950 page-enter text-slate-900 dark:text-slate-100 overflow-x-hidden pb-24 md:pb-8">
       {/* Contextual Action Bar */}
-      <div className="flex items-center justify-between px-6 py-4 bg-transparent border-b border-black/5 dark:border-white/5 mb-4">
+      <div className="flex items-center justify-between px-6 py-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-sm mb-4">
           <button onClick={() => navigate('/meetings')} className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/95 dark:bg-[#202c33]/95 backdrop-blur-md border border-black/5 dark:border-white/5 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] text-sm font-semibold text-slate-900 dark:text-white transition-all hover:-translate-y-0.5">
-            <ArrowLeft className="w-4 h-4 text-white/70" /> Meetings
+            <ArrowLeft className="w-4 h-4 text-slate-500" /> Meetings
           </button>
         <div className="flex items-center gap-2">
           {!meeting.ai_summary && (
@@ -601,7 +601,7 @@ export default function MeetingRecord() {
               <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white dark:to-slate-950/90 pointer-events-none" />
               <Lock className="w-8 h-8 text-emerald-500 mx-auto mb-4" />
               <h3 className="text-lg font-bold text-white dark:text-slate-100 relative z-10 mb-2">Advanced AI & Smart Follow-ups</h3>
-              <p className="text-sm text-white/70 max-w-sm mx-auto relative z-10 mb-6">
+              <p className="text-sm text-slate-500 max-w-sm mx-auto relative z-10 mb-6">
                 Upgrade to Pro to unlock the full AI Intelligence layer, sentiment analysis, and automated smart follow-ups.
               </p>
               <button 
@@ -648,12 +648,12 @@ export default function MeetingRecord() {
                     </div>
                     <div>
                       {seg.speaker && <p className="text-xs font-bold text-primary mb-0.5">{seg.speaker}</p>}
-                      <p className="text-sm text-gray-300 leading-relaxed">{seg.text}</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{seg.text}</p>
                     </div>
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-line">{meeting.raw_transcript}</p>
+                <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">{meeting.raw_transcript}</p>
               )}
             </div>
             {(transcript.length > 5 || (meeting.raw_transcript && meeting.raw_transcript.length > 400)) && (

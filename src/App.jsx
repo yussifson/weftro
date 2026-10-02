@@ -20,7 +20,10 @@ import ClipadAdminLayout from '@/components/layout/ClipadAdminLayout';
 
 const SpaceDashboard = React.lazy(() => import('@/pages/clipad/SpaceDashboard'));
 const RecordVideo = React.lazy(() => import('@/pages/clipad/RecordVideo'));
+
+const RecordVideo = React.lazy(() => import('@/pages/clipad/RecordVideo'));
 const WatchVideo = React.lazy(() => import('@/pages/clipad/WatchVideo'));
+const VideoRoom = React.lazy(() => import('@/components/video/VideoRoom'));
 const CliPadSettings = React.lazy(() => import('@/pages/clipad/CliPadSettings'));
 const VideoAnalytics = React.lazy(() => import('@/pages/clipad/VideoAnalytics'));
 const CliPadEnterpriseDashboard = React.lazy(() => import('@/pages/clipad/admin/EnterpriseDashboard'));
@@ -108,6 +111,11 @@ function App() {
                           <Route path="/knowledge" element={<KnowledgeJourney />} />
                           <Route path="/integration-analytics" element={<IntegrationAnalytics />} />
                           <Route path="/record-meeting" element={<MeetingRecord />} />
+
+                          <Route path="/record" element={<RecordVideo />} />
+                          <Route path="/watch/:id" element={<WatchVideo />} />
+                          <Route path="/meetings/:id" element={<MeetingRecord />} />
+                          <Route path="/join/:id" element={<VideoRoom />} />
                           <Route path="/save-meeting" element={<SaveMeetingPage />} />
                           <Route path="/meetings" element={<MeetingsList />} />
                           <Route path="/videos" element={<VideosList />} />
