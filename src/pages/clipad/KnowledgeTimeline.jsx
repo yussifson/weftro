@@ -133,7 +133,7 @@ export default function KnowledgeTimeline() {
               placeholder="Search timeline..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-4 py-2 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:border-[#00beac] transition-all shadow-sm"
+              className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-4 py-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#006065] dark:focus:border-[#fad503] transition-all shadow-sm"
             />
           </div>
 
@@ -196,11 +196,11 @@ export default function KnowledgeTimeline() {
                       <div className="w-2 h-2 rounded-full bg-[#fad503]" />
                     </div>
                     
-                    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 hover:shadow-lg hover:border-[#006065]/30 dark:hover:border-[#006065]/50 transition-all text-white">
+                    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 hover:shadow-lg hover:border-[#006065]/30 dark:hover:border-[#006065]/50 transition-all text-slate-900 dark:text-white">
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
                           <span className="text-xl" title={intg?.name}>{intg?.icon || '📄'}</span>
-                          <span className="text-xs font-bold px-2.5 py-1 bg-white/15 text-white rounded-md uppercase tracking-wider">
+                          <span className="text-xs font-bold px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-[#006065] dark:text-[#fad503] rounded-md uppercase tracking-wider">
                             {item.content_type || 'Document'}
                           </span>
                         </div>
@@ -210,25 +210,25 @@ export default function KnowledgeTimeline() {
                         </div>
                       </div>
                       
-                      <h3 className="text-base font-bold text-white mb-2 line-clamp-1 group-hover:text-[#fad503] transition-colors">
+                      <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2 line-clamp-1 group-hover:text-[#006065] dark:group-hover:text-[#fad503] transition-colors">
                         {item.title || 'Untitled Knowledge Artifact'}
                       </h3>
                       
                       {item.ai_summary ? (
-                        <p className="text-sm text-white/80 mb-4 line-clamp-2 leading-relaxed">
+                        <p className="text-sm text-slate-600 dark:text-slate-300 mb-4 line-clamp-2 leading-relaxed">
                           {item.ai_summary}
                         </p>
                       ) : item.content ? (
-                        <p className="text-sm text-white/80 mb-4 line-clamp-2 leading-relaxed opacity-90">
+                        <p className="text-sm text-slate-600 dark:text-slate-300 mb-4 line-clamp-2 leading-relaxed opacity-90">
                           {item.content.substring(0, 150)}...
                         </p>
                       ) : null}
                       
-                      <div className="flex items-center justify-between mt-auto pt-4 border-t border-white/10">
+                      <div className="flex items-center justify-between mt-auto pt-4 border-t border-slate-100 dark:border-slate-800">
                         <div className="flex items-center gap-2 text-xs">
                           {item.author && (
-                            <span className="flex items-center gap-1 text-white/80 bg-white/10 px-2 py-1 rounded-md">
-                              <span className="font-medium text-white">{item.author}</span>
+                            <span className="flex items-center gap-1 text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md">
+                              <span className="font-medium text-slate-900 dark:text-white">{item.author}</span>
                             </span>
                           )}
                           <span className="text-slate-400 flex items-center gap-1">
