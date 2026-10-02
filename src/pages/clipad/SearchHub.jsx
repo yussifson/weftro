@@ -790,7 +790,7 @@ export default function SearchHub() {
                                  {msg.role === 'user' ? 'You' : 'Orbit AI'}
                                </span>
                                
-                               <div className={`p-4 text-sm leading-relaxed ${msg.role === 'user' ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 rounded-2xl rounded-tr-sm' : 'bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-sm'}`}>
+                               <div className={`p-4 text-sm leading-relaxed ${msg.role === 'user' ? 'bg-indigo-600 text-white shadow-sm rounded-2xl rounded-tr-sm' : 'bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-sm'}`}>
                                   {msg.role === 'assistant' ? (
                                      <ReactMarkdown 
                                        remarkPlugins={[remarkGfm]}
