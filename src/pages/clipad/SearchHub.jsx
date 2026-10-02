@@ -3,7 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { FileText, CheckCircle, MessageSquare, Calendar, Video,
   Loader2, X, ShieldAlert, AlertTriangle, ExternalLink, Zap, Layers, Copy, CheckCheck,
   Users, ArrowUpRight, Send, Plus, Volume2, VolumeX, ThumbsUp, ThumbsDown, Edit,
-  Search, Sparkles
+  Search, Sparkles, ArrowLeft
 } from 'lucide-react';
 import { CliPadLogo } from '@/components/ui/CliPadLogo';
 import { supabase } from '@/api/supabaseClient';
@@ -539,97 +539,124 @@ export default function SearchHub() {
   return (
     <div className="flex flex-col h-screen bg-slate-50 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100 overflow-hidden">
       
-      {/* TOP HEADER & SEARCH BAR (ALWAYS VISIBLE) */}
-      <header className="h-16 shrink-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center px-4 md:px-8 gap-4 md:gap-8 z-10 shadow-sm">
-        <div className="hidden md:flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center shadow-sm">
-            <Search className="w-4 h-4 text-white" />
-          </div>
-          <span className="font-bold text-lg tracking-tight">Search Hub</span>
-        </div>
+      {!hasPerformedSearch ? (
+        /* ── ZERO STATE (Original Centered Layout) ── */
+        <div className="flex-1 flex flex-col items-center justify-center px-4 py-12 overflow-y-auto">
+          {/* Greeting heading */}
+          <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white text-center mb-2 tracking-tight">
+            How can I help you today, {firstName}?
+          </h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 text-center mb-8">Search across organizational memory, decisions, action items, documents, and meetings.</p>
 
-        <div className="flex-1 max-w-3xl">
-          <form onSubmit={(e) => { e.preventDefault(); setSearchParams({ q: query }); runSearch(); }} className="relative group">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-4 w-4 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
-            </div>
-            <input
-              type="text"
-              autoFocus
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search organizational memory, decisions, tasks, standups..."
-              className="block w-full pl-10 pr-12 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:focus:ring-indigo-400 transition-all placeholder:text-slate-400"
-            />
-            {query && (
-              <div className="absolute inset-y-0 right-0 pr-1 flex items-center gap-1">
-                <button type="button" onClick={() => { setQuery(''); setHasPerformedSearch(false); }} className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-md">
-                  <X className="w-3.5 h-3.5" />
+          {/* Search Input Bar */}
+          <div className="w-full max-w-2xl">
+            <form onSubmit={(e) => { e.preventDefault(); setSearchParams({ q: query }); runSearch(); }}>
+              <div className="relative flex items-center bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 rounded-2xl p-1.5 shadow-lg hover:border-indigo-500/50 focus-within:border-indigo-500 focus-within:ring-4 focus-within:ring-indigo-500/10 transition-all w-full">
+                <input
+                  autoFocus
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search decisions, documents, action items, standups..."
+                  className="flex-1 bg-transparent border-0 outline-none ring-0 text-base font-medium placeholder:text-slate-400 text-slate-900 dark:text-white px-4 min-w-0 w-full"
+                />
+
+                {query && (
+                  <button type="button" onClick={() => setQuery('')} className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 mr-1 shrink-0">
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={!query.trim()}
+                  className="px-6 py-3 sm:py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 shrink-0 shadow-md text-sm"
+                >
+                  {isSearching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                  <span className="hidden sm:inline">Search</span>
                 </button>
               </div>
-            )}
-          </form>
-        </div>
-      </header>
+            </form>
 
-      {/* FILTER TABS (Only if searched) */}
-      {hasPerformedSearch && (
-        <div className="shrink-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 md:px-8 py-2 overflow-x-auto hide-scrollbar flex gap-2">
-          {FILTER_TABS.map(tab => {
-             const Icon = tab.icon;
-             const isActive = activeFilter === tab.id;
-             return (
-               <button
-                 key={tab.id}
-                 onClick={() => setActiveFilter(tab.id)}
-                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors ${isActive ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700'}`}
-               >
-                 <Icon className="w-3.5 h-3.5" /> {tab.label}
-               </button>
-             );
-          })}
-        </div>
-      )}
-
-      {/* MAIN CONTENT AREA */}
-      <div className="flex-1 overflow-hidden relative flex">
-        
-        {!hasPerformedSearch ? (
-          /* ZERO STATE */
-          <div className="flex-1 overflow-y-auto px-4 py-16 flex flex-col items-center">
-             <div className="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center mb-6">
-               <Layers className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
-             </div>
-             <h1 className="text-3xl font-black text-slate-900 dark:text-white text-center mb-3 tracking-tight">
-               How can I help you, {firstName}?
-             </h1>
-             <p className="text-slate-500 text-center max-w-md mb-10 text-sm">
-               Instantly search and synthesize information across all your spaces, meetings, docs, and decisions.
-             </p>
-             
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl w-full">
-               {SUGGESTED_PROMPTS.map((item, idx) => {
-                  const Icon = item.icon;
-                  return (
-                    <button
-                      key={idx}
-                      onClick={() => { setQuery(item.desc); setSearchParams({ q: item.desc }); runSearch(item.desc); }}
-                      className="group flex flex-col items-start text-left p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl hover:border-indigo-300 dark:hover:border-indigo-700 hover:shadow-md transition-all"
-                    >
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="p-1.5 bg-indigo-50 dark:bg-indigo-900/30 rounded-md text-indigo-600 dark:text-indigo-400">
-                          <Icon className="w-4 h-4" />
-                        </div>
-                        <span className="font-bold text-sm">{item.title}</span>
-                      </div>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">{item.desc}</p>
-                    </button>
-                  );
-               })}
-             </div>
+            {/* Suggestion chips */}
+            <div className="flex flex-wrap items-center justify-center gap-2 mt-6">
+              {SUGGESTED_PROMPTS.map((item, idx) => {
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={idx}
+                    onClick={() => { setQuery(item.desc); setSearchParams({ q: item.desc }); runSearch(item.desc); }}
+                    className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-all group shadow-sm active:scale-95"
+                  >
+                    <Icon className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                    {item.title}
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        ) : (
-          /* SPLIT LAYOUT RESULTS */
+        </div>
+      ) : (
+        /* ── SEARCH STATE (Premium Split Layout) ── */
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Header specific to search state */}
+          <header className="h-16 shrink-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center px-4 md:px-8 gap-4 md:gap-8 z-10 shadow-sm">
+            <button 
+              onClick={() => { setHasPerformedSearch(false); setQuery(''); setResults([]); setAiAnswer(''); }} 
+              className="hidden md:flex items-center gap-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 px-3 py-1.5 rounded-lg transition-colors font-bold text-sm shadow-sm"
+            >
+              <ArrowLeft className="w-4 h-4" /> New Search
+            </button>
+
+            <div className="flex-1 max-w-3xl">
+              <form onSubmit={(e) => { e.preventDefault(); setSearchParams({ q: query }); runSearch(); }} className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Search className="h-4 w-4 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
+                </div>
+                <input
+                  type="text"
+                  autoFocus
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search organizational memory..."
+                  className="block w-full pl-10 pr-12 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:focus:ring-indigo-400 transition-all placeholder:text-slate-400"
+                />
+                {query && (
+                  <div className="absolute inset-y-0 right-0 pr-1 flex items-center gap-1">
+                    <button type="button" onClick={() => { setQuery(''); setHasPerformedSearch(false); }} className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-md">
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                )}
+              </form>
+            </div>
+            
+            <button 
+              onClick={() => { setHasPerformedSearch(false); setQuery(''); setResults([]); setAiAnswer(''); }} 
+              className="md:hidden p-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg transition-colors"
+              title="New Search"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+          </header>
+
+          {/* FILTER TABS */}
+          <div className="shrink-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 md:px-8 py-2 overflow-x-auto hide-scrollbar flex gap-2">
+            {FILTER_TABS.map(tab => {
+               const Icon = tab.icon;
+               const isActive = activeFilter === tab.id;
+               return (
+                 <button
+                   key={tab.id}
+                   onClick={() => setActiveFilter(tab.id)}
+                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors ${isActive ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700'}`}
+                 >
+                   <Icon className="w-3.5 h-3.5" /> {tab.label}
+                 </button>
+               );
+            })}
+          </div>
+
+          {/* MAIN CONTENT AREA */}
           <div className="flex-1 w-full max-w-screen-2xl mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 h-full overflow-hidden">
              
              {/* LEFT SIDE: SEARCH RESULTS */}
@@ -841,8 +868,8 @@ export default function SearchHub() {
 
              </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
