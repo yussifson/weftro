@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/api/supabaseClient';
 import { getLimit, hasFeature } from '@/lib/clipadPricing';
@@ -799,7 +800,7 @@ export default function SpaceDashboard() {
       </div>
 
       {/* Members Modal (Right Drawer) */}
-      {showMembers && (
+      {showMembers && createPortal(
         <div className="fixed inset-0 z-[100] flex justify-end">
           {/* Backdrop */}
           <div className="absolute inset-0 bg-slate-900/30 dark:bg-slate-950/60 backdrop-blur-sm transition-opacity" onClick={() => setShowMembers(false)} />
@@ -878,7 +879,7 @@ export default function SpaceDashboard() {
             </div>
           </div>
         </div>
-      )}
+      ), document.body)}
     </div>
   );
 }
