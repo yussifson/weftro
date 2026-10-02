@@ -444,7 +444,7 @@ export default function IntegrationsHub() {
           {/* Stats row */}
           <div className="flex flex-wrap gap-4 mt-6">
             {[
-              { label: 'Connected', value: connectedCount, icon: CheckCircle2, color: 'text-emerald-500' },
+              { label: 'Connected', value: connectedCount, icon: CheckCircle2, color: 'text-[#006065] dark:text-[#fad503]' },
               { label: 'Knowledge Items', value: knowledgeCount, icon: FileText, color: 'text-blue-500' },
               { label: 'Available', value: INTEGRATIONS.length, icon: Zap, color: 'text-primary' },
             ].map(stat => (
@@ -461,16 +461,19 @@ export default function IntegrationsHub() {
       <div className="max-w-5xl mx-auto px-4 md:px-6 mt-8 space-y-8">
 
         {/* Modern Tab Filters */}
-        <div className="flex items-center gap-6 overflow-x-auto hide-scrollbar border-b border-slate-200 dark:border-slate-800 pb-px mb-8">
-          {CATEGORIES.map(cat => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`py-3 text-sm font-bold border-b-2 transition-all whitespace-nowrap ${activeCategory === cat ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400' : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700'}`}
-            >
-              {cat}
-            </button>
-          ))}
+        <div className="flex items-center overflow-x-auto hide-scrollbar bg-slate-100 dark:bg-slate-800/50 p-1.5 rounded-xl mb-8 w-max">
+          {CATEGORIES.map(cat => {
+            const isActive = activeCategory === cat;
+            return (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`px-5 py-2 text-sm font-bold transition-all rounded-lg whitespace-nowrap ${isActive ? 'bg-white dark:bg-slate-900 text-[#006065] dark:text-[#fad503] shadow-sm ring-1 ring-black/5 dark:ring-white/10' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-black/5 dark:hover:bg-white/5'}`}
+              >
+                {cat}
+              </button>
+            );
+          })}
         </div>
 
         {/* â”€â”€ My Connections Panel (scoped view) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
@@ -515,14 +518,14 @@ export default function IntegrationsHub() {
           );
 
           return (
-            <div className="bg-indigo-50/50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-900/50 rounded-2xl p-5 space-y-4">
-              <h2 className="font-bold text-sm text-indigo-700 dark:text-indigo-400 flex items-center gap-2">
+            <div className="bg-[#006065]/5 dark:bg-[#006065]/10 border border-[#006065]/20 dark:border-[#006065]/30 rounded-2xl p-5 space-y-4">
+              <h2 className="font-bold text-sm text-[#006065] dark:text-[#fad503] flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4" /> {connectedCount} Active Connection{connectedCount !== 1 ? 's' : ''}
                 <span className="ml-auto text-[10px] text-muted-foreground font-normal">Hover a card to change scope</span>
               </h2>
-              <ScopeGroup label="Personal â€” Only you" items={personal} icon={User} color="text-violet-600 dark:text-violet-400" bg="border-violet-200 dark:border-violet-800/50" pill="bg-violet-100 dark:bg-violet-900/40 text-violet-600 dark:text-violet-400" />
-              <ScopeGroup label="Space-level" items={space} icon={Users} color="text-blue-600 dark:text-blue-400" bg="border-blue-200 dark:border-blue-800/50" pill="bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400" />
-              <ScopeGroup label="Company-wide â€” Everyone" items={company} icon={Globe} color="text-indigo-700 dark:text-indigo-400" bg="border-emerald-200 dark:border-emerald-800/50" pill="bg-emerald-100 dark:bg-emerald-900/40 text-indigo-700 dark:text-indigo-400" />
+              <ScopeGroup label="Personal â€” Only you" items={personal} icon={User} color="text-[#006065] dark:text-[#fad503]" bg="border-[#006065]/20" pill="bg-[#006065]/10 dark:bg-[#006065]/30 text-[#006065] dark:text-[#fad503]" />
+              <ScopeGroup label="Space-level" items={space} icon={Users} color="text-[#006065] dark:text-[#fad503]" bg="border-[#006065]/20" pill="bg-[#006065]/10 dark:bg-[#006065]/30 text-[#006065] dark:text-[#fad503]" />
+              <ScopeGroup label="Company-wide â€” Everyone" items={company} icon={Globe} color="text-[#006065] dark:text-[#fad503]" bg="border-[#006065]/20" pill="bg-[#006065]/10 dark:bg-[#006065]/30 text-[#006065] dark:text-[#fad503]" />
             </div>
           );
         })()}
@@ -544,7 +547,7 @@ export default function IntegrationsHub() {
               return (
                 <div
                   key={integration.id}
-                  className={`group relative bg-white dark:bg-slate-900 border ${isConnected ? 'border-indigo-200 dark:border-indigo-800 ring-1 ring-indigo-500/10' : 'border-slate-200 dark:border-slate-800'} rounded-2xl p-6 flex flex-col gap-5 shadow-sm hover:shadow-lg transition-all duration-300 ${!isAllowedToConnect ? 'opacity-75' : 'hover:-translate-y-1'}`}
+                  className={`group relative bg-white dark:bg-slate-900 border ${isConnected ? 'border-[#006065]/30 dark:border-[#006065]/50 ring-1 ring-[#006065]/10' : 'border-slate-200 dark:border-slate-800'} rounded-2xl p-6 flex flex-col gap-5 shadow-sm hover:shadow-lg transition-all duration-300 ${!isAllowedToConnect ? 'opacity-75' : 'hover:-translate-y-1'}`}
                 >
                   {/* Header */}
                   <div className="flex items-start justify-between gap-3">
@@ -556,19 +559,19 @@ export default function IntegrationsHub() {
                         <div className="flex items-center gap-2 flex-wrap">
                           <h3 className="font-bold text-foreground text-sm">{integration.name}</h3>
                           {isConnected && (
-                            <span className="flex items-center gap-1 px-1.5 py-0.5 bg-emerald-500/10 text-indigo-700 dark:text-indigo-400 rounded-full text-[10px] font-bold">
-                              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                            <span className="flex items-center gap-1 px-1.5 py-0.5 bg-[#006065]/10 text-[#006065] dark:text-[#fad503] rounded-full text-[10px] font-bold">
+                              <div className="w-1.5 h-1.5 rounded-full bg-[#006065] dark:bg-[#fad503] animate-pulse" />
                               Connected
                             </span>
                           )}
                           {isConnected && conn?.visibility === 'personal' && (
-                            <span className="flex items-center gap-1 px-1.5 py-0.5 bg-violet-500/10 text-violet-600 dark:text-violet-400 rounded-full text-[10px] font-semibold"><User className="w-2.5 h-2.5" /> Personal</span>
+                            <span className="flex items-center gap-1 px-1.5 py-0.5 bg-[#006065]/10 text-[#006065] dark:text-[#fad503] rounded-full text-[10px] font-semibold"><User className="w-2.5 h-2.5" /> Personal</span>
                           )}
                           {isConnected && conn?.visibility === 'space' && (
-                            <span className="flex items-center gap-1 px-1.5 py-0.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-full text-[10px] font-semibold"><Users className="w-2.5 h-2.5" /> Space</span>
+                            <span className="flex items-center gap-1 px-1.5 py-0.5 bg-[#006065]/10 text-[#006065] dark:text-[#fad503] rounded-full text-[10px] font-semibold"><Users className="w-2.5 h-2.5" /> Space</span>
                           )}
                           {isConnected && (conn?.visibility === 'company' || !conn?.visibility) && (
-                            <span className="flex items-center gap-1 px-1.5 py-0.5 bg-emerald-500/10 text-indigo-700 dark:text-indigo-400 rounded-full text-[10px] font-semibold"><Globe className="w-2.5 h-2.5" /> Company</span>
+                            <span className="flex items-center gap-1 px-1.5 py-0.5 bg-[#006065]/10 text-[#006065] dark:text-[#fad503] rounded-full text-[10px] font-semibold"><Globe className="w-2.5 h-2.5" /> Company</span>
                           )}
                           {!isAllowedToConnect && (
                             <span className="px-1.5 py-0.5 bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-full text-[10px] font-bold">
@@ -741,7 +744,7 @@ export default function IntegrationsHub() {
                       ) : (
                         <button
                           onClick={() => handleConnect(integration)}
-                          className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5"
+                          className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#006065] hover:bg-[#006065]/90 text-white text-xs font-bold transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5"
                         >
                           <Plug className="w-3.5 h-3.5" />
                           Connect
@@ -926,7 +929,7 @@ export default function IntegrationsHub() {
                 onClick={confirmConnect}
                 disabled={selectedScope === 'space' && (!selectedSpaceId || userSpaces.length === 0)}
                 style={{ borderRadius: '8px' }}
-                className="flex-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 shadow-md"
+                className="flex-1 px-4 py-2 bg-[#006065] hover:bg-[#006065]/90 text-white text-xs font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 shadow-md"
               >
                 <Plug className="w-3.5 h-3.5 text-white" /> Connect
               </button>
@@ -941,7 +944,7 @@ export default function IntegrationsHub() {
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-md p-6 animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center gap-3 mb-5">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-xl shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-[#006065] text-[#fad503] flex items-center justify-center text-xl shrink-0">
                 {changeScopeModal.integration?.icon || <Settings className="w-5 h-5 text-white" />}
               </div>
               <div>
@@ -952,7 +955,7 @@ export default function IntegrationsHub() {
 
             <div className="space-y-3 mb-5">
               {/* Personal */}
-              <button onClick={() => setSelectedScope('personal')} className={`w-full flex items-start gap-4 p-4 rounded-xl border-2 transition-all text-left ${selectedScope === 'personal' ? 'border-violet-500 bg-violet-50 dark:bg-violet-500/10' : 'border-white/15 dark:border-slate-700 hover:border-white/20 dark:hover:border-slate-600'}`}>
+              <button onClick={() => setSelectedScope('personal')} className={`w-full flex items-start gap-4 p-4 rounded-xl border-2 transition-all text-left ${selectedScope === 'personal' ? 'border-violet-500 bg-violet-50 dark:bg-[#006065]/10' : 'border-white/15 dark:border-slate-700 hover:border-white/20 dark:hover:border-slate-600'}`}>
                 <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${selectedScope === 'personal' ? 'bg-violet-500 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}`}><User className="w-4 h-4" /></div>
                 <div>
                   <div className="flex items-center gap-2"><span className="text-sm font-bold text-slate-900 dark:text-white">Personal</span><span className="text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 px-2 py-0.5 rounded-full">Only you</span></div>
@@ -961,10 +964,10 @@ export default function IntegrationsHub() {
               </button>
 
               {/* Space */}
-              <button onClick={() => setSelectedScope('space')} className={`w-full flex items-start gap-4 p-4 rounded-xl border-2 transition-all text-left ${selectedScope === 'space' ? 'border-blue-500 bg-blue-50 dark:bg-blue-500/10' : 'border-white/15 dark:border-slate-700 hover:border-white/20 dark:hover:border-slate-600'}`}>
+              <button onClick={() => setSelectedScope('space')} className={`w-full flex items-start gap-4 p-4 rounded-xl border-2 transition-all text-left ${selectedScope === 'space' ? 'border-blue-500 bg-blue-50 dark:bg-[#006065]/10' : 'border-white/15 dark:border-slate-700 hover:border-white/20 dark:hover:border-slate-600'}`}>
                 <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${selectedScope === 'space' ? 'bg-blue-500 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}`}><Users className="w-4 h-4" /></div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2"><span className="text-sm font-bold text-slate-900 dark:text-white">Space</span><span className="text-[10px] font-semibold bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 px-2 py-0.5 rounded-full">Space members only</span></div>
+                  <div className="flex items-center gap-2"><span className="text-sm font-bold text-slate-900 dark:text-white">Space</span><span className="text-[10px] font-semibold bg-[#006065]/10 dark:bg-[#006065]/30 text-[#006065] dark:text-[#fad503] px-2 py-0.5 rounded-full">Space members only</span></div>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Only members of the selected space can access this data.</p>
                   {selectedScope === 'space' && (
                     <div className="mt-3" onClick={e => e.stopPropagation()}>
@@ -981,12 +984,12 @@ export default function IntegrationsHub() {
               </button>
 
               {/* Company-wide */}
-              <button onClick={() => isAdmin && setSelectedScope('company')} className={`w-full flex items-start gap-4 p-4 rounded-xl border-2 transition-all text-left ${!isAdmin ? 'opacity-40 cursor-not-allowed' : selectedScope === 'company' ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-500/10' : 'border-white/15 dark:border-slate-700 hover:border-white/20 dark:hover:border-slate-600'}`}>
-                <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${selectedScope === 'company' && isAdmin ? 'bg-emerald-500 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}`}><Globe className="w-4 h-4" /></div>
+              <button onClick={() => isAdmin && setSelectedScope('company')} className={`w-full flex items-start gap-4 p-4 rounded-xl border-2 transition-all text-left ${!isAdmin ? 'opacity-40 cursor-not-allowed' : selectedScope === 'company' ? 'border-emerald-500 bg-emerald-50 dark:bg-[#006065]/10' : 'border-white/15 dark:border-slate-700 hover:border-white/20 dark:hover:border-slate-600'}`}>
+                <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${selectedScope === 'company' && isAdmin ? 'bg-[#006065] dark:bg-[#fad503] text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}`}><Globe className="w-4 h-4" /></div>
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-sm font-bold text-slate-900 dark:text-white">Company-wide</span>
-                    <span className="text-[10px] font-semibold bg-emerald-100 dark:bg-emerald-900/40 text-indigo-700 dark:text-indigo-400 px-2 py-0.5 rounded-full">Everyone</span>
+                    <span className="text-[10px] font-semibold bg-[#006065]/10 dark:bg-[#006065]/30 text-[#006065] dark:text-[#fad503] px-2 py-0.5 rounded-full">Everyone</span>
                     {!isAdmin && <span className="text-[10px] font-semibold bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded-full flex items-center gap-1"><Lock className="w-2.5 h-2.5" /> Admin only</span>}
                   </div>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">All company members can see this data via OrbitFlow and Spotlight.</p>
@@ -999,7 +1002,7 @@ export default function IntegrationsHub() {
               <button
                 onClick={handleChangeScope}
                 disabled={selectedScope === 'space' && (!selectedSpaceId || userSpaces.length === 0)}
-                className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white text-sm font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-violet-500/20"
+                className="flex-1 px-4 py-2.5 rounded-xl bg-[#006065] hover:bg-[#006065]/90 text-white text-sm font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-[#006065]/20"
               >
                 <Lock className="w-4 h-4" /> Save Access
               </button>
@@ -1059,8 +1062,8 @@ const API_KEY_CONFIGS = {
     label: 'Trello',                 
     fields: [{ key: 'api_key', label: 'API Key', secret: false }, { key: 'token', label: 'Personal Access Token', secret: true }],
     instructions: (
-      <div className="text-xs text-muted-foreground bg-indigo-50 dark:bg-indigo-900/20 p-3 rounded-xl mb-4 leading-relaxed">
-        <strong>1.</strong> Get your API Key from <a href="https://trello.com/app-key" target="_blank" rel="noreferrer" className="text-indigo-600 dark:text-indigo-400 underline font-semibold">Trello Developer</a>.<br />
+      <div className="text-xs text-muted-foreground bg-[#006065]/5 dark:bg-[#006065]/20 p-3 rounded-xl mb-4 leading-relaxed">
+        <strong>1.</strong> Get your API Key from <a href="https://trello.com/app-key" target="_blank" rel="noreferrer" className="text-[#006065] dark:text-[#fad503] underline font-semibold">Trello Developer</a>.<br />
         <strong>2.</strong> Replace <code>YOUR_API_KEY</code> in the URL below and visit it in a new tab to authorize:<br />
         <code className="block mt-1 p-1 bg-white dark:bg-slate-900 text-slate-900 dark:text-white dark:bg-black rounded border overflow-hidden whitespace-nowrap text-ellipsis">https://trello.com/1/authorize?expiration=never&name=CliPad&scope=read&response_type=token&key=YOUR_API_KEY</code><br />
         <strong>3.</strong> Paste your API Key and the generated Token below.
@@ -1108,8 +1111,8 @@ function ApiKeyModal({ integration, provider, onSave, onClose }) {
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
       <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl w-full max-w-md p-6 animate-in fade-in zoom-in-95 duration-200 relative">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center">
-            <Key className="w-5 h-5 text-indigo-500" />
+          <div className="w-10 h-10 rounded-xl bg-[#006065]/5 dark:bg-[#006065]/20 flex items-center justify-center">
+            <Key className="w-5 h-5 text-[#006065]" />
           </div>
           <div>
             <h2 className="text-base font-bold">Connect {integration?.name || config.label}</h2>
@@ -1129,7 +1132,7 @@ function ApiKeyModal({ integration, provider, onSave, onClose }) {
                   required
                   value={values[field.key] || ''}
                   onChange={e => setValues(prev => ({ ...prev, [field.key]: e.target.value }))}
-                  className="w-full px-3 py-2.5 bg-transparent dark:bg-slate-800/50 border border-border rounded-xl text-sm focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 pr-10"
+                  className="w-full px-3 py-2.5 bg-transparent dark:bg-slate-800/50 border border-border rounded-xl text-sm focus:outline-none focus:border-[#006065] focus:ring-2 focus:ring-[#006065]/10 pr-10"
                   placeholder={field.secret ? 'â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢' : ''}
                 />
                 {field.secret && (
@@ -1145,7 +1148,7 @@ function ApiKeyModal({ integration, provider, onSave, onClose }) {
             <button type="button" onClick={onClose} className="flex-1 px-4 py-2.5 rounded-xl border border-border text-sm font-semibold hover:bg-secondary transition-colors">
               Cancel
             </button>
-            <button type="submit" disabled={saving} className="flex-1 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
+            <button type="submit" disabled={saving} className="flex-1 px-4 py-2.5 rounded-xl bg-[#006065] hover:bg-[#006065]/90 text-white text-sm font-bold transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plug className="w-4 h-4" />}
               {saving ? 'Connecting...' : 'Connect'}
             </button>
@@ -1182,7 +1185,7 @@ function IntegrationConfigModal({ integration, conn, onSave, onClose }) {
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
       <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl w-full max-w-md p-6 animate-in fade-in zoom-in-95 duration-200 relative">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center text-xl">
+          <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-[#006065]/10 flex items-center justify-center text-xl">
             {integration?.icon || <Sliders className="w-5 h-5 text-blue-500" />}
           </div>
           <div>
