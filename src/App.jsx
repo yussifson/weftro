@@ -122,21 +122,21 @@ function App() {
                           <Route path="/search" element={<SearchHub />} />
                           <Route path="/settings" element={<CliPadSettings />} />
                           
-                          <Route path="/decision-replay" element={<DecisionReplay />} />
-                          <Route path="/commitment-intelligence" element={<CommitmentIntelligence />} />
-                          <Route path="/predictive-risk" element={<PredictiveRisk />} />
-                          <Route path="/org-health-pulse" element={<OrgHealthPulse />} />
-                          <Route path="/cross-space-intelligence" element={<CrossSpaceIntelligence />} />
+                          <Route path="/decision-replay" element={<SuperAdminRoute><DecisionReplay /></SuperAdminRoute>} />
+                          <Route path="/commitment-intelligence" element={<SuperAdminRoute><CommitmentIntelligence /></SuperAdminRoute>} />
+                          <Route path="/predictive-risk" element={<SuperAdminRoute><PredictiveRisk /></SuperAdminRoute>} />
+                          <Route path="/org-health-pulse" element={<SuperAdminRoute><OrgHealthPulse /></SuperAdminRoute>} />
+                          <Route path="/cross-space-intelligence" element={<SuperAdminRoute><CrossSpaceIntelligence /></SuperAdminRoute>} />
                         </Route>
 
                         <Route path="/admin" element={<ClipadAdminLayout />}>
-                          <Route index element={<ClipadAdminOverview />} />
-                          <Route path="companies" element={<CompanyManagement />} />
-                          <Route path="pricing" element={<PricingTags />} />
-                          <Route path="audit" element={<AuditMonitor />} />
-                          <Route path="support" element={<ClipadLiveSupport />} />
-                          <Route path="ai" element={<AdminAI />} />
-                          <Route path="custom-requests" element={<CustomRequests />} />
+                          <Route index element={<SuperAdminRoute><ClipadAdminOverview /></SuperAdminRoute>} />
+                          <Route path="companies" element={<SuperAdminRoute><CompanyManagement /></SuperAdminRoute>} />
+                          <Route path="pricing" element={<SuperAdminRoute><PricingTags /></SuperAdminRoute>} />
+                          <Route path="audit" element={<SuperAdminRoute><AuditMonitor /></SuperAdminRoute>} />
+                          <Route path="support" element={<SuperAdminRoute><ClipadLiveSupport /></SuperAdminRoute>} />
+                          <Route path="ai" element={<SuperAdminRoute><AdminAI /></SuperAdminRoute>} />
+                          <Route path="custom-requests" element={<AdminRoute><CustomRequests /></AdminRoute>} />
                         </Route>
 
                         <Route path="*" element={<Navigate to="/dashboard" replace />} />
@@ -159,6 +159,8 @@ function App() {
 }
 
 export default App;
+
+
 
 
 
