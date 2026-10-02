@@ -119,8 +119,7 @@ export default function CliPadSettings() {
               {id: 'profile', icon: User, label: 'Profile'}, 
               {id: 'notifs', icon: Bell, label: 'Notifications'}, 
               {id: 'meeting', icon: Video, label: 'Meeting Defaults'}, 
-              {id: 'team', icon: Users, label: 'Team Management'}, 
-              {id: 'billing', icon: CreditCard, label: 'Billing & Plans'}
+              ...(isAdmin(user) ? [{id: 'team', icon: Users, label: 'Team Management'}, {id: 'billing', icon: CreditCard, label: 'Billing & Plans'}] : [])
             ].map(tab => (
               <button 
                 key={tab.id} 
@@ -351,5 +350,7 @@ export default function CliPadSettings() {
     </div>
   );
 }
+
+
 
 

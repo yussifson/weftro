@@ -1,4 +1,4 @@
-
+﻿
 import React from 'react';
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import { Toaster } from "@/components/ui/toaster";
@@ -7,6 +7,7 @@ import { Toaster as HotToaster } from "react-hot-toast";
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClientInstance } from '@/lib/query-client';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
+import { isAdmin, isSuperAdmin } from '@/lib/constants';
 import { ImpersonationProvider } from '@/lib/ImpersonationContext';
 import { ThemeProvider } from '@/lib/ThemeContext';
 import { VideoProvider } from '@/lib/VideoContext';
@@ -60,10 +61,23 @@ const CrossSpaceIntelligence = React.lazy(() => import('@/pages/clipad/CrossSpac
 const AnalyticsPageRouter = () => {
   const { user } = useAuth();
   const plan = user?.clipad_plan || user?.user_metadata?.clipad_plan || 'free';
-  if (plan === 'enterprise' || user?.role === 'super_admin' || user?.role === 'admin') {
+  if (isAdmin(user)) {
     return <CliPadEnterpriseDashboard />;
   }
   return <VideoAnalytics />;
+};
+
+
+const SuperAdminRoute = ({ children }) => {
+  const { user } = useAuth();
+  if (!user || !isSuperAdmin(user)) return <Navigate to='/dashboard' replace />;
+  return children;
+};
+
+const AdminRoute = ({ children }) => {
+  const { user } = useAuth();
+  if (!user || !isAdmin(user)) return <Navigate to='/dashboard' replace />;
+  return children;
 };
 
 function App() {
@@ -145,3 +159,6 @@ function App() {
 }
 
 export default App;
+
+
+

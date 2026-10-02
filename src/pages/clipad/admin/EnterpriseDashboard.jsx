@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/AuthContext';
 import { EnterpriseAnalyticsAPI } from '@/api/EnterpriseAnalyticsAPI';
 import { 
@@ -29,9 +29,9 @@ export default function EnterpriseDashboard() {
   // Guard: Restrict access to Enterprise / Off-Cloud plans or Super Admins
   useEffect(() => {
     if (!user) return;
-    const isSuperAdmin = ['super_admin', 'admin', 'optavelos'].includes(user.role);
+    const isSuperAdmin = ['super_admin', 'admin', 'optavelos', 'company_admin'].includes(user.role);
     const plan = (user.clipad_plan || user.subscription_plan || '').toLowerCase();
-    if (!isSuperAdmin && plan !== 'enterprise' && plan !== 'off_cloud') {
+    if (!isSuperAdmin) {
       window.location.href = '/clipad';
     }
   }, [user]);
@@ -183,7 +183,7 @@ export default function EnterpriseDashboard() {
                       </p>
                       <p className="text-xs text-white/70 flex items-center gap-2 mt-1">
                         <span className="capitalize text-[10px] px-1.5 py-0.5 rounded bg-[#006065] text-white border border-white/15/15 dark:bg-slate-700 text-white/90 dark:text-foreground">{asset.type}</span>
-                        Created by {asset.host_name} • {new Date(asset.created_at).toLocaleDateString()}
+                        Created by {asset.host_name} â€¢ {new Date(asset.created_at).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
@@ -437,3 +437,4 @@ function MetricCard({ icon, title, value, subtext, progress, progressColor }) {
     </div>
   );
 }
+
