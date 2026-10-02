@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
-import { Plus, MoreVertical, Calendar as CalendarIcon, CheckCircle, Clock, Trash2, Edit3, Circle, User, Sparkles } from 'lucide-react';
+import { Plus, MoreVertical, Calendar as CalendarIcon, CheckCircle, Clock, Trash2, Edit3, Circle, User } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
@@ -149,60 +149,49 @@ export default function TaskBoard({ spaceId }) {
     e.preventDefault();
   };
 
-  if (loading) return (
-    <div className="h-full flex flex-col items-center justify-center text-slate-400">
-      <div className="animate-spin w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full mb-4" />
-      <span className="text-sm font-medium">Loading action board...</span>
-    </div>
-  );
+  if (loading) return <div className="p-8 text-center text-muted-foreground animate-pulse">Loading tasks...</div>;
 
   return (
-    <div className="h-full flex flex-col font-sans bg-white dark:bg-slate-950 rounded-2xl overflow-hidden p-4 md:p-6 shadow-sm border border-slate-200 dark:border-slate-800">
-      <div className="flex items-center justify-between mb-6 shrink-0">
-        <div>
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2 tracking-tight leading-none mb-1">
-            <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center shrink-0">
-              <CheckCircle className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-            </div>
-            Action Board
-          </h2>
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider ml-10">Track workspace tasks</p>
-        </div>
+    <div className="h-full flex flex-col font-sans">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-bold text-foreground flex items-center gap-2 tracking-tight">
+          <CheckCircle className="w-5 h-5 text-primary" /> Action Board
+        </h2>
       </div>
 
-      <div className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide -mx-4 md:-mx-6 px-4 md:px-6">
-        <div className="flex items-start gap-4 h-full pb-4 md:min-w-max max-md:snap-x max-md:snap-mandatory">
+      <div className="flex-1 overflow-x-auto overflow-y-hidden">
+        <div className="flex items-start gap-4 pb-4 h-full md:min-w-max max-md:snap-x max-md:snap-mandatory">
           {stages.map(stage => (
             <div 
               key={stage.id} 
-              className="w-[85vw] md:w-[320px] shrink-0 max-md:snap-center h-full flex flex-col bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden"
+              className="w-[85vw] md:w-[320px] shrink-0 max-md:snap-center h-full flex flex-col bg-card/40 backdrop-blur rounded-2xl border border-border shadow-sm overflow-hidden"
               onDrop={(e) => handleDrop(e, stage.id)}
               onDragOver={handleDragOver}
             >
-              <div className="px-4 py-3 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-slate-100/50 dark:bg-slate-900 shrink-0">
+              <div className="p-4 flex items-center justify-between border-b border-border/50 bg-card/60">
                 <div className="flex items-center gap-2">
-                  <div className={`w-2 h-2 rounded-full ${stage.color} shadow-sm`} />
-                  <h3 className="font-bold text-slate-900 dark:text-white text-sm tracking-tight">{stage.label}</h3>
-                  <span className="text-[10px] bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-full font-bold border border-slate-200 dark:border-slate-700 shadow-sm">
+                  <div className={`w-3 h-3 rounded-full ${stage.color} shadow-sm`} />
+                  <h3 className="font-semibold text-foreground text-sm tracking-tight">{stage.label}</h3>
+                  <span className="text-xs bg-secondary/50 text-muted-foreground px-2 py-0.5 rounded-full font-medium">
                     {tasks.filter(t => t.status === stage.id).length}
                   </span>
                 </div>
                 <div className="flex items-center gap-1">
                   <button 
                     onClick={() => { setAddingToStage(stage.id); setNewTaskTitle(''); }}
-                    className="p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-200 dark:hover:bg-slate-800 dark:hover:text-slate-200 rounded-md transition-colors"
+                    className="p-1.5 hover:bg-secondary rounded-lg transition-colors text-muted-foreground hover:text-foreground"
                     title="Add Task"
                   >
                     <Plus className="w-4 h-4" />
                   </button>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button className="p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-200 dark:hover:bg-slate-800 dark:hover:text-slate-200 rounded-md transition-colors">
+                      <button className="p-1.5 hover:bg-secondary rounded-lg transition-colors text-muted-foreground hover:text-foreground">
                         <MoreVertical className="w-4 h-4" />
                       </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-40 rounded-xl">
-                      <DropdownMenuItem className="text-rose-500 font-medium text-xs focus:text-rose-600 focus:bg-rose-50 dark:focus:bg-rose-900/20" onClick={() => deleteStage(stage.id)}>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem className="text-destructive" onClick={() => deleteStage(stage.id)}>
                         <Trash2 className="w-4 h-4 mr-2" /> Delete Column
                       </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -210,20 +199,20 @@ export default function TaskBoard({ spaceId }) {
                 </div>
               </div>
 
-              <div className="p-3 flex-1 flex flex-col gap-3 overflow-y-auto scrollbar-thin">
+              <div className="p-3 flex-1 flex flex-col gap-3 min-h-[150px] overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
                 {addingToStage === stage.id && (
-                  <form onSubmit={(e) => handleAddTask(e, stage.id)} className="bg-white dark:bg-slate-950 p-3 rounded-xl border-2 border-indigo-500/50 shadow-sm animate-in fade-in slide-in-from-top-2">
+                  <form onSubmit={(e) => handleAddTask(e, stage.id)} className="bg-background p-3 rounded-xl border border-primary/40 shadow-sm animate-in fade-in slide-in-from-top-2">
                     <input
-                      autoFocus
+                      
                       type="text"
                       value={newTaskTitle}
                       onChange={e => setNewTaskTitle(e.target.value)}
                       placeholder="What needs to be done?"
-                      className="w-full bg-transparent text-sm text-slate-900 dark:text-white placeholder:text-slate-400 outline-none mb-3 font-medium"
+                      className="w-full bg-transparent text-sm text-foreground placeholder-muted-foreground outline-none mb-2"
                     />
                     <div className="flex items-center gap-2 justify-end">
-                      <button type="button" onClick={() => setAddingToStage(null)} className="px-2 py-1 text-xs font-semibold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">Cancel</button>
-                      <button type="submit" disabled={!newTaskTitle.trim()} className="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg font-bold transition-colors shadow-sm disabled:opacity-50">Add Task</button>
+                      <button type="button" onClick={() => setAddingToStage(null)} className="text-xs text-muted-foreground hover:text-foreground">Cancel</button>
+                      <button type="submit" className="text-xs bg-primary text-primary-foreground px-3 py-1 rounded-lg font-medium">Add</button>
                     </div>
                   </form>
                 )}
@@ -233,49 +222,45 @@ export default function TaskBoard({ spaceId }) {
                     key={task.id}
                     draggable
                     onDragStart={(e) => handleDragStart(e, task.id)}
-                    className="bg-white dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-700 shadow-sm hover:shadow cursor-grab active:cursor-grabbing active:scale-[0.98] group transition-all relative overflow-hidden"
+                    className="bg-white dark:bg-[#1A232C] p-4 sm:p-5 rounded-2xl border border-black/5 dark:border-white/5 hover:border-primary/30 shadow-sm cursor-grab active:cursor-grabbing active:scale-[0.98] group transition-all"
                   >
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <p className={`text-sm font-bold leading-snug ${task.status === 'done' ? 'line-through text-slate-400 dark:text-slate-500' : 'text-slate-900 dark:text-white'}`}>
+                    <div className="flex items-start justify-between gap-2 mb-3">
+                      <p className={`text-base font-semibold leading-snug ${task.status === 'done' ? 'line-through text-slate-400 dark:text-muted-foreground' : 'text-slate-900 dark:text-white'}`}>
                         {task.title}
                       </p>
                       <DropdownMenu>
-                        <DropdownMenuTrigger className="opacity-0 group-hover:opacity-100 p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-all shrink-0">
+                        <DropdownMenuTrigger className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all shrink-0">
                           <MoreVertical className="w-4 h-4 text-slate-400" />
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-48 rounded-xl">
+                        <DropdownMenuContent align="end" className="w-40 rounded-xl">
                           {stages.filter(s => s.id !== task.status).map(s => (
-                            <DropdownMenuItem key={s.id} onClick={() => updateTaskStatus(task.id, s.id)} className="text-xs font-medium">
+                            <DropdownMenuItem key={s.id} onClick={() => updateTaskStatus(task.id, s.id)}>
                               <Circle className={`w-3 h-3 mr-2 ${s.color.replace('bg-', 'text-')}`} /> Move to {s.label}
                             </DropdownMenuItem>
                           ))}
-                          <DropdownMenuItem onClick={() => deleteTask(task.id)} className="text-xs font-medium text-rose-500 focus:text-rose-600 focus:bg-rose-50 dark:focus:bg-rose-900/20">
-                            <Trash2 className="w-3.5 h-3.5 mr-2" /> Delete Task
+                          <DropdownMenuItem onClick={() => deleteTask(task.id)} className="text-xs text-rose-500">
+                            <Trash2 className="w-3.5 h-3.5 mr-2" /> Delete
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>
                     
                     {task.source === 'ai_generated' && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-500 mb-3 border border-amber-200 dark:border-amber-800/50">
-                        <Sparkles className="w-2.5 h-2.5" /> AI Extracted
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-pink-500/10 text-pink-500 text-[10px] font-bold uppercase tracking-wider mb-3">
+                        ✨ AI Generated
                       </span>
                     )}
 
-                    <div className="flex items-center justify-between mt-4">
-                      <div className="flex items-center gap-2">
-                        {task.due_date && (
-                          <span className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded border border-slate-200 dark:border-slate-700 text-[10px] font-semibold text-slate-500">
-                            <CalendarIcon className="w-3 h-3 text-indigo-500" /> {new Date(task.due_date).toLocaleDateString()}
-                          </span>
-                        )}
+                    <div className="flex items-center justify-between mt-auto pt-3 border-t border-black/5 dark:border-white/5 mt-3">
+                      <div className="flex items-center gap-2 text-[11px] font-medium text-slate-500 dark:text-muted-foreground">
+                        {task.due_date && <span className="flex items-center gap-1 bg-slate-100 dark:bg-white/5 px-2 py-1 rounded-md"><CalendarIcon className="w-3 h-3 text-indigo-400" /> {new Date(task.due_date).toLocaleDateString()}</span>}
                       </div>
                       {task.assignee && (
-                        <div className="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center overflow-hidden border-2 border-white dark:border-slate-950 shadow-sm shrink-0" title={task.assignee.full_name}>
+                        <div className="w-7 h-7 rounded-full bg-slate-100 dark:bg-secondary flex items-center justify-center overflow-hidden border border-white dark:border-slate-800 shadow-sm" title={task.assignee.full_name}>
                           {task.assignee.avatar_url ? (
                             <img src={task.assignee.avatar_url} className="w-full h-full object-cover" />
                           ) : (
-                            <span className="text-[9px] font-bold text-slate-500">{task.assignee.full_name.charAt(0)}</span>
+                            <User className="w-4 h-4 text-slate-400" />
                           )}
                         </div>
                       )}
@@ -287,36 +272,36 @@ export default function TaskBoard({ spaceId }) {
           ))}
 
           {/* Add Column Button */}
-          <div className="w-[85vw] md:w-[320px] shrink-0 max-md:snap-center h-full flex flex-col pb-4">
+          <div className="w-[85vw] md:w-[320px] shrink-0 max-md:snap-center h-full flex flex-col">
             {!showAddStage ? (
               <button 
                 onClick={() => setShowAddStage(true)}
-                className="w-full h-12 flex items-center justify-center gap-2 border border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 hover:text-slate-900 dark:hover:text-white hover:border-indigo-400 hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-all font-bold text-sm shadow-sm"
+                className="w-full h-14 flex items-center justify-center gap-2 border border-dashed border-border rounded-2xl text-muted-foreground hover:text-foreground hover:border-primary/50 hover:bg-card/50 transition-all font-medium"
               >
-                <Plus className="w-4 h-4" /> Add Column
+                <Plus className="w-5 h-5" /> Add Column
               </button>
             ) : (
-              <form onSubmit={addStage} className="bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-indigo-200 dark:border-indigo-800 shadow-sm p-4 animate-in fade-in slide-in-from-left-2">
+              <form onSubmit={addStage} className="bg-card/60 backdrop-blur rounded-2xl border border-primary/50 shadow-sm p-3 animate-in fade-in slide-in-from-left-2">
                 <input
-                  autoFocus
+                  
                   type="text"
                   value={newStageName}
                   onChange={e => setNewStageName(e.target.value)}
                   placeholder="Column name"
-                  className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-lg px-3 py-2 text-sm mb-3 text-slate-900 dark:text-white font-medium outline-none transition-all"
+                  className="w-full bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary rounded-lg px-3 py-2 text-sm mb-3 text-foreground"
                 />
                 <div className="flex gap-2 justify-end">
                   <button 
                     type="button"
                     onClick={() => { setShowAddStage(false); setNewStageName(''); }}
-                    className="px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
+                    className="px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground"
                   >
                     Cancel
                   </button>
                   <button 
                     type="submit"
                     disabled={!newStageName.trim()}
-                    className="px-4 py-1.5 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm rounded-lg disabled:opacity-50 transition-colors"
+                    className="px-3 py-1.5 text-xs font-bold bg-primary text-primary-foreground rounded-md disabled:opacity-50"
                   >
                     Save
                   </button>

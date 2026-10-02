@@ -879,7 +879,7 @@ export default function SpaceDashboard() {
             </div>
           </div>
         </div>
-      ), document.body)}
+      , document.body)}
     </div>
   );
 }
