@@ -1539,7 +1539,7 @@ export default function RecordVideo() {
             }
             navigate(-1);
           }}
-          className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/95 dark:bg-[#202c33]/95 backdrop-blur-md border border-black/5 dark:border-white/5 shadow-sm hover:shadow-md text-sm font-semibold text-white/90 dark:text-foreground transition-all hover:-translate-y-0.5"
+          className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white dark:bg-slate-900 backdrop-blur-md border border-black/5 dark:border-white/5 shadow-sm hover:shadow-md text-sm font-semibold text-white/90 dark:text-foreground transition-all hover:-translate-y-0.5"
         >
           <ArrowLeft className="w-4 h-4 text-white/70" /> Back
         </button>
@@ -1654,7 +1654,7 @@ export default function RecordVideo() {
                 <input 
                   type="text" 
                   placeholder="E.g., Announce Q3 Roadmap..."
-                  className="flex-1 bg-white/95 dark:bg-[#202c33]/95 border border-black/5 dark:border-white/5 rounded-lg px-3 py-2 text-sm text-white dark:text-white placeholder-slate-400 dark:placeholder-slate-500"
+                  className="flex-1 bg-white dark:bg-slate-900 border border-black/5 dark:border-white/5 rounded-lg px-3 py-2 text-sm text-white dark:text-white placeholder-slate-400 dark:placeholder-slate-500"
                   value={scriptPrompt}
                   onChange={e => setScriptPrompt(e.target.value)}
                 />
@@ -1671,7 +1671,7 @@ export default function RecordVideo() {
               <div className="relative">
                 <textarea
                   placeholder="Or paste your script here..."
-                  className="w-full h-32 bg-white/95 dark:bg-[#202c33]/95 border border-black/5 dark:border-white/5 rounded-lg p-3 text-sm text-white dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-indigo-500 resize-none"
+                  className="w-full h-32 bg-white dark:bg-slate-900 border border-black/5 dark:border-white/5 rounded-lg p-3 text-sm text-white dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-indigo-500 resize-none"
                   value={teleprompterText}
                   onChange={e => setTeleprompterText(e.target.value)}
                 />
@@ -1743,14 +1743,14 @@ export default function RecordVideo() {
           <div className="flex flex-col items-center gap-6 relative pb-24">
             
             {teleprompterText && showTeleprompter && (
-              <div className="relative w-full max-w-4xl mx-auto mb-6 bg-white/95 dark:bg-[#202c33]/95 backdrop-blur-3xl border border-black/5 dark:border-white/5 rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] overflow-hidden z-40 transition-all flex flex-col">
+              <div className="relative w-full max-w-4xl mx-auto mb-6 bg-white dark:bg-slate-900 backdrop-blur-3xl border border-black/5 dark:border-white/5 rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] overflow-hidden z-40 transition-all flex flex-col">
                 <div className="bg-black/5 dark:bg-white/5 border-b border-black/5 dark:border-white/5 px-5 py-3 flex items-center justify-between cursor-move">
                   <div className="flex items-center gap-2">
                     <AlignLeft className="w-5 h-5 text-indigo-500 dark:text-indigo-400" />
-                    <h3 className="text-xs font-black text-white/90 dark:text-foreground uppercase tracking-widest">AI Teleprompter</h3>
+                    <h3 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest">AI Teleprompter</h3>
                   </div>
                   <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2 text-sm font-semibold text-white/70 dark:text-muted-foreground bg-white/50 dark:bg-black/20 px-4 py-1.5 rounded-full border border-black/5 dark:border-white/5">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-black/20 px-4 py-1.5 rounded-full border border-black/5 dark:border-white/5">
                       <span>Speed</span>
                       <input type="range" min="0" max="10" value={scrollSpeed} onChange={e => setScrollSpeed(Number(e.target.value))} className="w-24 h-2 bg-slate-300 dark:bg-slate-600 rounded-lg appearance-none cursor-pointer accent-indigo-500" />
                     </div>
@@ -1764,7 +1764,7 @@ export default function RecordVideo() {
                 </div>
                 <div 
                   ref={teleprompterRef}
-                  className="p-8 md:p-12 max-h-96 overflow-y-auto text-2xl md:text-3xl lg:text-[32px] font-medium text-white dark:text-white leading-[1.6] text-center scroll-smooth drop-shadow-sm"
+                  className="p-8 md:p-12 max-h-96 overflow-y-auto text-2xl md:text-3xl lg:text-[32px] font-medium text-slate-900 dark:text-white leading-[1.6] text-center scroll-smooth drop-shadow-sm"
                 >
                   {teleprompterText.split('\n').map((line, i) => <p key={i} className="mb-6 last:mb-0 opacity-90 hover:opacity-100 transition-opacity">{line}</p>)}
                 </div>
@@ -1821,7 +1821,7 @@ export default function RecordVideo() {
             <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 p-2 bg-white/50 /80 backdrop-blur-3xl border border-black/5 dark:border-white/5 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
               <button
                 onClick={togglePause}
-                className={`flex items-center justify-center w-12 h-12 rounded-full transition-all ${isPaused ? 'bg-amber-500/20 text-amber-500 hover:bg-amber-500/30' : 'bg-white/95 dark:bg-[#202c33]/95 text-white dark:text-white hover:bg-black/5 dark:hover:bg-white/10'}`}
+                className={`flex items-center justify-center w-12 h-12 rounded-full transition-all ${isPaused ? 'bg-amber-500/20 text-amber-500 hover:bg-amber-500/30' : 'bg-white dark:bg-slate-900 text-white dark:text-white hover:bg-black/5 dark:hover:bg-white/10'}`}
                 title={isPaused ? 'Resume' : 'Pause'}
               >
                 {isPaused ? <Play className="w-5 h-5 fill-current" /> : <Pause className="w-5 h-5 fill-current" />}
@@ -1830,7 +1830,7 @@ export default function RecordVideo() {
               {!pipWindow && ('documentPictureInPicture' in window) && (
                 <button
                   onClick={() => startPip(window.documentPictureInPicture.requestWindow({ width: 320, height: 180 }).catch(console.error))}
-                  className="flex items-center justify-center w-12 h-12 rounded-full bg-white/95 dark:bg-[#202c33]/95 text-indigo-500 dark:text-indigo-400 hover:bg-black/5 dark:hover:bg-white/10 transition-all"
+                  className="flex items-center justify-center w-12 h-12 rounded-full bg-white dark:bg-slate-900 text-indigo-500 dark:text-indigo-400 hover:bg-black/5 dark:hover:bg-white/10 transition-all"
                   title="Open PiP Controls"
                 >
                   <Monitor className="w-5 h-5" />
@@ -1840,7 +1840,7 @@ export default function RecordVideo() {
               {teleprompterText && !showTeleprompter && (
                 <button
                   onClick={() => setShowTeleprompter(true)}
-                  className="flex items-center justify-center w-12 h-12 rounded-full bg-white/95 dark:bg-[#202c33]/95 text-white/80 dark:text-foreground hover:bg-black/5 dark:hover:bg-white/10 transition-all"
+                  className="flex items-center justify-center w-12 h-12 rounded-full bg-white dark:bg-slate-900 text-white/80 dark:text-foreground hover:bg-black/5 dark:hover:bg-white/10 transition-all"
                   title="Show Teleprompter"
                 >
                   <AlignLeft className="w-5 h-5" />
@@ -1888,7 +1888,7 @@ export default function RecordVideo() {
                   value={title}
                   onChange={e => setTitle(e.target.value)}
                   placeholder="Give your video a title"
-                  className="w-full px-4 py-3 rounded-xl bg-white/95 dark:bg-[#202c33]/95 border border-black/5 dark:border-white/5 shadow-[0_2px_10px_rgba(0,0,0,0.04)] text-white dark:text-white text-sm placeholder-gray-600 focus:outline-none focus:border-indigo-500/60 transition-all"
+                  className="w-full px-4 py-3 rounded-xl bg-white dark:bg-slate-900 border border-black/5 dark:border-white/5 shadow-[0_2px_10px_rgba(0,0,0,0.04)] text-white dark:text-white text-sm placeholder-gray-600 focus:outline-none focus:border-indigo-500/60 transition-all"
                 />
               </div>
               <div>
@@ -1896,7 +1896,7 @@ export default function RecordVideo() {
                 <select
                   value={selectedSpace}
                   onChange={e => setSelectedSpace(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-white/95 dark:bg-[#202c33]/95 border border-black/5 dark:border-white/5 shadow-[0_2px_10px_rgba(0,0,0,0.04)] text-white dark:text-white text-sm focus:outline-none focus:border-indigo-500/60 transition-all"
+                  className="w-full px-4 py-3 rounded-xl bg-white dark:bg-slate-900 border border-black/5 dark:border-white/5 shadow-[0_2px_10px_rgba(0,0,0,0.04)] text-white dark:text-white text-sm focus:outline-none focus:border-indigo-500/60 transition-all"
                 >
                   <option value="">No space</option>
                   {spaces.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
@@ -1929,7 +1929,7 @@ export default function RecordVideo() {
                 onChange={e => setDescription(e.target.value)}
                 placeholder="What is this video about?"
                 rows={2}
-                className="w-full px-4 py-3 rounded-xl bg-white/95 dark:bg-[#202c33]/95 border border-black/5 dark:border-white/5 shadow-[0_2px_10px_rgba(0,0,0,0.04)] text-white dark:text-white text-sm placeholder-gray-600 focus:outline-none focus:border-indigo-500/60 transition-all resize-none"
+                className="w-full px-4 py-3 rounded-xl bg-white dark:bg-slate-900 border border-black/5 dark:border-white/5 shadow-[0_2px_10px_rgba(0,0,0,0.04)] text-white dark:text-white text-sm placeholder-gray-600 focus:outline-none focus:border-indigo-500/60 transition-all resize-none"
               />
             </div>
 
@@ -1941,7 +1941,7 @@ export default function RecordVideo() {
                   <select
                     value={visibility}
                     onChange={e => setVisibility(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl bg-white/95 dark:bg-[#202c33]/95 border border-black/5 dark:border-white/5 shadow-[0_2px_10px_rgba(0,0,0,0.04)] text-white dark:text-white text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all cursor-pointer font-semibold"
+                    className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-black/5 dark:border-white/5 shadow-[0_2px_10px_rgba(0,0,0,0.04)] text-white dark:text-white text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all cursor-pointer font-semibold"
                   >
                     <option value="internal">Internal (Company Only)</option>
                     <option value="external">External (Anyone with link)</option>
@@ -1954,7 +1954,7 @@ export default function RecordVideo() {
                     <select
                       value={lockType}
                       onChange={e => setLockType(e.target.value)}
-                      className="w-full pl-10 pr-8 py-2.5 rounded-xl bg-white/95 dark:bg-[#202c33]/95 border border-black/5 dark:border-white/5 shadow-[0_2px_10px_rgba(0,0,0,0.04)] text-white dark:text-white text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all cursor-pointer font-semibold"
+                      className="w-full pl-10 pr-8 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-black/5 dark:border-white/5 shadow-[0_2px_10px_rgba(0,0,0,0.04)] text-white dark:text-white text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all cursor-pointer font-semibold"
                     >
                     <option value="none">Public (Space Members)</option>
                     <option value="manual">Locked (Only Me)</option>
@@ -1996,11 +1996,11 @@ export default function RecordVideo() {
               <div className="mt-4 p-5 bg-amber-50/50 dark:bg-amber-500/10 rounded-xl border border-amber-100/50 dark:border-amber-500/20 backdrop-blur-md flex gap-4 animate-in fade-in slide-in-from-top-2">
                 <div className="flex-1">
                   <label className="block text-xs font-semibold text-amber-800 dark:text-amber-500 mb-1.5">Unlock Date</label>
-                  <input type="date" value={unlockDate} onChange={e => setUnlockDate(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-white/95 dark:bg-[#202c33]/95 border border-black/5 dark:border-white/5 text-white dark:text-white text-sm" min={new Date().toISOString().split('T')[0]} />
+                  <input type="date" value={unlockDate} onChange={e => setUnlockDate(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-white dark:bg-slate-900 border border-black/5 dark:border-white/5 text-white dark:text-white text-sm" min={new Date().toISOString().split('T')[0]} />
                 </div>
                 <div className="flex-1">
                   <label className="block text-xs font-semibold text-amber-800 dark:text-amber-500 mb-1.5">Unlock Time</label>
-                  <input type="time" value={unlockTime} onChange={e => setUnlockTime(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-white/95 dark:bg-[#202c33]/95 border border-black/5 dark:border-white/5 text-white dark:text-white text-sm" />
+                  <input type="time" value={unlockTime} onChange={e => setUnlockTime(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-white dark:bg-slate-900 border border-black/5 dark:border-white/5 text-white dark:text-white text-sm" />
                 </div>
               </div>
             )}

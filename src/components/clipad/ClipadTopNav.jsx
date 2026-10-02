@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/lib/AuthContext';
-import { MessageSquare, Search, Plus, User, ChevronDown, Sparkles, Video, Calendar, Activity } from 'lucide-react';
+import {  MessageSquare, Search, Plus, User, ChevronDown, Sparkles, Video, Calendar, Activity , BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import GlobalSearch from '@/components/clipad/search/GlobalSearch';
 import ThemeToggle from '@/components/layout/ThemeToggle';
@@ -57,7 +57,10 @@ export default function ClipadTopNav({ forceMobile = false }) {
             <DropdownMenuItem onClick={() => navigate('/meetings')} className="cursor-pointer font-bold py-2.5 rounded-xl text-white hover:bg-white/10 focus:bg-white/10 transition-colors">
               <Calendar className="w-4 h-4 mr-2.5 text-[#fad503]" /> Start Live Meeting
             </DropdownMenuItem>
-          </DropdownMenuContent>
+                        <DropdownMenuItem onClick={() => navigate('/analytics')} className="cursor-pointer font-bold py-2.5 rounded-xl text-white hover:bg-white/10 focus:bg-white/10 transition-colors">
+                <BarChart3 className="w-4 h-4 mr-2.5 text-[#fad503]" /> Video Analytics
+              </DropdownMenuItem>
+            </DropdownMenuContent>
         </DropdownMenu>
 
       </div>

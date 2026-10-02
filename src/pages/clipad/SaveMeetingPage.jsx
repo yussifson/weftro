@@ -206,20 +206,20 @@ export default function SaveMeetingPage() {
   }
 
   return (
-    <div className="min-h-full bg-transparent  p-6 md:p-12">
+    <div className="min-h-full bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-6 md:p-12 page-enter">
       <div className="max-w-2xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white dark:text-white">Save Meeting Record</h1>
-          <p className="text-white/70 dark:text-muted-foreground mt-2">
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Save Meeting Record</h1>
+          <p className="text-slate-500 dark:text-slate-400 mt-2">
             Your meeting has ended. Review the details and set access controls before publishing.
           </p>
         </div>
 
-        <div className="bg-[#006065] text-white dark:bg-[#006065] rounded-2xl shadow-sm border border-white/15 dark:border-white/15 p-8 space-y-8">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white p-8 space-y-8">
 
           {/* Title */}
           <div>
-            <label className="block text-sm font-semibold text-white/90 dark:text-foreground mb-2">Meeting Title</label>
+            <label className="block text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Meeting Title</label>
             <Input
               value={title}
               onChange={e => setTitle(e.target.value)}
@@ -230,7 +230,7 @@ export default function SaveMeetingPage() {
 
           {/* Visibility */}
           <div>
-            <label className="block text-sm font-semibold text-white/90 dark:text-foreground mb-2">Visibility</label>
+            <label className="block text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Visibility</label>
             <select
               value={visibility}
               onChange={e => setVisibility(e.target.value)}
@@ -244,7 +244,7 @@ export default function SaveMeetingPage() {
           {/* Lock Settings */}
           <div>
             <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-              <label className="text-sm font-semibold text-white/90 dark:text-foreground uppercase tracking-wider shrink-0">Access Control</label>
+              <label className="text-sm font-semibold text-slate-900 dark:text-slate-100 uppercase tracking-wider shrink-0">Access Control</label>
               <div className="relative inline-block min-w-[220px]">
                 <select
                   value={lockType}
@@ -256,7 +256,7 @@ export default function SaveMeetingPage() {
                   <option value="scheduled">Scheduled Release</option>
                 </select>
                 <div className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
-                  {lockType === 'none' && <Unlock className="w-4 h-4 text-emerald-500" />}
+                  {lockType === 'none' && <Unlock className="w-4 h-4 text-[#006065] dark:text-[#fad503]" />}
                   {lockType === 'manual' && <Lock className="w-4 h-4 text-indigo-500" />}
                   {lockType === 'scheduled' && <Clock className="w-4 h-4 text-amber-500" />}
                 </div>
