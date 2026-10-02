@@ -77,7 +77,7 @@ export default function VideoAnalytics() {
     } else if (!isLoadingAuth) {
       setLoading(false);
     }
-  }, [user, isLoadingAuth]);
+  }, [user, isLoadingAuth, companyId]);
 
   const fetchAnalytics = async () => {
     setLoading(true);

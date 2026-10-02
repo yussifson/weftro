@@ -59,11 +59,6 @@ const OrgHealthPulse = React.lazy(() => import('@/pages/clipad/OrgHealthPulse'))
 const CrossSpaceIntelligence = React.lazy(() => import('@/pages/clipad/CrossSpaceIntelligence'));
 
 const AnalyticsPageRouter = () => {
-  const { user } = useAuth();
-  const plan = user?.clipad_plan || user?.user_metadata?.clipad_plan || 'free';
-  if (isAdmin(user)) {
-    return <CliPadEnterpriseDashboard />;
-  }
   return <VideoAnalytics />;
 };
 
@@ -159,6 +154,7 @@ function App() {
 }
 
 export default App;
+
 
 
 
