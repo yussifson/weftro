@@ -25,40 +25,40 @@ import { INTEGRATIONS } from '@/config/integrationsList';
 
 // â”€â”€â”€ Provider color palette â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const PROVIDER_COLORS = {
-  slack: '#4A154B',
-  github: '#24292E',
-  notion: '#000000',
-  jira: '#0052CC',
-  google_drive: '#34A853',
-  google_meet: '#00897B',
-  zoom: '#2D8CFF',
-  confluence: '#172B4D',
-  linear: '#5E6AD2',
-  asana: '#F06A6A',
-  clickup: '#7B68EE',
-  trello: '#0079BF',
-  figma: '#F24E1E',
-  miro: '#FFDD33',
-  hubspot: '#FF7A59',
-  salesforce: '#00A1E0',
-  microsoft_teams: '#6264A7',
-  outlook: '#0078D4',
-  gmail: '#EA4335',
-  gitlab: '#FC6D26',
-  bitbucket: '#0052CC',
-  default: '#6366F1',
+  slack: '#fad503',
+  github: '#fad503',
+  notion: '#fad503',
+  jira: '#fad503',
+  google_drive: '#fad503',
+  google_meet: '#fad503',
+  zoom: '#fad503',
+  confluence: '#fad503',
+  linear: '#fad503',
+  asana: '#fad503',
+  clickup: '#fad503',
+  trello: '#fad503',
+  figma: '#fad503',
+  miro: '#fad503',
+  hubspot: '#fad503',
+  salesforce: '#fad503',
+  microsoft_teams: '#fad503',
+  outlook: '#fad503',
+  gmail: '#fad503',
+  gitlab: '#fad503',
+  bitbucket: '#fad503',
+  default: '#fad503',
 };
 
 const getProviderColor = (provider) =>
   PROVIDER_COLORS[provider?.toLowerCase()] || PROVIDER_COLORS.default;
 
 const RELATIONSHIP_COLORS = {
-  mentions: '#F59E0B',
-  continues: '#10B981',
-  implements: '#6366F1',
-  blocks: '#EF4444',
-  references: '#3B82F6',
-  related: '#8B5CF6',
+  mentions: '#006065',
+  continues: '#006065',
+  implements: '#006065',
+  blocks: '#fad503',
+  references: '#006065',
+  related: '#006065',
 };
 
 // â”€â”€â”€ Custom Node Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -70,7 +70,7 @@ function KnowledgeNode({ data, selected }) {
     <div
       className="relative rounded-2xl border-2 transition-all cursor-pointer bg-[#006065] text-white shadow-md p-3"
       style={{
-        borderColor: selected ? '#00beac' : color,
+        borderColor: selected ? '#fad503' : color,
         boxShadow: selected ? '0 0 0 3px #00beac, 0 4px 24px rgba(0,0,0,0.3)' : '0 4px 12px rgba(0,0,0,0.15)',
         minWidth: 160,
         maxWidth: 200,
@@ -273,12 +273,12 @@ export default function KnowledgeGraph() {
   });
 
   return (
-    <div className="flex flex-col h-full min-h-screen bg-[#f8fafc] text-white font-sans page-enter">
+    <div className="flex flex-col h-full min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans page-enter">
       {/* Header */}
-      <div className="relative border-b border-white/15/80 bg-[#006065] px-6 py-6 shrink-0">
+      <div className="relative border-b border-white/15 bg-[#006065] px-6 py-6 shrink-0">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <button onClick={() => navigate('/integrations')} className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors shrink-0">
+            <button onClick={() => navigate('/capture')} className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors shrink-0">
               <ArrowLeft className="w-4 h-4 text-white" />
             </button>
             <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center">
@@ -304,14 +304,14 @@ export default function KnowledgeGraph() {
             ))}
             <button
               onClick={loadGraph}
-              className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-sm font-medium transition-colors border border-white/15/80"
+              className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-sm font-medium transition-colors border border-white/15"
             >
               <RefreshCw className="w-4 h-4" />
               Refresh
             </button>
             <button
               onClick={generateAIInsights}
-              className="flex items-center gap-2 px-4 py-2 bg-[#00beac] hover:bg-[#00beac]/90 text-[#00beac] rounded-xl text-sm font-bold transition-all shadow-md"
+              className="flex items-center gap-2 px-4 py-2 bg-[#fad503] hover:bg-[#fad503]/90 text-[#006065] rounded-xl text-sm font-bold transition-all shadow-md"
             >
               <Sparkles className="w-4 h-4" />
               AI Insights
@@ -327,14 +327,14 @@ export default function KnowledgeGraph() {
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search nodes..."
-              className="pl-8 pr-3 py-1.5 text-xs bg-white text-white border border-white/15/80 rounded-xl focus:outline-none focus:border-[#00beac] w-48 placeholder:text-white/50"
+              className="pl-8 pr-3 py-1.5 text-xs bg-white/10 text-white border border-white/20 rounded-xl focus:outline-none focus:border-[#fad503] w-48 placeholder:text-white/50"
             />
           </div>
 
           <select
             value={filterProvider}
             onChange={e => setFilterProvider(e.target.value)}
-            className="px-3 py-1.5 text-xs bg-[#005055] text-white border border-white/20 rounded-xl focus:outline-none focus:border-[#00beac]"
+            className="px-3 py-1.5 text-xs bg-[#005055] text-white border border-white/20 rounded-xl focus:outline-none focus:border-[#fad503]"
           >
             <option value="all">All Sources</option>
             {providers.map(p => <option key={p} value={p}>{p}</option>)}
@@ -343,7 +343,7 @@ export default function KnowledgeGraph() {
           <select
             value={filterRelation}
             onChange={e => setFilterRelation(e.target.value)}
-            className="px-3 py-1.5 text-xs bg-[#005055] text-white border border-white/20 rounded-xl focus:outline-none focus:border-[#00beac]"
+            className="px-3 py-1.5 text-xs bg-[#005055] text-white border border-white/20 rounded-xl focus:outline-none focus:border-[#fad503]"
           >
             <option value="all">All Relationships</option>
             {Object.keys(RELATIONSHIP_COLORS).map(r => (
@@ -368,7 +368,7 @@ export default function KnowledgeGraph() {
         {loading ? (
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="flex flex-col items-center gap-3">
-              <Loader2 className="w-8 h-8 text-violet-500 animate-spin" />
+              <Loader2 className="w-8 h-8 text-[#fad503] animate-spin" />
               <p className="text-sm text-muted-foreground">Building knowledge graphâ€¦</p>
             </div>
           </div>
@@ -397,7 +397,7 @@ export default function KnowledgeGraph() {
             maxZoom={2}
             className="bg-transparent"
           >
-            <Background color={theme === 'dark' ? '#6366F140' : '#6366F120'} gap={24} size={1} />
+            <Background color={theme === 'dark' ? '#00606540' : '#00606520'} gap={24} size={1} />
             <Controls />
             <MiniMap
               nodeColor={n => getProviderColor(n.data?.provider)}
@@ -410,7 +410,7 @@ export default function KnowledgeGraph() {
           <div className="absolute top-4 left-4 w-80 bg-[#006065] text-white border border-white/15 rounded-2xl shadow-2xl p-5 z-20 animate-in fade-in slide-in-from-left-4 max-h-[80vh] overflow-y-auto">
             <div className="flex items-start justify-between gap-2 mb-3">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-[#00beac]/20 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-lg bg-black/20 flex items-center justify-center">
                   <Sparkles className="w-4 h-4 text-[#fad503]" />
                 </div>
                 <div>
@@ -424,7 +424,7 @@ export default function KnowledgeGraph() {
             </div>
             {aiInsightsLoading && !aiInsights ? (
               <div className="flex items-center gap-2 text-sm text-muted-foreground py-4">
-                <Loader2 className="w-4 h-4 animate-spin text-violet-500" />
+                <Loader2 className="w-4 h-4 animate-spin text-[#fad503]" />
                 Analyzing your knowledge graphâ€¦
               </div>
             ) : (
