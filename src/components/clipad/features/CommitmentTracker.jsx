@@ -130,7 +130,7 @@ export default function CommitmentTracker({ spaceId }) {
         <button
           onClick={handleAIDetect}
           disabled={detecting}
-          className="flex items-center justify-center gap-1.5 text-xs font-bold bg-slate-900 hover:bg-slate-800 dark:bg-indigo-600 dark:hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50 shrink-0 whitespace-nowrap shadow-sm"
+          className="flex items-center justify-center gap-1.5 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50 shrink-0 whitespace-nowrap shadow-sm"
         >
           {detecting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
           {detecting ? 'Detecting...' : detectedCount > 0 ? `${detectedCount} Found` : 'AI Detect'}

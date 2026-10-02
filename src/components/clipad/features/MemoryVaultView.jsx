@@ -264,7 +264,7 @@ export default function MemoryVaultView({ companyId, userId, spaceId }) {
             <div className="mt-6 flex justify-end">
               <button
                 onClick={() => setProvenanceModal(null)}
-                className="px-4 py-2 bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 rounded-lg text-xs font-semibold"
+                className="px-4 py-2 bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm rounded-lg text-xs font-semibold"
               >
                 Close Trace
               </button>

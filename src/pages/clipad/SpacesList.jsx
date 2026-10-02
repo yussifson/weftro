@@ -292,7 +292,7 @@ export default function SpacesList() {
                 />
              </div>
              {canCreateSpaces(user) && (
-                <button onClick={() => setShowCreate(true)} className="flex items-center gap-2 px-4 py-1.5 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200 rounded-md font-semibold text-sm transition-all shadow-sm">
+                <button onClick={() => setShowCreate(true)} className="flex items-center gap-2 px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm rounded-md font-semibold text-sm transition-all shadow-sm">
                   <Plus className="w-4 h-4" /> New Space
                 </button>
              )}

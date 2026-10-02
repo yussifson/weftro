@@ -520,7 +520,7 @@ export default function SpaceDashboard() {
               </Button>
               <div className="flex gap-2">
                 <Button type="button" variant="outline" size="sm" onClick={() => setShowEdit(false)}>Cancel</Button>
-                <Button type="submit" size="sm" disabled={savingEdit} className="bg-slate-900 text-white hover:bg-slate-800">{savingEdit ? 'Saving...' : 'Save'}</Button>
+                <Button type="submit" size="sm" disabled={savingEdit} className="bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm">{savingEdit ? 'Saving...' : 'Save'}</Button>
               </div>
             </div>
           </form>

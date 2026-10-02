@@ -143,7 +143,7 @@ export default function LockWall({ type = 'manual', unlockAt = null, title = 'th
                 <button
                   onClick={handleUnlockWithKey}
                   disabled={!passcode.trim() || isUnlocking}
-                  className="px-5 py-2 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-xs hover:opacity-90 disabled:opacity-50 transition-all"
+                  className="px-5 py-2 rounded-xl bg-indigo-600 text-white shadow-sm font-bold text-xs hover:opacity-90 disabled:opacity-50 transition-all"
                 >
                   Unlock
                 </button>

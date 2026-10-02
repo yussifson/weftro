@@ -532,7 +532,7 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
           </button>
           {stickies.length > 0 && (
             <button onClick={handleAiSynthesizeBoard} disabled={isAiGenerating} title="AI Synthesize Canvas"
-              className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-sm flex items-center gap-1.5 transition-all disabled:opacity-50">
+              className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm text-xs font-bold shadow-sm flex items-center gap-1.5 transition-all disabled:opacity-50">
               {isAiGenerating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Brain className="w-3.5 h-3.5 text-cyan-400" />}
               Synthesize
             </button>
