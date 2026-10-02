@@ -209,26 +209,26 @@ export default function IntegrationAnalytics() {
             <MetricCard 
               title="Active Integrations" 
               value={`${metrics?.activeConnections} / ${metrics?.totalConnections}`} 
-              icon={Plug} color="text-[#006065] dark:text-[#fad503]" bg="bg-[#006065]/10 dark:bg-slate-900 border border-slate-200 dark:border-slate-800/30" 
+              icon={Plug} color="text-[#006065] dark:text-[#fad503]" bg="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:border-[#006065]/30 hover:shadow-lg transition-all" 
               subtitle={metrics?.errorCount > 0 ? `${metrics.errorCount} requiring attention` : 'All systems operational'}
               subtitleClass={metrics?.errorCount > 0 ? 'text-rose-500' : 'text-emerald-600 dark:text-emerald-400'}
             />
             <MetricCard 
               title="Total Knowledge Items" 
               value={metrics?.totalItems?.toLocaleString()} 
-              icon={Database} color="text-[#006065] dark:text-[#fad503]" bg="bg-[#006065]/10 dark:bg-slate-900 border border-slate-200 dark:border-slate-800/30" 
+              icon={Database} color="text-[#006065] dark:text-[#fad503]" bg="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:border-[#006065]/30 hover:shadow-lg transition-all" 
               subtitle="Imported from all sources"
             />
             <MetricCard 
               title="AI Processed (Vectorized)" 
               value={`${metrics?.vectorizedItems?.toLocaleString()}`} 
-              icon={Cpu} color="text-[#006065] dark:text-[#fad503]" bg="bg-[#006065]/10 dark:bg-slate-900 border border-slate-200 dark:border-slate-800/30" 
+              icon={Cpu} color="text-[#006065] dark:text-[#fad503]" bg="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:border-[#006065]/30 hover:shadow-lg transition-all" 
               subtitle={`${Math.round((metrics?.vectorizedItems / (metrics?.totalItems || 1)) * 100)}% of total corpus`}
             />
             <MetricCard 
               title="Graph Relationships" 
               value={metrics?.totalRelationships?.toLocaleString()} 
-              icon={Network} color="text-[#006065] dark:text-[#fad503]" bg="bg-[#006065]/10 dark:bg-slate-900 border border-slate-200 dark:border-slate-800/30" 
+              icon={Network} color="text-[#006065] dark:text-[#fad503]" bg="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:border-[#006065]/30 hover:shadow-lg transition-all" 
               subtitle="Detected cross-source links"
             />
           </div>
@@ -303,13 +303,13 @@ export default function IntegrationAnalytics() {
             </h3>
             
             <div className="overflow-x-auto">
-              <table className="w-full text-sm text-left">
+              <table className="w-full text-sm text-left border-collapse">
                 <thead className="text-xs text-slate-500 dark:text-slate-400 uppercase bg-transparent dark:bg-slate-800/50 rounded-t-xl">
                   <tr>
                     <th className="px-4 py-3 rounded-tl-xl">Provider</th>
-                    <th className="px-4 py-3">Status</th>
-                    <th className="px-4 py-3">Last Synced</th>
-                    <th className="px-4 py-3">Frequency</th>
+                    <th className="px-6 py-4">Status</th>
+                    <th className="px-6 py-4">Last Synced</th>
+                    <th className="px-6 py-4">Frequency</th>
                     <th className="px-4 py-3 rounded-tr-xl">Errors / Logs</th>
                   </tr>
                 </thead>

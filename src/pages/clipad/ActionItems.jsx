@@ -246,7 +246,7 @@ export default function ActionItems() {
             <select
               value={providerFilter}
               onChange={e => setProviderFilter(e.target.value)}
-              className="px-3 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none"
+              className="px-3 py-1.5 text-xs text-slate-900 dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none"
             >
               <option value="all">All Sources</option>
               {providers.map(p => <option key={p} value={p}>{p}</option>)}
@@ -254,7 +254,7 @@ export default function ActionItems() {
             <select
               value={statusFilter}
               onChange={e => setStatusFilter(e.target.value)}
-              className="px-3 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none"
+              className="px-3 py-1.5 text-xs text-slate-900 dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none"
             >
               <option value="all">All Status</option>
               <option value="todo">Todo</option>
