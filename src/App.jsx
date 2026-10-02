@@ -20,8 +20,6 @@ import ClipadAdminLayout from '@/components/layout/ClipadAdminLayout';
 
 const SpaceDashboard = React.lazy(() => import('@/pages/clipad/SpaceDashboard'));
 const RecordVideo = React.lazy(() => import('@/pages/clipad/RecordVideo'));
-
-const RecordVideo = React.lazy(() => import('@/pages/clipad/RecordVideo'));
 const WatchVideo = React.lazy(() => import('@/pages/clipad/WatchVideo'));
 const VideoRoom = React.lazy(() => import('@/components/video/VideoRoom'));
 const CliPadSettings = React.lazy(() => import('@/pages/clipad/CliPadSettings'));
