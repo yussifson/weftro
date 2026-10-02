@@ -148,7 +148,7 @@ export default function DecisionLedger() {
   });
 
   return (
-    <div className="min-h-full bg-[#f8fafc] text-white font-sans page-enter pb-12">
+    <div className="min-h-full bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans page-enter pb-12">
       {/* Header */}
       <div className="relative overflow-hidden border-b border-slate-200 dark:border-slate-800 bg-[#006065] text-white px-6 py-10">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(245,158,11,0.08),transparent_60%)] pointer-events-none" />
@@ -176,7 +176,7 @@ export default function DecisionLedger() {
                 placeholder="Search decisions..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-[#006065] border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-4 py-2 text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all shadow-sm"
+                className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-4 py-2 text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all shadow-sm"
               />
             </div>
             <button
@@ -250,7 +250,7 @@ export default function DecisionLedger() {
               const aiDecisions = getDecisionText(item);
 
               return (
-                <div key={item.id} className="bg-[#006065] border border-slate-200 dark:border-slate-800 rounded-2xl p-5 hover:border-[#006065]/50 transition-all hover:shadow-sm">
+                <div key={item.id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 hover:border-[#006065]/50 transition-all hover:shadow-sm">
                   <div className="flex flex-col md:flex-row md:items-start gap-4">
                     <div className="w-12 h-12 rounded-full bg-[#006065]/10 dark:bg-[#006065]/30 flex items-center justify-center shrink-0 border border-[#006065]/20 dark:border-[#006065]/50">
                       <CheckCircle2 className="w-6 h-6 text-[#006065] dark:text-[#fad503]" />
@@ -266,7 +266,7 @@ export default function DecisionLedger() {
                         </span>
                         {item.outcome_status && (
                           <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${
-                            item.outcome_status === 'successful' ? 'bg-[#006065]/10 dark:bg-[#006065]/30 border-emerald-500/30 text-emerald-400' :
+                            item.outcome_status === 'successful' ? 'bg-[#006065]/10 dark:bg-[#006065]/30 border-[#006065]/30 dark:border-[#fad503]/30 text-emerald-400' :
                             item.outcome_status === 'unsuccessful' ? 'bg-red-500/10 border-red-500/30 text-red-400' :
                             item.outcome_status === 'partial' ? 'bg-[#006065]/10 dark:bg-[#006065]/30 border-amber-500/30 text-amber-400' :
                             'bg-[#006065]/10 dark:bg-[#006065]/30 border-blue-500/30 text-blue-400'
@@ -275,7 +275,7 @@ export default function DecisionLedger() {
                           </span>
                         )}
                         {item.importance_score && (
-                          <span className="text-xs text-slate-500 dark:text-slate-400">Impact: <span className="font-bold text-white">{item.importance_score}/10</span></span>
+                          <span className="text-xs text-slate-500 dark:text-slate-400">Impact: <span className="font-bold text-slate-900 dark:text-white">{item.importance_score}/10</span></span>
                         )}
                         {intg && (
                           <span className="text-xs flex items-center gap-1.5 text-slate-500 dark:text-slate-400 font-medium">
@@ -293,7 +293,7 @@ export default function DecisionLedger() {
                           {aiDecisions.map((d, i) => (
                             <div key={i} className="flex items-start gap-2.5 bg-amber-500/5 border border-amber-500/15 rounded-xl px-4 py-2.5">
                               <Sparkles className="w-3.5 h-3.5 text-[#006065] dark:text-[#fad503] shrink-0 mt-0.5" />
-                              <p className="text-sm text-white leading-relaxed">{d}</p>
+                              <p className="text-sm text-slate-900 dark:text-white leading-relaxed">{d}</p>
                             </div>
                           ))}
                         </div>
@@ -312,12 +312,12 @@ export default function DecisionLedger() {
                         {item.author && (
                           <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
                             <Users className="w-3.5 h-3.5" />
-                            <span>Owner: <span className="font-medium text-white">{item.author}</span></span>
+                            <span>Owner: <span className="font-medium text-slate-900 dark:text-white">{item.author}</span></span>
                           </div>
                         )}
                         <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
                           <Target className="w-3.5 h-3.5" />
-                          <span>Source: <span className="font-medium text-white capitalize">{item.provider}</span></span>
+                          <span>Source: <span className="font-medium text-slate-900 dark:text-white capitalize">{item.provider}</span></span>
                         </div>
                         {item.content_type && (
                           <span className="capitalize text-slate-500 dark:text-slate-400 bg-white/10 px-2 py-0.5 rounded-md">{item.content_type}</span>
@@ -325,7 +325,7 @@ export default function DecisionLedger() {
                         {item._type === 'native' && (
                           <button
                             onClick={() => navigate(`${window.location.pathname.startsWith('/clipad') ? '/clipad' : ''}/decisions/${item.nativeId}/replay`)}
-                            className="ml-auto flex items-center gap-1.5 px-3 py-1.5 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 rounded-lg text-xs font-semibold hover:bg-indigo-500/20 transition-colors"
+                            className="ml-auto flex items-center gap-1.5 px-3 py-1.5 bg-[#006065]/10 dark:bg-[#006065]/30 border border-indigo-500/20 text-[#006065] dark:text-[#fad503] rounded-lg text-xs font-semibold hover:bg-indigo-500/20 transition-colors"
                           >
                             <Play className="w-3 h-3" fill="currentColor" />
                             Replay Decision

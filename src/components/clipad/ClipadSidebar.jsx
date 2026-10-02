@@ -99,15 +99,10 @@ export default function ClipadSidebar({ forceMobile }) {
       path: '/health',
       icon: Activity
     });
-    adminItems.push({
-      label: 'Custom Requests',
-      path: '/admin/custom-requests',
-      icon: Sparkles
-    });
-  }
+      }
   
   if (user?.role === 'super_admin') {
-    adminItems.push({ 
+        adminItems.push({ 
       label: 'Super Admin', 
       path: '/admin', 
       icon: Shield 

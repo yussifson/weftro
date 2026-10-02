@@ -260,8 +260,8 @@ export default function KnowledgeJourney() {
 function JourneyCard({ journey, onSelect, isSelected }) {
   return (
     <div
-      className={`bg-[#006065] border rounded-2xl overflow-hidden transition-all cursor-pointer ${
-        isSelected ? 'border-blue-500/50 shadow-md' : 'border-slate-200 dark:border-slate-800 hover:border-[#006065]/50 hover:shadow-sm'
+      className={`bg-white dark:bg-slate-900 border rounded-2xl overflow-hidden transition-all cursor-pointer ${
+        isSelected ? 'border-[#006065]/50 dark:border-[#fad503]/50 shadow-md' : 'border-slate-200 dark:border-slate-800 hover:border-[#006065]/50 hover:shadow-sm'
       }`}
       onClick={onSelect}
     >
@@ -346,7 +346,7 @@ function DetailChain({ node, depth }) {
               {node.item.imported_at ? format(new Date(node.item.imported_at), 'MMM d, yyyy') : ''}
             </span>
           </div>
-          <p className="text-sm font-semibold text-white">{node.item.title || 'Untitled'}</p>
+          <p className="text-sm font-semibold text-slate-900 dark:text-white">{node.item.title || 'Untitled'}</p>
           {node.item.ai_summary && (
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">{node.item.ai_summary}</p>
           )}

@@ -246,7 +246,7 @@ export default function ActionItems() {
             <select
               value={providerFilter}
               onChange={e => setProviderFilter(e.target.value)}
-              className="px-3 py-1.5 text-xs bg-[#006065] border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none"
+              className="px-3 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none"
             >
               <option value="all">All Sources</option>
               {providers.map(p => <option key={p} value={p}>{p}</option>)}
@@ -254,7 +254,7 @@ export default function ActionItems() {
             <select
               value={statusFilter}
               onChange={e => setStatusFilter(e.target.value)}
-              className="px-3 py-1.5 text-xs bg-[#006065] border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none"
+              className="px-3 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none"
             >
               <option value="all">All Status</option>
               <option value="todo">Todo</option>
@@ -292,8 +292,8 @@ export default function ActionItems() {
               return (
                 <div
                   key={item.id}
-                  className={`bg-[#006065] border rounded-2xl p-4 transition-all ${
-                    isDone ? 'border-emerald-500/30 opacity-60' : 'border-slate-200 dark:border-slate-800 hover:border-[#006065]/50 hover:shadow-sm'
+                  className={`bg-white dark:bg-slate-900 border rounded-2xl p-4 transition-all ${
+                    isDone ? 'border-[#006065]/30 dark:border-[#fad503]/30 opacity-60' : 'border-slate-200 dark:border-slate-800 hover:border-[#006065]/50 hover:shadow-sm'
                   }`}
                 >
                   <div className="flex items-start gap-3">
@@ -309,7 +309,7 @@ export default function ActionItems() {
                     </button>
 
                     <div className="flex-1 min-w-0">
-                      <p className={`text-sm font-medium leading-relaxed ${isDone ? 'line-through text-slate-500 dark:text-slate-400' : 'text-white'}`}>
+                      <p className={`text-sm font-medium leading-relaxed ${isDone ? 'line-through text-slate-500 dark:text-slate-400' : 'text-slate-900 dark:text-white'}`}>
                         {item.text}
                       </p>
 
@@ -357,7 +357,7 @@ export default function ActionItems() {
                             key={target.id}
                             onClick={() => handleExport(item, target.id)}
                             disabled={isExportingThis}
-                            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#006065] border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold hover:bg-white/10 transition-colors disabled:opacity-50"
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold hover:bg-white/10 transition-colors disabled:opacity-50"
                             style={{ color: target.color }}
                           >
                             {isExportingThis
