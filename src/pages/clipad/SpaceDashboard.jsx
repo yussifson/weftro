@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/api/supabaseClient';
 import { getLimit, hasFeature } from '@/lib/clipadPricing';
@@ -455,6 +455,7 @@ export default function SpaceDashboard() {
   const isSpacemanHere = isSpacemanInSpace(user, spaceMembers);
   const canEdit = isAdmin(user) || isSpacemanHere;
   const isMember = spaceMembers.some(m => m.user_id === user?.id);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   return (
     <div style={{ fontFamily: "'Inter', sans-serif" }} className="flex h-screen bg-slate-50 dark:bg-slate-950 overflow-hidden text-slate-900 dark:text-slate-100">
@@ -489,7 +490,7 @@ export default function SpaceDashboard() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowPrivacyModal(false)}>Cancel</Button>
-            <Button className="bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900" onClick={confirmJoinMeeting}>Start Meeting</Button>
+            <Button className="bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-bold border-0 shadow-sm" onClick={confirmJoinMeeting}>Start Meeting</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -527,19 +528,23 @@ export default function SpaceDashboard() {
       </Dialog>
 
       {/* SIDEBAR */}
-      <aside className="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex-col hidden md:flex shrink-0">
-        <div className="h-16 flex items-center px-4 border-b border-slate-200 dark:border-slate-800 gap-3">
-          <button onClick={() => navigate('/spaces')} className="p-2 -ml-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-            <ArrowLeft className="w-4 h-4" />
-          </button>
-          <div className={`w-8 h-8 rounded bg-gradient-to-br ${color} flex items-center justify-center text-white shrink-0 shadow-sm`}>
-            {React.createElement(getSpaceIcon(space.name), { className: "w-4 h-4" })}
+      <aside className={`bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex-col hidden md:flex shrink-0 transition-all duration-300 ${sidebarOpen ? 'w-64' : 'w-20'}`}>
+        <div className="h-16 flex items-center px-4 border-b border-slate-200 dark:border-slate-800 gap-3 shrink-0 justify-between">
+          <div className="flex items-center gap-3 overflow-hidden">
+             {sidebarOpen && (
+                <button onClick={() => navigate('/spaces')} className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-md transition-all shadow-sm">
+                  <ArrowLeft className="w-3.5 h-3.5" /> Back
+                </button>
+             )}
+             <span className={`font-bold text-sm truncate transition-opacity duration-300 ${sidebarOpen ? 'opacity-100' : 'opacity-0 hidden'}`}>{space.name}</span>
           </div>
-          <span className="font-semibold text-sm truncate">{space.name}</span>
+          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-colors shrink-0">
+             <ArrowLeft className={`w-4 h-4 transition-transform duration-300 ${!sidebarOpen ? 'rotate-180' : ''}`} />
+          </button>
         </div>
         
-        <div className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
-          <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3 px-3">Menu</div>
+        <div className="flex-1 overflow-y-auto py-4 px-3 space-y-1 scrollbar-hide">
+          {sidebarOpen && <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3 px-3 transition-opacity">Menu</div>}
           {TABS.filter(t => {
             if (t.id === 'automations') return user?.role === 'super_admin';
             if (['memory', 'decisions'].includes(t.id)) return isAdmin(user) || isSpacemanHere;
@@ -551,30 +556,31 @@ export default function SpaceDashboard() {
               <button
                 key={tab.id}
                 onClick={() => handleTabChange(tab.id)}
-                className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-all ${isActive ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-medium' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'}`}
+                title={!sidebarOpen ? tab.label : ''}
+                className={`flex items-center py-2 rounded-md transition-all ${sidebarOpen ? 'w-full gap-3 px-3 text-sm' : 'justify-center w-12 h-12 mx-auto'} ${isActive ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-medium' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'}`}
               >
-                <Icon className={`w-4 h-4 ${isActive ? 'text-slate-900 dark:text-white' : 'text-slate-400'}`} />
-                {tab.label}
+                <Icon className={`shrink-0 ${sidebarOpen ? 'w-4 h-4' : 'w-5 h-5'} ${isActive ? 'text-slate-900 dark:text-white' : 'text-slate-400'}`} />
+                {sidebarOpen && <span className="truncate">{tab.label}</span>}
               </button>
             );
           })}
         </div>
         
         {/* Sidebar Footer Actions */}
-        <div className="p-4 border-t border-slate-200 dark:border-slate-800 space-y-2">
-          <button onClick={() => navigate('/chat')} className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium border border-slate-200 dark:border-slate-700 rounded-md hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-            <MessageSquare className="w-4 h-4" /> Global Chat
+        <div className="p-4 border-t border-slate-200 dark:border-slate-800 space-y-2 shrink-0">
+          <button onClick={() => navigate('/chat')} title={!sidebarOpen ? "Global Chat" : ""} className={`flex items-center justify-center font-medium border border-slate-200 dark:border-slate-700 rounded-md hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors ${sidebarOpen ? 'w-full gap-2 px-3 py-2 text-sm' : 'w-12 h-12 mx-auto'}`}>
+            <MessageSquare className="w-4 h-4 shrink-0" /> {sidebarOpen && <span>Global Chat</span>}
           </button>
         </div>
       </aside>
 
       {/* MOBILE HEADER (only visible on small screens) */}
-      <div className="md:hidden fixed top-0 left-0 right-0 h-14 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center px-4 z-40 justify-between">
+      <div className="md:hidden fixed top-0 left-0 right-0 h-14 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center px-4 z-40 justify-between shadow-sm">
          <div className="flex items-center gap-2">
-           <button onClick={() => navigate('/spaces')} className="p-2 -ml-2 text-slate-400 hover:text-slate-600">
-             <ArrowLeft className="w-5 h-5" />
+           <button onClick={() => navigate('/spaces')} className="flex items-center gap-1.5 px-2 py-1 text-xs font-semibold text-slate-600 bg-slate-100 rounded-md">
+             <ArrowLeft className="w-3.5 h-3.5" /> Back
            </button>
-           <span className="font-semibold text-sm truncate">{space.name}</span>
+           <span className="font-bold text-sm truncate ml-2">{space.name}</span>
          </div>
          <button onClick={() => setShowMembers(true)} className="p-2 text-slate-500">
            <Users className="w-5 h-5" />
@@ -603,9 +609,9 @@ export default function SpaceDashboard() {
       </div>
 
       {/* MAIN CONTENT AREA */}
-      <div className="flex-1 flex flex-col h-screen overflow-hidden pt-24 md:pt-0">
+      <div className="flex-1 flex flex-col h-screen overflow-hidden pt-24 md:pt-0 relative">
         {/* Top Action Header */}
-        <header className="hidden md:flex h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 items-center justify-between px-8 shrink-0">
+        <header className="hidden md:flex h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 items-center justify-between px-8 shrink-0 z-10">
           <div className="flex items-center gap-4">
             <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
               {TABS.find(t => t.id === activeTab)?.label}
@@ -614,16 +620,16 @@ export default function SpaceDashboard() {
           </div>
           <div className="flex items-center gap-3">
              {canEdit && (
-               <button onClick={() => setShowEdit(true)} className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-colors" title="Settings">
+               <button onClick={() => setShowEdit(true)} className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-colors shadow-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700" title="Settings">
                  <Settings className="w-4 h-4" />
                </button>
              )}
-             <button onClick={() => setShowMembers(true)} className="flex items-center gap-2 px-3 py-1.5 border border-slate-200 dark:border-slate-700 text-sm font-medium rounded-md hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+             <button onClick={() => setShowMembers(true)} className="flex items-center gap-2 px-3 py-1.5 border border-slate-200 dark:border-slate-700 text-sm font-medium rounded-md hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm bg-white dark:bg-slate-900">
                 <Users className="w-4 h-4 text-slate-400" /> <span className="text-slate-600 dark:text-slate-300">{spaceMembers.length}</span>
              </button>
              <button
               onClick={handleJoinMeeting}
-              className={`flex items-center gap-2 px-4 py-1.5 rounded-md font-medium text-sm transition-all ${isLive ? 'bg-rose-500 hover:bg-rose-600 text-white animate-pulse shadow-sm' : 'bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200 shadow-sm'}`}
+              className={`flex items-center gap-2 px-4 py-1.5 rounded-md font-semibold text-sm transition-all ${isLive ? 'bg-rose-500 hover:bg-rose-600 text-white animate-pulse shadow-md' : 'bg-yellow-400 hover:bg-yellow-500 text-slate-900 shadow-sm border border-yellow-500/20'}`}
              >
               {isLive ? <Activity className="w-4 h-4" /> : <Video className="w-4 h-4" />}
               {isLive ? 'Join Live' : 'Start Meeting'}
@@ -632,57 +638,45 @@ export default function SpaceDashboard() {
         </header>
 
         {/* Dynamic Tab Content Area */}
-        <main className="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-950 p-4 md:p-8">
+        <main className="flex-1 overflow-y-auto p-4 md:p-8">
           <div className="max-w-6xl mx-auto">
           
             {activeTab === 'overview' && (
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {/* Blocker Radar */}
-                  <div className="col-span-1 flex flex-col bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden p-4">
-                    <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2"><ShieldAlert className="w-4 h-4 text-orange-500" /> Blocker Radar</h3>
-                    <div className="flex-1">
-                      <BlockerRadar workspaceId={space.company_id} spaceId={spaceId} isWorkspaceView={true} hasFullIntelligence={user?.clipad_plan === 'pro' || user?.clipad_plan === 'enterprise'} />
-                    </div>
+                  <div className="col-span-1 h-full">
+                    <BlockerRadar workspaceId={space.company_id} spaceId={spaceId} isWorkspaceView={true} hasFullIntelligence={user?.clipad_plan === 'pro' || user?.clipad_plan === 'enterprise'} />
                   </div>
                   
                   {/* Commitment Tracker */}
-                  <div className="col-span-1 flex flex-col bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden p-4">
-                     <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2"><CheckCircle className="w-4 h-4 text-emerald-500" /> Commitments</h3>
-                     <div className="flex-1">
-                       <CommitmentTracker spaceId={spaceId} />
-                     </div>
+                  <div className="col-span-1 h-full">
+                     <CommitmentTracker spaceId={spaceId} />
                   </div>
 
                   {/* Redundant Work / Extra Widget */}
-                  <div className="col-span-1 flex flex-col bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden p-4">
-                     <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2"><Activity className="w-4 h-4 text-blue-500" /> Redundant Work</h3>
-                     <div className="flex-1 text-sm text-slate-500 flex items-center justify-center">
-                       <RedundantWorkAlert workspaceId={space.company_id} spaceId={spaceId} />
-                     </div>
+                  <div className="col-span-1 h-full">
+                     <RedundantWorkAlert workspaceId={space.company_id} spaceId={spaceId} />
                   </div>
                   
                   {/* Decision Ledger */}
-                  <div className="col-span-1 md:col-span-2 lg:col-span-3 flex flex-col bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden p-4">
-                    <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2"><Settings className="w-4 h-4 text-slate-500" /> Decision Ledger</h3>
-                    <div className="flex-1">
-                      <DecisionLedger workspaceId={space.company_id} spaceId={spaceId} hasFullIntelligence={user?.clipad_plan === 'pro' || user?.clipad_plan === 'enterprise'} teamColor={color} />
-                    </div>
+                  <div className="col-span-1 md:col-span-2 lg:col-span-3 h-full">
+                    <DecisionLedger workspaceId={space.company_id} spaceId={spaceId} hasFullIntelligence={user?.clipad_plan === 'pro' || user?.clipad_plan === 'enterprise'} teamColor={color} />
                   </div>
                 </div>
                 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-4">
                   {/* Recent Videos */}
-                  <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-5">
-                    <div className="flex items-center justify-between mb-4">
+                  <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-6">
+                    <div className="flex items-center justify-between mb-6">
                       <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                        <Camera className="w-4 h-4 text-slate-400" /> Recent Videos
+                        <Camera className="w-4 h-4 text-indigo-500" /> Recent Videos
                       </h3>
-                      <button onClick={() => setActiveTab('videos')} className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400">View all</button>
+                      <button onClick={() => setActiveTab('videos')} className="text-xs font-semibold text-slate-500 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-md transition-colors">View all</button>
                     </div>
                     {videos.length === 0 ? (
-                      <div className="py-8 text-center border border-dashed border-slate-200 dark:border-slate-800 rounded-lg bg-slate-50 dark:bg-slate-900/50">
-                        <p className="text-sm text-slate-500">No videos yet.</p>
+                      <div className="py-10 text-center border border-dashed border-slate-200 dark:border-slate-800 rounded-lg bg-slate-50 dark:bg-slate-900/50">
+                        <p className="text-sm text-slate-500 font-medium">No videos yet.</p>
                       </div>
                     ) : (
                       <div className="grid grid-cols-2 gap-4">{videos.slice(0,4).map(v => <VideoCard key={v.id} video={v} onClick={() => navigate(`/watch/${v.id}`)} />)}</div>
@@ -690,21 +684,21 @@ export default function SpaceDashboard() {
                   </div>
 
                   {/* Recent Meetings */}
-                  <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-5">
-                    <div className="flex items-center justify-between mb-4">
+                  <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-6">
+                    <div className="flex items-center justify-between mb-6">
                       <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                        <Calendar className="w-4 h-4 text-slate-400" /> Recent Meetings
+                        <Calendar className="w-4 h-4 text-emerald-500" /> Recent Meetings
                       </h3>
-                      <button onClick={() => setActiveTab('meetings')} className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400">View all</button>
+                      <button onClick={() => setActiveTab('meetings')} className="text-xs font-semibold text-slate-500 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-md transition-colors">View all</button>
                     </div>
                     {meetings.length === 0 ? (
-                      <div className="py-8 text-center border border-dashed border-slate-200 dark:border-slate-800 rounded-lg bg-slate-50 dark:bg-slate-900/50">
-                        <p className="text-sm text-slate-500">No meetings yet.</p>
+                      <div className="py-10 text-center border border-dashed border-slate-200 dark:border-slate-800 rounded-lg bg-slate-50 dark:bg-slate-900/50">
+                        <p className="text-sm text-slate-500 font-medium">No meetings yet.</p>
                       </div>
                     ) : (
                       <div className="divide-y divide-slate-100 dark:divide-slate-800 border border-slate-100 dark:border-slate-800 rounded-lg overflow-hidden">
                         {meetings.slice(0,5).map(m => (
-                          <div key={m.id} onClick={() => navigate(`/meetings/${m.id}`)} className="px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer">
+                          <div key={m.id} onClick={() => navigate(`/meetings/${m.id}`)} className="px-5 py-4 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors">
                             <p className="text-sm font-semibold text-slate-900 dark:text-white">{m.title || 'Team Meeting'}</p>
                             <p className="text-xs text-slate-500 mt-1">{new Date(m.created_at).toLocaleString()}</p>
                           </div>
@@ -726,7 +720,7 @@ export default function SpaceDashboard() {
             {activeTab === 'meetings' && (
               <div className="space-y-4">
                 {meetings.length === 0 ? <p className="text-slate-500 text-sm">No meetings found.</p> : meetings.map(m => (
-                   <div key={m.id} onClick={() => navigate(`/meetings/${m.id}`)} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-xl hover:shadow-sm cursor-pointer flex justify-between items-center">
+                   <div key={m.id} onClick={() => navigate(`/meetings/${m.id}`)} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-xl hover:shadow-sm cursor-pointer flex justify-between items-center transition-all hover:border-slate-300">
                      <div>
                        <h3 className="font-semibold text-slate-900 dark:text-white">{m.title || 'Team Meeting'}</h3>
                        <p className="text-xs text-slate-500 mt-1">{new Date(m.created_at).toLocaleString()}</p>
