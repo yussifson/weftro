@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { generateText } from '@/lib/cloudflareAI';
-import { AlertTriangle, ExternalLink, Loader2 } from 'lucide-react';
+import { AlertTriangle, ExternalLink, Loader2, Activity, CheckCircle } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
 
 export default function RedundantWorkAlert({ workspaceId, currentSpaceId }) {
@@ -78,52 +78,59 @@ Do NOT wrap in markdown blocks.`
     }
   };
 
-  if (loading) return null; // fail silently so UI isn't jittery
-  if (!alerts || alerts.length === 0) return null;
-
   return (
-    <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-4 mb-6 shadow-sm">
-      <div className="flex items-start gap-3">
-        <div className="mt-0.5 bg-amber-100 dark:bg-amber-900/50 p-2 rounded-full text-amber-600 dark:text-amber-400">
-          <AlertTriangle className="w-5 h-5" />
+    <div className="bg-white dark:bg-card rounded-xl shadow-sm border border-slate-200 dark:border-border p-5 h-full flex flex-col">
+      <div className="flex items-start justify-between mb-4 gap-3">
+        <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <Activity className="w-4 h-4 text-blue-500 shrink-0" />
+          <span className="leading-tight truncate">Redundant Work</span>
+        </h2>
+        {alerts && alerts.length > 0 && (
+          <span className="bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-xs px-2 py-0.5 rounded-full font-bold shrink-0">
+            Detected
+          </span>
+        )}
+      </div>
+
+      {loading ? (
+        <div className="flex-1 flex items-center justify-center">
+          <Loader2 className="w-5 h-5 animate-spin text-slate-400" />
         </div>
-        <div className="flex-1">
-          <h3 className="text-sm font-semibold text-amber-900 dark:text-amber-300 flex items-center gap-2">
-            Redundant Work Detected
-            <span className="bg-amber-200 dark:bg-amber-800 text-amber-800 dark:text-amber-200 text-xs px-2 py-0.5 rounded-full font-medium">
-              Enterprise AI
-            </span>
-          </h3>
-          <p className="text-sm text-amber-800 dark:text-amber-400 mt-1">
-            Our Semantic Engine detected that another team is currently discussing or working on similar topics. 
-            Consider aligning to avoid duplication of effort.
+      ) : !alerts || alerts.length === 0 ? (
+        <div className="flex-1 flex flex-col items-center justify-center text-center py-4">
+          <CheckCircle className="w-8 h-8 text-slate-300 dark:text-slate-600 mb-2" />
+          <p className="text-xs text-slate-500 dark:text-muted-foreground">No overlapping work detected across teams.</p>
+        </div>
+      ) : (
+        <div className="flex-1 flex flex-col">
+          <p className="text-xs text-amber-700 dark:text-amber-400 mb-3 font-medium">
+            Semantic overlap detected with other spaces.
           </p>
-          
-          <div className="mt-3 space-y-2">
+          <div className="space-y-2 flex-1">
             {alerts.map(alert => {
               const idStr = alert.source_id ? alert.source_id.substring(2) : '';
               const linkUrl = alert.source_id?.startsWith('M-') ? `/clipad/meetings/${idStr}` : '#';
 
               return (
-                <div key={alert.id} className="bg-white dark:bg-card border border-amber-100 dark:border-amber-900/50 rounded-md p-3 flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-slate-900 dark:text-white">Topic: {alert.topic_name}</p>
-                    <p className="text-xs text-slate-500 dark:text-muted-foreground mt-0.5">
-                      Being discussed in <strong className="text-slate-700 dark:text-foreground">{alert.space_name || 'Another Space'}</strong>
-                    </p>
-                    {alert.reason && <p className="text-[10px] text-slate-400 mt-1 italic">"{alert.reason}"</p>}
+                <div key={alert.id} className="p-3 bg-slate-50 dark:bg-secondary/20 border border-slate-100 dark:border-border/50 rounded-lg flex flex-col gap-1.5">
+                  <div className="flex justify-between items-start">
+                    <p className="text-sm font-semibold text-slate-900 dark:text-white">{alert.topic_name}</p>
+                    {linkUrl !== '#' && (
+                      <a href={linkUrl} className="text-xs font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 flex items-center gap-1 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-0.5 rounded transition-colors">
+                        View <ExternalLink className="w-3 h-3" />
+                      </a>
+                    )}
                   </div>
-                  {linkUrl !== '#' && (
-                    <a href={linkUrl} className="text-xs font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 flex items-center gap-1 bg-indigo-50 dark:bg-indigo-900/30 px-3 py-1.5 rounded-md transition-colors">
-                      View Context <ExternalLink className="w-3 h-3" />
-                    </a>
-                  )}
+                  <p className="text-xs text-slate-500">
+                    Also in <strong className="text-slate-700 dark:text-foreground">{alert.space_name || 'Another Space'}</strong>
+                  </p>
+                  {alert.reason && <p className="text-[10px] text-slate-400 italic line-clamp-2">"{alert.reason}"</p>}
                 </div>
               );
             })}
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

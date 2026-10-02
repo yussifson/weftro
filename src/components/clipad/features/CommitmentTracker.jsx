@@ -121,16 +121,16 @@ export default function CommitmentTracker({ spaceId }) {
   }
 
   return (
-    <div className="bg-white dark:bg-card rounded-xl shadow-sm border border-slate-200 dark:border-border p-5">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-          <CheckCircle2 className="w-5 h-5 text-indigo-500" />
-          AI Commitment Tracker
+    <div className="bg-white dark:bg-card rounded-xl shadow-sm border border-slate-200 dark:border-border p-5 h-full flex flex-col">
+      <div className="flex items-start justify-between mb-4 gap-3">
+        <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+          <span className="leading-tight">Commitment Tracker</span>
         </h2>
         <button
           onClick={handleAIDetect}
           disabled={detecting}
-          className="flex items-center gap-1.5 text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
+          className="flex items-center justify-center gap-1.5 text-xs font-bold bg-slate-900 hover:bg-slate-800 dark:bg-indigo-600 dark:hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50 shrink-0 whitespace-nowrap shadow-sm"
         >
           {detecting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
           {detecting ? 'Detecting...' : detectedCount > 0 ? `${detectedCount} Found` : 'AI Detect'}
