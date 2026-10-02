@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
@@ -72,18 +72,8 @@ export default function VideoAnalytics() {
   }, [selectedVideo]);
 
   useEffect(() => { 
-    if (user && !isAdmin(user)) {
-      navigate('/dashboard');
-    }
-  }, [user, navigate]);
-
-  useEffect(() => { 
     if (user) {
-      if (isAdmin(user)) {
-        fetchAnalytics(); 
-      } else {
-        setLoading(false);
-      }
+      fetchAnalytics(); 
     } else if (!isLoadingAuth) {
       setLoading(false);
     }

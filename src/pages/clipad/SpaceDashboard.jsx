@@ -815,7 +815,9 @@ export default function SpaceDashboard() {
                   <Users className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                 </div>
                 <div>
-                  <h2 className="text-base font-bold text-slate-900 dark:text-white leading-none mb-1">Manage Access</h2>
+                  <h2 className="text-base font-bold text-slate-900 dark:text-white leading-none mb-1">
+                    {isAdmin(user) ? 'Manage Access' : 'Space Members'}
+                  </h2>
                   <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{spaceMembers.length} Members</p>
                 </div>
               </div>
@@ -842,10 +844,26 @@ export default function SpaceDashboard() {
             <div className="flex-1 overflow-y-auto p-2 scrollbar-hide">
               <div className="pb-16 pt-2">
               {profiles
-                .filter(p => p.id !== space.created_by && ((p.full_name || '').toLowerCase().includes((searchMember || '').toLowerCase()) || (p.email || '').toLowerCase().includes((searchMember || '').toLowerCase())))
+                .filter(p => {
+                  const isOwner = p.id === space?.created_by;
+                  const isMem = spaceMembers.some(m => m.user_id === p.id);
+                  const matchesSearch = !searchMember || 
+                    (p.full_name || '').toLowerCase().includes(searchMember.toLowerCase()) || 
+                    (p.email || '').toLowerCase().includes(searchMember.toLowerCase());
+                  
+                  if (!matchesSearch) return false;
+
+                  // For non-admins, ONLY show users who are owner or members of THIS space
+                  if (!isAdmin(user) && !isMem && !isOwner) {
+                    return false;
+                  }
+
+                  return true;
+                })
                 .map(p => {
                   const memberRow = spaceMembers.find(m => m.user_id === p.id);
                   const isMem = !!memberRow;
+                  const isOwner = p.id === space?.created_by;
                   const isSpacemanMember = p.role === 'spaceman';
 
                   return (
@@ -861,7 +879,9 @@ export default function SpaceDashboard() {
                         </div>
                       </div>
                       <div className="shrink-0 ml-3">
-                      {canEdit ? (
+                      {isOwner ? (
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-2.5 py-1 rounded-full">Owner</span>
+                      ) : (isAdmin(user) && canEdit) ? (
                         <button
                           onClick={() => toggleMember(p.id)}
                           className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all shadow-sm ${isMem ? 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-rose-600 hover:border-rose-200 dark:hover:border-rose-900/50 dark:hover:text-rose-400' : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm border border-transparent'}`}
