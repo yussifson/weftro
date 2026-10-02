@@ -6,7 +6,7 @@ import { useAuth } from '@/lib/AuthContext';
 import { isAdmin, isSpacemanInSpace } from '@/lib/constants';
 import {
   Users, Video, Calendar, Play, Activity,
-  Brain, FileText, CheckCircle, Search, Settings, ArrowLeft,
+  Brain, FileText, CheckCircle, Search, Settings, ArrowLeft, PanelLeftClose, PanelLeft, Menu,
   Clock, MessageSquare, ArrowRight, Edit3, Lock, X, Trash2, User, ShieldAlert, Sparkles, Camera, Layers, ChevronRight, Sun
 } from 'lucide-react';
 import MeetingInsights from '@/components/clipad/MeetingInsights';
@@ -538,9 +538,9 @@ export default function SpaceDashboard() {
              )}
              <span className={`font-bold text-sm truncate transition-opacity duration-300 ${sidebarOpen ? 'opacity-100' : 'opacity-0 hidden'}`}>{space.name}</span>
           </div>
-          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-colors shrink-0">
-             <ArrowLeft className={`w-4 h-4 transition-transform duration-300 ${!sidebarOpen ? 'rotate-180' : ''}`} />
-          </button>
+          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-colors shrink-0" title={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}>
+              {sidebarOpen ? <PanelLeftClose className="w-5 h-5 transition-transform duration-300" /> : <PanelLeft className="w-5 h-5 transition-transform duration-300" />}
+            </button>
         </div>
         
         <div className="flex-1 overflow-y-auto py-4 px-3 space-y-1 scrollbar-hide">

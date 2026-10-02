@@ -173,7 +173,7 @@ export default function BlockerRadar({ workspaceId, spaceId, isWorkspaceView = f
   if (isWorkspaceView) {
     return (
       <div className="bg-white dark:bg-card rounded-xl shadow-sm border border-slate-200 dark:border-border p-5 h-full flex flex-col">
-        <div className="flex items-start justify-between mb-4 gap-3">
+        <div className="flex flex-wrap items-center justify-between mb-4 gap-3">
           <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <ShieldAlert className="w-4 h-4 text-orange-500 shrink-0" />
             <span className="leading-tight truncate">Blocker Radar</span>
