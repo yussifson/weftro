@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/AuthContext';
 import { EnterpriseAnalyticsAPI } from '@/api/EnterpriseAnalyticsAPI';
 import { 
@@ -29,7 +29,7 @@ export default function EnterpriseDashboard() {
   // Guard: Restrict access to Enterprise / Off-Cloud plans or Super Admins
   useEffect(() => {
     if (!user) return;
-    const isSuperAdmin = ['super_admin', 'admin', 'optavelos', 'company_admin'].includes(user.role);
+    const isSuperAdmin = user.role === 'super_admin' || user.user_metadata?.role === 'super_admin';
     const plan = (user.clipad_plan || user.subscription_plan || '').toLowerCase();
     if (!isSuperAdmin) {
       window.location.href = '/clipad';

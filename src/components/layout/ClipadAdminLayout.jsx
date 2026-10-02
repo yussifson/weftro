@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Building2, Tags, ShieldAlert, BrainCircuit, ArrowLeft, LogOut, Headset, Sparkles } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
-import { isAdmin } from '@/lib/constants';
+import { isSuperAdmin } from '@/lib/constants';
 
 export default function ClipadAdminLayout() {
   const navigate = useNavigate();
@@ -15,12 +15,12 @@ export default function ClipadAdminLayout() {
   };
 
   useEffect(() => {
-    if (user && !isAdmin(user)) {
-      navigate('/');
+    if (user && !isSuperAdmin(user)) {
+      navigate('/dashboard');
     }
   }, [user, navigate]);
 
-  if (!user || !isAdmin(user)) {
+  if (!user || !isSuperAdmin(user)) {
     return null;
   }
 
