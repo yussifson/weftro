@@ -98,13 +98,13 @@ function App() {
                           <Route path="/action-items" element={<ActionItems />} />
                           <Route path="/knowledge" element={<KnowledgeJourney />} />
                           <Route path="/integration-analytics" element={<IntegrationAnalytics />} />
-                          <Route path="/capture" element={<MeetingRecord />} />
+                          <Route path="/record-meeting" element={<MeetingRecord />} />
                           <Route path="/save-meeting" element={<SaveMeetingPage />} />
                           <Route path="/meetings" element={<MeetingsList />} />
                           <Route path="/videos" element={<VideosList />} />
                           <Route path="/support" element={<CliPadSupport />} />
                           <Route path="/chat" element={<ClipadChat />} />
-                          <Route path="/integrations" element={<IntegrationsHub />} />
+                          <Route path="/capture" element={<IntegrationsHub />} />
                           <Route path="/search" element={<SearchHub />} />
                           <Route path="/settings" element={<CliPadSettings />} />
                           
