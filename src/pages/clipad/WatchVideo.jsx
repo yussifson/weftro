@@ -38,7 +38,7 @@ function FloatingReaction({ emoji, x, y, onDone }) {
 }
 
 export default function WatchVideo() {
-  const { videoId } = useParams();
+  const { id: videoId } = useParams();
   const { user, isLoadingAuth } = useAuth();
   const navigate = useNavigate();
   const videoRef = useRef(null);

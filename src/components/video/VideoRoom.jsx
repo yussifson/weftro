@@ -1679,7 +1679,7 @@ export default function VideoRoom({ roomUrl, userName, token, initialAudio = tru
   };
  }, [roomUrl, token]);
 
-  if (!daily || !roomUrl) {
+  if (!daily || !finalRoomUrl) {
    return (
     <div className="flex flex-col h-full bg-slate-50 dark:bg-background rounded-xl items-center justify-center gap-4">
       <ClipadLoader size="lg" text="Connecting to secure video server..." />
