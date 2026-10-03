@@ -45,20 +45,20 @@ export default function ClipadTopNav({ forceMobile = false }) {
             <button className="flex-shrink-0 group relative p-[1px] rounded-full bg-[#fad503] shadow-[0_4px_20px_rgba(250,213,3,0.35)] hover:shadow-[0_6px_24px_rgba(250,213,3,0.5)] transition-all duration-300 active:scale-95 cursor-pointer">
               <div className="flex items-center h-9 bg-[#fad503] text-[#006065] rounded-full px-4 gap-1.5 font-black">
                 <Video className="w-4 h-4 text-[#006065] group-hover:scale-110 transition-transform" />
-                <span className="text-[13px] font-black text-[#006065] uppercase tracking-wider">Studio</span>
+                <span className="text-[13px] font-black text-[#006065] uppercase tracking-wider">Capture</span>
                 <ChevronDown className="w-3.5 h-3.5 text-[#006065] ml-0.5 group-hover:translate-y-0.5 transition-transform" />
               </div>
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-52 bg-[#006065] border-white/15 text-white shadow-2xl rounded-2xl p-1.5 backdrop-blur-xl">
             <DropdownMenuItem onClick={() => navigate('/videos')} className="cursor-pointer font-bold py-2.5 rounded-xl text-white hover:bg-white/10 focus:bg-white/10 transition-colors">
-              <Video className="w-4 h-4 mr-2.5 text-[#fad503]" /> Record Async Video
+              <Video className="w-4 h-4 mr-2.5 text-[#fad503]" /> Record
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => navigate('/meetings')} className="cursor-pointer font-bold py-2.5 rounded-xl text-white hover:bg-white/10 focus:bg-white/10 transition-colors">
-              <Calendar className="w-4 h-4 mr-2.5 text-[#fad503]" /> Start Live Meeting
+              <Calendar className="w-4 h-4 mr-2.5 text-[#fad503]" /> Meet
             </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => navigate('/analytics')} className="cursor-pointer font-bold py-2.5 rounded-xl text-white hover:bg-white/10 focus:bg-white/10 transition-colors">
-                <BarChart3 className="w-4 h-4 mr-2.5 text-[#fad503]" /> Video Analytics
+                <BarChart3 className="w-4 h-4 mr-2.5 text-[#fad503]" /> Analytics
               </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

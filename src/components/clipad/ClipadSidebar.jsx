@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Folder, Shield, BarChart2, Network, Clock, Scale, CheckSquare, Map, Plug, Search, Settings, HelpCircle, PanelLeftClose, PanelLeft, ChevronUp, ChevronDown, Activity, LogOut, Target, TrendingUp, GitMerge, HeartPulse, Sparkles, Home, Inbox, Layers } from 'lucide-react';
+import { Folder, Shield, BarChart2, Network, Clock, Scale, CheckSquare, Map, Plug, Search, Settings, HelpCircle, PanelLeftClose, PanelLeft, ChevronUp, ChevronDown, Activity, LogOut, Target, TrendingUp, GitMerge, HeartPulse, Sparkles, Home } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CliPadLogo } from '@/components/ui/CliPadLogo';
 import { useAuth } from '@/lib/AuthContext';
@@ -75,10 +75,7 @@ export default function ClipadSidebar({ forceMobile }) {
   ];
 
   const isSuperAdmin = user?.role === 'super_admin';
-  const intelligenceItems = [
-    { label: 'My Captures', path: '/captures', icon: Inbox },
-    { label: 'Context Sessions', path: '/context-sessions', icon: Layers },
-    { label: 'Integrations', path: '/integrations', icon: Plug },
+  const intelligenceItems = [    { label: 'Capture', path: '/integrations', icon: Plug },
     { label: 'Analytics', path: '/integration-analytics', icon: BarChart2 },
     { label: 'Graph', path: '/graph', icon: Network },
     { label: 'Timeline', path: '/timeline', icon: Clock },
