@@ -1,26 +1,32 @@
 const fs = require('fs');
-let s = fs.readFileSync('src/pages/clipad/SaveMeetingPage.jsx', 'utf8');
+let content = fs.readFileSync('src/pages/clipad/SaveMeetingPage.jsx', 'utf8');
 
-// Page wrapper
-s = s.replace(/min-h-full bg-transparent  p-6 md:p-12/g, 'min-h-full bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-6 md:p-12 page-enter');
-s = s.replace(/text-3xl font-bold text-white dark:text-white/g, 'text-3xl font-bold text-slate-900 dark:text-white');
-s = s.replace(/text-white\/70 dark:text-muted-foreground/g, 'text-slate-500 dark:text-slate-400');
+// Form inputs
+content = content.replace(
+  /className="w-full pl-4 pr-10 py-3 rounded-xl bg-\[#006065\] text-white dark:bg-\[#006065\] border border-white\/15 dark:border-white\/15 text-white dark:text-white text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-emerald-500\/30 focus:border-emerald-500\/60 transition-all cursor-pointer shadow-sm"/g,
+  'className="w-full pl-4 pr-10 py-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-[#006065]/20 focus:border-[#006065] transition-all cursor-pointer shadow-sm"'
+);
+content = content.replace(
+  /className="w-full pl-10 pr-8 py-2\.5 rounded-xl bg-\[#006065\] text-white dark:bg-\[#006065\] border border-white\/15 dark:border-white\/15 text-white dark:text-white text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-emerald-500\/30 focus:border-emerald-500\/60 transition-all cursor-pointer font-semibold shadow-sm"/g,
+  'className="w-full pl-10 pr-8 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-[#006065]/20 focus:border-[#006065] transition-all cursor-pointer font-semibold shadow-sm"'
+);
+content = content.replace(
+  /className="bg-\[#006065\] text-white dark:bg-\[#006065\]"/g,
+  'className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white border-slate-200 dark:border-slate-800 focus-visible:ring-[#006065]"'
+);
 
-// Form Card
-s = s.replace(/bg-\[#006065\] text-white dark:bg-\[#006065\] rounded-2xl shadow-sm border border-white\/15 dark:border-white\/15/g, 'bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white');
-s = s.replace(/text-white\/90 dark:text-foreground/g, 'text-slate-900 dark:text-slate-100');
+// Any other massive inputs:
+// text input for title
+content = content.replace(
+  /className="w-full px-4 py-3 rounded-xl bg-\[#006065\] text-white dark:bg-\[#006065\] border border-white\/15 dark:border-white\/15 text-white dark:text-white text-[15px] placeholder-white\/50 focus:outline-none focus:ring-2 focus:ring-emerald-500\/30 focus:border-emerald-500\/60 transition-all shadow-sm"/g,
+  'className="w-full px-4 py-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-[15px] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#006065]/20 focus:border-[#006065] transition-all shadow-sm"'
+);
 
-// Input styles (if it uses standard Input component, it might be fine, but let's check for any custom classes)
-s = s.replace(/bg-white\/10 text-white border-white\/20/g, 'bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white border-slate-200 dark:border-slate-700');
-s = s.replace(/bg-white\/10 hover:bg-white\/20 text-white/g, 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white');
+// If the previous regex fails due to exact class matching, just do split.join for the common classes
+content = content.split('bg-[#006065] text-white dark:bg-[#006065] border border-white/15 dark:border-white/15 text-white dark:text-white')
+  .join('bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white');
 
-// Select styles
-s = s.replace(/bg-white\/10 dark:bg-slate-800\/50/g, 'bg-slate-50 dark:bg-slate-800');
+content = content.split('placeholder-white/50').join('placeholder-slate-400');
+content = content.split('focus:ring-emerald-500/30 focus:border-emerald-500/60').join('focus:ring-[#006065]/20 focus:border-[#006065]');
 
-// Primary button
-s = s.replace(/bg-primary hover:bg-primary\/90 text-white/g, 'bg-[#006065] hover:bg-[#004e52] text-[#fad503]');
-
-// Icons/Badges
-s = s.replace(/text-emerald-500/g, 'text-[#006065] dark:text-[#fad503]');
-
-fs.writeFileSync('src/pages/clipad/SaveMeetingPage.jsx', s);
+fs.writeFileSync('src/pages/clipad/SaveMeetingPage.jsx', content);

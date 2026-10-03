@@ -120,7 +120,9 @@ function App() {
                           <Route path="/videos" element={<VideosList />} />
                           <Route path="/support" element={<CliPadSupport />} />
                           <Route path="/chat" element={<ClipadChat />} />
-                          <Route path="/capture" element={<IntegrationsHub />} />
+                          <Route path="/integrations" element={<IntegrationsHub />} />
+                          <Route path="/captures" element={<CaptureInbox />} />
+                          <Route path="/context-sessions" element={<ContextSessions />} />
                           <Route path="/search" element={<SearchHub />} />
                           <Route path="/settings" element={<CliPadSettings />} />
                           
