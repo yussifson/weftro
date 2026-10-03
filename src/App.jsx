@@ -52,8 +52,6 @@ const CliPadCustomPricing = React.lazy(() => import('@/pages/clipad/CliPadCustom
 const CustomRequests = React.lazy(() => import('@/pages/clipad/admin/CustomRequests'));
 
 const IntegrationsHub = React.lazy(() => import('@/pages/clipad/IntegrationsHub'));
-const CaptureInbox = React.lazy(() => import('@/pages/clipad/CaptureInbox'));
-const ContextSessions = React.lazy(() => import('@/pages/clipad/ContextSessions'));
 const SearchHub = React.lazy(() => import('@/pages/clipad/SearchHub'));
 const DecisionReplay = React.lazy(() => import('@/pages/clipad/DecisionReplay'));
 const CommitmentIntelligence = React.lazy(() => import('@/pages/clipad/CommitmentIntelligence'));
@@ -123,8 +121,6 @@ function App() {
                           <Route path="/support" element={<CliPadSupport />} />
                           <Route path="/chat" element={<ClipadChat />} />
                           <Route path="/integrations" element={<IntegrationsHub />} />
-                          <Route path="/captures" element={<CaptureInbox />} />
-                          <Route path="/context-sessions" element={<ContextSessions />} />
                           <Route path="/search" element={<SearchHub />} />
                           <Route path="/settings" element={<CliPadSettings />} />
                           
@@ -165,6 +161,7 @@ function App() {
 }
 
 export default App;
+
 
 
 
