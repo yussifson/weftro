@@ -231,11 +231,9 @@ export default function CliPadBilling() {
     if (currentPlan === targetPlan) return 'Current Plan';
     if (targetPlan === 'custom') return 'Contact Us';
     if ((planRank[currentPlan] || 0) > (planRank[targetPlan] || 0)) {
-      if (targetPlan === 'free') return 'Downgrade to Free';
-      return `Downgrade to ${targetPlan.charAt(0).toUpperCase() + targetPlan.slice(1)}`;
+      return 'Downgrade';
     }
-    if (targetPlan === 'free') return 'Upgrade to Free';
-    return `Upgrade to ${targetPlan.charAt(0).toUpperCase() + targetPlan.slice(1)}`;
+    return 'Upgrade';
   };
 
   const handleDowngrade = (planType) => {
@@ -359,7 +357,7 @@ export default function CliPadBilling() {
           <button 
             onClick={() => handlePlanClick('free')}
             disabled={currentPlan === 'free' || loading}
-            className={`w-full mt-auto py-2.5 rounded-lg text-sm font-semibold transition-all shadow-sm ${currentPlan === 'free' ? 'bg-slate-100 dark:bg-slate-800 text-slate-500 cursor-default' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-[#006065] dark:hover:border-[#fad503] text-slate-900 dark:text-white'}`}>
+            className={`w-full mt-auto py-2.5 rounded-lg text-sm font-semibold transition-all shadow-sm ${currentPlan === 'free' ? 'bg-slate-100 dark:bg-slate-800 text-slate-500 cursor-default' : 'bg-white dark:bg-slate-900 border border-[#006065]/30 hover:border-[#006065] dark:border-slate-700 dark:hover:border-[#fad503] text-slate-900 dark:text-white shadow-sm'}`}>
             {getButtonText('free')}
           </button>
         </div>
@@ -405,7 +403,7 @@ export default function CliPadBilling() {
           <button 
             onClick={() => handlePlanClick('enterprise')}
             disabled={currentPlan === 'enterprise' || loading}
-            className={`w-full mt-auto py-2.5 rounded-lg text-sm font-semibold transition-all shadow-sm ${currentPlan === 'enterprise' ? 'bg-slate-100 dark:bg-slate-800 text-slate-500 cursor-default' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-[#006065] dark:hover:border-[#fad503] text-slate-900 dark:text-white'}`}>
+            className={`w-full mt-auto py-2.5 rounded-lg text-sm font-semibold transition-all shadow-sm ${currentPlan === 'enterprise' ? 'bg-slate-100 dark:bg-slate-800 text-slate-500 cursor-default' : 'bg-white dark:bg-slate-900 border border-[#006065]/30 hover:border-[#006065] dark:border-slate-700 dark:hover:border-[#fad503] text-slate-900 dark:text-white shadow-sm'}`}>
             {getButtonText('enterprise')}
           </button>
         </div>
@@ -426,7 +424,7 @@ export default function CliPadBilling() {
           <button 
             onClick={() => handlePlanClick('custom')}
             disabled={currentPlan === 'custom' || loading}
-            className={`w-full mt-8 py-2 rounded-xl font-semibold border ${currentPlan === 'custom' ? 'bg-secondary text-foreground border-border' : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-md'}`}>
+            className={`w-full mt-auto py-2.5 rounded-lg text-sm font-semibold border ${currentPlan === 'custom' ? 'bg-secondary text-foreground border-border' : 'bg-[#006065] hover:bg-[#004e52] text-white shadow-md'}`}>
             {getButtonText('custom')}
           </button>
         </div>
