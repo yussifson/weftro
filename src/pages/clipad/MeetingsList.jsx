@@ -209,13 +209,16 @@ export default function MeetingsList() {
             <p className="text-slate-400 text-sm">Start a meeting to see it appear here with full AI summaries and action items.</p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="relative pl-6 border-l-2 border-[#006065]/20 dark:border-[#006065]/40 space-y-6">
             {filtered.map(m => (
-              <div
-                key={m.id}
-                onClick={() => navigate(`/meetings/${m.id}`)}
-                className="group p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-[#006065]/50 dark:hover:border-[#fad503]/50 cursor-pointer shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all hover:-translate-y-0.5 active:scale-[0.98] flex flex-col md:flex-row md:items-center gap-4"
-              >
+              <div key={m.id} className="relative group">
+                <div className="absolute -left-[35px] w-6 h-6 rounded-full bg-[#006065] border-2 border-[#fad503] flex items-center justify-center shadow-sm mt-5">
+                  <div className="w-2 h-2 rounded-full bg-[#fad503]" />
+                </div>
+                <div
+                  onClick={() => navigate(`/meetings/${m.id}`)}
+                  className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-[#006065]/50 dark:hover:border-[#fad503]/50 cursor-pointer shadow-sm hover:shadow-lg transition-all hover:-translate-y-0.5 active:scale-[0.98] flex flex-col gap-3"
+                >
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2 mb-1">
                     <h3 className="text-base font-bold text-slate-900 dark:text-white truncate">{m.title || 'Team Meeting'}</h3>

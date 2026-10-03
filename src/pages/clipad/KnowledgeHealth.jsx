@@ -100,44 +100,47 @@ export default function KnowledgeHealth() {
           { subject: 'Knowledge Capture', A: Math.min(100, decisionCount * 5 + 40), fullMark: 100 },
           { subject: 'External Sync', A: integrationHealth, fullMark: 100 },
         ]);
+        
+        // IMPORTANT: Unblock UI rendering instantly
+        setLoading(false);
 
-        // Generate a real AI diagnosis using LLM
-        const prompt = [
-          { role: 'system', content: 'You are an elite organizational psychologist and operations expert AI. Provide a concise, 2-3 sentence executive diagnosis of the company\'s operational health based on the provided metrics. Do not use markdown. Speak directly and professionally.' },
-          { role: 'user', content: `Metrics: Total Meetings: ${meetingCount}, Key Decisions Made: ${decisionCount}, Blockers Raised: ${blockerCount}, Tasks Completed: ${taskCompletedCount}. Calculated Scores (out of 100): Decision Velocity: ${velocity}, Resolution Speed: ${resolution}, Silos: ${silos}, Meeting Efficiency: ${bloat}. What is your diagnosis?` }
-        ];
+        // Run AI stuff in background non-blocking
+        setTimeout(async () => {
+          try {
+            const prompt = [
+              { role: 'system', content: 'You are an elite organizational psychologist and operations expert AI. Provide a concise, 2-3 sentence executive diagnosis of the company\'s operational health based on the provided metrics. Do not use markdown. Speak directly and professionally.' },
+              { role: 'user', content: `Metrics: Total Meetings: ${meetingCount}, Key Decisions Made: ${decisionCount}, Blockers Raised: ${blockerCount}, Tasks Completed: ${taskCompletedCount}. Calculated Scores (out of 100): Decision Velocity: ${velocity}, Resolution Speed: ${resolution}, Silos: ${silos}, Meeting Efficiency: ${bloat}. What is your diagnosis?` }
+            ];
+            const aiResponse = await generateText(prompt);
+            setDiagnosis(aiResponse?.trim() || "Organizational intelligence is healthy. Teams are effectively capturing decisions and resolving blockers.");
 
-        const aiResponse = await generateText(prompt);
-        setDiagnosis(aiResponse?.trim() || "Organizational intelligence is healthy. Teams are effectively capturing decisions and resolving blockers.");
-
-        // Generate Proactive Insights
-        try {
-          const insightPrompt = [
-            { role: 'system', content: 'You are an AI organizational insights engine. Based on the following metrics, generate 3 specific, proactive, and actionable insights. Output strictly valid JSON as an array of objects. Each object must have "type" ("warning", "suggestion", or "insight"), "title" (short summary), and "description" (detailed actionable context).' },
-            { role: 'user', content: `Metrics: Total Meetings: ${meetingCount}, Key Decisions Made: ${decisionCount}, Blockers Raised: ${blockerCount}, Tasks Completed: ${taskCompletedCount}, Imported Integrations: ${importedCount}. Calculated Scores: Velocity: ${velocity}, Resolution: ${resolution}, Silos: ${silos}, Efficiency: ${bloat}.` }
-          ];
-          const insightRaw = await generateText(insightPrompt);
-          // Try to extract JSON from the response
-          const jsonMatch = insightRaw.match(/\[.*\]/s);
-          if (jsonMatch) {
-            setInsights(JSON.parse(jsonMatch[0]));
-          } else {
-            setInsights([
-               { type: 'insight', title: 'Knowledge Base Growing', description: 'Your external integrations are successfully syncing data into the graph.' },
-               { type: 'suggestion', title: 'Review Open Blockers', description: 'There are unresolved blockers that need attention to maintain resolution speed.' }
-            ]);
+            const insightPrompt = [
+              { role: 'system', content: 'You are an AI organizational insights engine. Based on the following metrics, generate 3 specific, proactive, and actionable insights. Output strictly valid JSON as an array of objects. Each object must have "type" ("warning", "suggestion", or "insight"), "title" (short summary), and "description" (detailed actionable context).' },
+              { role: 'user', content: `Metrics: Total Meetings: ${meetingCount}, Key Decisions Made: ${decisionCount}, Blockers Raised: ${blockerCount}, Tasks Completed: ${taskCompletedCount}, Imported Integrations: ${importedCount}. Calculated Scores: Velocity: ${velocity}, Resolution: ${resolution}, Silos: ${silos}, Efficiency: ${bloat}.` }
+            ];
+            const insightRaw = await generateText(insightPrompt);
+            const jsonMatch = insightRaw.match(/\[.*\]/s);
+            if (jsonMatch) {
+              setInsights(JSON.parse(jsonMatch[0]));
+            } else {
+              setInsights([
+                 { type: 'insight', title: 'Knowledge Base Growing', description: 'Your external integrations are successfully syncing data into the graph.' },
+                 { type: 'suggestion', title: 'Review Open Blockers', description: 'There are unresolved blockers that need attention to maintain resolution speed.' }
+              ]);
+            }
+          } catch (e) {
+            console.warn("AI generation failed in background", e);
+            setDiagnosis("Organizational intelligence is healthy. Teams are effectively capturing decisions and resolving blockers.");
           }
-        } catch(e) {
-          console.warn("Failed to generate insights", e);
-        }
-
-        // Detect Organizational Risks
-        const detectedRisks = await detectRisks(user?.company_id);
-        setRisks(detectedRisks);
+          
+          try {
+            const detectedRisks = await detectRisks(user?.company_id);
+            setRisks(detectedRisks);
+          } catch (e) { }
+        }, 100);
 
       } catch (err) {
         console.error(err);
-      } finally {
         setLoading(false);
       }
     }
@@ -151,7 +154,7 @@ export default function KnowledgeHealth() {
 
   if (loading) {
     return (
-      <div className="max-w-6xl mx-auto px-4 md:px-6 py-8 animate-pulse space-y-6 w-full">
+      <div className="max-w-6xl mx-auto px-4 md:px-6 py-8 animate-pulse space-y-6 w-full min-h-screen bg-slate-50 dark:bg-slate-950">
         <div className="h-8 bg-slate-200 dark:bg-slate-800 rounded-xl w-48 mb-4" />
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           {[...Array(5)].map((_, i) => (

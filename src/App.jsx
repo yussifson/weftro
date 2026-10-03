@@ -111,6 +111,7 @@ function App() {
                           <Route path="/record-meeting" element={<MeetingRecord />} />
 
                           <Route path="/record" element={<RecordVideo />} />
+                          <Route path="/record/:id" element={<RecordVideo />} />
                           <Route path="/watch/:id" element={<WatchVideo />} />
                           <Route path="/meetings/:id" element={<MeetingRecord />} />
                           <Route path="/join/:id" element={<VideoRoom />} />

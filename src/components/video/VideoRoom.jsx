@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import DailyIframe from '@daily-co/daily-js';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation} from "react-i18next";
 import { 
  DailyProvider, 
@@ -1540,6 +1540,8 @@ function ParticipantTile({ id, isLocal, className }) {
 
 // Wrapper to initialize Daily provider
 export default function VideoRoom({ roomUrl, userName, token, initialAudio = true, initialVideo = true, initialBackground, onLeave, isPipMode, togglePipMode, spaceId }) {
+ const { id: routeId } = useParams();
+ const finalRoomUrl = roomUrl || (routeId ? `https://optavel.daily.co/${routeId}` : null);
  const { user } = useAuth();
  const [daily, setDaily] = useState(null);
  // Keep a ref so the cleanup closure always has access to the latest callObject
@@ -1547,7 +1549,7 @@ export default function VideoRoom({ roomUrl, userName, token, initialAudio = tru
  const callRef = useRef(null);
 
  useEffect(() => {
-  if (!roomUrl) return;
+  if (!finalRoomUrl) return;
 
   let cancelled = false;
 
@@ -1687,7 +1689,7 @@ export default function VideoRoom({ roomUrl, userName, token, initialAudio = tru
 
  return (
   <DailyProvider callObject={daily}>
-   <VideoRoomInner roomUrl={roomUrl} onLeave={onLeave} isPipMode={isPipMode} togglePipMode={togglePipMode} initialBackground={initialBackground} spaceId={spaceId} initialAudio={initialAudio} initialVideo={initialVideo} />
+   <VideoRoomInner roomUrl={finalRoomUrl} onLeave={onLeave} isPipMode={isPipMode} togglePipMode={togglePipMode} initialBackground={initialBackground} spaceId={spaceId} initialAudio={initialAudio} initialVideo={initialVideo} />
   </DailyProvider>
  );
 }
