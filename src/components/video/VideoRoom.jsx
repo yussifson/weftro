@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+﻿import React, { useEffect, useState, useRef, useCallback } from 'react';
 import DailyIframe from '@daily-co/daily-js';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation} from "react-i18next";
@@ -53,8 +53,8 @@ export const VIRTUAL_BACKGROUNDS = [
   { id: 'bg15', label: 'Deep Ocean', type: 'background-image', url: 'https://images.unsplash.com/photo-1551244072-5d12893278ab?q=80&w=600&auto=format&fit=crop' }
 ];
 
-// Fix #17: EMOJIS constant outside component — avoids recreation on every render
-const EMOJIS = ['👍', '❤️', '👏', '😂', '🎉', '🔥'];
+// Fix #17: EMOJIS constant outside component â€” avoids recreation on every render
+const EMOJIS = ['ðŸ‘', 'â¤ï¸', 'ðŸ‘', 'ðŸ˜‚', 'ðŸŽ‰', 'ðŸ”¥'];
 
 function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBackground, spaceId, initialAudio = true, initialVideo = true }) {
   const navigate = useNavigate();
@@ -99,7 +99,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
   const [isReconnecting, setIsReconnecting] = useState(false);
   // Add: Connection quality indicator ('good' | 'low' | 'very-low')
   const [networkQuality, setNetworkQuality] = useState('good');
-  // Fix #18: Single AudioContext ref — reuse across join/leave sounds
+  // Fix #18: Single AudioContext ref â€” reuse across join/leave sounds
   const audioCtxRef = useRef(null);
   const [activeBg, setActiveBg] = useState(initialBackground?.id || 'none');
   const [isApplyingBg, setIsApplyingBg] = useState(false);
@@ -240,7 +240,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
    setJoined(true);
    setIsReconnecting(false);
    if (!daily) return;
-   // Enforce the pre-join mic/camera choices — Daily sometimes ignores startAudioOff/startVideoOff
+   // Enforce the pre-join mic/camera choices â€” Daily sometimes ignores startAudioOff/startVideoOff
    // so we explicitly set them after joining to guarantee the intended state.
    Promise.all([
      daily.setLocalAudio(initialAudio).catch(() => {}),
@@ -256,7 +256,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
        }
      }
    }).catch(e => console.warn('updateSendSettings failed:', e));
-   // Only attempt cloud transcription — silent failure is fine if not enabled
+   // Only attempt cloud transcription â€” silent failure is fine if not enabled
    daily.startTranscription().catch(() => {});
   }, [daily, initialAudio, initialVideo]));
 
@@ -354,10 +354,10 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
  useDailyEvent('network-connection', useCallback((ev) => {
    if (ev.event === 'interrupted') {
      setIsReconnecting(true);
-     toast({ title: '⚠️ Connection Lost', description: 'Attempting to reconnect…', variant: 'destructive' });
+     toast({ title: 'âš ï¸ Connection Lost', description: 'Attempting to reconnectâ€¦', variant: 'destructive' });
    } else if (ev.event === 'connected') {
      setIsReconnecting(false);
-     toast({ title: '✅ Reconnected', description: 'Your connection has been restored.' });
+     toast({ title: 'âœ… Reconnected', description: 'Your connection has been restored.' });
    }
  }, [toast]));
 
@@ -388,7 +388,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
      }
    } catch (_) {}
    toast({
-     title: 'Connecting…',
+     title: 'Connectingâ€¦',
      description: 'Your camera and mic will be available once the call connects.'
    });
    return false;
@@ -404,9 +404,9 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
       const isDeviceNotFound = err?.name === 'NotFoundError' || err?.message?.includes('not found') || err?.message?.includes('device');
       const isPermission = err?.name === 'NotAllowedError' || err?.message?.includes('Permission') || err?.message?.includes('allowed');
       if (isDeviceNotFound) {
-        toast({ title: '🎙️ No Microphone Found', description: 'Please connect a microphone and try again. Make sure it\'s plugged in and not in use by another app.', variant: 'destructive' });
+        toast({ title: 'ðŸŽ™ï¸ No Microphone Found', description: 'Please connect a microphone and try again. Make sure it\'s plugged in and not in use by another app.', variant: 'destructive' });
       } else if (isPermission) {
-        toast({ title: '🔒 Microphone Blocked', description: 'Browser blocked microphone access. Click the 🔒 icon in your browser address bar to allow it.', variant: 'destructive' });
+        toast({ title: 'ðŸ”’ Microphone Blocked', description: 'Browser blocked microphone access. Click the ðŸ”’ icon in your browser address bar to allow it.', variant: 'destructive' });
       } else {
         toast({ title: 'Microphone Error', description: err?.message || 'Could not access your microphone.', variant: 'destructive' });
       }
@@ -423,9 +423,9 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
       const isDeviceNotFound = err?.name === 'NotFoundError' || err?.message?.includes('not found') || err?.message?.includes('device');
       const isPermission = err?.name === 'NotAllowedError' || err?.message?.includes('Permission') || err?.message?.includes('allowed');
       if (isDeviceNotFound) {
-        toast({ title: '📷 No Camera Found', description: 'No webcam detected. Please connect a camera and try again. Others will still be able to see your name and hear you.', variant: 'destructive' });
+        toast({ title: 'ðŸ“· No Camera Found', description: 'No webcam detected. Please connect a camera and try again. Others will still be able to see your name and hear you.', variant: 'destructive' });
       } else if (isPermission) {
-        toast({ title: '🔒 Camera Blocked', description: 'Browser blocked camera access. Click the 🔒 icon in your browser address bar to allow it.', variant: 'destructive' });
+        toast({ title: 'ðŸ”’ Camera Blocked', description: 'Browser blocked camera access. Click the ðŸ”’ icon in your browser address bar to allow it.', variant: 'destructive' });
       } else {
         toast({ title: 'Camera Error', description: err?.message || 'Could not access your camera.', variant: 'destructive' });
       }
@@ -483,7 +483,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
             title: meetingTitle,
             daily_room_name: roomUrl.split('/').pop().split('?')[0] || 'room',
             host_id: user?.id || null,
-            company_id: user?.company_id || null, // Fix #3 — needed for RLS and teammate visibility
+            company_id: user?.company_id || null, // Fix #3 â€” needed for RLS and teammate visibility
             ai_summary: rawTranscript ? 'Generating summary...' : 'No transcript recorded.',
             started_at: new Date(joinTimeRef.current).toISOString(),
             ended_at: new Date().toISOString(),
@@ -499,7 +499,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           const { data: insertedMeeting, error } = await db.from('clipad_meeting_records').insert(meetingData).select().single();
           
           if (!error && insertedMeeting && rawTranscript.trim().length > 10) {
-            // Run AI summary in background — always update the record, even on failure
+            // Run AI summary in background â€” always update the record, even on failure
             (async () => {
               try {
                 const { generateText } = await import('@/lib/cloudflareAI');
@@ -581,7 +581,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
             // Always navigate to save page using the real UUID from the DB record
             navigate(`${basePath}/save-meeting/${insertedMeeting.id}${spaceId ? `?spaceId=${spaceId}` : ''}`);
           } else {
-            // Insert failed — let the caller (e.g. StandaloneMeeting) decide where to go
+            // Insert failed â€” let the caller (e.g. StandaloneMeeting) decide where to go
             toast({ title: 'Meeting ended', description: 'Could not save record. Please check your connection.', variant: 'destructive' });
             if (onLeave) onLeave(null);
           }
@@ -600,7 +600,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
     if (onLeave) onLeave(null);
   };
 
- // Fix #7: Real-time transcription — cross-browser (Chrome + Firefox fallback)
+ // Fix #7: Real-time transcription â€” cross-browser (Chrome + Firefox fallback)
  // Uses both Daily's built-in transcription-message event AND Web Speech API
  useDailyEvent('transcription-message', useCallback((ev) => {
    if (ev?.text) {
@@ -785,7 +785,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
               <span className="text-sm font-semibold truncate text-slate-700 dark:text-slate-200">{waitingParticipants[id].name || 'Guest'}</span>
             </div>
             <div className="flex gap-1.5 shrink-0">
-              <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10" onClick={() => denyParticipant(id)}>✕</Button>
+              <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10" onClick={() => denyParticipant(id)}>âœ•</Button>
               <Button size="sm" className="h-8 px-4 text-xs font-semibold" onClick={() => admitParticipant(id)}>Admit</Button>
             </div>
           </div>
@@ -820,7 +820,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           {isReconnecting && (
             <div className="absolute inset-0 z-50 bg-black/70 backdrop-blur-sm flex flex-col items-center justify-center gap-4">
               <OrbitLoader size="lg" />
-              <p className="text-white font-semibold text-lg">Reconnecting…</p>
+              <p className="text-white font-semibold text-lg">Reconnectingâ€¦</p>
               <p className="text-white/60 text-sm">Your connection was interrupted. Hang tight.</p>
             </div>
           )}
@@ -832,7 +832,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
             <ParticipantTile id={mainSpeakerId} isLocal={mainSpeakerId === localSessionId} className="w-full h-full absolute inset-0 !m-0 !border-0 !rounded-none" />
           ) : null}
         </div>
-        {/* Participant Sidebar — always visible, even in 2-person calls */}
+        {/* Participant Sidebar â€” always visible, even in 2-person calls */}
         <div className="flex-1 lg:max-w-[320px] flex lg:flex-col gap-4 overflow-x-auto lg:overflow-y-auto min-h-[140px] lg:min-h-0 items-center lg:items-stretch content-start">
           {sidebarParticipants.map(id => (
             <ParticipantTile key={id} id={id} isLocal={id === localSessionId} className="w-64 min-w-[16rem] lg:w-full lg:min-w-0 shrink-0 m-0" />
@@ -841,7 +841,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           {totalCount === 1 && mainSpeakerId === localSessionId && (
             <div className="flex flex-col items-center justify-center gap-2 p-4 text-slate-400 text-sm">
               <Users className="w-8 h-8 opacity-40" />
-              <p className="text-center opacity-60">Waiting for others to join…</p>
+              <p className="text-center opacity-60">Waiting for others to joinâ€¦</p>
             </div>
           )}
           {allParticipants.length === 0 && (
@@ -1583,9 +1583,9 @@ export default function VideoRoom({ roomUrl, userName, token, initialAudio = tru
    
    let parsedUrl;
    let finalToken = token;
-   let cleanUrl = roomUrl;
+   let cleanUrl = finalRoomUrl || '';
    try {
-     parsedUrl = new URL(roomUrl);
+     if (finalRoomUrl) { parsedUrl = new URL(finalRoomUrl); } else { parsedUrl = null; }
      const urlToken = parsedUrl.searchParams.get('t');
      if (urlToken) {
        finalToken = finalToken || urlToken;
@@ -1611,7 +1611,7 @@ export default function VideoRoom({ roomUrl, userName, token, initialAudio = tru
     // Calling startCamera() first causes NotAllowedError on many browsers
     // which aborts the whole join flow.
 
-    // Apply noise cancellation as an input setting — this is supported pre-join
+    // Apply noise cancellation as an input setting â€” this is supported pre-join
     try {
       await callObject.updateInputSettings({
         audio: {
@@ -1638,14 +1638,14 @@ export default function VideoRoom({ roomUrl, userName, token, initialAudio = tru
 
     if (cancelled) return;
 
-    // Join the room — camera/mic are activated here
+    // Join the room â€” camera/mic are activated here
     await callObject.join(joinOpts);
 
     // Fix #8: updateSendSettings is now applied in the joined-meeting event
-    // inside VideoRoomInner (after join succeeds) — see the useDailyEvent listener
+    // inside VideoRoomInner (after join succeeds) â€” see the useDailyEvent listener
 
    } catch (joinErr) {
-    console.warn('Joining error — attempting fallback join without media settings.', joinErr);
+    console.warn('Joining error â€” attempting fallback join without media settings.', joinErr);
     if (cancelled) return;
     try {
       const joinPayload = { url: cleanUrl, userName: joinOpts.userName, startAudioOff: !startMic, startVideoOff: !startCam };
@@ -1658,7 +1658,7 @@ export default function VideoRoom({ roomUrl, userName, token, initialAudio = tru
    if (cancelled) return;
    setDaily(callObject);
     // Log meeting join
-    logAuditEvent({ action: 'meeting_created', user, details: `Joined Meeting Room: ${roomUrl.split('/').pop()}` });
+    logAuditEvent({ action: 'meeting_created', user, details: `Joined Meeting Room: ${cleanUrl ? cleanUrl.split('/').pop() : 'Unknown'}` });
   };
 
   initDaily().catch(console.error);
@@ -1693,3 +1693,4 @@ export default function VideoRoom({ roomUrl, userName, token, initialAudio = tru
   </DailyProvider>
  );
 }
+
