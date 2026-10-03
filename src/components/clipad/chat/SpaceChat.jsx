@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
-import { Hash, Plus, Send, MessageSquare, Sparkles, Loader2, Menu, X } from 'lucide-react';
+import { Hash, Plus, Send, MessageSquare, Sparkles, Loader2, Menu, X, Search } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { invokeCloudflareAi } from '@/lib/cloudflareAI';
 
@@ -187,7 +187,7 @@ export default function SpaceChat({ spaceId }) {
   if (loading) {
     return (
       <div className="flex h-[600px] border border-slate-200 dark:border-slate-800 rounded-2xl items-center justify-center bg-slate-50 dark:bg-slate-900/50">
-        <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#006065] dark:text-[#fad503] animate-spin" />
       </div>
     );
   }
@@ -205,17 +205,21 @@ export default function SpaceChat({ spaceId }) {
 
       {/* Sidebar Channels */}
       <div className={`absolute md:relative z-30 h-full w-64 bg-slate-50 dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col transition-transform duration-300 ease-in-out shadow-xl md:shadow-none ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
-        <div className="h-16 px-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0 bg-white dark:bg-slate-900/50">
-          <h3 className="font-bold text-slate-900 dark:text-white text-base tracking-tight flex items-center gap-2">
-            <MessageSquare className="w-4 h-4 text-indigo-500" /> Channels
-          </h3>
-          <button 
-            onClick={() => setShowNewChannel(!showNewChannel)}
-            className="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-md text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
-            title="New Channel"
-          >
-            <Plus className="w-4 h-4" />
-          </button>
+        <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex flex-col gap-3 shrink-0 bg-white dark:bg-slate-900/50">
+          <div className="flex items-center justify-between w-full">
+            <h2 className="font-bold text-lg text-slate-900 dark:text-white">Space Chats</h2>
+            <button 
+              onClick={() => setShowNewChannel(!showNewChannel)}
+              className="w-8 h-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-slate-700 transition-colors"
+              title="New Chat"
+            >
+              <Plus className="w-5 h-5" />
+            </button>
+          </div>
+          <div className="relative">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input type="text" placeholder="Search chats..." className="w-full bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-white border border-transparent focus:border-[#006065] rounded-xl px-4 py-2 pl-9 text-sm focus:outline-none transition-all" />
+          </div>
         </div>
         
         <div className="flex-1 overflow-y-auto p-3 space-y-0.5 scrollbar-thin">
@@ -247,7 +251,7 @@ export default function SpaceChat({ spaceId }) {
                 <button 
                   onClick={() => newChannelName.trim() && createChannel(newChannelName.trim())}
                   disabled={creatingChannel || !newChannelName.trim()}
-                  className="px-3 py-1.5 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-md shadow-sm transition-colors disabled:opacity-50"
+                  className="px-3 py-1.5 text-xs font-bold bg-[#006065] text-white hover:bg-[#004e52] hover:bg-[#004e52] text-white text-white rounded-md shadow-sm transition-colors disabled:opacity-50"
                 >
                   Create
                 </button>
@@ -262,11 +266,11 @@ export default function SpaceChat({ spaceId }) {
               onClick={() => { setActiveChannel(channel); setSidebarOpen(false); }}
               className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-semibold transition-all group ${
                 activeChannel?.id === channel.id 
-                  ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 shadow-sm' 
+                  ? 'bg-[#006065]/10 dark:bg-[#006065]/30 text-[#006065] dark:text-[#fad503] dark:text-[#006065] dark:text-[#fad503] shadow-sm' 
                   : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
-              <Hash className={`w-4 h-4 shrink-0 transition-colors ${activeChannel?.id === channel.id ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 group-hover:text-slate-500'}`} />
+              <Hash className={`w-4 h-4 shrink-0 transition-colors ${activeChannel?.id === channel.id ? 'text-[#006065] dark:text-[#fad503] dark:text-[#006065] dark:text-[#fad503]' : 'text-slate-400 group-hover:text-slate-500'}`} />
               <span className="truncate">{channel.name}</span>
             </button>
           ))}
@@ -294,7 +298,7 @@ export default function SpaceChat({ spaceId }) {
               <button
                 onClick={handleAISummarize}
                 disabled={isSummarizing || messages.length === 0}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-900/20 dark:hover:bg-indigo-900/40 text-indigo-700 dark:text-indigo-400 rounded-md text-xs font-bold transition-colors disabled:opacity-50 border border-indigo-200 dark:border-indigo-800 shadow-sm"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-[#006065]/5 hover:bg-[#006065]/10 dark:bg-[#006065]/20 dark:hover:bg-[#006065]/40 text-[#006065] dark:text-[#fad503] dark:text-[#006065] dark:text-[#fad503] rounded-md text-xs font-bold transition-colors disabled:opacity-50 border border-[#006065]/30 dark:border-[#006065]/40 shadow-sm"
               >
                 {isSummarizing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
                 <span className="hidden sm:inline">AI Summary</span>
@@ -302,15 +306,15 @@ export default function SpaceChat({ spaceId }) {
             </div>
 
             {summaryStr && (
-              <div className="mx-4 md:mx-6 mt-4 p-5 bg-gradient-to-br from-indigo-50 to-white dark:from-indigo-900/20 dark:to-slate-900 border border-indigo-100 dark:border-indigo-800 rounded-xl relative shadow-sm animate-in slide-in-from-top-4">
+              <div className="mx-4 md:mx-6 mt-4 p-5 bg-gradient-to-br from-[#006065]/5 to-white dark:from-[#006065]/20 dark:to-slate-900 border border-[#006065]/20 dark:border-[#006065]/40 rounded-xl relative shadow-sm animate-in slide-in-from-top-4">
                 <button 
                   onClick={() => setSummaryStr(null)}
                   className="absolute top-3 right-3 p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-md bg-white/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
-                <h4 className="flex items-center gap-2 font-bold text-indigo-900 dark:text-indigo-100 text-sm mb-3">
-                  <div className="w-6 h-6 rounded-md bg-indigo-600 flex items-center justify-center">
+                <h4 className="flex items-center gap-2 font-bold text-slate-900 dark:text-white dark:text-slate-100 text-sm mb-3">
+                  <div className="w-6 h-6 rounded-md bg-[#006065] text-white hover:bg-[#004e52] flex items-center justify-center">
                     <Sparkles className="w-3 h-3 text-white" />
                   </div>
                   Orbit AI Summary
@@ -332,38 +336,32 @@ export default function SpaceChat({ spaceId }) {
                 </div>
               ) : (
                 messages.map((msg, i) => {
-                  const isSameUserAsPrev = i > 0 && messages[i-1].user?.id === msg.user?.id;
+                  const isMe = msg.user?.id === user?.id;
+                  const showTail = i === 0 || messages[i-1].user?.id !== msg.user?.id;
+                  const senderName = msg.user?.full_name || 'User';
+                  const avatarUrl = msg.user?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${senderName}`;
                   
                   return (
-                    <div key={msg.id} className={`flex gap-3 md:gap-4 group hover:bg-slate-50 dark:hover:bg-slate-900/50 p-2 -mx-2 rounded-xl transition-colors ${isSameUserAsPrev ? 'mt-1' : 'mt-6'}`}>
-                      {!isSameUserAsPrev ? (
-                        <img 
-                          src={msg.user?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${msg.user?.full_name || 'User'}`}
-                          alt={msg.user?.full_name}
-                          className="w-10 h-10 rounded-xl bg-slate-200 dark:bg-slate-800 object-cover shrink-0 shadow-sm ring-1 ring-slate-200 dark:ring-slate-800"
-                        />
+                    <div key={msg.id} className={`flex items-end gap-2 max-w-[85%] group ${isMe ? 'ml-auto flex-row-reverse' : 'mr-auto'}`}>
+                      {!isMe && showTail ? (
+                        <img src={avatarUrl} alt={senderName} className="w-7 h-7 rounded-full shrink-0 object-cover" />
                       ) : (
-                        <div className="w-10 shrink-0 flex justify-center">
-                          <span className="text-[10px] font-bold text-slate-300 dark:text-slate-700 opacity-0 group-hover:opacity-100 transition-opacity mt-1">
-                            {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                          </span>
-                        </div>
+                        !isMe && <div className="w-7 shrink-0" />
                       )}
-                      
-                      <div className="flex-1 min-w-0">
-                        {!isSameUserAsPrev && (
-                          <div className="flex items-baseline gap-2 mb-0.5">
-                            <span className="font-bold text-slate-900 dark:text-white text-[15px] tracking-tight">
-                              {msg.user?.full_name || 'Unknown User'}
-                            </span>
-                            <span className="text-xs font-semibold text-slate-400">
-                              {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                            </span>
-                          </div>
+
+                      <div className={`relative px-4 py-2.5 text-[14.5px] leading-relaxed rounded-2xl shadow-sm ${isMe 
+                        ? 'bg-[#006065] text-white font-medium rounded-br-sm' 
+                        : 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-800 rounded-bl-sm'}`}>
+                        
+                        {!isMe && showTail && (
+                          <div className="text-[11px] font-bold text-[#006065] dark:text-[#fad503] mb-0.5">{senderName}</div>
                         )}
-                        <p className="text-[15px] text-slate-800 dark:text-slate-200 whitespace-pre-wrap leading-relaxed">
-                          {msg.content}
-                        </p>
+
+                        <div className="whitespace-pre-wrap leading-relaxed">{msg.content}</div>
+
+                        <span className="text-[10px] opacity-70 mt-1 block text-right font-medium tracking-wide">
+                          {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </span>
                       </div>
                     </div>
                   );
@@ -375,13 +373,13 @@ export default function SpaceChat({ spaceId }) {
             <div className="p-4 md:px-6 md:pb-6 bg-white dark:bg-slate-950 pt-2 shrink-0">
               <form 
                 onSubmit={handleSendMessage}
-                className="relative flex items-end gap-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 focus-within:border-indigo-500 focus-within:ring-4 focus-within:ring-indigo-500/20 rounded-2xl overflow-hidden shadow-sm transition-all duration-200"
+                className="relative flex items-center gap-2 bg-slate-100 dark:bg-slate-950 border border-transparent rounded-full px-2 shadow-sm transition-all duration-200 focus-within:ring-2 focus-within:ring-[#006065]"
               >
                 <textarea
                   value={newMessage}
                   onChange={e => setNewMessage(e.target.value)}
                   placeholder={`Message #${activeChannel.name}`}
-                  className="flex-1 bg-transparent border-0 focus:ring-0 resize-none max-h-40 min-h-[56px] py-4 px-4 text-[15px] text-slate-900 dark:text-white placeholder:text-slate-400 font-medium"
+                  className="flex-1 bg-transparent border-0 focus:ring-0 resize-none max-h-40 min-h-[56px] py-4 px-4 text-[15px] text-slate-900 dark:text-white placeholder:text-slate-500 font-medium"
                   rows={1}
                   onKeyDown={e => {
                     if (e.key === 'Enter' && !e.shiftKey) {
@@ -395,15 +393,13 @@ export default function SpaceChat({ spaceId }) {
                   <button 
                     type="submit"
                     disabled={!newMessage.trim()}
-                    className="p-2.5 bg-indigo-600 text-white rounded-xl disabled:opacity-50 disabled:bg-slate-200 disabled:text-slate-400 dark:disabled:bg-slate-800 dark:disabled:text-slate-600 transition-all duration-200 shadow-sm hover:shadow active:scale-95 hover:bg-indigo-700"
+                    className="w-10 h-10 flex items-center justify-center rounded-full bg-[#006065] hover:bg-[#004e52] text-white disabled:opacity-50 disabled:bg-slate-300 transition-all shadow-md active:scale-95 shrink-0 mb-1"
                   >
                     <Send className="w-5 h-5" />
                   </button>
                 </div>
               </form>
-              <p className="text-[11px] text-slate-400 mt-2 text-center hidden md:block font-semibold">
-                <strong>Return</strong> to send, <strong>Shift + Return</strong> to add a new line
-              </p>
+              
             </div>
           </>
         ) : (
