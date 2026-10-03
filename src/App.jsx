@@ -52,6 +52,8 @@ const CliPadCustomPricing = React.lazy(() => import('@/pages/clipad/CliPadCustom
 const CustomRequests = React.lazy(() => import('@/pages/clipad/admin/CustomRequests'));
 
 const IntegrationsHub = React.lazy(() => import('@/pages/clipad/IntegrationsHub'));
+const CaptureInbox = React.lazy(() => import('@/pages/clipad/CaptureInbox'));
+const ContextSessions = React.lazy(() => import('@/pages/clipad/ContextSessions'));
 const SearchHub = React.lazy(() => import('@/pages/clipad/SearchHub'));
 const DecisionReplay = React.lazy(() => import('@/pages/clipad/DecisionReplay'));
 const CommitmentIntelligence = React.lazy(() => import('@/pages/clipad/CommitmentIntelligence'));
