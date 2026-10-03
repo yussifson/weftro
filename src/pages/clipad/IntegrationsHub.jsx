@@ -462,7 +462,7 @@ export default function IntegrationsHub() {
       <div className="max-w-5xl mx-auto px-4 md:px-6 mt-8 space-y-8">
 
         {/* Modern Tab Filters */}
-        <div className="flex items-center overflow-x-auto hide-scrollbar bg-slate-100 dark:bg-slate-800/50 p-1.5 rounded-xl mb-8 w-max">
+        <div className="flex items-center overflow-x-auto hide-scrollbar bg-slate-100 dark:bg-slate-800/50 p-1.5 rounded-xl mb-8 w-full">
           {CATEGORIES.map(cat => {
             const isActive = activeCategory === cat;
             return (
