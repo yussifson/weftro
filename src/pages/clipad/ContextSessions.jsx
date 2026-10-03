@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
-import { Layers, Plus, Search, Archive, Clock, PlayCircle, PauseCircle, CheckCircle2, ChevronRight, Inbox } from 'lucide-react';
+import { Layers, Plus, Search, Archive, Clock, PlayCircle, PauseCircle, CheckCircle2, Inbox } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from '@/components/ui/use-toast';
 import { CONTEXT_SESSION_STATUS, createContextSession, updateContextSession } from '@/lib/clipadContextSessionService';
@@ -12,8 +12,6 @@ export default function ContextSessions() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [selectedSession, setSelectedSession] = useState(null);
-  
-  // New session state
   const [showNew, setShowNew] = useState(false);
   const [newName, setNewName] = useState('');
   const [newDesc, setNewDesc] = useState('');
@@ -27,19 +25,13 @@ export default function ContextSessions() {
       setLoading(true);
       const { data, error } = await supabase
         .from('clipad_v3_context_sessions')
-        .select(\`
-          *,
-          clipad_v3_captures (
-            id, title, capture_type, status, created_at
-          )
-        \`)
+        .select('*, clipad_v3_captures(id, title, capture_type, status, created_at)')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
-        
+
       if (error) throw error;
       setSessions(data || []);
-      
-      // Update selected session if open
+
       if (selectedSession) {
         const updated = data?.find(s => s.id === selectedSession.id);
         if (updated) setSelectedSession(updated);
@@ -59,7 +51,7 @@ export default function ContextSessions() {
         companyId: user.company_id,
         userId: user.id,
         name: newName,
-        description: newDesc
+        description: newDesc,
       });
       toast({ title: 'Success', description: 'Session created.' });
       setShowNew(false);
@@ -75,7 +67,7 @@ export default function ContextSessions() {
     e?.stopPropagation();
     try {
       await updateContextSession(id, { status });
-      toast({ title: 'Status Updated', description: \`Session is now \${status}.\` });
+      toast({ title: 'Status Updated', description: `Session is now ${status}.` });
       fetchSessions();
     } catch (err) {
       toast({ title: 'Error', description: 'Failed to update status.', variant: 'destructive' });
@@ -83,7 +75,7 @@ export default function ContextSessions() {
   };
 
   const getStatusColor = (status) => {
-    switch(status) {
+    switch (status) {
       case CONTEXT_SESSION_STATUS.ACTIVE: return 'bg-emerald-100 text-emerald-700 ring-emerald-500/20';
       case CONTEXT_SESSION_STATUS.PAUSED: return 'bg-amber-100 text-amber-700 ring-amber-500/20';
       case CONTEXT_SESSION_STATUS.COMPLETED: return 'bg-blue-100 text-blue-700 ring-blue-500/20';
@@ -92,7 +84,10 @@ export default function ContextSessions() {
     }
   };
 
-  const filtered = sessions.filter(s => s.name?.toLowerCase().includes(search.toLowerCase()) || s.description?.toLowerCase().includes(search.toLowerCase()));
+  const filtered = sessions.filter(s =>
+    s.name?.toLowerCase().includes(search.toLowerCase()) ||
+    s.description?.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-950 font-sans">
@@ -107,7 +102,7 @@ export default function ContextSessions() {
               <p className="text-sm text-slate-500 dark:text-slate-400">Group related captures and tasks to build organizational intelligence.</p>
             </div>
           </div>
-          <button 
+          <button
             onClick={() => setShowNew(true)}
             className="flex items-center gap-2 px-4 py-2 bg-[#006065] hover:bg-[#004e52] text-white rounded-xl font-bold shadow-md transition-all"
           >
@@ -118,12 +113,12 @@ export default function ContextSessions() {
         <div className="flex gap-4 items-center">
           <div className="relative flex-1 max-w-md">
             <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input 
-              type="text" 
-              placeholder="Search sessions..." 
+            <input
+              type="text"
+              placeholder="Search sessions..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-100 dark:bg-slate-800 border-transparent focus:border-[#006065] focus:bg-white dark:focus:bg-slate-900 rounded-xl text-sm transition-all"
+              className="w-full pl-10 pr-4 py-2.5 bg-slate-100 dark:bg-slate-800 border-transparent focus:border-[#006065] focus:bg-white dark:focus:bg-slate-900 rounded-xl text-sm transition-all outline-none"
             />
           </div>
         </div>
@@ -131,20 +126,20 @@ export default function ContextSessions() {
 
       <div className="flex-1 flex overflow-hidden">
         {/* List */}
-        <div className={\`flex-1 overflow-y-auto p-8 \${selectedSession ? 'hidden lg:block lg:max-w-[400px] border-r border-slate-200 dark:border-slate-800' : ''}\`}>
+        <div className={`flex-1 overflow-y-auto p-8 ${selectedSession ? 'hidden lg:block lg:max-w-[400px] border-r border-slate-200 dark:border-slate-800' : ''}`}>
           {showNew && (
-            <div className="mb-4 p-5 bg-white dark:bg-slate-900 rounded-2xl border border-[#006065]/30 shadow-sm animate-in slide-in-from-top-4">
+            <div className="mb-4 p-5 bg-white dark:bg-slate-900 rounded-2xl border border-[#006065]/30 shadow-sm">
               <h3 className="font-bold text-slate-900 dark:text-white mb-3">Create New Session</h3>
-              <input 
-                type="text" 
-                placeholder="Session Name (e.g., Q4 Planning)" 
+              <input
+                type="text"
+                placeholder="Session Name (e.g., Q4 Planning)"
                 value={newName}
                 onChange={e => setNewName(e.target.value)}
                 autoFocus
                 className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg mb-2 text-sm focus:border-[#006065] outline-none"
               />
-              <textarea 
-                placeholder="Description (optional)" 
+              <textarea
+                placeholder="Description (optional)"
                 value={newDesc}
                 onChange={e => setNewDesc(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg mb-3 text-sm focus:border-[#006065] outline-none resize-none h-20"
@@ -157,7 +152,9 @@ export default function ContextSessions() {
           )}
 
           {loading ? (
-            <div className="flex justify-center p-8"><Layers className="w-6 h-6 text-slate-300 animate-pulse" /></div>
+            <div className="flex justify-center p-8">
+              <Layers className="w-6 h-6 text-slate-300 animate-pulse" />
+            </div>
           ) : filtered.length === 0 && !showNew ? (
             <div className="text-center p-8 text-slate-400">
               <Layers className="w-12 h-12 mx-auto mb-4 opacity-20" />
@@ -167,22 +164,23 @@ export default function ContextSessions() {
           ) : (
             <div className="space-y-3">
               {filtered.map(session => (
-                <div 
-                  key={session.id} 
+                <div
+                  key={session.id}
                   onClick={() => setSelectedSession(session)}
-                  className={\`group p-4 bg-white dark:bg-slate-900 rounded-2xl border transition-all cursor-pointer \${selectedSession?.id === session.id ? 'border-[#006065] shadow-md ring-1 ring-[#006065]/20' : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'}\`}
+                  className={`group p-4 bg-white dark:bg-slate-900 rounded-2xl border transition-all cursor-pointer ${selectedSession?.id === session.id ? 'border-[#006065] shadow-md ring-1 ring-[#006065]/20' : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'}`}
                 >
                   <div className="flex justify-between items-start mb-1">
                     <h3 className="font-bold text-slate-900 dark:text-white truncate pr-2">{session.name}</h3>
-                    <span className={\`px-2 py-0.5 rounded-full text-[10px] font-bold ring-1 shrink-0 \${getStatusColor(session.status)}\`}>
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ring-1 shrink-0 ${getStatusColor(session.status)}`}>
                       {session.status}
                     </span>
                   </div>
-                  {session.description && <p className="text-xs text-slate-500 line-clamp-1 mb-3">{session.description}</p>}
-                  
+                  {session.description && (
+                    <p className="text-xs text-slate-500 line-clamp-1 mb-3">{session.description}</p>
+                  )}
                   <div className="flex items-center justify-between text-xs font-medium text-slate-400 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800">
-                    <span className="flex items-center gap-1.5"><Inbox className="w-3.5 h-3.5"/> {session.clipad_v3_captures?.length || 0} Captures</span>
-                    <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5"/> {format(new Date(session.updated_at), 'MMM d')}</span>
+                    <span className="flex items-center gap-1.5"><Inbox className="w-3.5 h-3.5" /> {session.clipad_v3_captures?.length || 0} Captures</span>
+                    <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> {format(new Date(session.updated_at), 'MMM d')}</span>
                   </div>
                 </div>
               ))}
@@ -197,33 +195,48 @@ export default function ContextSessions() {
               <div className="flex justify-between items-start mb-6">
                 <div>
                   <div className="flex items-center gap-2 mb-2">
-                    <span className={\`px-2.5 py-1 rounded-full text-xs font-bold ring-1 \${getStatusColor(selectedSession.status)}\`}>
+                    <span className={`px-2.5 py-1 rounded-full text-xs font-bold ring-1 ${getStatusColor(selectedSession.status)}`}>
                       {selectedSession.status}
                     </span>
                   </div>
                   <h2 className="text-3xl font-black text-slate-900 dark:text-white mb-2 tracking-tight">{selectedSession.name}</h2>
                   <p className="text-slate-500 font-medium">{selectedSession.description || 'No description provided.'}</p>
                 </div>
-                
-                {/* Actions */}
+
                 <div className="flex gap-2 bg-slate-100 dark:bg-slate-800 p-1.5 rounded-xl">
                   {selectedSession.status !== CONTEXT_SESSION_STATUS.ACTIVE && (
-                    <button onClick={(e) => handleUpdateStatus(selectedSession.id, CONTEXT_SESSION_STATUS.ACTIVE, e)} className="p-2 text-emerald-600 hover:bg-white dark:hover:bg-slate-700 rounded-lg shadow-sm tooltip" title="Mark Active">
+                    <button
+                      onClick={(e) => handleUpdateStatus(selectedSession.id, CONTEXT_SESSION_STATUS.ACTIVE, e)}
+                      className="p-2 text-emerald-600 hover:bg-white dark:hover:bg-slate-700 rounded-lg"
+                      title="Mark Active"
+                    >
                       <PlayCircle className="w-5 h-5" />
                     </button>
                   )}
                   {selectedSession.status === CONTEXT_SESSION_STATUS.ACTIVE && (
-                    <button onClick={(e) => handleUpdateStatus(selectedSession.id, CONTEXT_SESSION_STATUS.PAUSED, e)} className="p-2 text-amber-600 hover:bg-white dark:hover:bg-slate-700 rounded-lg shadow-sm" title="Pause Session">
+                    <button
+                      onClick={(e) => handleUpdateStatus(selectedSession.id, CONTEXT_SESSION_STATUS.PAUSED, e)}
+                      className="p-2 text-amber-600 hover:bg-white dark:hover:bg-slate-700 rounded-lg"
+                      title="Pause Session"
+                    >
                       <PauseCircle className="w-5 h-5" />
                     </button>
                   )}
                   {selectedSession.status !== CONTEXT_SESSION_STATUS.COMPLETED && (
-                    <button onClick={(e) => handleUpdateStatus(selectedSession.id, CONTEXT_SESSION_STATUS.COMPLETED, e)} className="p-2 text-blue-600 hover:bg-white dark:hover:bg-slate-700 rounded-lg shadow-sm" title="Complete Session">
+                    <button
+                      onClick={(e) => handleUpdateStatus(selectedSession.id, CONTEXT_SESSION_STATUS.COMPLETED, e)}
+                      className="p-2 text-blue-600 hover:bg-white dark:hover:bg-slate-700 rounded-lg"
+                      title="Complete Session"
+                    >
                       <CheckCircle2 className="w-5 h-5" />
                     </button>
                   )}
                   {selectedSession.status !== CONTEXT_SESSION_STATUS.ARCHIVED && (
-                    <button onClick={(e) => handleUpdateStatus(selectedSession.id, CONTEXT_SESSION_STATUS.ARCHIVED, e)} className="p-2 text-slate-400 hover:bg-white dark:hover:bg-slate-700 rounded-lg shadow-sm" title="Archive">
+                    <button
+                      onClick={(e) => handleUpdateStatus(selectedSession.id, CONTEXT_SESSION_STATUS.ARCHIVED, e)}
+                      className="p-2 text-slate-400 hover:bg-white dark:hover:bg-slate-700 rounded-lg"
+                      title="Archive"
+                    >
                       <Archive className="w-5 h-5" />
                     </button>
                   )}
@@ -235,17 +248,19 @@ export default function ContextSessions() {
               <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-4 flex items-center gap-2">
                 <Inbox className="w-5 h-5 text-[#006065]" /> Captures in this Session
               </h3>
-              
+
               {selectedSession.clipad_v3_captures?.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {selectedSession.clipad_v3_captures.map(capture => (
-                    <div key={capture.id} className="p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-[#006065]/50 transition-colors cursor-pointer group">
+                    <div key={capture.id} className="p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-[#006065]/50 transition-colors cursor-pointer">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{capture.capture_type}</span>
                         <span className="text-[10px] bg-slate-200 dark:bg-slate-800 px-1.5 py-0.5 rounded text-slate-600 dark:text-slate-300">{capture.status}</span>
                       </div>
                       <h4 className="font-bold text-slate-900 dark:text-white text-sm mb-1 line-clamp-1">{capture.title || 'Untitled'}</h4>
-                      <p className="text-[11px] text-slate-500 flex items-center gap-1"><Clock className="w-3 h-3"/> {format(new Date(capture.created_at), 'MMM d, h:mm a')}</p>
+                      <p className="text-[11px] text-slate-500 flex items-center gap-1">
+                        <Clock className="w-3 h-3" /> {format(new Date(capture.created_at), 'MMM d, h:mm a')}
+                      </p>
                     </div>
                   ))}
                 </div>
