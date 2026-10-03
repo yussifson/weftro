@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
 import { 
@@ -211,7 +211,7 @@ export default function IntegrationAnalytics() {
               value={`${metrics?.activeConnections} / ${metrics?.totalConnections}`} 
               icon={Plug} color="text-[#006065] dark:text-[#fad503]" bg="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:border-[#006065]/30 hover:shadow-lg transition-all" 
               subtitle={metrics?.errorCount > 0 ? `${metrics.errorCount} requiring attention` : 'All systems operational'}
-              subtitleClass={metrics?.errorCount > 0 ? 'text-rose-500' : 'text-emerald-600 dark:text-emerald-400'}
+              subtitleClass={metrics?.errorCount > 0 ? 'text-rose-500' : 'text-[#006065] dark:text-[#00beac]'}
             />
             <MetricCard 
               title="Total Knowledge Items" 
@@ -330,8 +330,8 @@ export default function IntegrationAnalytics() {
                               <AlertTriangle className="w-3.5 h-3.5" /> Error
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400">
-                              <div className="w-2 h-2 rounded-full bg-emerald-500" /> Active
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-[#006065]/20 text-[#004e52] dark:bg-[#006065]/20 dark:text-[#00beac]">
+                              <div className="w-2 h-2 rounded-full bg-[#006065]" /> Active
                             </span>
                           )}
                         </td>
@@ -347,7 +347,7 @@ export default function IntegrationAnalytics() {
                           {sync.error ? (
                             <span className="text-rose-500 text-xs" title={sync.error}>{sync.error}</span>
                           ) : (
-                            <span className="text-xs text-slate-400">—</span>
+                            <span className="text-xs text-slate-400">â€”</span>
                           )}
                         </td>
                       </tr>
@@ -378,3 +378,4 @@ function MetricCard({ title, value, icon: Icon, color, bg, subtitle, subtitleCla
     </div>
   );
 }
+

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
 import { generateText } from '@/lib/cloudflareAI';
@@ -189,7 +189,7 @@ export default function FollowUpEngine({ spaceId, workspaceId }) {
             
             <div className="mt-3 flex justify-end">
               {sentIds.has(nudge.id) ? (
-                <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+                <span className="text-xs font-bold text-[#006065] dark:text-[#00beac] flex items-center gap-1.5">
                   <CheckCheck className="w-4 h-4" /> Nudge Sent
                 </span>
               ) : (
@@ -212,3 +212,4 @@ export default function FollowUpEngine({ spaceId, workspaceId }) {
     </div>
   );
 }
+

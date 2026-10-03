@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
 import { Plus, MoreVertical, Calendar as CalendarIcon, CheckCircle, Clock, Trash2, Edit3, Circle, User } from 'lucide-react';
@@ -8,7 +8,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 const DEFAULT_STAGES = [
   { id: 'todo', label: 'To Do', color: 'bg-slate-500' },
   { id: 'in_progress', label: 'In Progress', color: 'bg-indigo-500' },
-  { id: 'done', label: 'Done', color: 'bg-emerald-500' }
+  { id: 'done', label: 'Done', color: 'bg-[#006065]' }
 ];
 
 export default function TaskBoard({ spaceId }) {
@@ -247,7 +247,7 @@ export default function TaskBoard({ spaceId }) {
                     
                     {task.source === 'ai_generated' && (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-pink-500/10 text-pink-500 text-[10px] font-bold uppercase tracking-wider mb-3">
-                        ✨ AI Generated
+                        âœ¨ AI Generated
                       </span>
                     )}
 
@@ -314,3 +314,4 @@ export default function TaskBoard({ spaceId }) {
     </div>
   );
 }
+

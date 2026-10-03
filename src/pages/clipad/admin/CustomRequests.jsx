@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import {
   Sparkles,
@@ -35,7 +35,7 @@ const STATUS_CONFIG = {
   pending: { label: 'Pending Review', color: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20' },
   contacted: { label: 'Contacted', color: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20' },
   in_progress: { label: 'In Negotiation', color: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20' },
-  closed: { label: 'Closed / Won', color: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' },
+  closed: { label: 'Closed / Won', color: 'bg-[#006065]/10 text-[#006065] dark:text-[#00beac] border-[#006065]/20' },
 };
 
 export default function CustomRequests() {
@@ -415,11 +415,11 @@ export default function CustomRequests() {
 
         <Card className="bg-card border-border shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xs font-bold uppercase tracking-wider text-emerald-500">Won / Closed</CardTitle>
-            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+            <CardTitle className="text-xs font-bold uppercase tracking-wider text-[#006065]">Won / Closed</CardTitle>
+            <CheckCircle2 className="w-4 h-4 text-[#006065]" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400">{closedCount}</div>
+            <div className="text-2xl font-black text-[#006065] dark:text-[#00beac]">{closedCount}</div>
             <p className="text-xs text-muted-foreground mt-1">Converted custom arrangements</p>
           </CardContent>
         </Card>
@@ -547,7 +547,7 @@ export default function CustomRequests() {
                                 onClick={() => handleUpdateStatus(req.id, stKey)}
                                 className="text-xs font-semibold gap-2"
                               >
-                                <span className={`w-2 h-2 rounded-full ${stKey === 'closed' ? 'bg-emerald-500' : stKey === 'in_progress' ? 'bg-purple-500' : stKey === 'contacted' ? 'bg-blue-500' : 'bg-amber-500'}`} />
+                                <span className={`w-2 h-2 rounded-full ${stKey === 'closed' ? 'bg-[#006065]' : stKey === 'in_progress' ? 'bg-purple-500' : stKey === 'contacted' ? 'bg-blue-500' : 'bg-amber-500'}`} />
                                 {stVal.label}
                               </DropdownMenuItem>
                             ))}
@@ -744,3 +744,4 @@ export default function CustomRequests() {
     </div>
   );
 }
+

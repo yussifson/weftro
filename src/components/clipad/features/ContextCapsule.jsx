@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { Sparkles, Brain, FileText, CheckCircle, ShieldAlert, Loader2, RefreshCw } from 'lucide-react';
 import { generateText } from '@/lib/cloudflareAI';
@@ -66,7 +66,7 @@ export default function ContextCapsule({ spaceId, hasFullIntelligence }) {
           decisions.length > 0 ? `Active Decisions: ${decisions.map(d => d.decision_text).join('; ')}` : '',
           blockers.length > 0 ? `Open Blockers: ${blockers.map(b => b.description).join('; ')}` : '',
           tasks.length > 0 ? `Open Tasks: ${tasks.map(t => t.title).join('; ')}` : '',
-          meetings.length > 0 ? `Recent Meetings: ${meetings.map(m => `"${m.title}" — ${m.ai_summary?.substring(0, 100) || 'No summary'}`).join('; ')}` : '',
+          meetings.length > 0 ? `Recent Meetings: ${meetings.map(m => `"${m.title}" â€” ${m.ai_summary?.substring(0, 100) || 'No summary'}`).join('; ')}` : '',
         ].filter(Boolean).join('\n');
 
         try {
@@ -106,7 +106,7 @@ export default function ContextCapsule({ spaceId, hasFullIntelligence }) {
         disabled
       >
         <ShieldAlert className="w-5 h-5 text-indigo-400" />
-        Context Capsules Locked — Upgrade to Pro
+        Context Capsules Locked â€” Upgrade to Pro
       </button>
     );
   }
@@ -157,7 +157,7 @@ export default function ContextCapsule({ spaceId, hasFullIntelligence }) {
           {/* Active Decisions */}
           <div>
             <h4 className="text-sm font-semibold text-slate-700 dark:text-foreground mb-2 flex items-center gap-2">
-              <CheckCircle className="w-4 h-4 text-emerald-500" /> Active Decisions
+              <CheckCircle className="w-4 h-4 text-[#006065]" /> Active Decisions
             </h4>
             {capsule.decisions.length === 0 ? (
               <p className="text-xs text-slate-400">No active decisions recorded.</p>
@@ -178,7 +178,7 @@ export default function ContextCapsule({ spaceId, hasFullIntelligence }) {
               <ShieldAlert className="w-4 h-4 text-amber-500" /> Open Blockers
             </h4>
             {capsule.blockers.length === 0 ? (
-              <p className="text-xs text-slate-400">No active blockers — team is unblocked!</p>
+              <p className="text-xs text-slate-400">No active blockers â€” team is unblocked!</p>
             ) : (
               <ul className="space-y-1.5">
                 {capsule.blockers.map(b => (
@@ -212,3 +212,4 @@ export default function ContextCapsule({ spaceId, hasFullIntelligence }) {
     </div>
   );
 }
+

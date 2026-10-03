@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
@@ -9,11 +9,11 @@ import { RefreshCw,
 } from 'lucide-react';
 
 const GRADE_CONFIG = {
-  A: { color: 'emerald', label: 'Excellent', emoji: 'ðŸ†' },
-  B: { color: 'green', label: 'Good', emoji: 'âœ…' },
-  C: { color: 'amber', label: 'Fair', emoji: 'âš ï¸' },
-  D: { color: 'orange', label: 'Poor', emoji: 'ðŸ”»' },
-  F: { color: 'red', label: 'Critical', emoji: 'ðŸš¨' },
+  A: { color: 'emerald', label: 'Excellent', emoji: 'Ã°Å¸Ââ€ ' },
+  B: { color: 'green', label: 'Good', emoji: 'Ã¢Å“â€¦' },
+  C: { color: 'amber', label: 'Fair', emoji: 'Ã¢Å¡Â Ã¯Â¸Â' },
+  D: { color: 'orange', label: 'Poor', emoji: 'Ã°Å¸â€Â»' },
+  F: { color: 'red', label: 'Critical', emoji: 'Ã°Å¸Å¡Â¨' },
 };
 
 function PulseGauge({ score }) {
@@ -58,7 +58,7 @@ function PulseGauge({ score }) {
         </div>
       </div>
       <div className={`mt-2 px-3 py-1 rounded-full text-xs font-black border bg-${cfg.color}-500/10 border-${cfg.color}-500/30 text-${cfg.color}-400`}>
-        {cfg.emoji} Grade {grade} â€” {cfg.label}
+        {cfg.emoji} Grade {grade} Ã¢â‚¬â€ {cfg.label}
       </div>
     </div>
   );
@@ -199,7 +199,7 @@ Respond in valid JSON only:
           <div className="flex items-start justify-between flex-wrap gap-3">
             <div>
               <h1 className="text-2xl font-black text-foreground">CliPad Pulse</h1>
-              <p className="text-sm text-muted-foreground mt-1">Your organization's vital signs â€” real-time health score built from every signal Orbit tracks.</p>
+              <p className="text-sm text-muted-foreground mt-1">Your organization's vital signs Ã¢â‚¬â€ real-time health score built from every signal Orbit tracks.</p>
               {lastUpdated && <p className="text-xs text-muted-foreground/60 mt-0.5">Last updated: {format(lastUpdated, 'h:mm a')}</p>}
             </div>
             <div className="flex items-center gap-2">
@@ -253,7 +253,7 @@ Respond in valid JSON only:
                 <Clock className="w-8 h-8 text-amber-400 shrink-0" />
                 <div>
                   <p className="font-bold text-foreground">Estimated meeting cost this month: <span className="text-amber-400">${metrics.meetingCostEstimate.toLocaleString()}</span></p>
-                  <p className="text-sm text-muted-foreground">{metrics.meetingsThisMonth} meetings tracked Â· Use Meeting ROI data to identify which ones could be async</p>
+                  <p className="text-sm text-muted-foreground">{metrics.meetingsThisMonth} meetings tracked Ã‚Â· Use Meeting ROI data to identify which ones could be async</p>
                 </div>
               </div>
             )}
@@ -273,8 +273,8 @@ Respond in valid JSON only:
                 )}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   {aiPulse.win_of_the_week && (
-                    <div className="p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/20">
-                      <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider mb-1">Win of the Week</p>
+                    <div className="p-3 rounded-xl bg-[#006065]/5 border border-[#006065]/20">
+                      <p className="text-[10px] font-bold text-[#00beac] uppercase tracking-wider mb-1">Win of the Week</p>
                       <p className="text-xs text-foreground/80">{aiPulse.win_of_the_week}</p>
                     </div>
                   )}
@@ -323,3 +323,4 @@ Respond in valid JSON only:
     </div>
   );
 }
+

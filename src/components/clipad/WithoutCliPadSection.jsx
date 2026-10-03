@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { motion } from 'framer-motion';
 import { AlertCircle, MessageSquare, FileText, Video, RefreshCw, XCircle, Clock } from 'lucide-react';
 
@@ -67,7 +67,7 @@ export default function WithoutCliPadSection() {
                 <div className="bg-blue-500 p-3 rounded-lg rounded-tr-none text-xs text-white">I think Sarah has it on her hard drive...</div>
               </div>
               <div className="flex gap-3 items-start opacity-50">
-                <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center"><FileText className="w-4 h-4 text-emerald-500" /></div>
+                <div className="w-8 h-8 rounded-full bg-[#006065]/20 flex items-center justify-center"><FileText className="w-4 h-4 text-[#006065]" /></div>
                 <div className="bg-slate-100 p-3 rounded-lg rounded-tl-none text-xs text-slate-600">The doc link expired. Can someone re-share?</div>
               </div>
             </div>
@@ -114,3 +114,4 @@ export default function WithoutCliPadSection() {
     </section>
   );
 }
+

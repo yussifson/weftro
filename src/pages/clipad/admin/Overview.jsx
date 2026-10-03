@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { Users, Building2, Layers, Activity, Clock, LogIn, TrendingUp, Video, RefreshCw } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 
 const ACTION_ICONS = {
   login:           { icon: LogIn,      color: 'text-blue-500',    bg: 'bg-blue-50 dark:bg-blue-900/20' },
-  plan_upgrade:    { icon: TrendingUp, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
+  plan_upgrade:    { icon: TrendingUp, color: 'text-[#006065]', bg: 'bg-[#006065]/10 dark:bg-[#004e52]/20' },
   meeting_created: { icon: Activity,   color: 'text-violet-500',  bg: 'bg-violet-50 dark:bg-violet-900/20' },
   video_recorded:  { icon: Video,      color: 'text-orange-500',  bg: 'bg-orange-50 dark:bg-orange-900/20' },
 };
@@ -94,7 +94,7 @@ export default function Overview() {
     { title: "Total Companies", value: stats.companies, icon: Building2, color: "text-blue-500", bg: "bg-blue-50 dark:bg-blue-900/20" },
     { title: "Total Spaces", value: stats.spaces, icon: Layers, color: "text-indigo-500", bg: "bg-indigo-50 dark:bg-indigo-900/20" },
     { title: "Registered Users", value: stats.users, icon: Users, color: "text-purple-500", bg: "bg-purple-50 dark:bg-purple-900/20" },
-    { title: "Total Logins Audited", value: stats.logins, icon: Activity, color: "text-emerald-500", bg: "bg-emerald-50 dark:bg-emerald-900/20" },
+    { title: "Total Logins Audited", value: stats.logins, icon: Activity, color: "text-[#006065]", bg: "bg-[#006065]/10 dark:bg-[#004e52]/20" },
   ];
 
   return (
@@ -134,14 +134,14 @@ export default function Overview() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        {/* Recent System Activity — real data from audit_logs */}
+        {/* Recent System Activity â€” real data from audit_logs */}
         <Card className="flex flex-col">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="flex items-center gap-2 text-base">
               <Activity className="w-4 h-4 text-indigo-500" /> Recent System Activity
             </CardTitle>
-            <div className="flex items-center gap-1 text-[11px] text-emerald-500 font-semibold">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <div className="flex items-center gap-1 text-[11px] text-[#006065] font-semibold">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#006065] animate-pulse" />
               Live
             </div>
           </CardHeader>
@@ -159,10 +159,10 @@ export default function Overview() {
                       <p className="text-sm font-semibold text-foreground capitalize truncate">
                         {log.action?.replace(/_/g, ' ')}
                         {log.user_name && log.user_name !== 'Unknown' && (
-                          <span className="font-normal text-muted-foreground"> · {log.user_name}</span>
+                          <span className="font-normal text-muted-foreground"> Â· {log.user_name}</span>
                         )}
                       </p>
-                      <p className="text-xs text-muted-foreground truncate">{log.details || log.user_email || '—'}</p>
+                      <p className="text-xs text-muted-foreground truncate">{log.details || log.user_email || 'â€”'}</p>
                       <p className="text-[10px] text-white/60 mt-0.5 flex items-center gap-1">
                         <Clock className="w-3 h-3" />
                         {formatDistanceToNow(new Date(log.created_at), { addSuffix: true })}
@@ -226,3 +226,4 @@ export default function Overview() {
     </div>
   );
 }
+

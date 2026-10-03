@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/api/supabaseClient';
 import { getLimit, hasFeature } from '@/lib/clipadPricing';
@@ -31,7 +31,7 @@ function StatCard({ icon: Icon, value, label, trend }) {
         </div>
         {trend && (
           <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm ${trend > 0 ? 'text-[#006065] bg-[#006065]/10 border border-[#006065]/20' : 'text-slate-600 bg-slate-100 border border-slate-200'}`}>
-            {trend > 0 ? '↑' : '↓'} {Math.abs(trend)}%
+            {trend > 0 ? 'â†‘' : 'â†“'} {Math.abs(trend)}%
           </span>
         )}
       </div>
@@ -278,7 +278,7 @@ export default function CliPadDashboard() {
           status: 'active',
           meeting_type: 'instant'
         });
-      } catch (_) { /* db insert failed — meeting still works */ }
+      } catch (_) { /* db insert failed â€” meeting still works */ }
 
       navigate(`/join/${targetRoomName}` + (spaceId ? `?spaceId=${spaceId}` : ''));
     } catch (err) {
@@ -318,9 +318,9 @@ export default function CliPadDashboard() {
 
   const getGreetingEmoji = () => {
     const emojis = [
-      '👋', '✨', '🚀', '🌟', '🎉', '💡', '🔥', '🙌', '😎', '☕',
-      '💪', '🎯', '🌈', '⚡', '🎈', '😊', '🤩', '🌺', '🍀', '🏆',
-      '💎', '🌻', '🤝', '🦋', '🥳', '🙌', '🤠', '🔮', '🎊', '🥰', '✌️'
+      'ðŸ‘‹', 'âœ¨', 'ðŸš€', 'ðŸŒŸ', 'ðŸŽ‰', 'ðŸ’¡', 'ðŸ”¥', 'ðŸ™Œ', 'ðŸ˜Ž', 'â˜•',
+      'ðŸ’ª', 'ðŸŽ¯', 'ðŸŒˆ', 'âš¡', 'ðŸŽˆ', 'ðŸ˜Š', 'ðŸ¤©', 'ðŸŒº', 'ðŸ€', 'ðŸ†',
+      'ðŸ’Ž', 'ðŸŒ»', 'ðŸ¤', 'ðŸ¦‹', 'ðŸ¥³', 'ðŸ™Œ', 'ðŸ¤ ', 'ðŸ”®', 'ðŸŽŠ', 'ðŸ¥°', 'âœŒï¸'
     ];
     const day = new Date().getDate(); // 1-31
     return emojis[(day - 1) % emojis.length];
@@ -440,7 +440,7 @@ export default function CliPadDashboard() {
         {/* Main content grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-10 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-300">
 
-          {/* Left — Spaces + Videos */}
+          {/* Left â€” Spaces + Videos */}
           <div className="lg:col-span-2 space-y-10">
 
             {/* Spaces */}
@@ -462,7 +462,7 @@ export default function CliPadDashboard() {
                 <div className="p-10 rounded-2xl border border-dashed border-black/10 dark:border-white/10 bg-white/50 dark:bg-white/5 backdrop-blur-sm text-center">
                   <Layers className="w-12 h-12 text-slate-500 dark:text-slate-400 mx-auto mb-4" />
                   <p className="text-sm font-medium text-slate-500 dark:text-slate-400 dark:text-muted-foreground">No spaces yet.</p>
-                  <button onClick={() => navigate('/spaces')} className="mt-4 text-sm font-semibold text-[#006065] dark:text-[#006065] hover:text-[#006065] dark:text-[#006065]/80 transition-colors">Create your first space →</button>
+                  <button onClick={() => navigate('/spaces')} className="mt-4 text-sm font-semibold text-[#006065] dark:text-[#006065] hover:text-[#006065] dark:text-[#006065]/80 transition-colors">Create your first space â†’</button>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
@@ -484,7 +484,7 @@ export default function CliPadDashboard() {
                 <div className="p-10 rounded-2xl border border-dashed border-black/10 dark:border-white/10 bg-white/50 dark:bg-white/5 backdrop-blur-sm text-center">
                   <Camera className="w-12 h-12 text-slate-500 dark:text-slate-400 mx-auto mb-4" />
                   <p className="text-sm font-medium text-slate-500 dark:text-slate-400 dark:text-muted-foreground">No recordings yet.</p>
-                  <button onClick={() => navigate('/record')} className="mt-4 text-sm font-semibold text-[#006065] dark:text-[#006065] hover:text-[#006065] dark:text-[#006065]/80 transition-colors">Record your first async video →</button>
+                  <button onClick={() => navigate('/record')} className="mt-4 text-sm font-semibold text-[#006065] dark:text-[#006065] hover:text-[#006065] dark:text-[#006065]/80 transition-colors">Record your first async video â†’</button>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
@@ -494,7 +494,7 @@ export default function CliPadDashboard() {
             </div>
           </div>
 
-          {/* Right — Action Items + AI Insight + Recent Meetings */}
+          {/* Right â€” Action Items + AI Insight + Recent Meetings */}
           <div className="space-y-8">
 
             {/* My Action Items */}
@@ -626,3 +626,4 @@ export default function CliPadDashboard() {
     </div>
   );
 }
+

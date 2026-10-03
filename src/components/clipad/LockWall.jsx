@@ -65,7 +65,7 @@ export default function LockWall({ type = 'manual', unlockAt = null, title = 'th
   return (
     <div className="min-h-[100dvh] w-full bg-slate-50 dark:bg-[#006065] flex items-center justify-center p-6 relative overflow-hidden">
       {/* Premium Background Effects */}
-      <div className={`absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full blur-[100px] pointer-events-none ${isNotFound ? 'bg-rose-500/10 dark:bg-rose-500/10' : 'bg-emerald-500/10 dark:bg-emerald-500/10'}`} />
+      <div className={`absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full blur-[100px] pointer-events-none ${isNotFound ? 'bg-rose-500/10 dark:bg-rose-500/10' : 'bg-[#006065]/10 dark:bg-[#006065]/10'}`} />
       <div className={`absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full blur-[100px] pointer-events-none ${isNotFound ? 'bg-orange-500/10 dark:bg-orange-500/10' : 'bg-teal-500/10 dark:bg-teal-500/10'}`} />
       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03] dark:opacity-[0.05] pointer-events-none mix-blend-overlay" />
 
@@ -74,12 +74,12 @@ export default function LockWall({ type = 'manual', unlockAt = null, title = 'th
           
           {/* Icon */}
           <div className="relative mb-8 group">
-            <div className={`absolute inset-0 rounded-full blur-xl group-hover:blur-2xl transition-all duration-500 animate-pulse ${isNotFound ? 'bg-rose-500/20 dark:bg-rose-500/30' : 'bg-emerald-500/20 dark:bg-emerald-500/30'}`} />
+            <div className={`absolute inset-0 rounded-full blur-xl group-hover:blur-2xl transition-all duration-500 animate-pulse ${isNotFound ? 'bg-rose-500/20 dark:bg-rose-500/30' : 'bg-[#006065]/20 dark:bg-[#006065]/30'}`} />
             <div className="relative w-24 h-24 rounded-full bg-gradient-to-tr from-white to-slate-100 dark:from-slate-800 dark:to-slate-700 border border-slate-200 dark:border-slate-600 flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-500">
               {isScheduled ? (
                 <Clock className="w-10 h-10 text-amber-500" />
               ) : (
-                <Lock className={`w-10 h-10 ${isNotFound ? 'text-rose-500 dark:text-rose-400' : 'text-emerald-500 dark:text-emerald-400'}`} />
+                <Lock className={`w-10 h-10 ${isNotFound ? 'text-rose-500 dark:text-rose-400' : 'text-[#006065] dark:text-[#00beac]'}`} />
               )}
             </div>
           </div>
@@ -113,15 +113,15 @@ export default function LockWall({ type = 'manual', unlockAt = null, title = 'th
 
           {/* Private space note */}
           {isPrivate && (
-            <div className="w-full bg-emerald-50/50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 rounded-2xl p-5 mb-8 text-left">
-              <p className="text-[10px] text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.2em] font-bold mb-3">How to get access</p>
+            <div className="w-full bg-[#006065]/10/50 dark:bg-[#006065]/10 border border-emerald-100 dark:border-[#006065]/20 rounded-2xl p-5 mb-8 text-left">
+              <p className="text-[10px] text-[#006065] dark:text-[#00beac] uppercase tracking-[0.2em] font-bold mb-3">How to get access</p>
               <ul className="text-sm text-emerald-900/80 dark:text-emerald-200 space-y-2.5 font-medium">
                 <li className="flex items-start gap-2.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 mt-1.5 shrink-0" /> 
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#006065] dark:bg-emerald-400 mt-1.5 shrink-0" /> 
                   Ask the space owner to add you as a member
                 </li>
                 <li className="flex items-start gap-2.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 mt-1.5 shrink-0" /> 
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#006065] dark:bg-emerald-400 mt-1.5 shrink-0" /> 
                   Once added, refresh this page
                 </li>
               </ul>
@@ -138,7 +138,7 @@ export default function LockWall({ type = 'manual', unlockAt = null, title = 'th
                   value={passcode}
                   onChange={e => { setPasscode(e.target.value); setPasscodeError(''); }}
                   placeholder="Enter access key..."
-                  className="flex-1 px-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm outline-none focus:border-emerald-500"
+                  className="flex-1 px-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm outline-none focus:border-[#006065]"
                 />
                 <button
                   onClick={handleUnlockWithKey}
@@ -169,4 +169,5 @@ export default function LockWall({ type = 'manual', unlockAt = null, title = 'th
     </div>
   );
 }
+
 

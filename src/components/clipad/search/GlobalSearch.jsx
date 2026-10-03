@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+﻿import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import {
   Search, Sparkles, FileText, CheckCircle, MessageSquare, Calendar, Video,
@@ -15,11 +15,11 @@ import { isAdmin, isSpaceman } from '@/lib/constants';
 import { useToast } from '@/components/ui/use-toast';
 import ThinkingAccordion, { parseThinking } from '@/components/chat/ThinkingAccordion';
 
-// ─── Type metadata ─────────────────────────────────────────────────────────────
+// â”€â”€â”€ Type metadata â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const TYPE_META = {
   meeting:     { icon: Calendar,      label: 'Meeting',   color: 'text-blue-700 dark:text-blue-400',       bg: 'bg-blue-100 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700/50',     route: (id) => `/meetings/${id}` },
   video:       { icon: Video,         label: 'Video',     color: 'text-purple-700 dark:text-purple-400',   bg: 'bg-purple-100 dark:bg-purple-900/30 border border-purple-200 dark:border-purple-700/50', route: (id) => `/watch/${id}` },
-  doc:         { icon: FileText,      label: 'Doc',       color: 'text-emerald-700 dark:text-emerald-400', bg: 'bg-emerald-100 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-700/50', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=docs&docId=${id}` : null },
+  doc:         { icon: FileText,      label: 'Doc',       color: 'text-[#004e52] dark:text-[#00beac]', bg: 'bg-[#006065]/20 dark:bg-[#004e52]/30 border border-emerald-200 dark:border-emerald-700/50', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=docs&docId=${id}` : null },
   task:        { icon: CheckCircle,   label: 'Task',      color: 'text-amber-700 dark:text-amber-400',     bg: 'bg-amber-100 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700/50',   route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=tasks&taskId=${id}` : null },
   message:     { icon: MessageSquare, label: 'Chat',      color: 'text-indigo-700 dark:text-indigo-400',   bg: 'bg-indigo-100 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-700/50', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=chat` : null },
   decision:    { icon: ShieldAlert,   label: 'Decision',  color: 'text-rose-700 dark:text-rose-400',       bg: 'bg-rose-100 dark:bg-rose-900/30 border border-rose-200 dark:border-rose-700/50',     route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=decisions` : null },
@@ -55,7 +55,7 @@ const matchesFilter = (itemType, filterId) => {
   return allowed ? allowed.includes(itemType) : itemType === filterId;
 };
 
-// ─── Smart relevance scoring ─────────────────────────────────────────────────
+// â”€â”€â”€ Smart relevance scoring â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function scoreResult(result, query) {
   const q = query.toLowerCase();
   const label = (result.label || '').toLowerCase();
@@ -79,7 +79,7 @@ function scoreResult(result, query) {
   return score;
 }
 
-// ─── Module-level cache for space ID lookups (60s TTL) ──────────────────────
+// â”€â”€â”€ Module-level cache for space ID lookups (60s TTL) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const _spaceIdCache = new Map();
 
 async function fetchAccessibleSpaceIds(user) {
@@ -102,7 +102,7 @@ async function fetchAccessibleSpaceIds(user) {
   return ids;
 }
 
-// ─── People search ─────────────────────────────────────────────────────────
+// â”€â”€â”€ People search â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function searchPeople(query, companyId) {
   const term = `%${query}%`;
   const { data } = await supabase
@@ -116,14 +116,14 @@ async function searchPeople(query, companyId) {
     id: p.id,
     space_id: null,
     label: p.full_name || p.email,
-    snippet: [p.role, p.department].filter(Boolean).join(' · ') || p.email,
+    snippet: [p.role, p.department].filter(Boolean).join(' Â· ') || p.email,
     email: p.email,
     avatar_url: p.avatar_url,
     department: p.department,
   }));
 }
 
-// ─── Suggestion config ───────────────────────────────────────────────────────
+// â”€â”€â”€ Suggestion config â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const DEFAULT_SUGGESTIONS = [
   { key: '1', text: 'What decisions were made last week?',   type: 'decision', icon: ShieldAlert,   color: 'text-rose-700 dark:text-rose-400',    bg: 'bg-rose-100 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800/60' },
   { key: '2', text: 'Show me overdue tasks across spaces',   type: 'task',     icon: CheckCircle,   color: 'text-amber-700 dark:text-amber-400',  bg: 'bg-amber-100 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800/60' },
@@ -133,7 +133,7 @@ const DEFAULT_SUGGESTIONS = [
   { key: '6', text: 'Summarize key updates from standups',   type: 'standup',  icon: Zap,           color: 'text-teal-700 dark:text-teal-400',    bg: 'bg-teal-100 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800/60' },
 ];
 
-// ─── Highlight matched text ──────────────────────────────────────────────────
+// â”€â”€â”€ Highlight matched text â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function Highlight({ text, query }) {
   if (!text || !query) return <span>{text}</span>;
   const idx = text.toLowerCase().indexOf(query.toLowerCase());
@@ -147,7 +147,7 @@ function Highlight({ text, query }) {
   );
 }
 
-// ─── Person activity card ─────────────────────────────────────────────────────
+// â”€â”€â”€ Person activity card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function PersonCard({ person, navigate, setIsOpen }) {
   const [activity, setActivity] = useState(null);
   useEffect(() => {
@@ -178,7 +178,7 @@ function PersonCard({ person, navigate, setIsOpen }) {
         </div>
         <span className="ml-auto text-[10px] font-bold text-violet-600 dark:text-violet-400 bg-violet-100 dark:bg-violet-900/50 px-2 py-0.5 rounded-full border border-violet-200 dark:border-violet-700">Person</span>
       </div>
-      {!activity && <div className="text-[11px] text-slate-400 animate-pulse">Loading activity…</div>}
+      {!activity && <div className="text-[11px] text-slate-400 animate-pulse">Loading activityâ€¦</div>}
       {activity && (
         <div className="grid grid-cols-3 gap-2 text-[11px]">
           <div>
@@ -199,7 +199,7 @@ function PersonCard({ person, navigate, setIsOpen }) {
   );
 }
 
-// ─── Main Component ───────────────────────────────────────────────────────────
+// â”€â”€â”€ Main Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function GlobalSearch() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -238,7 +238,7 @@ export default function GlobalSearch() {
     if (route) { navigate(route); setIsOpen(false); }
   }, [navigate]);
 
-  // ── Load space names + integration suggestions ─────────────────────────────
+  // â”€â”€ Load space names + integration suggestions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   useEffect(() => {
     if (!user?.company_id) return;
     supabase.from('clipad_spaces').select('id, name').eq('company_id', user.company_id).then(({ data }) => {
@@ -258,13 +258,13 @@ export default function GlobalSearch() {
         if (activeProviders.includes('jira') || activeProviders.includes('linear'))
           newSuggestions.unshift({ key: 'dyn2', text: 'Show me my active Jira tickets', type: 'integration', icon: CheckCircle, color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-100 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/60' });
         if (activeProviders.includes('slack') || activeProviders.includes('ms_teams'))
-          newSuggestions.unshift({ key: 'dyn3', text: 'Summarize recent Slack messages', type: 'message', icon: MessageSquare, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-100 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/60' });
+          newSuggestions.unshift({ key: 'dyn3', text: 'Summarize recent Slack messages', type: 'message', icon: MessageSquare, color: 'text-[#006065] dark:text-[#00beac]', bg: 'bg-[#006065]/20 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/60' });
         const finalSuggestions = newSuggestions.slice(0, 6).map((item, i) => ({ ...item, key: (i + 1).toString() }));
         setDynamicSuggestions(finalSuggestions);
       });
   }, [user]);
 
-  // ── Global Keyboard (⌘K, Esc, arrows) ────────────────────────────────────
+  // â”€â”€ Global Keyboard (âŒ˜K, Esc, arrows) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   useEffect(() => {
     const onKey = (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
@@ -308,7 +308,7 @@ export default function GlobalSearch() {
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
-  // ── Core DB search (no AI) — called on debounce ────────────────────────────
+  // â”€â”€ Core DB search (no AI) â€” called on debounce â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const runDbSearch = useCallback(async (q, limit = 6) => {
     if (!q.trim() || !user?.company_id) return [];
     const accessibleSpaceIds = await fetchAccessibleSpaceIds(user);
@@ -389,7 +389,7 @@ export default function GlobalSearch() {
       ...(decisions || []).map(d => ({ type: 'decision', id: d.id, space_id: d.team_space_id, label: 'Decision', snippet: d.decision_text?.substring(0, 200), created_at: d.created_at })),
       ...(videos || []).map(v => ({ type: 'video', id: v.id, space_id: v.space_id, label: v.title || 'Video', snippet: v.ai_summary?.substring(0, 200), created_at: v.created_at })),
       ...(blockers || []).map(b => ({ type: 'blocker', id: b.id, space_id: b.team_space_id, label: 'Blocker', snippet: b.description?.substring(0, 200), created_at: b.detected_at })),
-      ...(standups || []).map(s => ({ type: 'standup', id: s.id, space_id: s.space_id, label: `Standup — ${s.user_name || 'Team member'} (${s.created_at?.slice(0, 10)})`, snippet: s.today?.substring(0, 200), created_at: s.created_at })),
+      ...(standups || []).map(s => ({ type: 'standup', id: s.id, space_id: s.space_id, label: `Standup â€” ${s.user_name || 'Team member'} (${s.created_at?.slice(0, 10)})`, snippet: s.today?.substring(0, 200), created_at: s.created_at })),
       ...(integrations || []).map(i => ({ type: 'integration', id: i.id, space_id: null, label: `[${i.provider}] ${i.title}`, snippet: i.content?.substring(0, 200), created_at: i.updated_at })),
     ];
 
@@ -397,7 +397,7 @@ export default function GlobalSearch() {
     return raw.sort((a, b) => scoreResult(b, q) - scoreResult(a, q));
   }, [user]);
 
-  // ── Live debounced search (fires 300ms after typing) ──────────────────────
+  // â”€â”€ Live debounced search (fires 300ms after typing) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   useEffect(() => {
     if (!isOpen) return;
     const q = query.trim();
@@ -427,7 +427,7 @@ export default function GlobalSearch() {
     return () => clearTimeout(debounceRef.current);
   }, [query, isOpen, lastQuery, runDbSearch]);
 
-  // ── AI Synthesis — only fires on explicit Enter ────────────────────────────
+  // â”€â”€ AI Synthesis â€” only fires on explicit Enter â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const handleSearch = useCallback(async (forcedQuery, aiOnly = false) => {
     const q = (forcedQuery || query).trim();
     if (!q) return;
@@ -476,7 +476,7 @@ export default function GlobalSearch() {
       const keywordResultsContext = currentResults.length > 0
         ? `\n\nKEYWORD SEARCH RESULTS (${currentResults.length} records matched "${q}"):\n` +
           currentResults.map(r => `[${r.type.toUpperCase()} ID:${r.id}] ${r.label}: ${r.snippet || ''}`).join('\n')
-        : `\n\nKEYWORD SEARCH: No records matched "${q}" directly — check org context.`;
+        : `\n\nKEYWORD SEARCH: No records matched "${q}" directly â€” check org context.`;
 
       const now = new Date();
       const timeContext = `CURRENT DATE & TIME: ${now.toLocaleDateString()} ${now.toLocaleTimeString()} (${Intl.DateTimeFormat().resolvedOptions().timeZone})`;
@@ -527,7 +527,7 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
     }
   }, [query, user, lastAiQuery, aiAnswer, isSynthesizing, results, runDbSearch]);
 
-  // ── Load More ─────────────────────────────────────────────────────────────
+  // â”€â”€ Load More â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const handleLoadMore = useCallback(async () => {
     const q = query.trim();
     if (!q) return;
@@ -544,7 +544,7 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
   const filteredResults = useMemo(() => results.filter(r => matchesFilter(r.type, selectedFilter)), [results, selectedFilter]);
   const peopleResults = useMemo(() => results.filter(r => r.type === 'person'), [results]);
 
-  // ── Keyboard handler inside input ────────────────────────────────────────
+  // â”€â”€ Keyboard handler inside input â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const handleKeyDown = (e) => {
     if (!hasSearched && !query && ['1','2','3','4','5','6'].includes(e.key)) {
       const idx = parseInt(e.key, 10) - 1;
@@ -583,9 +583,9 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
             <Search className="w-[18px] h-[18px] shrink-0 text-white/60" />
             <div className="w-[1px] h-5 bg-white/20 mx-3 shrink-0" />
             <span className="text-[14px] font-medium flex-1 text-left whitespace-nowrap overflow-hidden text-ellipsis tracking-tight text-white/50 group-hover:text-white/70">
-              Search people, docs, tasks…
+              Search people, docs, tasksâ€¦
             </span>
-            <kbd className="text-[10px] font-mono bg-white/10 px-1.5 py-0.5 rounded text-white/50 border border-white/15 shrink-0 hidden lg:block tracking-wider font-bold shadow-sm">⌘K</kbd>
+            <kbd className="text-[10px] font-mono bg-white/10 px-1.5 py-0.5 rounded text-white/50 border border-white/15 shrink-0 hidden lg:block tracking-wider font-bold shadow-sm">âŒ˜K</kbd>
           </button>
         </div>
         <button onClick={() => setIsOpen(true)} className="md:hidden p-2 text-white/60 hover:text-white transition-colors active:scale-95 rounded-lg hover:bg-white/10" title="Search">
@@ -868,8 +868,8 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
           <div className="px-4 py-2 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex items-center justify-between shrink-0">
              <div className="flex items-center gap-4">
                 <div className="flex items-center gap-1.5 text-[10px] text-slate-400 font-medium">
-                  <kbd className="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-300 font-mono">↑</kbd>
-                  <kbd className="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-300 font-mono">↓</kbd>
+                  <kbd className="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-300 font-mono">â†‘</kbd>
+                  <kbd className="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-300 font-mono">â†“</kbd>
                   <span>to navigate</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-[10px] text-slate-400 font-medium">
@@ -892,3 +892,4 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
     document.body
   );
 };
+

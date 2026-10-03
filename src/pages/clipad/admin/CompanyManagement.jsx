@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { useNavigate } from 'react-router-dom';
 import { useImpersonation } from '@/lib/ImpersonationContext';
@@ -119,7 +119,7 @@ export default function CompanyManagement() {
                 <TableCell className="font-medium">{company.name}</TableCell>
                 <TableCell className="text-muted-foreground">{company.subdomain || 'N/A'}</TableCell>
                 <TableCell>
-                  <span className={`px-2 py-1 rounded-full text-xs font-semibold ${company.status === 'suspended' ? 'bg-red-500/10 text-red-500' : 'bg-emerald-500/10 text-emerald-500'}`}>
+                  <span className={`px-2 py-1 rounded-full text-xs font-semibold ${company.status === 'suspended' ? 'bg-red-500/10 text-red-500' : 'bg-[#006065]/10 text-[#006065]'}`}>
                     {company.status || 'Active'}
                   </span>
                 </TableCell>
@@ -130,7 +130,7 @@ export default function CompanyManagement() {
                 </TableCell>
                 <TableCell>
                   <DropdownMenu>
-                    <DropdownMenuTrigger className="capitalize px-3 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-md text-xs font-bold hover:bg-emerald-500/20 transition-colors cursor-pointer border-none outline-none focus:ring-0">
+                    <DropdownMenuTrigger className="capitalize px-3 py-1 bg-[#006065]/10 text-[#006065] dark:text-[#00beac] rounded-md text-xs font-bold hover:bg-[#006065]/20 transition-colors cursor-pointer border-none outline-none focus:ring-0">
                       {company.clipad_pricing_tags?.name || 'Free Tier'}
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
@@ -179,3 +179,4 @@ export default function CompanyManagement() {
     </div>
   );
 }
+

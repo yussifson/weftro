@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { getSmartMoments, confirmSmartMoment, dismissSmartMoment, updateSmartMoment, convertMomentToMemory, MOMENT_TYPES, MOMENT_STATUS } from '@/lib/clipadSmartMomentService';
 import { extractSmartMomentsFromTranscript } from '@/lib/clipadTranscriptIntelligence';
 import { Zap, CheckCircle2, XCircle, Edit3, Clock, Sparkles, AlertCircle, ArrowUpRight, Play, RefreshCw, Check, Shield } from 'lucide-react';
@@ -75,7 +75,7 @@ export default function SmartMomentTimeline({ companyId, meetingId, videoId, tra
   const getMomentBadgeColor = (type) => {
     switch (type) {
       case MOMENT_TYPES.DECISION:
-        return 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20';
+        return 'bg-[#006065]/10 text-[#006065] dark:text-[#00beac] border-[#006065]/20';
       case MOMENT_TYPES.ACTION:
       case MOMENT_TYPES.COMMITMENT:
         return 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/20';
@@ -182,14 +182,14 @@ export default function SmartMomentTimeline({ companyId, meetingId, videoId, tra
                   <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800 text-xs">
                     <div className="flex items-center gap-2">
                       {isConfirmed ? (
-                        <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold text-[11px]">
+                        <span className="flex items-center gap-1 text-[#006065] dark:text-[#00beac] font-semibold text-[11px]">
                           <CheckCircle2 className="w-3.5 h-3.5" /> Confirmed & Synced to Memory
                         </span>
                       ) : (
                         <div className="flex items-center gap-1.5">
                           <button
                             onClick={() => handleConfirm(moment.id)}
-                            className="flex items-center gap-1 px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500 hover:text-white text-[11px] font-medium transition-colors"
+                            className="flex items-center gap-1 px-2.5 py-1 rounded bg-[#006065]/10 text-[#006065] hover:bg-[#006065] hover:text-white text-[11px] font-medium transition-colors"
                           >
                             <Check className="w-3 h-3" /> Confirm
                           </button>
@@ -270,3 +270,4 @@ export default function SmartMomentTimeline({ companyId, meetingId, videoId, tra
     </div>
   );
 }
+

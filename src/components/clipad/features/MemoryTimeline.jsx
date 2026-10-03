@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { generateText } from '@/lib/cloudflareAI';
 import { Brain, FileText, Video, GitBranch, ArrowRight, MessageSquare, AlertTriangle, CheckCircle, Loader2, Network } from 'lucide-react';
@@ -80,8 +80,8 @@ export default function MemoryTimeline({ topic, workspaceId }) {
           title: d.decision_text.substring(0, 80),
           date: new Date(d.created_at),
           icon: GitBranch,
-          color: 'text-emerald-500',
-          bg: 'bg-emerald-50 dark:bg-emerald-500/10',
+          color: 'text-[#006065]',
+          bg: 'bg-[#006065]/10 dark:bg-[#006065]/10',
           description: d.rationale || `Decision made regarding "${topic}".`,
           badge: d.status,
           sourceId: d.id,
@@ -228,3 +228,4 @@ export default function MemoryTimeline({ topic, workspaceId }) {
     </div>
   );
 }
+

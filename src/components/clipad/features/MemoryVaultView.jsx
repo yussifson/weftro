@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { getMemories, supersedeMemory, getMemoryProvenance, MEMORY_TIERS, MEMORY_STATUS } from '@/lib/clipadMemoryService';
 import { Database, Shield, Brain, Layers, Tag, CheckCircle2, AlertTriangle, History, ExternalLink, RefreshCw, Filter, Search, Sparkles } from 'lucide-react';
@@ -166,7 +166,7 @@ export default function MemoryVaultView({ companyId, userId, spaceId }) {
                             ? 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300'
                             : isTeam
                             ? 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300'
-                            : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
+                            : 'bg-[#006065]/20 text-[#004e52] dark:bg-emerald-950 dark:text-emerald-300'
                         }`}
                       >
                         {mem.memory_tier}
@@ -315,3 +315,4 @@ export default function MemoryVaultView({ companyId, userId, spaceId }) {
     </div>
   );
 }
+

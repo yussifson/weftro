@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+﻿import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
@@ -259,14 +259,14 @@ export default function DecisionLedger() {
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-2 mb-2">
                         <span className="text-xs font-bold text-[#006065] dark:text-[#fad503] uppercase tracking-wider bg-[#006065]/10 dark:bg-[#006065]/30 px-2 py-0.5 rounded-md">
-                          {item._type === 'native' ? 'ðŸ¤– AI-Detected' : 'ðŸ“„ Knowledge Source'}
+                          {item._type === 'native' ? 'Ã°Å¸Â¤â€“ AI-Detected' : 'Ã°Å¸â€œâ€ž Knowledge Source'}
                         </span>
                         <span className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
                           <Calendar className="w-3 h-3" /> {format(new Date(item.imported_at), 'MMM d, yyyy')}
                         </span>
                         {item.outcome_status && (
                           <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${
-                            item.outcome_status === 'successful' ? 'bg-[#006065]/10 dark:bg-[#006065]/30 border-[#006065]/30 dark:border-[#fad503]/30 text-emerald-400' :
+                            item.outcome_status === 'successful' ? 'bg-[#006065]/10 dark:bg-[#006065]/30 border-[#006065]/30 dark:border-[#fad503]/30 text-[#00beac]' :
                             item.outcome_status === 'unsuccessful' ? 'bg-red-500/10 border-red-500/30 text-red-400' :
                             item.outcome_status === 'partial' ? 'bg-[#006065]/10 dark:bg-[#006065]/30 border-amber-500/30 text-amber-400' :
                             'bg-[#006065]/10 dark:bg-[#006065]/30 border-blue-500/30 text-blue-400'
@@ -353,3 +353,4 @@ export default function DecisionLedger() {
     </div>
   );
 }
+

@@ -443,7 +443,7 @@ return <LockWall type={accessDenied.type} unlockAt={accessDenied.unlockAt || nul
           </button>
           <div className="flex items-center gap-2">
             <span className="text-xs text-slate-500 dark:text-muted-foreground flex items-center gap-1 font-medium"><Eye className="w-3.5 h-3.5" /> {views} views</span>
-            <button onClick={copyShareLink} className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm transition-all border ${copied ? 'text-emerald-600 dark:text-emerald-400 border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/10' : 'text-slate-900 dark:text-white border-black/5 dark:border-white/5 bg-white/95 dark:bg-[#202c33]/95 hover:bg-black/5 dark:hover:bg-white/10'}`}>
+            <button onClick={copyShareLink} className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm transition-all border ${copied ? 'text-[#006065] dark:text-[#00beac] border-[#006065]/30 bg-[#006065]/10 dark:bg-[#006065]/10' : 'text-slate-900 dark:text-white border-black/5 dark:border-white/5 bg-white/95 dark:bg-[#202c33]/95 hover:bg-black/5 dark:hover:bg-white/10'}`}>
               {copied ? <><Check className="w-3.5 h-3.5" /> Copied!</> : <><Share2 className="w-3.5 h-3.5" /> Share</>}
             </button>
           </div>
@@ -891,5 +891,6 @@ return <LockWall type={accessDenied.type} unlockAt={accessDenied.unlockAt || nul
     </>
   );
 }
+
 
 

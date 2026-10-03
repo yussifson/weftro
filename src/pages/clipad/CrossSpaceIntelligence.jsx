@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
@@ -64,7 +64,7 @@ function CollisionCard({ type, items, spaceNames, onViewSpace }) {
   );
 }
 
-// Simple keyword-based similarity â€” no external ML needed
+// Simple keyword-based similarity Ã¢â‚¬â€ no external ML needed
 function computeSimilarity(a, b) {
   const tokenize = (str) =>
     (str || '').toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(w => w.length > 3);
@@ -288,7 +288,7 @@ Respond in valid JSON only:
                   aiSummary.org_silos_risk === 'critical' ? 'bg-red-500/10 text-red-400' :
                   aiSummary.org_silos_risk === 'high' ? 'bg-orange-500/10 text-orange-400' :
                   aiSummary.org_silos_risk === 'medium' ? 'bg-amber-500/10 text-amber-400' :
-                  'bg-emerald-500/10 text-emerald-400'
+                  'bg-[#006065]/10 text-[#00beac]'
                 }`}>
                   {aiSummary.org_silos_risk} silo risk
                 </span>
@@ -336,7 +336,7 @@ Respond in valid JSON only:
                   <h2 className="font-semibold text-foreground text-sm">Duplicate Blockers Across Teams</h2>
                   <span className="text-xs text-red-400 font-bold ml-1">{blockerCollisions.length} collision{blockerCollisions.length > 1 ? 's' : ''}</span>
                 </div>
-                <p className="text-xs text-muted-foreground mb-3">Multiple teams are blocked on the same issue â€” solving it once saves everyone.</p>
+                <p className="text-xs text-muted-foreground mb-3">Multiple teams are blocked on the same issue Ã¢â‚¬â€ solving it once saves everyone.</p>
                 <div className="space-y-3">
                   {blockerCollisions.map((group, i) => (
                     <CollisionCard key={i} type="blocker" items={group} spaceNames={spaceNames} onViewSpace={id => navigate(`${basePath}/spaces/${id}`)} />
@@ -407,7 +407,7 @@ Respond in valid JSON only:
 
             {totalCollisions === 0 && siloedSpaces.length === 0 && !loading && (
               <div className="text-center py-16">
-                <Shield className="w-12 h-12 text-emerald-400 mx-auto mb-3" />
+                <Shield className="w-12 h-12 text-[#00beac] mx-auto mb-3" />
                 <p className="text-lg font-bold text-foreground">No collisions detected</p>
                 <p className="text-sm text-muted-foreground mt-1">Your teams are operating without significant overlap or isolation. Keep it up.</p>
               </div>
@@ -418,3 +418,4 @@ Respond in valid JSON only:
     </div>
   );
 }
+

@@ -186,7 +186,7 @@ export default function LiveSupport() {
                 
                 <div className="flex gap-4 items-start">
                   <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${
-                    req.type === 'call' ? 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400' : 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400'
+                    req.type === 'call' ? 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400' : 'bg-[#006065]/10 text-[#006065] dark:bg-[#006065]/10 dark:text-[#00beac]'
                   }`}>
                     {req.type === 'call' ? <PhoneCall className="w-6 h-6" /> : <MessageSquare className="w-6 h-6" />}
                   </div>
@@ -228,7 +228,7 @@ export default function LiveSupport() {
                       <button onClick={() => updateStatus(req.id, 'contacted')} className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold transition-colors">
                         <Mail className="w-4 h-4" /> Mark Contacted
                       </button>
-                      <button onClick={() => updateStatus(req.id, 'resolved')} className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-[#006065] text-white border border-white/15/10 dark:bg-secondary hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-white/90 dark:text-foreground hover:text-emerald-600 dark:hover:text-emerald-400 rounded-xl text-sm font-semibold transition-colors">
+                      <button onClick={() => updateStatus(req.id, 'resolved')} className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-[#006065] text-white border border-white/15/10 dark:bg-secondary hover:bg-[#006065]/10 dark:hover:bg-[#004e52]/20 text-white/90 dark:text-foreground hover:text-[#006065] dark:hover:text-[#00beac] rounded-xl text-sm font-semibold transition-colors">
                         <CheckCircle2 className="w-4 h-4" /> Resolve
                       </button>
                     </>
@@ -239,7 +239,7 @@ export default function LiveSupport() {
                     </button>
                   )}
                   {req.status === 'resolved' && (
-                    <div className="flex items-center justify-center gap-2 px-4 py-2 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-xl text-sm font-semibold">
+                    <div className="flex items-center justify-center gap-2 px-4 py-2 bg-[#006065]/10 dark:bg-[#006065]/10 text-[#006065] dark:text-[#00beac] rounded-xl text-sm font-semibold">
                       <CheckCircle2 className="w-4 h-4" /> Resolved
                     </div>
                   )}
@@ -259,4 +259,5 @@ export default function LiveSupport() {
     </div>
   );
 }
+
 

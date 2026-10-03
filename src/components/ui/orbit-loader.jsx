@@ -1,36 +1,25 @@
-import React from 'react'
-import { getSubdomainAndBase } from '@/lib/domainUtils'
+﻿import React from 'react'
 
 const SIZE_MAP = {
-  sm: { dim: 16, stroke: 1.5, r: 6 },
-  md: { dim: 24, stroke: 2,   r: 9 },
-  lg: { dim: 40, stroke: 2.5, r: 16 }
+  sm: { dim: 16 },
+  md: { dim: 24 },
+  lg: { dim: 40 }
 }
 
 export function OrbitLoader({ size = 'md', className = '', label = 'Loading', color }) {
   const { dim } = SIZE_MAP[size] || SIZE_MAP['md']
   
-  let isRootAccount = false;
-  let isClipad = false;
-  try {
-    const host = window.location.hostname.toLowerCase();
-    if (host.includes('clipad')) {
-      isClipad = true;
-    } else if (host.includes('account') || host === 'optavel.com' || host === 'www.optavel.com') {
-      isRootAccount = true;
-    }
-  } catch (e) {}
-  
-  const logoSrc = isClipad ? "/clipad-logo-green.svg" : (isRootAccount ? "/optavel-favicon.svg" : "/slate-favicon.svg");
-
   return (
     <span
       role="status"
       aria-label={label}
-      className={`orbit-loader orbit-loader--${size} ${className}`}
+      className={orbit-loader orbit-loader-- + size +   + className}
       style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: dim, height: dim }}
     >
-      <img src={logoSrc} alt={label} style={{ width: '100%', height: '100%', objectFit: 'contain', animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' }} />
+      <svg className="animate-spin text-primary" style={{ width: '100%', height: '100%' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
     </span>
   )
 }
@@ -59,20 +48,6 @@ export function LoadingOverlay({ visible, size = 'md', label = 'Loading', blur =
 }
 
 export function PageLoader({ label = 'Loading...' }) {
-  let isRootAccount = false;
-  let isClipad = false;
-  try {
-    const host = window.location.hostname.toLowerCase();
-    if (host.includes('clipad')) {
-      isClipad = true;
-    } else if (host.includes('account') || host === 'optavel.com' || host === 'www.optavel.com') {
-      isRootAccount = true;
-    }
-  } catch (e) {}
-  
-  const logoSrc = isClipad ? "/clipad-logo-green.svg" : (isRootAccount ? "/optavel-favicon.svg" : "/slate-favicon.svg");
-  const logoAlt = isClipad ? "CliPad Logo" : (isRootAccount ? "Optavel Logo" : "Slate Logo");
-
   return (
     <div
       role="status"
@@ -92,37 +67,18 @@ export function PageLoader({ label = 'Loading...' }) {
         alignItems: 'center', justifyContent: 'center',
         animation: 'fade-up 500ms ease 100ms both',
       }}>
-        {/* Exact Logo */}
         <div style={{
-          width: '64px', height: '64px',
+          width: '48px', height: '48px',
           marginBottom: '24px',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
-          <img 
-            src={logoSrc} 
-            alt={logoAlt} 
-            style={{ 
-              width: '100%', height: '100%', objectFit: 'contain',
-              animation: 'logo-breathe 2.5s ease-in-out infinite' 
-            }} 
-          />
+          <svg className="animate-spin text-primary" style={{ width: '100%', height: '100%' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
         </div>
-
-        {/* Loader image is the only thing shown */}
-
-        {/* Loading text removed as per request to keep it clean */}
       </div>
-
-      {/* Inline keyframes */}
-      <style>{`
-        @keyframes logo-breathe {
-          0%, 100% { transform: scale(1); opacity: 0.9; }
-          50% { transform: scale(1.05); opacity: 1; }
-        }
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
+      <style>{
         @keyframes fade-up {
           from { opacity: 0; transform: translateY(8px); }
           to   { opacity: 1; transform: translateY(0); }
@@ -131,7 +87,7 @@ export function PageLoader({ label = 'Loading...' }) {
           from { opacity: 0; }
           to   { opacity: 1; }
         }
-      `}</style>
+      }</style>
     </div>
   )
 }

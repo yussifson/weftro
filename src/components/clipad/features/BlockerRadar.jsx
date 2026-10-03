@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { ShieldAlert, AlertTriangle, CheckCircle, Network, Plus, Loader2, Sparkles, Bot } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
@@ -190,7 +190,7 @@ export default function BlockerRadar({ workspaceId, spaceId, isWorkspaceView = f
           </div>
         ) : openBlockers.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center text-center py-4">
-            <CheckCircle className="w-8 h-8 text-emerald-400 mb-2" />
+            <CheckCircle className="w-8 h-8 text-[#00beac] mb-2" />
             <p className="text-xs text-slate-500 dark:text-muted-foreground">No open blockers. Team is unblocked!</p>
           </div>
         ) : (
@@ -260,7 +260,7 @@ export default function BlockerRadar({ workspaceId, spaceId, isWorkspaceView = f
         </div>
       ) : blockers.length === 0 ? (
         <div className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl p-10 shadow-sm flex flex-col items-center text-center">
-          <CheckCircle className="w-10 h-10 text-emerald-400 mb-3" />
+          <CheckCircle className="w-10 h-10 text-[#00beac] mb-3" />
           <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">All Clear!</h3>
           <p className="text-sm text-slate-500 dark:text-muted-foreground">No blockers detected. Team is moving freely.</p>
         </div>
@@ -315,7 +315,7 @@ export default function BlockerRadar({ workspaceId, spaceId, isWorkspaceView = f
                   {isOpen && canResolve && (
                     <button
                       onClick={() => handleResolve(blocker.id)}
-                      className="text-xs bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap flex items-center gap-1"
+                      className="text-xs bg-[#006065]/10 hover:bg-[#006065]/20 text-[#006065] dark:text-[#00beac] border border-[#006065]/30 px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap flex items-center gap-1"
                     >
                       <CheckCircle className="w-3 h-3" /> Resolve
                     </button>
@@ -332,3 +332,4 @@ export default function BlockerRadar({ workspaceId, spaceId, isWorkspaceView = f
     </div>
   );
 }
+

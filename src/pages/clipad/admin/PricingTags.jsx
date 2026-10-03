@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { Building2, CheckCircle2, ChevronDown, Tags, Plus, Pencil, Trash2 } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -240,7 +240,7 @@ export default function PricingTags() {
                     </span>
                   </TableCell>
                   <TableCell>
-                    <span className="capitalize px-3 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-md text-sm font-bold">
+                    <span className="capitalize px-3 py-1 bg-[#006065]/10 text-[#006065] dark:text-[#00beac] rounded-md text-sm font-bold">
                       {company.clipad_pricing_tags?.name || 'Free Tier'}
                     </span>
                   </TableCell>
@@ -253,11 +253,11 @@ export default function PricingTags() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => handleUpdateCompanyPlan(company.id, null, 'Free Tier')} className="cursor-pointer">
-                          Free Tier {!company.pricing_tag_id && <CheckCircle2 className="w-4 h-4 text-emerald-500 ml-auto" />}
+                          Free Tier {!company.pricing_tag_id && <CheckCircle2 className="w-4 h-4 text-[#006065] ml-auto" />}
                         </DropdownMenuItem>
                         {pricingTags.map(tag => (
                           <DropdownMenuItem key={tag.id} onClick={() => handleUpdateCompanyPlan(company.id, tag.id, tag.name)} className="cursor-pointer font-medium text-blue-600 dark:text-blue-400">
-                            {tag.name} {company.pricing_tag_id === tag.id && <CheckCircle2 className="w-4 h-4 text-emerald-500 ml-auto" />}
+                            {tag.name} {company.pricing_tag_id === tag.id && <CheckCircle2 className="w-4 h-4 text-[#006065] ml-auto" />}
                           </DropdownMenuItem>
                         ))}
                       </DropdownMenuContent>
@@ -342,3 +342,4 @@ export default function PricingTags() {
     </div>
   );
 }
+

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+﻿import React, { useRef, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, X, Printer, ShieldCheck, Star, Building2, Calendar, FileText } from 'lucide-react';
@@ -252,7 +252,7 @@ export default function PaymentReceiptModal({ isOpen, onClose, transactionDetail
             {/* Left Panel - Brand & Summary */}
             <div className="md:w-2/5 bg-slate-50 border-r border-slate-100 p-6 md:p-8 flex flex-col justify-between shrink-0 relative overflow-hidden">
               {/* Subtle background decoration */}
-              <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+              <div className="absolute top-0 right-0 w-64 h-64 bg-[#006065]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
               
               <div className="relative z-10">
                 <div className="mb-12">
@@ -266,7 +266,7 @@ export default function PaymentReceiptModal({ isOpen, onClose, transactionDetail
                   <div>
                     <h3 className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-1">Total Paid</h3>
                     <div className="text-3xl font-black text-slate-900 tracking-tight">{formattedAmount}</div>
-                    <div className="flex items-center gap-1 mt-1.5 text-emerald-600 bg-emerald-50 w-fit px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide">
+                    <div className="flex items-center gap-1 mt-1.5 text-[#006065] bg-[#006065]/10 w-fit px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide">
                       <CheckCircle className="w-3 h-3" />
                       {isAdminAssigned ? 'Complimentary' : 'Successful'}
                     </div>
@@ -316,7 +316,7 @@ export default function PaymentReceiptModal({ isOpen, onClose, transactionDetail
                   <div>
                     <div className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Reference ID</div>
                     <div className="font-mono text-xs font-semibold text-slate-900 truncate pr-2">
-                      {isAdminAssigned ? 'ADMIN-UPGRADE' : transactionDetails.reference || '—'}
+                      {isAdminAssigned ? 'ADMIN-UPGRADE' : transactionDetails.reference || 'â€”'}
                     </div>
                   </div>
                 </div>
@@ -328,7 +328,7 @@ export default function PaymentReceiptModal({ isOpen, onClose, transactionDetail
                   <div className="flex justify-between items-center py-2">
                     <div className="flex gap-3 items-center">
                       <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600 shrink-0">
-                        <Star className="w-5 h-5 text-emerald-500" />
+                        <Star className="w-5 h-5 text-[#006065]" />
                       </div>
                       <div>
                         <div className="font-bold text-slate-900 text-sm">CliPad {transactionDetails.plan.toUpperCase()} Plan</div>
@@ -366,3 +366,4 @@ export default function PaymentReceiptModal({ isOpen, onClose, transactionDetail
   if (!mounted) return null;
   return createPortal(modalContent, document.body);
 }
+

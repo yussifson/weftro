@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
@@ -260,7 +260,7 @@ export default function CliPadCustomPricing() {
         {submittedRequest ? (
           /* SUCCESS CONFIRMATION */
           <div className="max-w-xl mx-auto bg-[#006065] text-white dark:bg-[#111625] border border-white/15 dark:border-white/10 rounded-3xl p-8 md:p-12 shadow-xl text-center animate-in fade-in zoom-in-95 duration-300">
-            <div className="w-16 h-16 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-2xl mx-auto flex items-center justify-center mb-6">
+            <div className="w-16 h-16 bg-[#006065]/10 text-[#006065] dark:text-[#00beac] rounded-2xl mx-auto flex items-center justify-center mb-6">
               <CheckCircle2 className="w-8 h-8" />
             </div>
 
@@ -286,7 +286,7 @@ export default function CliPadCustomPricing() {
               </div>
               <div className="flex justify-between items-center py-1">
                 <span className="text-muted-foreground">Guaranteed Response:</span>
-                <span className="font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                <span className="font-bold text-[#006065] dark:text-[#00beac] flex items-center gap-1">
                   <Clock className="w-3.5 h-3.5" /> Within 2 Business Hours
                 </span>
               </div>
@@ -598,7 +598,7 @@ export default function CliPadCustomPricing() {
                 </button>
 
                 <div className="flex items-center justify-center gap-2 text-[11px] text-muted-foreground pt-1">
-                  <Lock className="w-3 h-3 text-emerald-500" />
+                  <Lock className="w-3 h-3 text-[#006065]" />
                   <span>Enterprise grade confidentiality. Data is never shared or sold.</span>
                 </div>
               </form>
@@ -610,3 +610,4 @@ export default function CliPadCustomPricing() {
     </div>
   );
 }
+

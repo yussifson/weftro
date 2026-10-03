@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
 import { Activity, BrainCircuit, HeartPulse, ShieldAlert, Target, TrendingUp, Users, LogOut, Settings, Shield, Sparkles, Info, AlertTriangle } from 'lucide-react';
@@ -192,7 +192,7 @@ export default function KnowledgeHealth() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
         {[
           { title: 'Total Meetings', value: rawCounts?.meetings || 0, desc: 'Recorded on platform', icon: Activity, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-500/10' },
-          { title: 'Key Decisions', value: rawCounts?.decisions || 0, desc: 'Extracted automatically', icon: BrainCircuit, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-500/10' },
+          { title: 'Key Decisions', value: rawCounts?.decisions || 0, desc: 'Extracted automatically', icon: BrainCircuit, color: 'text-[#006065]', bg: 'bg-[#006065]/10 dark:bg-[#006065]/10' },
           { title: 'Blockers Raised', value: rawCounts?.blockers || 0, desc: 'Identified in syncs', icon: ShieldAlert, color: 'text-rose-500', bg: 'bg-rose-50 dark:bg-rose-500/10' },
           { title: 'Tasks Completed', value: rawCounts?.completed || 0, desc: 'Resolved action items', icon: Target, color: 'text-indigo-500', bg: 'bg-indigo-50 dark:bg-indigo-500/10' },
           { title: 'Imported Data', value: rawCounts?.imported || 0, desc: 'From external integrations', icon: Sparkles, color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-500/10' },
@@ -292,7 +292,7 @@ export default function KnowledgeHealth() {
                   });
                   
                   if (error) throw error;
-                  toast.success("Detailed Health Report generated and sent to your email!", { duration: 5000, icon: '📊' });
+                  toast.success("Detailed Health Report generated and sent to your email!", { duration: 5000, icon: 'ðŸ“Š' });
                 } catch (err) {
                   console.error(err);
                   toast.error("Failed to send report. Please try again later.");
@@ -396,7 +396,7 @@ export default function KnowledgeHealth() {
             </div>
           </div>
           <div className="flex gap-3">
-            <div className="w-8 h-8 shrink-0 rounded-full bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center text-emerald-600 font-bold">2</div>
+            <div className="w-8 h-8 shrink-0 rounded-full bg-[#006065]/10 dark:bg-[#006065]/10 flex items-center justify-center text-[#006065] font-bold">2</div>
             <div>
               <h4 className="font-bold text-slate-900 dark:text-white">Resolution Speed</h4>
               <p className="text-sm text-white/70 mt-1">Evaluates how quickly blockers raised in standups or meetings are converted into completed tasks.</p>
@@ -423,3 +423,4 @@ export default function KnowledgeHealth() {
     </div>
   );
 }
+

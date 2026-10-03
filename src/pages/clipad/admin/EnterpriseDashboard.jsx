@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/AuthContext';
 import { EnterpriseAnalyticsAPI } from '@/api/EnterpriseAnalyticsAPI';
 import { 
@@ -98,7 +98,7 @@ export default function EnterpriseDashboard() {
             <p className="text-slate-600 dark:text-slate-300 mt-1">Cross-tenant visibility and administrative oversight for your entire organization.</p>
           </div>
           <div className="flex items-center gap-3 px-4 py-2 bg-[#006065] text-white border border-white/15/10 text-white border border-white/15 border border-indigo-100 dark:border-indigo-500/20 rounded-xl">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <div className="w-2 h-2 rounded-full bg-[#006065] animate-pulse" />
             <span className="text-sm font-bold text-indigo-300 dark:text-indigo-300">Live Status: Operational</span>
           </div>
         </div>
@@ -126,7 +126,7 @@ export default function EnterpriseDashboard() {
               subtext="Cross-functional hubs"
             />
             <MetricCard 
-              icon={<Video className="w-5 h-5 text-emerald-500" />} 
+              icon={<Video className="w-5 h-5 text-[#006065]" />} 
               title="Total Video Assets" 
               value={(metrics?.videos || 0) + (metrics?.meetings || 0)}
               subtext={`${metrics?.videos || 0} Async | ${metrics?.meetings || 0} Meetings`}
@@ -183,7 +183,7 @@ export default function EnterpriseDashboard() {
                       </p>
                       <p className="text-xs text-white/70 flex items-center gap-2 mt-1">
                         <span className="capitalize text-[10px] px-1.5 py-0.5 rounded bg-[#006065] text-white border border-white/15/15 dark:bg-slate-700 text-white/90 dark:text-foreground">{asset.type}</span>
-                        Created by {asset.host_name} â€¢ {new Date(asset.created_at).toLocaleDateString()}
+                        Created by {asset.host_name} Ã¢â‚¬Â¢ {new Date(asset.created_at).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
@@ -250,7 +250,7 @@ export default function EnterpriseDashboard() {
                 auditLogs.map((log) => (
                   <div key={log.id} className="flex gap-4 group">
                     <div className="relative flex flex-col items-center">
-                      <div className={`w-3 h-3 rounded-full z-10 flex items-center justify-center ${log.type === 'security' ? 'bg-emerald-500 ring-4 ring-emerald-500/20' : 'bg-[#006065] text-white border border-white/15/100 ring-4 ring-indigo-500/20'}`} />
+                      <div className={`w-3 h-3 rounded-full z-10 flex items-center justify-center ${log.type === 'security' ? 'bg-[#006065] ring-4 ring-[#006065]/20' : 'bg-[#006065] text-white border border-white/15/100 ring-4 ring-indigo-500/20'}`} />
                       <div className="w-px h-full bg-[#006065] text-white border border-white/15/15 dark:bg-slate-700 absolute top-3 group-last:hidden" />
                     </div>
                     <div className="pb-5 w-full">
@@ -324,7 +324,7 @@ export default function EnterpriseDashboard() {
                     {/* Viewers */}
                     <div>
                       <h3 className="text-sm font-bold text-white dark:text-white uppercase tracking-wider mb-4 flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4 text-emerald-500" />
+                        <CheckCircle className="w-4 h-4 text-[#006065]" />
                         Watched ({engagement.viewers.length})
                       </h3>
                       <div className="bg-transparent dark:bg-[#006065]/50 rounded-xl border border-white/15 dark:border-white/15 max-h-[300px] overflow-y-auto">
@@ -437,4 +437,5 @@ function MetricCard({ icon, title, value, subtext, progress, progressColor }) {
     </div>
   );
 }
+
 

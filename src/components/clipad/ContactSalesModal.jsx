@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { supabase } from '@/api/supabaseClient';
 import { useToast } from '@/components/ui/use-toast';
@@ -55,7 +55,7 @@ export default function ContactSalesModal({ isOpen, onClose }) {
       <DialogContent className="sm:max-w-md p-0 overflow-hidden bg-white dark:bg-background border-slate-200 dark:border-border rounded-3xl">
         {success ? (
           <div className="p-10 text-center flex flex-col items-center justify-center space-y-4">
-            <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mb-2">
+            <div className="w-16 h-16 bg-[#006065]/20 dark:bg-[#006065]/20 text-[#006065] dark:text-[#00beac] rounded-full flex items-center justify-center mb-2">
               <CheckCircle className="w-8 h-8" />
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Message Sent!</h2>
@@ -138,3 +138,4 @@ export default function ContactSalesModal({ isOpen, onClose }) {
     </Dialog>
   );
 }
+

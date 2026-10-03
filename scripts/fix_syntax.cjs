@@ -1,15 +1,13 @@
 const fs = require('fs');
-let m = fs.readFileSync('src/pages/clipad/MeetingsList.jsx', 'utf8');
+let c = fs.readFileSync('src/pages/clipad/RecordVideo.jsx', 'utf8');
 
-const target = `                </div>
-              </div>
-            ))}`;
+// Fix the extra </div> — the action row replacement left 3 closing divs but only 2 were needed
+// The pattern is: </div>\n            </div>\n            </div>\r\n\r\n            {lockType
+// We need to remove one of those closing divs
+c = c.replace(
+  /(<\/div>\n            <\/div>)\n            <\/div>\r?\n\r?\n            \{lockType/,
+  '$1\r\n\r\n            {lockType'
+);
 
-const replacement = `                </div>
-              </div>
-              </div>
-            ))}`;
-
-m = m.replace(target, replacement);
-
-fs.writeFileSync('src/pages/clipad/MeetingsList.jsx', m);
+fs.writeFileSync('src/pages/clipad/RecordVideo.jsx', c);
+console.log('Fixed extra </div>');

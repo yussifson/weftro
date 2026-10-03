@@ -15,8 +15,8 @@ const RISK_LEVELS = {
   critical: { label: 'Critical', color: 'text-red-400', bg: 'bg-red-500/10 border-red-500/40', dot: 'bg-red-500', pulse: 'animate-pulse' },
   high: { label: 'High', color: 'text-orange-400', bg: 'bg-orange-500/10 border-orange-500/30', dot: 'bg-orange-500', pulse: '' },
   medium: { label: 'Medium', color: 'text-amber-400', bg: 'bg-amber-500/10 border-amber-500/30', dot: 'bg-amber-500', pulse: '' },
-  low: { label: 'Low', color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/30', dot: 'bg-emerald-500', pulse: '' },
-  healthy: { label: 'Healthy', color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/20', dot: 'bg-emerald-400', pulse: '' },
+  low: { label: 'Low', color: 'text-[#00beac]', bg: 'bg-[#006065]/10 border-[#006065]/30', dot: 'bg-[#006065]', pulse: '' },
+  healthy: { label: 'Healthy', color: 'text-[#00beac]', bg: 'bg-[#006065]/10 border-[#006065]/20', dot: 'bg-emerald-400', pulse: '' },
 };
 
 function RiskSignalBar({ label, value, max, color = 'red', tooltip }) {
@@ -333,7 +333,7 @@ Analyze patterns that historically precede project failures and org dysfunction.
         {aiReport && !aiReport.error && (
           <div className={`rounded-2xl border p-5 ${
             aiReport.risk_trajectory === 'escalating' ? 'border-red-500/40 bg-red-500/5' :
-            aiReport.risk_trajectory === 'improving' ? 'border-emerald-500/30 bg-emerald-500/5' :
+            aiReport.risk_trajectory === 'improving' ? 'border-[#006065]/30 bg-[#006065]/5' :
             'border-amber-500/30 bg-amber-500/5'
           }`}>
             <div className="flex items-center gap-2 mb-4">
@@ -342,7 +342,7 @@ Analyze patterns that historically precede project failures and org dysfunction.
               {aiReport.risk_trajectory && (
                 <span className={`ml-auto text-xs font-bold px-2 py-0.5 rounded-full ${
                   aiReport.risk_trajectory === 'escalating' ? 'bg-red-500/10 text-red-400' :
-                  aiReport.risk_trajectory === 'improving' ? 'bg-emerald-500/10 text-emerald-400' :
+                  aiReport.risk_trajectory === 'improving' ? 'bg-[#006065]/10 text-[#00beac]' :
                   'bg-amber-500/10 text-amber-400'
                 }`}>
                   {aiReport.risk_trajectory === 'escalating' ? 'â†‘ Escalating' : aiReport.risk_trajectory === 'improving' ? 'â†“ Improving' : 'â†’ Stable'}
@@ -371,8 +371,8 @@ Analyze patterns that historically precede project failures and org dysfunction.
                 </div>
               )}
               {aiReport.silver_lining && (
-                <div className="p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/20">
-                  <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider mb-1">Silver Lining</p>
+                <div className="p-3 rounded-xl bg-[#006065]/5 border border-[#006065]/20">
+                  <p className="text-[10px] font-bold text-[#00beac] uppercase tracking-wider mb-1">Silver Lining</p>
                   <p className="text-xs text-foreground/90">{aiReport.silver_lining}</p>
                 </div>
               )}
@@ -425,3 +425,4 @@ Analyze patterns that historically precede project failures and org dysfunction.
     </div>
   );
 }
+

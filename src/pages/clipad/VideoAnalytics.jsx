@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
@@ -24,7 +24,7 @@ function StatCard({ icon: Icon, color, value, label, trend }) {
           <Icon className="w-6 h-6" />
         </div>
         {trend !== undefined && trend !== null && (
-          <span className={`text-xs font-bold px-2.5 py-1 rounded-full border ${trend > 0 ? 'text-emerald-600 bg-emerald-50 border-emerald-100 dark:text-emerald-400 dark:bg-emerald-500/10 dark:border-emerald-500/20' : trend < 0 ? 'text-red-600 bg-red-50 border-red-100 dark:text-red-400 dark:bg-red-500/10 dark:border-red-500/20' : 'text-slate-500 bg-slate-100 border-slate-200 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400'}`}>
+          <span className={`text-xs font-bold px-2.5 py-1 rounded-full border ${trend > 0 ? 'text-[#006065] bg-[#006065]/10 border-emerald-100 dark:text-[#00beac] dark:bg-[#006065]/10 dark:border-[#006065]/20' : trend < 0 ? 'text-red-600 bg-red-50 border-red-100 dark:text-red-400 dark:bg-red-500/10 dark:border-red-500/20' : 'text-slate-500 bg-slate-100 border-slate-200 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400'}`}>
             {trend > 0 ? '+' : ''}{trend}%
           </span>
         )}
@@ -486,4 +486,5 @@ export default function VideoAnalytics() {
       </div>
   );
 }
+
 

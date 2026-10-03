@@ -226,7 +226,7 @@ export default function ActionItems() {
           {items.length > 0 && (
             <div className="mt-4 h-2 bg-white/10 rounded-full overflow-hidden max-w-lg">
               <div
-                className="h-full bg-emerald-500 rounded-full transition-all duration-500"
+                className="h-full bg-[#006065] rounded-full transition-all duration-500"
                 style={{ width: `${(doneCount / items.length) * 100}%` }}
               />
             </div>
@@ -336,7 +336,7 @@ export default function ActionItems() {
                       <div className="relative shrink-0 group">
                         <button
                           onClick={() => setExpandedItem(isExpanded ? null : item.id)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#006065]/10 dark:bg-[#006065]/30 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-xl text-xs font-semibold transition-colors"
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#006065]/10 dark:bg-[#006065]/30 hover:bg-[#006065]/20 text-[#006065] dark:text-[#00beac] rounded-xl text-xs font-semibold transition-colors"
                         >
                           <Send className="w-3.5 h-3.5" />
                           Export
@@ -379,3 +379,4 @@ export default function ActionItems() {
     </div>
   );
 }
+

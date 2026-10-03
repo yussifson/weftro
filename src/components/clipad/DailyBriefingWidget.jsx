@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Sparkles, Calendar, AlertTriangle, CheckCircle2, ArrowRight, RefreshCw } from 'lucide-react';
 import { supabase } from '@/api/supabaseClient';
 import { generateText } from '@/lib/cloudflareAI';
@@ -120,8 +120,8 @@ export default function DailyBriefingWidget() {
     return (
       <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm animate-pulse flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-            <Sparkles className="w-4.5 h-4.5 text-emerald-500 animate-spin" />
+          <div className="w-8 h-8 rounded-xl bg-[#006065]/10 border border-[#006065]/20 flex items-center justify-center">
+            <Sparkles className="w-4.5 h-4.5 text-[#006065] animate-spin" />
           </div>
           <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Synthesizing your Executive Daily Briefing...</span>
         </div>
@@ -139,8 +139,8 @@ export default function DailyBriefingWidget() {
       {/* Header Bar */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3 cursor-pointer select-none" onClick={() => setIsExpanded(!isExpanded)}>
-          <div className="w-9 h-9 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/20 dark:border-emerald-500/30 flex items-center justify-center shrink-0">
-            <Sparkles className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+          <div className="w-9 h-9 rounded-xl bg-[#006065]/10 dark:bg-[#006065]/15 border border-[#006065]/20 dark:border-[#006065]/30 flex items-center justify-center shrink-0">
+            <Sparkles className="w-5 h-5 text-[#006065] dark:text-[#00beac]" />
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -176,13 +176,13 @@ export default function DailyBriefingWidget() {
             {/* Yesterday's Highlights */}
             {briefing.highlights?.length > 0 && (
               <div className="p-4 rounded-xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/70 dark:border-slate-800/80 space-y-2">
-                <h4 className="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+                <h4 className="text-[11px] font-bold uppercase tracking-wider text-[#006065] dark:text-[#00beac] flex items-center gap-1.5">
                   <Calendar className="w-3.5 h-3.5" /> Yesterday's Key Highlights
                 </h4>
                 <ul className="space-y-1.5 text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
                   {briefing.highlights.map((h, i) => (
                     <li key={i} className="flex items-start gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0 mt-1.5" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#006065] shrink-0 mt-1.5" />
                       <span>{h}</span>
                     </li>
                   ))}
@@ -212,7 +212,7 @@ export default function DailyBriefingWidget() {
                   <ul className="space-y-1 text-xs text-red-600 dark:text-red-300">
                     {briefing.risks.map((r, i) => (
                       <li key={i} className="flex items-start gap-1.5">
-                        <span className="text-red-500 font-bold">•</span>
+                        <span className="text-red-500 font-bold">â€¢</span>
                         <span>{r}</span>
                       </li>
                     ))}
@@ -234,11 +234,11 @@ export default function DailyBriefingWidget() {
                 // Delay sending the prompt slightly to allow side drawer animation to initialize
                 setTimeout(() => {
                   window.dispatchEvent(new CustomEvent('orbit:inject', {
-                    detail: { query: 'Give me a deeper breakdown of my team’s active blockers and commitments' }
+                    detail: { query: 'Give me a deeper breakdown of my teamâ€™s active blockers and commitments' }
                   }));
                 }, 150);
               }}
-              className="flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors group/btn"
+              className="flex items-center gap-1 text-xs font-bold text-[#006065] dark:text-[#00beac] hover:text-[#004e52] dark:hover:text-emerald-300 transition-colors group/btn"
             >
               Ask Orbit <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover/btn:translate-x-1" />
             </button>
@@ -248,3 +248,4 @@ export default function DailyBriefingWidget() {
     </div>
   );
 }
+

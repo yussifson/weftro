@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { Activity, TrendingDown, TrendingUp, Users, Loader2, RefreshCw } from 'lucide-react';
 import { generateText } from '@/lib/cloudflareAI';
@@ -39,7 +39,7 @@ export default function MeetingNecessityWidget({ workspaceId }) {
       return;
     }
 
-    // No metrics yet — auto-analyze from raw meetings
+    // No metrics yet â€” auto-analyze from raw meetings
     await analyzeFromMeetings();
   };
 
@@ -155,7 +155,7 @@ export default function MeetingNecessityWidget({ workspaceId }) {
         </div>
         <div className="flex items-center gap-3 py-6 justify-center text-slate-400 dark:text-slate-500">
           <Loader2 className="w-5 h-5 animate-spin" />
-          <span className="text-sm">{analyzing ? 'AI is analyzing your meetings…' : 'Loading…'}</span>
+          <span className="text-sm">{analyzing ? 'AI is analyzing your meetingsâ€¦' : 'Loadingâ€¦'}</span>
         </div>
       </div>
     );
@@ -176,7 +176,7 @@ export default function MeetingNecessityWidget({ workspaceId }) {
           <p className="text-sm text-slate-500 dark:text-muted-foreground mt-1">AI analysis of meeting ROI and engagement.</p>
         </div>
         <div className="flex flex-col items-end gap-1">
-          <div className={`text-2xl font-bold ${avgScore > 70 ? 'text-emerald-600 dark:text-emerald-400' : avgScore > 40 ? 'text-amber-600 dark:text-amber-400' : 'text-red-600 dark:text-red-400'}`}>
+          <div className={`text-2xl font-bold ${avgScore > 70 ? 'text-[#006065] dark:text-[#00beac]' : avgScore > 40 ? 'text-amber-600 dark:text-amber-400' : 'text-red-600 dark:text-red-400'}`}>
             {avgScore}
             <span className="text-xs font-medium text-slate-500 block uppercase tracking-wider">Avg Score</span>
           </div>
@@ -206,7 +206,7 @@ export default function MeetingNecessityWidget({ workspaceId }) {
                     <Users className="w-3 h-3" /> {m.engagement_metrics?.participant_count || 0}
                   </span>
                   <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                    m.necessity_score > 70 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' :
+                    m.necessity_score > 70 ? 'bg-[#006065]/20 text-[#004e52] dark:bg-[#004e52]/30 dark:text-[#00beac]' :
                     m.necessity_score > 40 ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' :
                     'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
                   }`}>
@@ -221,7 +221,7 @@ export default function MeetingNecessityWidget({ workspaceId }) {
               <div className="flex items-center gap-2">
                 <div className="w-16 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
                   <div
-                    className={`h-full rounded-full ${m.necessity_score > 70 ? 'bg-emerald-500' : m.necessity_score > 40 ? 'bg-amber-500' : 'bg-red-500'}`}
+                    className={`h-full rounded-full ${m.necessity_score > 70 ? 'bg-[#006065]' : m.necessity_score > 40 ? 'bg-amber-500' : 'bg-red-500'}`}
                     style={{ width: `${m.necessity_score || 0}%` }}
                   />
                 </div>
@@ -236,3 +236,4 @@ export default function MeetingNecessityWidget({ workspaceId }) {
     </div>
   );
 }
+

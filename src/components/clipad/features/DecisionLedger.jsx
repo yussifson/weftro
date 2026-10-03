@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { ShieldAlert, CheckCircle, Clock, Archive, BrainCircuit, Sparkles, Loader2, Star, Bot } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
@@ -130,7 +130,7 @@ export default function DecisionLedger({ workspaceId, spaceId, hasFullIntelligen
   // Use teamColor for the active badge, defaulting to emerald if none provided
   const badgeColorClass = teamColor 
     ? `bg-gradient-to-br ${teamColor} text-white border-transparent` 
-    : 'bg-emerald-100 dark:bg-emerald-400/10 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-transparent';
+    : 'bg-[#006065]/20 dark:bg-emerald-400/10 text-[#004e52] dark:text-[#00beac] border-emerald-200 dark:border-transparent';
 
   return (
     <div className="space-y-6">
@@ -222,3 +222,4 @@ export default function DecisionLedger({ workspaceId, spaceId, hasFullIntelligen
     </div>
   );
 }
+

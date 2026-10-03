@@ -24,7 +24,7 @@ function CopyButton({ text }) {
     setTimeout(() => setCopied(false), 2000);
   };
   return (
-    <button onClick={copy} className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg transition-all ${copied ? 'text-emerald-500 bg-emerald-500/10' : 'text-muted-foreground hover:text-slate-600 dark:text-slate-300 bg-secondary hover:bg-secondary'}`}>
+    <button onClick={copy} className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg transition-all ${copied ? 'text-[#006065] bg-[#006065]/10' : 'text-muted-foreground hover:text-slate-600 dark:text-slate-300 bg-secondary hover:bg-secondary'}`}>
       {copied ? <><Check className="w-3 h-3" /> Copied</> : <><Copy className="w-3 h-3" /> Copy</>}
     </button>
   );
@@ -68,7 +68,7 @@ function ActionItemRow({ item, onUpdate }) {
     <div className="flex items-start gap-3 py-3">
       <button
         onClick={toggle}
-        className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${done ? 'bg-emerald-500 border-emerald-500' : 'border-gray-600 hover:border-primary'}`}
+        className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${done ? 'bg-[#006065] border-[#006065]' : 'border-gray-600 hover:border-primary'}`}
       >
         {done && <Check className="w-3 h-3 text-foreground" strokeWidth={3} />}
       </button>
@@ -599,7 +599,7 @@ export default function MeetingRecord() {
           <SectionCard icon={Brain} iconColor="from-emerald-500 to-emerald-600" title="AI Intelligence Locked" defaultOpen>
             <div className="relative overflow-hidden rounded-xl bg-transparent dark:bg-[#006065] border border-slate-200 dark:border-slate-800 p-8 text-center">
               <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white dark:to-slate-950/90 pointer-events-none" />
-              <Lock className="w-8 h-8 text-emerald-500 mx-auto mb-4" />
+              <Lock className="w-8 h-8 text-[#006065] mx-auto mb-4" />
               <h3 className="text-lg font-bold text-white dark:text-slate-100 relative z-10 mb-2">Advanced AI & Smart Follow-ups</h3>
               <p className="text-sm text-slate-500 max-w-sm mx-auto relative z-10 mb-6">
                 Upgrade to Pro to unlock the full AI Intelligence layer, sentiment analysis, and automated smart follow-ups.
@@ -878,4 +878,5 @@ export default function MeetingRecord() {
           </div>
   );
 }
+
 

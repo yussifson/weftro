@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/api/supabaseClient';
@@ -19,7 +19,6 @@ import ClipadLoader from '@/components/ui/ClipadLoader';
 import LockWall from '@/components/clipad/LockWall';
 import { useToast } from '@/components/ui/use-toast';
 import TaskBoard from '@/components/clipad/tasks/TaskBoard';
-import SpaceChat from '@/components/clipad/chat/SpaceChat';
 import SpaceDocs from '@/components/clipad/docs/SpaceDocs';
 import SpaceCalendar from '@/components/clipad/calendar/SpaceCalendar';
 import CanvasWhiteboard from '@/components/clipad/CanvasWhiteboard';
@@ -40,7 +39,6 @@ const TABS = [
   { id: 'timeline', icon: Activity, label: 'Timeline' },
   { id: 'memory', icon: Brain, label: 'Memory' },
   { id: 'standup', icon: Sun, label: 'Standup' },
-  { id: 'chat', icon: MessageSquare, label: 'Chat' },
   { id: 'calendar', icon: Calendar, label: 'Calendar' },
   { id: 'videos', icon: Camera, label: 'Videos' },
   { id: 'meetings', icon: Calendar, label: 'Meetings' },
@@ -63,7 +61,7 @@ function TaskRow({ item, onToggle }) {
   };
   return (
     <div className="flex items-start gap-3 p-4 rounded-xl hover:bg-secondary transition-colors group">
-      <button onClick={handle} className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${done ? 'bg-emerald-500 border-emerald-500' : 'border-gray-600 hover:border-primary'}`}>
+      <button onClick={handle} className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${done ? 'bg-[#006065] border-[#006065]' : 'border-gray-600 hover:border-primary'}`}>
         {done && <CheckCircle className="w-3.5 h-3.5 text-foreground" />}
       </button>
       <div className="flex-1 min-w-0">
@@ -88,7 +86,7 @@ const getVideoColor = (id) => {
     'from-fuchsia-500 to-fuchsia-700',
     'from-rose-500 to-rose-700', 
     'from-orange-500 to-orange-700', 
-    'from-emerald-500 to-emerald-700', 
+    'from-[#006065] to-[#004e52]', 
     'from-cyan-500 to-cyan-700'
   ];
   if (!id) return colors[0];
@@ -327,7 +325,7 @@ export default function SpaceDashboard() {
           status: 'active',
           meeting_type: 'instant'
         });
-      } catch (_) { /* db insert failed â€” meeting still works */ }
+      } catch (_) { /* db insert failed Ã¢â‚¬â€ meeting still works */ }
 
       try {
         await supabase.from('clipad_spaces').update({ meeting_url: roomData?.url || `https://optavel.daily.co/${targetRoomName}` }).eq('id', spaceId);
@@ -421,9 +419,9 @@ export default function SpaceDashboard() {
 
   const getDailyNatureElement = () => {
     const nature = [
-      'ðŸŒ¿', 'ðŸŒ¸', 'ðŸ”ï¸', 'ðŸ', 'ðŸƒ', 'ðŸŒ²', 'ðŸŒ´', 'ðŸŒ¾', 'ðŸŒµ', 'ðŸŒ»',
-      'ðŸŒ¼', 'ðŸ„', 'ðŸŒ³', 'ðŸ‚', 'â›…', 'ðŸŒˆ', 'ðŸª´', 'ðŸŒŠ', 'â„ï¸', 'ðŸªµ',
-      'ðŸŒº', 'ðŸ€', 'ðŸŒ·', 'ðŸŒ±', 'ðŸµï¸', 'ðŸ’', 'ðŸŽ‹', 'ðŸª´', 'ðŸŒ…', 'ðŸŒŒ', 'ðŸŒ '
+      'Ã°Å¸Å’Â¿', 'Ã°Å¸Å’Â¸', 'Ã°Å¸Ââ€Ã¯Â¸Â', 'Ã°Å¸ÂÂ', 'Ã°Å¸ÂÆ’', 'Ã°Å¸Å’Â²', 'Ã°Å¸Å’Â´', 'Ã°Å¸Å’Â¾', 'Ã°Å¸Å’Âµ', 'Ã°Å¸Å’Â»',
+      'Ã°Å¸Å’Â¼', 'Ã°Å¸Ââ€ž', 'Ã°Å¸Å’Â³', 'Ã°Å¸Ââ€š', 'Ã¢â€ºâ€¦', 'Ã°Å¸Å’Ë†', 'Ã°Å¸ÂªÂ´', 'Ã°Å¸Å’Å ', 'Ã¢Ââ€žÃ¯Â¸Â', 'Ã°Å¸ÂªÂµ',
+      'Ã°Å¸Å’Âº', 'Ã°Å¸Ââ‚¬', 'Ã°Å¸Å’Â·', 'Ã°Å¸Å’Â±', 'Ã°Å¸ÂÂµÃ¯Â¸Â', 'Ã°Å¸â€™Â', 'Ã°Å¸Å½â€¹', 'Ã°Å¸ÂªÂ´', 'Ã°Å¸Å’â€¦', 'Ã°Å¸Å’Å’', 'Ã°Å¸Å’Â '
     ];
     const day = new Date().getDate(); // 1-31
     return nature[(day - 1) % nature.length];
@@ -443,7 +441,7 @@ export default function SpaceDashboard() {
         <div className="text-center">
           <Layers className="w-12 h-12 text-gray-700 mx-auto mb-3" />
           <p className="text-muted-foreground">Space not found.</p>
-          <button onClick={() => navigate('/spaces')} className="mt-4 text-primary hover:text-primary/80 text-sm transition-colors">â† Back to Spaces</button>
+          <button onClick={() => navigate('/spaces')} className="mt-4 text-primary hover:text-primary/80 text-sm transition-colors">Ã¢â€ Â Back to Spaces</button>
         </div>
       </div>
     );
@@ -688,7 +686,7 @@ export default function SpaceDashboard() {
                   <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-6">
                     <div className="flex items-center justify-between mb-6">
                       <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                        <Calendar className="w-4 h-4 text-emerald-500" /> Recent Meetings
+                        <Calendar className="w-4 h-4 text-[#006065]" /> Recent Meetings
                       </h3>
                       <button onClick={() => setActiveTab('meetings')} className="text-xs font-semibold text-slate-500 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-md transition-colors">View all</button>
                     </div>
@@ -749,11 +747,7 @@ export default function SpaceDashboard() {
               </div>
             )}
 
-            {activeTab === 'chat' && (
-              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden h-[75vh]">
-                <SpaceChat spaceId={spaceId} user={user} />
-              </div>
-            )}
+            
 
             {activeTab === 'standup' && (
               <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden">
@@ -873,7 +867,7 @@ export default function SpaceDashboard() {
                         <div className="min-w-0">
                           <p className="text-sm font-bold text-slate-900 dark:text-white truncate flex items-center gap-2">
                             {p.full_name}
-                            {isSpacemanMember && <span className="shrink-0 w-1.5 h-1.5 rounded-full bg-emerald-500" title="Spaceman" />}
+                            {isSpacemanMember && <span className="shrink-0 w-1.5 h-1.5 rounded-full bg-[#006065]" title="Spaceman" />}
                           </p>
                           <p className="text-xs font-medium text-slate-500 truncate">{p.email}</p>
                         </div>
@@ -889,7 +883,7 @@ export default function SpaceDashboard() {
                           {isMem ? 'Remove' : 'Add'}
                         </button>
                       ) : (
-                        isMem && <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-2.5 py-1 rounded-full">Member</span>
+                        isMem && <span className="text-[10px] font-bold uppercase tracking-wider text-[#006065] dark:text-[#00beac] bg-[#006065]/10 dark:bg-[#00beac]/10 px-2.5 py-1 rounded-full">Member</span>
                       )}
                       </div>
                     </div>
@@ -903,3 +897,6 @@ export default function SpaceDashboard() {
     </div>
   );
 }
+
+
+

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+﻿import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { FileText, CheckCircle, MessageSquare, Calendar, Video,
   Loader2, X, ShieldAlert, AlertTriangle, ExternalLink, Zap, Layers, Copy, CheckCheck,
@@ -305,7 +305,7 @@ export default function SearchHub() {
     }));
   };
 
-  // Ref to track the current synthesis session — prevents double-firing
+  // Ref to track the current synthesis session â€” prevents double-firing
   const synthSessionRef = React.useRef(0);
   const lastQueryRef = React.useRef('');
 
@@ -356,7 +356,7 @@ export default function SearchHub() {
       ...(decisions || []).map(d => ({ type: 'decision', id: d.id, space_id: d.team_space_id, label: 'Decision', snippet: d.decision_text, created_at: d.created_at })),
       ...(videos || []).map(v => ({ type: 'video', id: v.id, space_id: v.space_id, label: v.title || 'Video', snippet: v.ai_summary, created_at: v.created_at })),
       ...(blockers || []).map(b => ({ type: 'blocker', id: b.id, space_id: b.team_space_id, label: 'Blocker', snippet: b.description, created_at: b.detected_at })),
-      ...(standups || []).map(s => ({ type: 'standup', id: s.id, space_id: s.space_id, label: `Standup — ${s.user_name || 'Team member'} (${s.created_at?.slice(0, 10)})`, snippet: s.today, created_at: s.created_at })),
+      ...(standups || []).map(s => ({ type: 'standup', id: s.id, space_id: s.space_id, label: `Standup â€” ${s.user_name || 'Team member'} (${s.created_at?.slice(0, 10)})`, snippet: s.today, created_at: s.created_at })),
       ...(integrations || []).map(i => ({ type: 'integration', id: i.id, space_id: null, label: `[${i.provider}] ${i.title}`, snippet: i.content, created_at: i.updated_at, provider: i.provider })),
     ];
 
@@ -365,7 +365,7 @@ export default function SearchHub() {
     if (raw.length > 0) setSelectedResult(raw[0]);
 
     if (!skipAISynthesis) {
-      // AI Executive Synthesis — bump session id to prevent stale callbacks
+      // AI Executive Synthesis â€” bump session id to prevent stale callbacks
       runAISynthesis(q, raw, spaceIdArr);
     }
   }, [query, companyId, user]);
@@ -546,7 +546,7 @@ export default function SearchHub() {
     <div className="flex flex-col h-screen bg-slate-50 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100 overflow-hidden">
       
       {!hasPerformedSearch ? (
-        /* ── ZERO STATE (Original Centered Layout) ── */
+        /* â”€â”€ ZERO STATE (Original Centered Layout) â”€â”€ */
         <div className="flex-1 flex flex-col items-center justify-center px-4 py-12 overflow-y-auto">
           {/* Greeting heading */}
           <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white text-center mb-2 tracking-tight">
@@ -602,7 +602,7 @@ export default function SearchHub() {
           </div>
         </div>
       ) : (
-        /* ── SEARCH STATE (Premium Split Layout) ── */
+        /* â”€â”€ SEARCH STATE (Premium Split Layout) â”€â”€ */
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Header specific to search state */}
           <header className="h-16 shrink-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center px-4 md:px-8 gap-4 md:gap-8 z-10 shadow-sm">
@@ -812,13 +812,13 @@ export default function SearchHub() {
                                {msg.role === 'assistant' && (
                                   <div className="flex items-center gap-1 mt-1">
                                      <button onClick={() => handleCopy(msg.content, idx)} className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" title="Copy text">
-                                        {copiedMsgIndex === idx ? <CheckCheck className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                                        {copiedMsgIndex === idx ? <CheckCheck className="w-3.5 h-3.5 text-[#006065]" /> : <Copy className="w-3.5 h-3.5" />}
                                      </button>
                                      <button onClick={() => handleSpeak(msg.content, idx)} className={`p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors ${isSpeakingMsgIndex === idx ? 'text-[#006065] bg-[#006065]/5 dark:bg-indigo-900/30' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`} title={isSpeakingMsgIndex === idx ? "Stop speaking" : "Read aloud"}>
                                         {isSpeakingMsgIndex === idx ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
                                      </button>
                                      <div className="w-px h-3 bg-slate-200 dark:bg-slate-700 mx-1" />
-                                     <button onClick={() => setVotedMsgState(p => ({...p, [idx]: 'up'}))} className={`p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors ${votedMsgState[idx] === 'up' ? 'text-emerald-500' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}>
+                                     <button onClick={() => setVotedMsgState(p => ({...p, [idx]: 'up'}))} className={`p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors ${votedMsgState[idx] === 'up' ? 'text-[#006065]' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}>
                                         <ThumbsUp className="w-3.5 h-3.5" />
                                      </button>
                                      <button onClick={() => setVotedMsgState(p => ({...p, [idx]: 'down'}))} className={`p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors ${votedMsgState[idx] === 'down' ? 'text-rose-500' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}>
@@ -879,3 +879,4 @@ export default function SearchHub() {
     </div>
   );
 }
+

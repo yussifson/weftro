@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { supabase } from '@/api/supabaseClient';
@@ -98,7 +98,7 @@ export default function CliPadLogin() {
   return (
     <>
       <Helmet>
-        <title>Log In — CliPad Collaborative Workspace</title>
+        <title>Log In â€” CliPad Collaborative Workspace</title>
         <meta name="description" content="Log in to your enterprise-grade collaborative productivity workspace." />
         <link rel="icon" type="image/svg+xml" href="/clipad-favicon-round.svg" />
       </Helmet>
@@ -152,7 +152,7 @@ export default function CliPadLogin() {
                       type={showPassword ? 'text' : 'password'}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••"
+                      placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                       className="w-full pl-10 pr-10 h-11 text-sm bg-white border border-slate-200 text-slate-900 rounded-xl focus:border-[#006065] focus:ring-2 focus:ring-[#006065]/15 transition-all outline-none shadow-sm placeholder:text-slate-400"
                       required
                     />
@@ -350,7 +350,7 @@ export default function CliPadLogin() {
                         <div className="text-[8px] text-slate-500">Manage your workspace intelligence</div>
                       </div>
                       <div className="bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full text-slate-400 text-[8px] flex items-center gap-1">
-                        🔍 Search memory...
+                        ðŸ” Search memory...
                       </div>
                     </div>
 
@@ -375,7 +375,7 @@ export default function CliPadLogin() {
                       <div className="divide-y divide-slate-100 text-[8px]">
                         <div className="px-2.5 py-1 flex justify-between items-center">
                           <span className="font-semibold text-slate-800">Q4 Product Architecture</span>
-                          <span className="bg-emerald-50 text-emerald-600 font-bold px-1.5 py-0.5 rounded text-[7px]">Processed</span>
+                          <span className="bg-[#006065]/10 text-[#006065] font-bold px-1.5 py-0.5 rounded text-[7px]">Processed</span>
                         </div>
                         <div className="px-2.5 py-1 flex justify-between items-center">
                           <span className="font-semibold text-slate-800">Sprint Review Recording</span>
@@ -391,7 +391,7 @@ export default function CliPadLogin() {
 
                   <div className="flex items-center justify-between text-[8px] text-slate-400 pt-1.5 border-t border-slate-100">
                     <span>CliPad V3</span>
-                    <span className="text-[#00beac] font-bold">● System Operational</span>
+                    <span className="text-[#00beac] font-bold">â— System Operational</span>
                   </div>
                 </div>
               </div>
@@ -404,4 +404,5 @@ export default function CliPadLogin() {
     </>
   );
 }
+
 

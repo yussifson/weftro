@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { supabase } from '@/api/supabaseClient';
@@ -196,58 +196,40 @@ function DocEditor({ doc, onSave, isSaving, onBack }) {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Toolbar */}
-      <div className="flex items-center gap-2 md:gap-4 p-2 sm:p-4 border-b bg-card overflow-x-auto no-scrollbar min-h-[60px]">
-        {onBack && (
-          <Button variant="ghost" size="icon" className="md:hidden shrink-0 w-10 h-10 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800" onClick={onBack}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-left text-slate-700 dark:text-slate-300"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
-          </Button>
-        )}
-        <input
-          value={title || ''}
-          onChange={(e) => setTitle(e.target.value)}
-          className="text-lg md:text-xl font-bold bg-transparent border-none focus:outline-none focus:ring-0 flex-1 placeholder:text-muted-foreground/50 min-w-[100px] text-slate-900 dark:text-white"
-          placeholder="Document Title"
-        />
+            {/* Toolbar */}
+      <div className="flex flex-wrap items-center justify-between gap-2 md:gap-4 p-2 sm:p-4 border-b bg-card min-h-[60px]">
+        <div className="flex items-center gap-2 flex-1 min-w-[200px]">
+          {onBack && (
+            <Button variant="ghost" size="icon" className="md:hidden shrink-0 w-8 h-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800" onClick={onBack}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-slate-700 dark:text-slate-300"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+            </Button>
+          )}
+          <input
+            value={title || ''}
+            onChange={(e) => setTitle(e.target.value)}
+            className="text-lg md:text-2xl font-bold bg-transparent border-none focus:outline-none focus:ring-0 flex-1 placeholder:text-muted-foreground/30 min-w-[100px] text-slate-900 dark:text-white"
+            placeholder="Untitled Document"
+          />
+        </div>
         
-        <div className="flex items-center gap-3">
-          {/* AI Assistant Menu */}
-          <div className="flex bg-muted/40 rounded-md overflow-hidden border shadow-sm">
-            <Button 
-              size="sm" 
-              variant="ghost" 
-              className="gap-2 rounded-none hover:bg-primary/10 hover:text-primary h-8"
-              onClick={() => handleAiAction('improve')}
-              disabled={isAiLoading}
-            >
+        <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+          <div className="flex bg-muted/40 rounded-md overflow-hidden border shadow-sm shrink-0">
+            <Button size="sm" variant="ghost" className="gap-2 rounded-none hover:bg-primary/10 hover:text-primary h-8 px-2 sm:px-3" onClick={() => handleAiAction('improve')} disabled={isAiLoading}>
               {isAiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3 text-amber-500" />}
-              <span className="text-xs font-medium">Improve</span>
+              <span className="text-xs font-medium hidden sm:inline">Improve</span>
             </Button>
             <div className="w-px bg-border" />
-            <Button 
-              size="sm" 
-              variant="ghost" 
-              className="gap-2 rounded-none hover:bg-primary/10 hover:text-primary h-8"
-              onClick={() => handleAiAction('summarize')}
-              disabled={isAiLoading}
-            >
+            <Button size="sm" variant="ghost" className="gap-2 rounded-none hover:bg-primary/10 hover:text-primary h-8 px-2 sm:px-3" onClick={() => handleAiAction('summarize')} disabled={isAiLoading}>
               <AlignLeft className="w-3 h-3 text-blue-500" />
-              <span className="text-xs font-medium">Summarize</span>
+              <span className="text-xs font-medium hidden sm:inline">Summarize</span>
             </Button>
           </div>
-
-          <Button 
-            size="sm" 
-            onClick={() => onSave(title, editor.getHTML())} 
-            disabled={isSaving}
-            className="shadow-sm h-8"
-          >
-            {isSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
-            Save
+          <Button size="sm" onClick={() => onSave(title, editor.getHTML())} disabled={isSaving} className="shadow-sm h-8 shrink-0 bg-[#006065] hover:bg-[#004e52] text-white">
+            {isSaving ? <Loader2 className="w-4 h-4 animate-spin sm:mr-2" /> : <Save className="w-4 h-4 sm:mr-2" />}
+            <span className="hidden sm:inline">Save Document</span>
           </Button>
         </div>
       </div>
-
       {/* Formatting Bar */}
       <div className="px-2 md:px-4 py-2 border-b bg-slate-50 dark:bg-card/50 flex gap-1 sm:gap-1.5 flex-nowrap overflow-x-auto no-scrollbar items-center mask-edges">
         <Button size="icon" variant={editor.isActive('bold') ? 'secondary' : 'ghost'} className="w-10 h-10 sm:w-8 sm:h-8 rounded-xl sm:rounded-lg shrink-0" onClick={() => editor.chain().focus().toggleBold().run()} title="Bold">
@@ -289,3 +271,4 @@ function DocEditor({ doc, onSave, isSaving, onBack }) {
     </div>
   );
 }
+

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/api/supabaseClient';
 import { getLimit } from '@/lib/clipadPricing';
@@ -96,12 +96,12 @@ export default function MeetingsList() {
       const payload = { instant: true, max_participants: getLimit(user, 'maxParticipants'), privacy: privacyType, companyId: user?.company_id || user?.user_metadata?.company_id };
       if (privacyType === 'public') payload.roomName = roomName;
 
-      // Attempt Edge Function — but never let it block meeting start
+      // Attempt Edge Function â€” but never let it block meeting start
       let roomData = null;
       try {
         const { data, error } = await supabase.functions.invoke('create-daily-room', { body: payload });
         if (!error && data && (data.name || data.roomName)) roomData = data;
-      } catch (_) { /* edge function unavailable — continue with local room */ }
+      } catch (_) { /* edge function unavailable â€” continue with local room */ }
 
       const targetRoomName = roomData?.name || roomData?.roomName || roomName;
 
@@ -117,11 +117,11 @@ export default function MeetingsList() {
           status: 'active',
           meeting_type: 'instant'
         });
-      } catch (_) { /* db insert failed — meeting still works */ }
+      } catch (_) { /* db insert failed â€” meeting still works */ }
 
       navigate(`/join/${targetRoomName}` + (spaceId ? `?spaceId=${spaceId}` : ''));
     } catch (err) {
-      // Ultimate fallback — always navigate to a meeting room
+      // Ultimate fallback â€” always navigate to a meeting room
       const fallbackRoom = generateShortId();
       console.error('Meeting creation error, using fallback:', err);
       navigate(`/join/${fallbackRoom}` + (spaceId ? `?spaceId=${spaceId}` : ''));
@@ -227,7 +227,7 @@ export default function MeetingsList() {
                       <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
                         m.space.is_private
                           ? 'bg-rose-100 dark:bg-rose-500/20 text-rose-700 dark:text-rose-400'
-                          : 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                          : 'bg-[#006065]/10 dark:bg-[#006065]/10 text-[#006065] dark:text-[#00beac]'
                       }`}>
                         {m.space.is_private ? <Lock className="w-2.5 h-2.5" /> : <Globe className="w-2.5 h-2.5" />}
                         {m.space.is_private ? 'Private' : 'Public'}
@@ -248,7 +248,7 @@ export default function MeetingsList() {
 
                 <div className="flex items-center gap-3 md:w-48 justify-end shrink-0">
                   {m.actions_open > 0 ? (
-                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-xs font-semibold">
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#006065]/10 border border-[#006065]/20 text-[#006065] text-xs font-semibold">
                       <Target className="w-3.5 h-3.5" /> {m.actions_open} open tasks
                     </div>
                   ) : m.actions_total > 0 ? (
@@ -274,3 +274,4 @@ export default function MeetingsList() {
     </div>
   );
 }
+

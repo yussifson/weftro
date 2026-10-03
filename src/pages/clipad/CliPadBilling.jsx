@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/lib/AuthContext';
 import { useCompanyId } from '@/hooks/useCompanyId';
@@ -303,7 +303,7 @@ export default function CliPadBilling() {
                 const percentage = Math.max(0, Math.min(100, (elapsed / total) * 100));
                 if (percentage > 90) return 'bg-red-500';
                 if (percentage > 70) return 'bg-amber-500';
-                return 'bg-emerald-500';
+                return 'bg-[#006065]';
               })()}`}
               style={{ width: `${(() => {
                 const start = new Date(subscriptionData.updated_at || Date.now());
@@ -495,3 +495,4 @@ export default function CliPadBilling() {
     </div>
   );
 }
+
