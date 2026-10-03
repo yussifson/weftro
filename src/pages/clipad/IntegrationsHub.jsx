@@ -413,6 +413,7 @@ export default function IntegrationsHub() {
   const filteredIntegrations = INTEGRATIONS.filter(i => {
     const matchesCategory = activeCategory === 'All' || i.category === activeCategory;
     const matchesSearch = !searchQuery || i.name.toLowerCase().includes(searchQuery.toLowerCase()) || i.description.toLowerCase().includes(searchQuery.toLowerCase());
+    if (!['super_admin', 'admin'].includes(userRole) && !ALLOWED_FOR_EVERYONE.includes(i.id)) return false;
     return matchesCategory && matchesSearch;
   });
 
@@ -542,7 +543,7 @@ export default function IntegrationsHub() {
               const isConnected = !!conn;
               const isSyncing = syncing[integration.id];
               const isDisconnecting = disconnecting[integration.id];
-              const isAllowedToConnect = isSuperAdmin(user) || ALLOWED_FOR_EVERYONE.includes(integration.id);
+              const isAllowedToConnect = ALLOWED_FOR_EVERYONE.includes(integration.id);
 
               return (
                 <div
@@ -573,7 +574,7 @@ export default function IntegrationsHub() {
                           {isConnected && (conn?.visibility === 'company' || !conn?.visibility) && (
                             <span className="flex items-center gap-1 px-1.5 py-0.5 bg-[#006065]/10 text-[#006065] dark:text-[#fad503] rounded-full text-[10px] font-semibold"><Globe className="w-2.5 h-2.5" /> Company</span>
                           )}
-                          {!isAllowedToConnect && (
+                          {!ALLOWED_FOR_EVERYONE.includes(integration.id) && (
                             <span className="px-1.5 py-0.5 bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-full text-[10px] font-bold">
                               Coming Soon
                             </span>

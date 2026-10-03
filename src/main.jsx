@@ -8,20 +8,6 @@ import i18n from '@/i18n/config.js'
 import { I18nextProvider } from 'react-i18next'
 
 
-function showUpdateOverlay() {
-  if (document.getElementById('clipad-update-overlay')) return;
-  const overlay = document.createElement('div');
-  overlay.id = 'clipad-update-overlay';
-  overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,96,101,0.9);backdrop-filter:blur(10px);z-index:999999;display:flex;flex-direction:column;align-items:center;justify-content:center;color:white;font-family:sans-serif;animation: fadeIn 0.3s ease;';
-  overlay.innerHTML = `
-    <style>@keyframes spin { 100% { transform: rotate(360deg); } } @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }</style>
-    <div style="width:40px;height:40px;border:3px solid rgba(255,255,255,0.3);border-top-color:#fad503;border-radius:50%;animation:spin 1s linear infinite;margin-bottom:20px;"></div>
-    <h2 style="margin:0 0 8px 0;font-size:24px;font-weight:bold;">Applying Update</h2>
-    <p style="margin:0;color:rgba(255,255,255,0.8);">Seamlessly transitioning to the latest version...</p>
-  `;
-  document.body.appendChild(overlay);
-}
-
 
 const updateSW = registerSW({
   onNeedRefresh() {
@@ -41,12 +27,12 @@ window.addEventListener('app:refresh', async () => {
     const reg = await navigator.serviceWorker.ready;
     if (reg) {
       await reg.update();
-      setTimeout(() => window.location.reload(true), 1500);
+      window.location.reload(true);
     } else {
-      showUpdateOverlay(); setTimeout(() => window.location.reload(true), 800);
+      window.location.reload(true);
     }
   } else {
-    showUpdateOverlay(); setTimeout(() => window.location.reload(true), 800);
+    window.location.reload(true);
   }
 });
 
@@ -63,7 +49,7 @@ window.addEventListener('vite:preloadError', async (event) => {
       await registration.unregister();
     }
   }
-  showUpdateOverlay(); setTimeout(() => window.location.reload(true), 800);
+  window.location.reload(true);
 });
 
 window.addEventListener('unhandledrejection', async (event) => {
@@ -81,7 +67,7 @@ window.addEventListener('unhandledrejection', async (event) => {
         await registration.unregister();
       }
     }
-    showUpdateOverlay(); setTimeout(() => window.location.reload(true), 800);
+    window.location.reload(true);
     return;
   }
 });
