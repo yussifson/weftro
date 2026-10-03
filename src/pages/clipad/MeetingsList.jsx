@@ -260,6 +260,7 @@ export default function MeetingsList() {
                   <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-[#006065] dark:text-[#fad503] transition-colors ml-2" />
                 </div>
               </div>
+              </div>
             ))}
           </div>
         )}
