@@ -45,7 +45,7 @@ export default function ClipadTopNav({ forceMobile = false }) {
             <button className="flex-shrink-0 group relative p-[1px] rounded-full bg-[#fad503] shadow-[0_4px_20px_rgba(250,213,3,0.35)] hover:shadow-[0_6px_24px_rgba(250,213,3,0.5)] transition-all duration-300 active:scale-95 cursor-pointer">
               <div className="flex items-center h-9 bg-[#fad503] text-[#006065] rounded-full px-4 gap-1.5 font-black">
                 <Video className="w-4 h-4 text-[#006065] group-hover:scale-110 transition-transform" />
-                <span className="text-[13px] font-black text-[#006065] uppercase tracking-wider">Capture</span>
+                <span className="text-[13px] font-black text-[#006065] uppercase tracking-wider">Create</span>
                 <ChevronDown className="w-3.5 h-3.5 text-[#006065] ml-0.5 group-hover:translate-y-0.5 transition-transform" />
               </div>
             </button>
