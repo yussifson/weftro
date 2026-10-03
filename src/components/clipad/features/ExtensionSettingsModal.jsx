@@ -3,20 +3,25 @@ import { X, Shield, Globe, EyeOff, Lock, Laptop, CheckCircle2 } from 'lucide-rea
 import { toast } from '@/components/ui/use-toast';
 
 export default function ExtensionSettingsModal({ onClose }) {
-  const [mode, setMode] = useState('ACTIVE'); // ACTIVE, PAUSED, PRIVATE
+  const [mode, setMode] = useState('ACTIVE');
   const [exclusions, setExclusions] = useState('banking.com\npersonal-email.com');
   const [saved, setSaved] = useState(false);
 
   const handleSave = () => {
-    // Simulated save for Phase 6 Extension Configuration
     setSaved(true);
     toast({ title: 'Preferences Saved', description: 'Browser extension settings updated successfully.' });
     setTimeout(() => setSaved(false), 2000);
   };
 
+  const activeBtnClass = (isActive, color) => {
+    if (isActive) return `p-4 rounded-2xl border text-left transition-all border-${color}-500 bg-${color}-50 dark:bg-${color}-900/10 ring-1 ring-${color}-500`;
+    return 'p-4 rounded-2xl border text-left transition-all border-slate-200 dark:border-slate-800';
+  };
+
   return (
-    <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 font-sans animate-in fade-in duration-200">
+    <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 font-sans">
       <div className="bg-white dark:bg-slate-950 rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col border border-slate-200 dark:border-slate-800">
+        {/* Header */}
         <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-900/50">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/50 rounded-xl flex items-center justify-center">
@@ -32,36 +37,43 @@ export default function ExtensionSettingsModal({ onClose }) {
           </button>
         </div>
 
+        {/* Body */}
         <div className="p-8 space-y-8 overflow-y-auto max-h-[70vh]">
           {/* Capture Modes */}
           <div>
             <h3 className="font-bold text-slate-900 dark:text-white mb-4">Global Capture Mode</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <button 
+              <button
                 onClick={() => setMode('ACTIVE')}
-                className={\`p-4 rounded-2xl border text-left transition-all \${mode === 'ACTIVE' ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/10 ring-1 ring-emerald-500' : 'border-slate-200 dark:border-slate-800 hover:border-emerald-300'}\`}
+                className={mode === 'ACTIVE'
+                  ? 'p-4 rounded-2xl border text-left transition-all border-emerald-500 bg-emerald-50 dark:bg-emerald-900/10 ring-1 ring-emerald-500'
+                  : 'p-4 rounded-2xl border text-left transition-all border-slate-200 dark:border-slate-800 hover:border-emerald-300'}
               >
-                <Globe className={\`w-6 h-6 mb-3 \${mode === 'ACTIVE' ? 'text-emerald-500' : 'text-slate-400'}\`} />
+                <Globe className={`w-6 h-6 mb-3 ${mode === 'ACTIVE' ? 'text-emerald-500' : 'text-slate-400'}`} />
                 <h4 className="font-bold text-slate-900 dark:text-white text-sm mb-1">Capture ON</h4>
                 <p className="text-xs text-slate-500">Continuously capture context for Org Memory.</p>
               </button>
 
-              <button 
+              <button
                 onClick={() => setMode('PRIVATE')}
-                className={\`p-4 rounded-2xl border text-left transition-all \${mode === 'PRIVATE' ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/10 ring-1 ring-amber-500' : 'border-slate-200 dark:border-slate-800 hover:border-amber-300'}\`}
+                className={mode === 'PRIVATE'
+                  ? 'p-4 rounded-2xl border text-left transition-all border-amber-500 bg-amber-50 dark:bg-amber-900/10 ring-1 ring-amber-500'
+                  : 'p-4 rounded-2xl border text-left transition-all border-slate-200 dark:border-slate-800 hover:border-amber-300'}
               >
-                <Shield className={\`w-6 h-6 mb-3 \${mode === 'PRIVATE' ? 'text-amber-500' : 'text-slate-400'}\`} />
+                <Shield className={`w-6 h-6 mb-3 ${mode === 'PRIVATE' ? 'text-amber-500' : 'text-slate-400'}`} />
                 <h4 className="font-bold text-slate-900 dark:text-white text-sm mb-1">Private Session</h4>
-                <p className="text-xs text-slate-500">Capture locally, but never upload to Org Memory.</p>
+                <p className="text-xs text-slate-500">Capture locally, never upload to Org Memory.</p>
               </button>
 
-              <button 
+              <button
                 onClick={() => setMode('PAUSED')}
-                className={\`p-4 rounded-2xl border text-left transition-all \${mode === 'PAUSED' ? 'border-rose-500 bg-rose-50 dark:bg-rose-900/10 ring-1 ring-rose-500' : 'border-slate-200 dark:border-slate-800 hover:border-rose-300'}\`}
+                className={mode === 'PAUSED'
+                  ? 'p-4 rounded-2xl border text-left transition-all border-rose-500 bg-rose-50 dark:bg-rose-900/10 ring-1 ring-rose-500'
+                  : 'p-4 rounded-2xl border text-left transition-all border-slate-200 dark:border-slate-800 hover:border-rose-300'}
               >
-                <EyeOff className={\`w-6 h-6 mb-3 \${mode === 'PAUSED' ? 'text-rose-500' : 'text-slate-400'}\`} />
+                <EyeOff className={`w-6 h-6 mb-3 ${mode === 'PAUSED' ? 'text-rose-500' : 'text-slate-400'}`} />
                 <h4 className="font-bold text-slate-900 dark:text-white text-sm mb-1">Capture OFF</h4>
-                <p className="text-xs text-slate-500">Pause all background visual & text capture entirely.</p>
+                <p className="text-xs text-slate-500">Pause all background capture entirely.</p>
               </button>
             </div>
           </div>
@@ -81,15 +93,16 @@ export default function ExtensionSettingsModal({ onClose }) {
               className="w-full h-32 px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm font-mono focus:border-indigo-500 outline-none resize-none"
             />
           </div>
-          
+
           <div className="bg-blue-50 dark:bg-blue-900/10 p-4 rounded-xl border border-blue-100 dark:border-blue-900/30">
             <h4 className="font-bold text-blue-900 dark:text-blue-200 text-sm mb-1">Privacy Guarantee</h4>
             <p className="text-xs text-blue-700 dark:text-blue-400 leading-relaxed">
-              Sensitive/private sources explicitly excluded here will bypass the Capture Layer entirely and will never automatically become organizational memory. Your visual context remains explicitly under your control.
+              Sensitive or private sources explicitly excluded here will bypass the Capture Layer entirely and will never automatically become organizational memory. Your context remains fully under your control.
             </p>
           </div>
         </div>
 
+        {/* Footer */}
         <div className="p-6 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 flex justify-end gap-3">
           <button onClick={onClose} className="px-5 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-xl transition-colors">
             Cancel
