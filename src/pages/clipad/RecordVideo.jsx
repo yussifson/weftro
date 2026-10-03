@@ -1931,19 +1931,20 @@ export default function RecordVideo() {
                 onChange={e => setDescription(e.target.value)}
                 placeholder="What is this video about?"
                 rows={2}
-                className="w-full px-4 py-3 rounded-xl bg-white dark:bg-slate-900 border border-black/5 dark:border-white/5 shadow-[0_2px_10px_rgba(0,0,0,0.04)] text-white dark:text-white text-sm placeholder-gray-600 focus:outline-none focus:border-indigo-500/60 transition-all resize-none"
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#006065]/20 focus:border-[#006065] transition-all resize-none"
               />
             </div>
 
-            {/* Action Row: Visibility, Lock Settings & Save Buttons */}
+{/* Action Row: Visibility, Lock Settings & Save Buttons */}
             <div className="mt-6 flex flex-col md:flex-row md:items-end justify-between gap-6">
               <div className="flex flex-col sm:flex-row gap-4 flex-1">
                 <div className="flex-1 max-w-[220px]">
-                  <label className="hidden sm:block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Visibility</label>
+                  <label className="block text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wider">Visibility</label>
                   <select
                     value={visibility}
                     onChange={e => setVisibility(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-black/5 dark:border-white/5 shadow-[0_2px_10px_rgba(0,0,0,0.04)] text-white dark:text-white text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all cursor-pointer font-semibold"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#006065]/20 focus:border-[#006065] transition-all appearance-none"
+                    style={{ backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394a3b8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem top 50%', backgroundSize: '0.65rem auto' }}
                   >
                     <option value="internal">Internal (Company Only)</option>
                     <option value="external">External (Anyone with link)</option>
@@ -1951,58 +1952,50 @@ export default function RecordVideo() {
                 </div>
 
                 <div className="flex-1 max-w-[220px]">
-                  <label className="hidden sm:block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Access Control</label>
-                  <div className="relative inline-block w-full">
-                    <select
-                      value={lockType}
-                      onChange={e => setLockType(e.target.value)}
-                      className="w-full pl-10 pr-8 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-black/5 dark:border-white/5 shadow-[0_2px_10px_rgba(0,0,0,0.04)] text-white dark:text-white text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all cursor-pointer font-semibold"
-                    >
+                  <label className="block text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wider">Access Control</label>
+                  <select
+                    value={lockType}
+                    onChange={e => setLockType(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#006065]/20 focus:border-[#006065] transition-all appearance-none"
+                    style={{ backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394a3b8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem top 50%', backgroundSize: '0.65rem auto' }}
+                  >
                     <option value="none">Public (Space Members)</option>
                     <option value="manual">Locked (Only Me)</option>
                     <option value="scheduled">Scheduled Release</option>
                   </select>
-                  <div className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
-                    {lockType === 'none' && <Unlock className="w-4 h-4 text-emerald-500" />}
-                    {lockType === 'manual' && <Lock className="w-4 h-4 text-indigo-500" />}
-                    {lockType === 'scheduled' && <Clock className="w-4 h-4 text-amber-500" />}
-                  </div>
-                  <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
-                    <ChevronDown className="w-4 h-4" />
-                  </div>
-                  </div>
                 </div>
               </div>
 
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 mt-4 md:mt-0">
                 {!activeVideoId && recordingUrl && (
                   <button onClick={() => {
                     const a = document.createElement('a');
                     a.href = recordingUrl;
                     a.download = `recording-${Date.now()}.webm`;
                     a.click();
-                  }} className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 hover:bg-white/15 dark:bg-[#202c33] dark:hover:bg-[#2a3840] border border-black/5 dark:border-white/5 text-white/90 dark:text-white/50 font-semibold text-sm transition-all shadow-sm">
+                  }} className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-bold text-sm transition-all shadow-sm">
                     <Download className="w-4 h-4" /> Download
                   </button>
                 )}
-                <button onClick={discard} className="flex items-center gap-2 px-6 py-3 rounded-xl bg-red-50 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 border border-red-200 dark:border-red-500/30 text-red-600 dark:text-red-400 font-semibold text-sm transition-all shadow-sm">
+                <button onClick={discard} className="flex items-center gap-2 px-6 py-3 rounded-xl bg-red-50 hover:bg-red-100 dark:bg-rose-500/10 dark:hover:bg-rose-500/20 border border-red-200 dark:border-rose-500/30 text-red-600 dark:text-rose-400 font-bold text-sm transition-all shadow-sm">
                   <RotateCcw className="w-4 h-4" /> Discard
                 </button>
-                <button onClick={uploadRecording} disabled={!title.trim() || !selectedSpace} className="flex items-center gap-2 px-8 py-3 rounded-xl bg-[#006065] hover:bg-[#004e52] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold shadow-lg shadow-[#006065]/25 transition-all">
+                <button onClick={uploadRecording} disabled={!title.trim() || !selectedSpace} className="flex items-center gap-2 px-8 py-3 rounded-xl bg-[#006065] hover:bg-[#004a4e] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold shadow-lg shadow-[#006065]/25 transition-all text-sm">
                   <Upload className="w-4 h-4" /> {activeVideoId ? 'Save Details' : 'Save to CliPad'}
                 </button>
               </div>
+            </div>
             </div>
 
             {lockType === 'scheduled' && (
               <div className="mt-4 p-5 bg-amber-50/50 dark:bg-amber-500/10 rounded-xl border border-amber-100/50 dark:border-amber-500/20 backdrop-blur-md flex gap-4 animate-in fade-in slide-in-from-top-2">
                 <div className="flex-1">
                   <label className="block text-xs font-semibold text-amber-800 dark:text-amber-500 mb-1.5">Unlock Date</label>
-                  <input type="date" value={unlockDate} onChange={e => setUnlockDate(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-white dark:bg-slate-900 border border-black/5 dark:border-white/5 text-white dark:text-white text-sm" min={new Date().toISOString().split('T')[0]} />
+                  <input type="date" value={unlockDate} onChange={e => setUnlockDate(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-white dark:bg-slate-900 border border-black/5 dark:border-white/5 text-slate-900 dark:text-white text-sm" min={new Date().toISOString().split('T')[0]} />
                 </div>
                 <div className="flex-1">
                   <label className="block text-xs font-semibold text-amber-800 dark:text-amber-500 mb-1.5">Unlock Time</label>
-                  <input type="time" value={unlockTime} onChange={e => setUnlockTime(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-white dark:bg-slate-900 border border-black/5 dark:border-white/5 text-white dark:text-white text-sm" />
+                  <input type="time" value={unlockTime} onChange={e => setUnlockTime(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-white dark:bg-slate-900 border border-black/5 dark:border-white/5 text-slate-900 dark:text-white text-sm" />
                 </div>
               </div>
             )}
