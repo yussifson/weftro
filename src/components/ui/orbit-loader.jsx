@@ -13,7 +13,7 @@ export function OrbitLoader({ size = 'md', className = '', label = 'Loading', co
     <span
       role="status"
       aria-label={label}
-      className={orbit-loader orbit-loader-- + size +   + className}
+      className={`orbit-loader orbit-loader--${size} ${className}`}
       style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: dim, height: dim }}
     >
       <svg className="animate-spin text-primary" style={{ width: '100%', height: '100%' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
