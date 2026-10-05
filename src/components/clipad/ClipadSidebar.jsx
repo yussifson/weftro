@@ -136,7 +136,7 @@ export default function ClipadSidebar({ forceMobile }) {
     );
   };
 
-  const rawWorkspaceName = user?.user_metadata?.company_name || 'Clipad';
+  const rawWorkspaceName = user?.user_metadata?.company_name || 'KERINT';
   const workspaceName = rawWorkspaceName.split(' ')[0];
   const firstName = user?.full_name?.split(' ')[0] || user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'User';
 

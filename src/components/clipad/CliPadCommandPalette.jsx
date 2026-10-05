@@ -55,7 +55,7 @@ export default function CliPadCommandPalette() {
           meetings: meetingsRes.data || [],
         });
       } catch (err) {
-        console.error("CliPad search failed", err);
+        console.error("KERINT search failed", err);
       } finally {
         setLoading(false);
       }

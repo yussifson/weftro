@@ -2019,7 +2019,7 @@ export default function RecordVideo() {
             </div>
             <button
               onClick={() => {
-                if (window.confirm('Cancel upload? Your recording will be available for local review but not saved to CliPad.')) {
+                if (window.confirm('Cancel upload? Your recording will be available for local review but not saved to KERINT.')) {
                   if (wsRef.current) {
                     try { wsRef.current.close(1000); } catch (_) {}
                   }

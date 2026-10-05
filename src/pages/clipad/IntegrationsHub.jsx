@@ -820,7 +820,7 @@ export default function IntegrationsHub() {
             <h3 className="font-bold text-sm text-amber-600 dark:text-amber-400 mb-1">API Credentials Required</h3>
             <p className="text-sm text-muted-foreground">
               To activate integrations, register OAuth apps on each provider's developer portal and add the credentials as Supabase secrets. 
-              Contact your administrator or check the <strong>CliPad Integration Setup Guide</strong> for step-by-step instructions.
+              Contact your administrator or check the <strong>KERINT Integration Setup Guide</strong> for step-by-step instructions.
             </p>
           </div>
           </div>

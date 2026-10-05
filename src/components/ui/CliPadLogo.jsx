@@ -1,46 +1,29 @@
-import React, { useId } from 'react';
+import React from 'react';
 
-export function CliPadLogo({ className = "", size = 24, color = "#00beac", dotColor = "#fad503" }) {
-  const gradientId = useId().replace(/:/g, '');
-  const gradRef = `url(#clipad-grad-${gradientId})`;
-
+export function KerintLogo({ className = '', style = {} }) {
   return (
-    <svg
-      className={className}
-      width={size}
-      height={size}
-      viewBox="0 0 32 32"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <defs>
-        <linearGradient id={`clipad-grad-${gradientId}`} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor={color} stopOpacity="1" />
-          <stop offset="100%" stopColor={color} stopOpacity="0.7" />
-        </linearGradient>
-      </defs>
-      
-      {/* Outer abstract 'C' curve representing CliPad and Communication */}
-      <path 
-        d="M26 12 C26 5, 20 2, 16 2 C8 2, 2 8, 2 16 C2 24, 8 30, 16 30 C22 30, 26 26, 26 26" 
-        stroke={gradRef} 
-        strokeWidth="4" 
-        strokeLinecap="round" 
-        strokeLinejoin="round" 
-      />
-      
-      {/* Inner video/play element */}
-      <path 
-        d="M12 10 L22 16 L12 22 Z" 
-        fill={gradRef} 
-      />
-      
-      {/* Dot for recording/live aspect */}
-      <circle cx="26" cy="6" r="3" fill={dotColor} />
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="-14 -14 205 76" className={className} style={{ width: 'auto', height: '100%', ...style }} role="img">
+      <title>KERINT</title>
+      <g transform="translate(-8 -8)">
+        <path stroke="#006065" d="M33 11.5H11.5V52.5H52.5V33" fill="none" strokeWidth="7" strokeLinejoin="miter"/>
+        <polygon fill="#fad503" points="44,11 53,20 44,29 35,20"/>
+      </g>
+      <g transform="translate(68 11.6) scale(.62)">
+        <g fill="#006065">
+          <rect x="0" y="0" width="6" height="40"/>
+          <polygon points="20,0 28,0 17,20 28,40 20,40 9,20"/>
+          <path transform="translate(34 0)" d="M0 0H24V6H6V17H20V23H6V34H24V40H0Z"/>
+          <path transform="translate(65 0)" fillRule="evenodd" d="M0 0H15A11 11 0 0 1 15 22H6V40H0ZM6 6H15A5 5 0 0 1 15 16H6Z"/>
+          <polygon transform="translate(65 0)" points="11,21 18.5,21 26,40 18,40"/>
+          <rect x="97" y="0" width="6" height="40"/>
+          <path transform="translate(112 0)" d="M0 0H7L22 28V0H28V40H21L6 12V40H0Z"/>
+          <path transform="translate(147 0)" d="M0 0H28V6H17V40H11V6H0Z"/>
+        </g>
+      </g>
     </svg>
   );
 }
 
-export default CliPadLogo;
-
-
+export const CliPadLogo = KerintLogo;
+export const Logo = KerintLogo;
+export default KerintLogo;

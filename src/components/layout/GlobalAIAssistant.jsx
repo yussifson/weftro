@@ -45,13 +45,13 @@ const PAGE_SUGGESTIONS = {
 
 // Page Context Map 
 const PAGE_CONTEXT = {
-  '/dashboard': { title: 'Dashboard', suite: 'Clipad', desc: 'main dashboard with activity and overview'},
-  '/spaces': { title: 'Spaces', suite: 'Clipad', desc: 'team knowledge spaces'},
-  '/meetings': { title: 'Meetings', suite: 'Clipad', desc: 'recorded meetings and transcripts'},
-  '/videos': { title: 'Videos', suite: 'Clipad', desc: 'async video recordings and memory vault'},
-  '/health': { title: 'Knowledge Health', suite: 'Clipad', desc: 'knowledge graph health and stale metrics'},
-  '/settings': { title: 'Settings', suite: 'Clipad', desc: 'user and workspace settings'},
-  '/': { title: 'Dashboard', suite: 'Clipad', desc: 'main dashboard'},
+  '/dashboard': { title: 'Dashboard', suite: 'KERINT', desc: 'main dashboard with activity and overview'},
+  '/spaces': { title: 'Spaces', suite: 'KERINT', desc: 'team knowledge spaces'},
+  '/meetings': { title: 'Meetings', suite: 'KERINT', desc: 'recorded meetings and transcripts'},
+  '/videos': { title: 'Videos', suite: 'KERINT', desc: 'async video recordings and memory vault'},
+  '/health': { title: 'Knowledge Health', suite: 'KERINT', desc: 'knowledge graph health and stale metrics'},
+  '/settings': { title: 'Settings', suite: 'KERINT', desc: 'user and workspace settings'},
+  '/': { title: 'Dashboard', suite: 'KERINT', desc: 'main dashboard'},
   '/promotions': { title: 'Promotions', suite: 'Retail', desc: 'discounts and campaigns'},
   
   // Hotel
@@ -1201,7 +1201,7 @@ RULES FOR MULTI-STEP REASONING & AUTOMATIONS:
     </div>
   ) : (
     <div className="w-8 h-8 rounded-full bg-transparent flex items-center justify-center shrink-0 mt-0.5 shadow-sm border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-      <img src="/clipad-app-icon.png" alt="CliPad" className="w-5 h-5 object-contain" />
+      <img src="/clipad-app-icon.png" alt="KERINT" className="w-5 h-5 object-contain" />
     </div>
   )}
   <div className={`px-5 py-3.5 rounded-2xl text-[14px] leading-relaxed max-w-[85%] break-words ${

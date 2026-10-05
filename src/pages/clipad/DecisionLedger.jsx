@@ -58,7 +58,7 @@ export default function DecisionLedger() {
         _type: 'native',
         id: d.id,
         nativeId: d.id,
-        provider: 'clipad',
+        provider: 'KERINT',
         title: d.decision_text,
         imported_at: d.created_at,
         ai_entities: { decisions: [d.decision_text] },

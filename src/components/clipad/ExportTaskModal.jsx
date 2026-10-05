@@ -19,8 +19,8 @@ export default function ExportTaskModal({ isOpen, onClose, task, meetingTitle, m
   const meetingUrl = meetingId ? `${window.location.origin}/meetings/${meetingId}` : window.location.href;
   const exportPayload = {
     title: task.title || task.name,
-    description: `Originating from CliPad Meeting: "${meetingTitle || 'Meeting'}"\n\nDeep Link: ${meetingUrl}\n\nTask Detail:\n${task.title || task.name}`,
-    source: 'CliPad 2.0 Meeting-to-Execution Pipeline',
+    description: `Originating from KERINT Meeting: "${meetingTitle || 'Meeting'}"\n\nDeep Link: ${meetingUrl}\n\nTask Detail:\n${task.title || task.name}`,
+    source: 'KERINT 2.0 Meeting-to-Execution Pipeline',
   };
 
   const handleExport = () => {

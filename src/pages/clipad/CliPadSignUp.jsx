@@ -5,7 +5,7 @@ import { supabase } from '@/api/supabaseClient';
 import { useToast } from '@/components/ui/use-toast';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { Logo } from '@/components/ui/Logo';
-import { CliPadLogo } from '@/components/ui/CliPadLogo';
+import { KERINTLogo } from '@/components/ui/KERINTLogo';
 
 export default function CliPadSignUp() {
   const navigate = useNavigate();
@@ -65,7 +65,7 @@ export default function CliPadSignUp() {
   return (
     <>
       <Helmet>
-        <title>Sign Up â€” CliPad Collaborative Workspace</title>
+        <title>Sign Up â€” KERINT Collaborative Workspace</title>
         <meta name="description" content="Create your enterprise-grade collaborative productivity workspace." />
         <link rel="icon" type="image/svg+xml" href="/clipad-favicon-round.svg" />
       </Helmet>
@@ -77,10 +77,8 @@ export default function CliPadSignUp() {
             
             {/* Top Logo */}
             <div className="flex items-center gap-2.5 mb-6 sm:mb-8">
-              <CliPadLogo size={32} color="#00beac" dotColor="#fad503" />
-              <span className="font-extrabold text-2xl tracking-tight text-slate-900">
-                CliPad
-              </span>
+              <KERINTLogo size={32} color="#00beac" dotColor="#fad503" />
+              <span className="font-extrabold text-2xl tracking-tight text-slate-900">KERINT</span>
             </div>
 
             {/* Title & Subtitle */}
@@ -206,7 +204,7 @@ export default function CliPadSignUp() {
           {/* Top Branding & Headline */}
           <div className="relative z-10">
             <div className="flex items-center gap-2 mb-4">
-              <CliPadLogo size={32} color="#ffffff" dotColor="#fad503" />
+              <KERINTLogo size={32} color="#ffffff" dotColor="#fad503" />
             </div>
             <h2 className="text-3xl lg:text-4xl font-extrabold text-white leading-tight tracking-tight max-w-md mt-2">
               AI-Powered Organizational Memory & Intelligence
@@ -231,8 +229,8 @@ export default function CliPadSignUp() {
                 <div className="w-44 bg-[#006065] text-white p-3 flex flex-col justify-between shrink-0">
                   <div>
                     <div className="flex items-center gap-1.5 mb-4">
-                      <CliPadLogo size={16} color="#00beac" dotColor="#fad503" />
-                      <span className="font-bold tracking-tight text-xs text-white">CliPad V3</span>
+                      <KERINTLogo size={16} color="#00beac" dotColor="#fad503" />
+                      <span className="font-bold tracking-tight text-xs text-white">KERINT V3</span>
                     </div>
 
                     <div className="text-[9px] uppercase font-bold text-white/40 tracking-wider mb-1.5">General</div>
@@ -310,7 +308,7 @@ export default function CliPadSignUp() {
                   </div>
 
                   <div className="flex items-center justify-between text-[8px] text-slate-400 pt-1.5 border-t border-slate-100">
-                    <span>CliPad V3</span>
+                    <span>KERINT V3</span>
                     <span className="text-[#00beac] font-bold">â— System Operational</span>
                   </div>
                 </div>

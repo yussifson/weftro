@@ -109,7 +109,7 @@ export default function CompanyManagement() {
               <TableHead>Subdomain</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Slate Plan</TableHead>
-              <TableHead>CliPad Plan</TableHead>
+              <TableHead>KERINT Plan</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>

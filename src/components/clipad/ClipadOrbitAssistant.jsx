@@ -666,7 +666,7 @@ export default function ClipadOrbitAssistant({ isOpen = true, onClose, spaceId =
           content: m.text,
         }));
 
-        const systemPrompt = `You are Orbit â€” CliPad's autonomous AI agent and organizational co-pilot. You are NOT a search tool. Your unique purpose:
+        const systemPrompt = `You are Orbit â€” KERINT's autonomous AI agent and organizational co-pilot. You are NOT a search tool. Your unique purpose:
 â€¢ You REASON across the entire workspace to surface insights, patterns, and risks the user may not have noticed.
 â€¢ You EXECUTE actions directly: create tasks, spaces, documents, log blockers, record decisions, schedule meetings.
 â€¢ You MONITOR: if you see a pattern in the data (e.g., blocked tasks, missed commitments, overdue items), proactively flag it.

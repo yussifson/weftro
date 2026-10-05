@@ -212,8 +212,8 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
       const { data, error } = await db.functions.invoke('send-email', {
         body: {
           to: [inviteEmail.trim()],
-          subject: "You're invited to a video meeting on CliPad",
-          html: `<p>Please join my video meeting using this secure link:</p><p><a href="${properLink}">${properLink}</a></p><p>Powered by CliPad Intelligence.</p>`
+          subject: "You're invited to a video meeting on KERINT",
+          html: `<p>Please join my video meeting using this secure link:</p><p><a href="${properLink}">${properLink}</a></p><p>Powered by KERINT Intelligence.</p>`
         }
       });
       
@@ -225,8 +225,8 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
       setShowInvite(false);
     } catch (error) {
       console.warn("API invite failed, using mailto fallback:", error);
-      const subject = encodeURIComponent("You're invited to a video meeting on CliPad");
-      const body = encodeURIComponent(`Please join my video meeting using this secure link:\n\n${properLink}\n\nPowered by CliPad Intelligence.`);
+      const subject = encodeURIComponent("You're invited to a video meeting on KERINT");
+      const body = encodeURIComponent(`Please join my video meeting using this secure link:\n\n${properLink}\n\nPowered by KERINT Intelligence.`);
       // Prevent page unload by using window.open instead of window.location.href
       window.open(`mailto:${inviteEmail.trim()}?subject=${subject}&body=${body}`, '_blank');
       toast({ title: "Opening Email Client", description: "Could not send via server. Opening your email app to send the invite." });
@@ -652,7 +652,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
 
     setIsAiLoading(true);
     setAiResponse(null);
-    toast({ title: "CliPad AI", description: "Generating meeting summary and action items..."});
+    toast({ title: "KERINT AI", description: "Generating meeting summary and action items..."});
     try {
       // Fix #7: Use the ref (always up to date) and pass the real room name
       const meetingContext = transcriptDataRef.current.map(t => `${t.name}: ${t.text}`).join('\n');
@@ -689,7 +689,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
 
     setIsAiLoading(true);
     setAiResponse(null);
-    toast({ title: "CliPad AI", description: "Drafting follow-up email..."});
+    toast({ title: "KERINT AI", description: "Drafting follow-up email..."});
     try {
       const { data, error } = await supabase.functions.invoke('clipad-smart-followup', {
         body: { type: 'meeting_followup', targetId: 'dummy-room' }

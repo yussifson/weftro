@@ -508,7 +508,7 @@ export const AuthProvider = ({ children }) => {
       // Update favicon and title if company data has it
       // Clipad pages always use CliPad branding regardless of company
       const clipadRoutes = ['/chat', '/analytics', '/meetings', '/spaces', '/dashboard', '/settings', '/support', '/search', '/record', '/watch', '/journey', '/decisions', '/integrations', '/action-items', '/knowledge-graph', '/timeline', '/health', '/integration-analytics', '/clipad'];
-      const isClipadRoute = window.location.hostname.includes('clipad') || clipadRoutes.some(r => window.location.pathname.startsWith(r));
+      const isClipadRoute = window.location.hostname.includes('KERINT') || clipadRoutes.some(r => window.location.pathname.startsWith(r));
 
       if (isClipadRoute) {
         let link = document.querySelector("link[rel~='icon']");
@@ -518,7 +518,7 @@ export const AuthProvider = ({ children }) => {
           document.getElementsByTagName('head')[0].appendChild(link);
         }
         link.href = '/clipad-favicon-round.svg';
-        document.title = 'CliPad';
+        document.title = 'KERINT';
       } else if (companyData) {
         if (companyData.favicon_url) {
           let link = document.querySelector("link[rel~='icon']");

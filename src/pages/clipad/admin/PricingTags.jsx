@@ -93,12 +93,12 @@ export default function PricingTags() {
             supabase.functions.invoke('send-email', {
               body: {
                 to: adminEmails,
-                subject: `CliPad Plan Upgraded - ${receiptNumber}`,
+                subject: `KERINT Plan Upgraded - ${receiptNumber}`,
                 html: `
                   <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; background: #f8fafc; padding: 40px; color: #0f172a;">
                     <div style="background: white; border: 1px solid #e2e8f0; border-radius: 20px; overflow: hidden;">
                       <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; text-align: center; padding: 32px;">
-                        <div style="font-size: 22px; font-weight: 900; margin-bottom: 8px;">CliPad</div>
+                        <div style="font-size: 22px; font-weight: 900; margin-bottom: 8px;">KERINT</div>
                         <div style="font-size: 12px; font-weight: 500;">Plan Upgraded by Admin</div>
                         <div style="font-size: 10px; margin-top: 12px; font-family: monospace;">#${receiptNumber}</div>
                       </div>
@@ -107,7 +107,7 @@ export default function PricingTags() {
                         <hr style="border: 0; border-top: 1px dashed #e2e8f0; margin-bottom: 24px;" />
                         <p><strong>Date:</strong> ${new Date().toLocaleString()}</p>
                         <p><strong>Status:</strong> Complimentary Upgrade / Invoiced</p>
-                        <p style="margin-top: 24px; font-size: 12px; color: #64748b; text-align: center;">You can view and download this receipt in your CliPad Billing Settings at any time.</p>
+                        <p style="margin-top: 24px; font-size: 12px; color: #64748b; text-align: center;">You can view and download this receipt in your KERINT Billing Settings at any time.</p>
                       </div>
                     </div>
                   </div>
@@ -121,7 +121,7 @@ export default function PricingTags() {
           user_id: p.id,
           type: 'plan_upgrade',
           title: `Your plan has been upgraded to ${resolvedPlan.charAt(0).toUpperCase() + resolvedPlan.slice(1)}!`,
-          message: `An admin has upgraded your CliPad workspace to the ${resolvedPlan.toUpperCase()} plan. Receipt: ${receiptNumber}`,
+          message: `An admin has upgraded your KERINT Workspace to the ${resolvedPlan.toUpperCase()} plan. Receipt: ${receiptNumber}`,
           link: '/clipad/billing',
           is_read: false,
         }));
@@ -132,7 +132,7 @@ export default function PricingTags() {
 
       toast({
         title: "Plan Updated Successfully",
-        description: `The company's CliPad plan has been upgraded to ${tagName || 'Free Tier'}.`
+        description: `The company's KERINT plan has been upgraded to ${tagName || 'Free Tier'}.`
       });
       fetchData();
     } else {
@@ -197,7 +197,7 @@ export default function PricingTags() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Pricing & Plans</h1>
-          <p className="text-muted-foreground mt-2">Manage CliPad plans separately from global Slate plans.</p>
+          <p className="text-muted-foreground mt-2">Manage KERINT plans separately from global Slate plans.</p>
         </div>
       </div>
 
@@ -214,7 +214,7 @@ export default function PricingTags() {
                 <TableHead>Company Name</TableHead>
                 <TableHead>Source</TableHead>
                 <TableHead>Global Slate Plan</TableHead>
-                <TableHead>CliPad Plan</TableHead>
+                <TableHead>KERINT Plan</TableHead>
                 <TableHead className="text-right">Action</TableHead>
               </TableRow>
             </TableHeader>
@@ -231,7 +231,7 @@ export default function PricingTags() {
                     {company.subscription_plan ? (
                       <span className="px-2 py-1 bg-slate-800 text-slate-100 rounded-md text-[10px] font-bold uppercase tracking-wider">Slate Member</span>
                     ) : (
-                      <span className="px-2 py-1 bg-indigo-500/10 text-indigo-500 rounded-md text-[10px] font-bold uppercase tracking-wider">CliPad Only</span>
+                      <span className="px-2 py-1 bg-indigo-500/10 text-indigo-500 rounded-md text-[10px] font-bold uppercase tracking-wider">KERINT Only</span>
                     )}
                   </TableCell>
                   <TableCell>
@@ -248,7 +248,7 @@ export default function PricingTags() {
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="outline" size="sm" className="gap-2">
-                          Change CliPad Plan <ChevronDown className="w-4 h-4" />
+                          Change KERINT Plan <ChevronDown className="w-4 h-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
@@ -278,7 +278,7 @@ export default function PricingTags() {
 
         <TabsContent value="tags" className="border border-border rounded-xl bg-card p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold">CliPad Pricing Tiers</h2>
+            <h2 className="text-xl font-bold">KERINT Pricing Tiers</h2>
             <Dialog open={isDialogOpen} onOpenChange={(open) => {
               setIsDialogOpen(open);
               if(!open) { setEditingTag(null); setFormData({ name: '', description: '', price: 0, currency: 'USD' }); }

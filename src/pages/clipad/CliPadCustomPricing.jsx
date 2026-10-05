@@ -233,7 +233,7 @@ export default function CliPadCustomPricing() {
               <div className="text-primary transition-transform group-hover:scale-105">
                 <CliPadLogo size={28} />
               </div>
-              <span className="font-bold text-lg tracking-tight">CliPad</span>
+              <span className="font-bold text-lg tracking-tight">KERINT</span>
             </Link>
           </div>
 
