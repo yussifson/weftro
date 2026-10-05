@@ -1,4 +1,4 @@
-﻿
+
 import React from 'react';
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import { Toaster } from "@/components/ui/toaster";
@@ -76,6 +76,12 @@ const AdminRoute = ({ children }) => {
   return children;
 };
 
+// Redirect / and unknown routes: logged-in → dashboard, guest → login
+const RootRedirect = () => {
+  const { user } = useAuth();
+  return <Navigate to={user ? '/dashboard' : '/login'} replace />;
+};
+
 function App() {
   return (
     <React.StrictMode>
@@ -95,7 +101,7 @@ function App() {
                         <Route path="/custom-pricing" element={<CliPadCustomPricing />} />
                         
                         <Route element={<ClipadLayout />}>
-                          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                          <Route path="/" element={<RootRedirect />} />
                           <Route path="/dashboard" element={<CliPadDashboard />} />
                           <Route path="/analytics" element={<AnalyticsPageRouter />} />
                           <Route path="/enterprise" element={<CliPadEnterpriseDashboard />} />
@@ -141,7 +147,7 @@ function App() {
                           <Route path="custom-requests" element={<SuperAdminRoute><CustomRequests /></SuperAdminRoute>} />
                         </Route>
 
-                        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                        <Route path="*" element={<RootRedirect />} />
                       </Routes>
                     </React.Suspense>
                   </BrowserRouter>
