@@ -11,7 +11,7 @@ import { CliPadLogo } from '@/components/ui/CliPadLogo';
 export default function CliPadLogin() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const redirectUrl = searchParams.get('redirect') || '/search';
+  const redirectUrl = searchParams.get('redirect') || '/dashboard';
   const { toast } = useToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/clipad-logo-green.svg" />
+    <link rel="icon" type="image/svg+xml" href="/clipad-logo.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>KERINT - #1 Enterprise AI-Powered Organizational Memory Platform</title>
     <meta name="description" content="KERINT is an enterprise-grade collaborative productivity workspace that unifies chat, spaces, video meetings, and action items in one place." />
@@ -58,9 +58,9 @@
       .app-preloader-spinner {
         width: 32px;
         height: 32px;
-        border: 2px solid rgba(16, 185, 129, 0.15); /* very light emerald */
+        border: 2px solid rgba(0, 96, 101, 0.15); /* very light teal */
         border-radius: 50%;
-        border-top-color: #10B981; /* emerald-500 */
+        border-top-color: #006065; /* KERINT teal */
         animation: spin 1s linear infinite;
         margin-bottom: 16px;
       }
@@ -126,12 +126,13 @@
       (function() {
         var host = window.location.hostname.toLowerCase();
         var isCapacitor = !!window.Capacitor || navigator.userAgent.toLowerCase().includes('capacitor');
-        var isClipad = host.includes('clipad');
-        var isSlate = host.includes('slate');
-        
+        var isClipad = host.includes('clipad') || host.includes('kerint') || host.includes('optavel');
+        var isSlate = host.includes('slate') && !isClipad;
+
         var appTitle = 'Workspace';
-        var faviconHref = '/optavel-favicon.svg';
-        var logoSrc = '/logo.png';
+        var faviconHref = '/clipad-logo.svg';
+        var faviconType = 'image/svg+xml';
+        var logoSrc = '/clipad-logo-green.svg';
 
         if (isClipad) {
           appTitle = 'KERINT - #1 Enterprise AI-Powered Organizational Memory Platform';
@@ -140,24 +141,23 @@
         } else if (isSlate) {
           appTitle = 'Slate - The Unified Workspace That Turns AI Into Clear Profit';
           faviconHref = '/slate-favicon.svg';
+          faviconType = 'image/svg+xml';
           logoSrc = '/slate-logo.png';
         } else {
-          // Account / Optavel / Default
-          appTitle = 'Optavel - Experience Infinite Scale With Next-Gen Enterprise Products';
-          faviconHref = '/optavel-favicon.svg'; // Main company favicon
-          logoSrc = '/optavel-favicon.svg'; // Main company logo
+          appTitle = 'KERINT - #1 Enterprise AI-Powered Organizational Memory Platform';
+          faviconHref = '/clipad-logo.svg';
+          logoSrc = '/clipad-logo-green.svg';
         }
 
         document.title = appTitle;
         var link = document.querySelector("link[rel~='icon']");
-        if (link) {
-          link.href = faviconHref;
-        } else {
+        if (!link) {
           link = document.createElement('link');
           link.rel = 'icon';
-          link.href = faviconHref;
           document.head.appendChild(link);
         }
+        link.type = faviconType;
+        link.href = faviconHref;
 
         var logoEl = document.getElementById('dynamic-preloader-logo');
         if (logoEl) {

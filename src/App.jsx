@@ -99,9 +99,9 @@ function App() {
                         <Route path="/login" element={<CliPadLogin />} />
                         <Route path="/signup" element={<CliPadSignUp />} />
                         <Route path="/custom-pricing" element={<CliPadCustomPricing />} />
-                        
+                        <Route path="/" element={<RootRedirect />} />
+
                         <Route element={<ClipadLayout />}>
-                          <Route path="/" element={<RootRedirect />} />
                           <Route path="/dashboard" element={<CliPadDashboard />} />
                           <Route path="/analytics" element={<AnalyticsPageRouter />} />
                           <Route path="/enterprise" element={<CliPadEnterpriseDashboard />} />
