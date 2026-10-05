@@ -85,63 +85,70 @@ html, body {
   }
 
   .dark {
-    --bg-base-rgb-dark: 15, 20, 32;
+    --bg-base-rgb-dark: 10, 15, 28;
 
-    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.10); }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.18); }
 
-    /* SaaSPO Style - Main Background #0F1420 */
-    --background: 222 36% 9.2%;
-    
-    /* Primary White Typography #FFFFFF */
-    --foreground: 0 0% 100%;
-    
-    /* Secondary Surface / Card Background #151c2d */
-    --card: 222 30% 13%;
-    --card-foreground: 0 0% 100%;
-    --popover: 222 36% 9.2%;
-    --popover-foreground: 0 0% 100%;
-    
-    /* Brand Green Accent #0AF395 */
-    --primary: 51 98% 50%; /* Yellow #fad503 */
-    --primary-foreground: 222 36% 9.2%; /* Dark text on bright green */
-    
-    /* Secondary Surface elements */
-    --secondary: 222 30% 13%;
-    --secondary-foreground: 0 0% 100%;
-    
-    /* Secondary Text #A7B0BA */
-    --muted: 222 30% 13%;
-    --muted-foreground: 212 11% 69%;
-    
-    /* Hover / Borders / Divider Color #222b3e */
-    --accent: 222 25% 18%;
-    --accent-foreground: 0 0% 100%;
-    
-    /* Destructive Accents */
+    /* ═══════════════════════════════════════════════ */
+    /* MIDNIGHT NAVY — KERINT Corporate Dark Theme    */
+    /* Deep blue-black with cold undertones.          */
+    /* Gold (#fad503) stays vivid; teal reads as link */
+    /* ═══════════════════════════════════════════════ */
+
+    /* Base canvas  #0A0F1C */
+    --background: 223 47% 7%;
+
+    /* Primary text  #E8EDF2 — warm off-white */
+    --foreground: 210 28% 93%;
+
+    /* Card / raised surface  #131A2C */
+    --card: 223 40% 12%;
+    --card-foreground: 210 28% 93%;
+    --popover: 223 40% 12%;
+    --popover-foreground: 210 28% 93%;
+
+    /* Brand primary — Dark Teal #006065 */
+    --primary: 183 100% 20%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary surface  #1A2238 */
+    --secondary: 224 37% 16%;
+    --secondary-foreground: 210 28% 93%;
+
+    /* Muted / dimmed text  #94A3B8 */
+    --muted: 223 40% 12%;
+    --muted-foreground: 215 20% 65%;
+
+    /* Accent / hover surface  #2B3B56 */
+    --accent: 218 33% 25%;
+    --accent-foreground: 210 28% 93%;
+
+    /* Destructive */
     --destructive: 0 62% 30%;
     --destructive-foreground: 0 0% 98%;
-    
-    /* Border / Divider Color #222b3e */
-    --border: 222 25% 18%;
-    --input: 222 25% 18%;
-    --ring: 156 92% 50%;
-    
-    --chart-1: 156 92% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 38 92% 50%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-    
-    /* Sidebar matching the SaaSPO palette */
-    --sidebar-background: 222 36% 9.2%;
-    --sidebar-foreground: 212 11% 69%;
-    --sidebar-primary: 156 92% 50%;
-    --sidebar-primary-foreground: 213 29% 6%;
-    --sidebar-accent: 209 31% 16%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 209 31% 16%;
-    --sidebar-ring: 156 92% 50%;
+
+    /* Borders & inputs  #1F2E47 */
+    --border: 218 39% 20%;
+    --input: 218 39% 20%;
+    --ring: 183 100% 20%;
+
+    /* Charts — brand-aware palette */
+    --chart-1: 183 100% 20%;   /* teal */
+    --chart-2: 51 98% 50%;     /* gold  #fad503 */
+    --chart-3: 183 50% 60%;    /* light teal */
+    --chart-4: 280 65% 60%;    /* purple accent */
+    --chart-5: 340 75% 55%;    /* rose accent */
+
+    /* Sidebar  #0D1626 — slightly lighter than canvas */
+    --sidebar-background: 218 49% 10%;
+    --sidebar-foreground: 215 20% 65%;
+    --sidebar-primary: 183 100% 20%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 218 33% 25%;
+    --sidebar-accent-foreground: 210 28% 93%;
+    --sidebar-border: 218 39% 20%;
+    --sidebar-ring: 183 100% 20%;
   }
 }
 
@@ -501,7 +508,7 @@ html, body {
     --color-module-career: hsl(152 76% 41%);
     --color-module-lms: hsl(152 76% 41%);
     --color-module-online: hsl(152 76% 41%);
-    --color-accent-primary: hsl(25 95% 53%);
+    --color-accent-primary: hsl(51 98% 50%);
     --color-accent-subtle: hsl(25 95% 53% / 0.1);
     
     /* Additional surface colors */
@@ -517,21 +524,21 @@ html, body {
     ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); }
     ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
 
-    --color-module-orbit: hsl(152 76% 50%);
-    --color-module-academic: hsl(152 76% 50%);
-    --color-module-admissions: hsl(152 76% 50%);
-    --color-module-courses: hsl(152 76% 50%);
-    --color-module-students: hsl(152 76% 50%);
-    --color-module-exams: hsl(152 76% 50%);
-    --color-module-faculty: hsl(152 76% 50%);
-    --color-module-research: hsl(152 76% 50%);
-    --color-module-library: hsl(152 76% 50%);
-    --color-module-hostel: hsl(152 76% 50%);
-    --color-module-finance: hsl(152 76% 50%);
-    --color-module-career: hsl(152 76% 50%);
-    --color-module-lms: hsl(152 76% 50%);
-    --color-module-online: hsl(152 76% 50%);
-    --color-accent-primary: hsl(25 95% 53%);
+    --color-module-orbit: hsl(183 100% 20%);
+    --color-module-academic: hsl(183 100% 20%);
+    --color-module-admissions: hsl(183 100% 20%);
+    --color-module-courses: hsl(183 100% 20%);
+    --color-module-students: hsl(183 100% 20%);
+    --color-module-exams: hsl(183 100% 20%);
+    --color-module-faculty: hsl(183 100% 20%);
+    --color-module-research: hsl(183 100% 20%);
+    --color-module-library: hsl(183 100% 20%);
+    --color-module-hostel: hsl(183 100% 20%);
+    --color-module-finance: hsl(183 100% 20%);
+    --color-module-career: hsl(183 100% 20%);
+    --color-module-lms: hsl(183 100% 20%);
+    --color-module-online: hsl(183 100% 20%);
+    --color-accent-primary: hsl(51 98% 50%);
     --color-accent-subtle: hsl(25 95% 53% / 0.2);
 
     /* Additional surface colors */
@@ -556,11 +563,11 @@ html, body {
 /* Focus States */
 *:focus-visible {
   outline: none !important;
-  box-shadow: 0 0 0 3px rgba(25, 184, 110, 0.15) !important;
+  box-shadow: 0 0 0 3px rgba(0, 96, 101, 0.15) !important;
 }
 
 .dark *:focus-visible {
-  box-shadow: 0 0 0 3px rgba(31, 224, 134, 0.15) !important;
+  box-shadow: 0 0 0 3px rgba(0, 96, 101, 0.25) !important;
 }
 
 /* Button Refinements */
