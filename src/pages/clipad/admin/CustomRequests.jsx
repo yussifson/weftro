@@ -35,7 +35,7 @@ const STATUS_CONFIG = {
   pending: { label: 'Pending Review', color: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20' },
   contacted: { label: 'Contacted', color: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20' },
   in_progress: { label: 'In Negotiation', color: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20' },
-  closed: { label: 'Closed / Won', color: 'bg-[#006065]/10 text-[#006065] dark:text-[#00beac] border-[#006065]/20' },
+  closed: { label: 'Closed / Won', color: 'bg-[#006065] dark:bg-[#131A2C]/10 text-[#006065] dark:text-[#00beac] border-[#006065]/20' },
 };
 
 export default function CustomRequests() {
@@ -438,7 +438,7 @@ export default function CustomRequests() {
           />
         </div>
 
-        <div className="flex items-center gap-1.5 p-1 bg-[#006065] text-white border border-white/15/10 dark:bg-[#006065] border border-border rounded-xl overflow-x-auto">
+        <div className="flex items-center gap-1.5 p-1 bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/10 dark:bg-[#006065] dark:bg-[#131A2C] border border-border rounded-xl overflow-x-auto">
           {['all', 'pending', 'contacted', 'in_progress', 'closed'].map((st) => (
             <button
               key={st}
@@ -477,7 +477,7 @@ export default function CustomRequests() {
         ) : (
           <div className="overflow-x-auto">
             <Table>
-              <TableHeader className="bg-transparent/50 dark:bg-[#006065] text-white border border-white/15/5">
+              <TableHeader className="bg-transparent/50 dark:bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/5">
                 <TableRow className="border-b border-border">
                   <TableHead className="w-[180px] font-bold text-xs uppercase tracking-wider text-muted-foreground">Prospect & Company</TableHead>
                   <TableHead className="font-bold text-xs uppercase tracking-wider text-muted-foreground">Seats / Scale</TableHead>
@@ -492,7 +492,7 @@ export default function CustomRequests() {
                 {filteredRequests.map((req) => {
                   const statusInfo = STATUS_CONFIG[req.status] || STATUS_CONFIG.pending;
                   return (
-                    <TableRow key={req.id || req.request_code} className="hover:bg-transparent/60 dark:hover:bg-[#006065]/40 transition-colors">
+                    <TableRow key={req.id || req.request_code} className="hover:bg-transparent/60 dark:hover:bg-[#006065] dark:bg-[#131A2C]/40 transition-colors">
                       <TableCell className="py-4">
                         <div className="space-y-1">
                           <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
@@ -547,7 +547,7 @@ export default function CustomRequests() {
                                 onClick={() => handleUpdateStatus(req.id, stKey)}
                                 className="text-xs font-semibold gap-2"
                               >
-                                <span className={`w-2 h-2 rounded-full ${stKey === 'closed' ? 'bg-[#006065]' : stKey === 'in_progress' ? 'bg-purple-500' : stKey === 'contacted' ? 'bg-blue-500' : 'bg-amber-500'}`} />
+                                <span className={`w-2 h-2 rounded-full ${stKey === 'closed' ? 'bg-[#006065] dark:bg-[#131A2C]' : stKey === 'in_progress' ? 'bg-purple-500' : stKey === 'contacted' ? 'bg-blue-500' : 'bg-amber-500'}`} />
                                 {stVal.label}
                               </DropdownMenuItem>
                             ))}
@@ -684,7 +684,7 @@ export default function CustomRequests() {
               {selectedRequest.requirements && (
                 <div>
                   <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Custom Requirements & Notes</h4>
-                  <div className="p-4 rounded-xl bg-transparent dark:bg-[#006065] text-white border border-white/15/5 border border-border text-xs text-foreground leading-relaxed whitespace-pre-wrap">
+                  <div className="p-4 rounded-xl bg-transparent dark:bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/5 border border-border text-xs text-foreground leading-relaxed whitespace-pre-wrap">
                     {selectedRequest.requirements}
                   </div>
                 </div>

@@ -75,7 +75,7 @@ export default function SmartMomentTimeline({ companyId, meetingId, videoId, tra
   const getMomentBadgeColor = (type) => {
     switch (type) {
       case MOMENT_TYPES.DECISION:
-        return 'bg-[#006065]/10 text-[#006065] dark:text-[#00beac] border-[#006065]/20';
+        return 'bg-[#006065] dark:bg-[#131A2C]/10 text-[#006065] dark:text-[#00beac] border-[#006065]/20';
       case MOMENT_TYPES.ACTION:
       case MOMENT_TYPES.COMMITMENT:
         return 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/20';
@@ -189,7 +189,7 @@ export default function SmartMomentTimeline({ companyId, meetingId, videoId, tra
                         <div className="flex items-center gap-1.5">
                           <button
                             onClick={() => handleConfirm(moment.id)}
-                            className="flex items-center gap-1 px-2.5 py-1 rounded bg-[#006065]/10 text-[#006065] hover:bg-[#006065] hover:text-white text-[11px] font-medium transition-colors"
+                            className="flex items-center gap-1 px-2.5 py-1 rounded bg-[#006065] dark:bg-[#131A2C]/10 text-[#006065] hover:bg-[#006065] dark:bg-[#131A2C] hover:text-white text-[11px] font-medium transition-colors"
                           >
                             <Check className="w-3 h-3" /> Confirm
                           </button>

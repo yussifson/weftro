@@ -1585,7 +1585,7 @@ export default function RecordVideo() {
                       <button
                         key={m.id}
                         onClick={() => setMode(m.id)}
-                        className={`flex flex-col items-center justify-center p-4 md:p-5 rounded-2xl border transition-all duration-300 shadow-sm active:scale-95 ${mode === m.id ? 'border-[#006065] dark:border-[#00beac] bg-[#006065]/5 dark:bg-[#00beac]/10 text-[#006065] dark:text-[#00beac] ring-1 ring-[#006065]/20' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50'}`}
+                        className={`flex flex-col items-center justify-center p-4 md:p-5 rounded-2xl border transition-all duration-300 shadow-sm active:scale-95 ${mode === m.id ? 'border-[#006065] dark:border-[#00beac] bg-[#006065] dark:bg-[#131A2C]/5 dark:bg-[#00beac]/10 text-[#006065] dark:text-[#00beac] ring-1 ring-[#006065]/20' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50'}`}
                       >
                         <Icon className={`w-7 h-7 mb-3 ${mode === m.id ? 'text-[#006065] dark:text-[#00beac]' : 'text-slate-400'}`} />
                         <span className="font-bold text-[13px] text-center leading-tight">
@@ -1692,7 +1692,7 @@ export default function RecordVideo() {
                   <button
                     onClick={startRecording}
                     disabled={countdown !== null || isPreparingStream || !title.trim() || !selectedSpace}
-                    className={`w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl ${countdown !== null || isPreparingStream || !title.trim() || !selectedSpace ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed' : 'bg-[#006065] hover:bg-[#004a4e] text-white shadow-md hover:shadow-lg hover:-translate-y-0.5'} font-bold text-sm transition-all duration-200`}
+                    className={`w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl ${countdown !== null || isPreparingStream || !title.trim() || !selectedSpace ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed' : 'bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004a4e] text-white shadow-md hover:shadow-lg hover:-translate-y-0.5'} font-bold text-sm transition-all duration-200`}
                   >
                     {isPreparingStream ? (
                       <RefreshCw className="w-4 h-4 animate-spin" />
@@ -1980,7 +1980,7 @@ export default function RecordVideo() {
                 <button onClick={discard} className="flex items-center gap-2 px-6 py-3 rounded-xl bg-red-50 hover:bg-red-100 dark:bg-rose-500/10 dark:hover:bg-rose-500/20 border border-red-200 dark:border-rose-500/30 text-red-600 dark:text-rose-400 font-bold text-sm transition-all shadow-sm">
                   <RotateCcw className="w-4 h-4" /> Discard
                 </button>
-                <button onClick={uploadRecording} disabled={!title.trim() || !selectedSpace} className="flex items-center gap-2 px-8 py-3 rounded-xl bg-[#006065] hover:bg-[#004a4e] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold shadow-lg shadow-[#006065]/25 transition-all text-sm">
+                <button onClick={uploadRecording} disabled={!title.trim() || !selectedSpace} className="flex items-center gap-2 px-8 py-3 rounded-xl bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004a4e] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold shadow-lg shadow-[#006065]/25 transition-all text-sm">
                   <Upload className="w-4 h-4" /> {activeVideoId ? 'Save Details' : 'Save to CliPad'}
                 </button>
               </div>
@@ -2004,7 +2004,7 @@ export default function RecordVideo() {
         {/* UPLOADING PHASE */}
         {phase === 'uploading' && (
           <div className="flex flex-col items-center justify-center py-24 gap-6">
-            <div className="w-20 h-20 rounded-full bg-[#006065]/10 border-2 border-indigo-500/20 flex items-center justify-center mb-2">
+            <div className="w-20 h-20 rounded-full bg-[#006065] dark:bg-[#131A2C]/10 border-2 border-indigo-500/20 flex items-center justify-center mb-2">
               <Upload className="w-8 h-8 text-[#006065] dark:text-[#00beac] animate-bounce" />
             </div>
             <h2 className="text-xl font-bold text-foreground">Uploading your videoâ€¦</h2>
@@ -2043,7 +2043,7 @@ export default function RecordVideo() {
         {/* DONE PHASE */}
         {phase === 'done' && (
           <div className="flex flex-col items-center justify-center py-24 gap-4">
-            <div className="w-20 h-20 rounded-full bg-[#006065]/10 border-2 border-[#006065]/30 flex items-center justify-center">
+            <div className="w-20 h-20 rounded-full bg-[#006065] dark:bg-[#131A2C]/10 border-2 border-[#006065]/30 flex items-center justify-center">
               <CheckCircle className="w-10 h-10 text-[#006065]" />
             </div>
             <h2 className="text-xl font-bold text-foreground">Video saved!</h2>

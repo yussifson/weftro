@@ -206,7 +206,7 @@ export default function MeetingNecessityWidget({ workspaceId }) {
                     <Users className="w-3 h-3" /> {m.engagement_metrics?.participant_count || 0}
                   </span>
                   <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                    m.necessity_score > 70 ? 'bg-[#006065]/20 text-[#004e52] dark:bg-[#004e52]/30 dark:text-[#00beac]' :
+                    m.necessity_score > 70 ? 'bg-[#006065] dark:bg-[#131A2C]/20 text-[#004e52] dark:bg-[#004e52]/30 dark:text-[#00beac]' :
                     m.necessity_score > 40 ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' :
                     'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
                   }`}>
@@ -221,7 +221,7 @@ export default function MeetingNecessityWidget({ workspaceId }) {
               <div className="flex items-center gap-2">
                 <div className="w-16 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
                   <div
-                    className={`h-full rounded-full ${m.necessity_score > 70 ? 'bg-[#006065]' : m.necessity_score > 40 ? 'bg-amber-500' : 'bg-red-500'}`}
+                    className={`h-full rounded-full ${m.necessity_score > 70 ? 'bg-[#006065] dark:bg-[#131A2C]' : m.necessity_score > 40 ? 'bg-amber-500' : 'bg-red-500'}`}
                     style={{ width: `${m.necessity_score || 0}%` }}
                   />
                 </div>

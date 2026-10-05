@@ -120,7 +120,7 @@ export default function DailyBriefingWidget() {
     return (
       <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm animate-pulse flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-[#006065]/10 border border-[#006065]/20 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-xl bg-[#006065] dark:bg-[#131A2C]/10 border border-[#006065]/20 flex items-center justify-center">
             <Sparkles className="w-4.5 h-4.5 text-[#006065] animate-spin" />
           </div>
           <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Synthesizing your Executive Daily Briefing...</span>
@@ -139,7 +139,7 @@ export default function DailyBriefingWidget() {
       {/* Header Bar */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3 cursor-pointer select-none" onClick={() => setIsExpanded(!isExpanded)}>
-          <div className="w-9 h-9 rounded-xl bg-[#006065]/10 dark:bg-[#006065]/15 border border-[#006065]/20 dark:border-[#006065]/30 flex items-center justify-center shrink-0">
+          <div className="w-9 h-9 rounded-xl bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/15 border border-[#006065]/20 dark:border-[#006065]/30 flex items-center justify-center shrink-0">
             <Sparkles className="w-5 h-5 text-[#006065] dark:text-[#00beac]" />
           </div>
           <div>
@@ -182,7 +182,7 @@ export default function DailyBriefingWidget() {
                 <ul className="space-y-1.5 text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
                   {briefing.highlights.map((h, i) => (
                     <li key={i} className="flex items-start gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#006065] shrink-0 mt-1.5" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#006065] dark:bg-[#131A2C] shrink-0 mt-1.5" />
                       <span>{h}</span>
                     </li>
                   ))}

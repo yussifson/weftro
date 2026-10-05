@@ -251,7 +251,7 @@ export default function SpaceChat({ spaceId }) {
                 <button 
                   onClick={() => newChannelName.trim() && createChannel(newChannelName.trim())}
                   disabled={creatingChannel || !newChannelName.trim()}
-                  className="px-3 py-1.5 text-xs font-bold bg-[#006065] text-white hover:bg-[#004e52] hover:bg-[#004e52] text-white text-white rounded-md shadow-sm transition-colors disabled:opacity-50"
+                  className="px-3 py-1.5 text-xs font-bold bg-[#006065] dark:bg-[#131A2C] text-white hover:bg-[#004e52] hover:bg-[#004e52] text-white text-white rounded-md shadow-sm transition-colors disabled:opacity-50"
                 >
                   Create
                 </button>
@@ -266,7 +266,7 @@ export default function SpaceChat({ spaceId }) {
               onClick={() => { setActiveChannel(channel); setSidebarOpen(false); }}
               className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-semibold transition-all group ${
                 activeChannel?.id === channel.id 
-                  ? 'bg-[#006065]/10 dark:bg-[#006065]/30 text-[#006065] dark:text-[#fad503] dark:text-[#006065] dark:text-[#fad503] shadow-sm' 
+                  ? 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 text-[#006065] dark:text-[#fad503] dark:text-[#006065] dark:text-[#fad503] shadow-sm' 
                   : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
@@ -298,7 +298,7 @@ export default function SpaceChat({ spaceId }) {
               <button
                 onClick={handleAISummarize}
                 disabled={isSummarizing || messages.length === 0}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-[#006065]/5 hover:bg-[#006065]/10 dark:bg-[#006065]/20 dark:hover:bg-[#006065]/40 text-[#006065] dark:text-[#fad503] dark:text-[#006065] dark:text-[#fad503] rounded-md text-xs font-bold transition-colors disabled:opacity-50 border border-[#006065]/30 dark:border-[#006065]/40 shadow-sm"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-[#006065] dark:bg-[#131A2C]/5 hover:bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/20 dark:hover:bg-[#006065] dark:bg-[#131A2C]/40 text-[#006065] dark:text-[#fad503] dark:text-[#006065] dark:text-[#fad503] rounded-md text-xs font-bold transition-colors disabled:opacity-50 border border-[#006065]/30 dark:border-[#006065]/40 shadow-sm"
               >
                 {isSummarizing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
                 <span className="hidden sm:inline">AI Summary</span>
@@ -314,7 +314,7 @@ export default function SpaceChat({ spaceId }) {
                   <X className="w-4 h-4" />
                 </button>
                 <h4 className="flex items-center gap-2 font-bold text-slate-900 dark:text-white dark:text-slate-100 text-sm mb-3">
-                  <div className="w-6 h-6 rounded-md bg-[#006065] text-white hover:bg-[#004e52] flex items-center justify-center">
+                  <div className="w-6 h-6 rounded-md bg-[#006065] dark:bg-[#131A2C] text-white hover:bg-[#004e52] flex items-center justify-center">
                     <Sparkles className="w-3 h-3 text-white" />
                   </div>
                   Orbit AI Summary
@@ -350,7 +350,7 @@ export default function SpaceChat({ spaceId }) {
                       )}
 
                       <div className={`relative px-4 py-2.5 text-[14.5px] leading-relaxed rounded-2xl shadow-sm ${isMe 
-                        ? 'bg-[#006065] text-white font-medium rounded-br-sm' 
+                        ? 'bg-[#006065] dark:bg-[#131A2C] text-white font-medium rounded-br-sm' 
                         : 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-800 rounded-bl-sm'}`}>
                         
                         {!isMe && showTail && (
@@ -393,7 +393,7 @@ export default function SpaceChat({ spaceId }) {
                   <button 
                     type="submit"
                     disabled={!newMessage.trim()}
-                    className="w-10 h-10 flex items-center justify-center rounded-full bg-[#006065] hover:bg-[#004e52] text-white disabled:opacity-50 disabled:bg-slate-300 transition-all shadow-md active:scale-95 shrink-0 mb-1"
+                    className="w-10 h-10 flex items-center justify-center rounded-full bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004e52] text-white disabled:opacity-50 disabled:bg-slate-300 transition-all shadow-md active:scale-95 shrink-0 mb-1"
                   >
                     <Send className="w-5 h-5" />
                   </button>

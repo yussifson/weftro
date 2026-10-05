@@ -329,7 +329,7 @@ export default function SpacesList() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filtered.map(space => {
-              const colors = ['bg-blue-600', 'bg-indigo-600', 'bg-purple-600', 'bg-[#006065]', 'bg-rose-600', 'bg-amber-600'];
+              const colors = ['bg-blue-600', 'bg-indigo-600', 'bg-purple-600', 'bg-[#006065] dark:bg-[#131A2C]', 'bg-rose-600', 'bg-amber-600'];
               const colorIndex = space.id ? space.id.split('-').reduce((acc, char) => acc + char.charCodeAt(0), 0) % colors.length : 0;
               const bgColorClass = colors[colorIndex];
               const SpaceIcon = getSpaceIcon(space.name);

@@ -90,7 +90,7 @@ export default function ClipadLayout() {
       {isChatDocked && location.pathname !== '/chat' && (
         <div 
           style={{ width: `${dockWidth}px` }} 
-          className="hidden md:flex flex-col h-full bg-[#006065] border-l border-white/15 shrink-0 relative z-30 shadow-2xl transition-all"
+          className="hidden md:flex flex-col h-full bg-[#006065] dark:bg-[#0A0F1C] border-l border-white/15 shrink-0 relative z-30 shadow-2xl transition-all"
         >
           <DockResizer />
           <React.Suspense fallback={<div className="p-4 text-white">Loading chat...</div>}>

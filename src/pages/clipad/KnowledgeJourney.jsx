@@ -189,7 +189,7 @@ export default function KnowledgeJourney() {
   return (
     <div className="min-h-full bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-12 font-sans page-enter">
       {/* Header */}
-      <div className="relative overflow-hidden border-b border-slate-200 dark:border-slate-800 bg-[#006065] text-white px-6 py-10">
+      <div className="relative overflow-hidden border-b border-slate-200 dark:border-slate-800 bg-[#006065] dark:bg-[#131A2C] text-white px-6 py-10">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(59,130,246,0.07),transparent_60%)] pointer-events-none" />
         <div className="max-w-5xl mx-auto relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>

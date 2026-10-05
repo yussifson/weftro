@@ -61,7 +61,7 @@ function TaskRow({ item, onToggle }) {
   };
   return (
     <div className="flex items-start gap-3 p-4 rounded-xl hover:bg-secondary transition-colors group">
-      <button onClick={handle} className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${done ? 'bg-[#006065] border-[#006065]' : 'border-gray-600 hover:border-primary'}`}>
+      <button onClick={handle} className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${done ? 'bg-[#006065] dark:bg-[#131A2C] border-[#006065]' : 'border-gray-600 hover:border-primary'}`}>
         {done && <CheckCircle className="w-3.5 h-3.5 text-foreground" />}
       </button>
       <div className="flex-1 min-w-0">
@@ -96,7 +96,7 @@ const getVideoColor = (id) => {
 
 function VideoCard({ video, onClick }) {
   return (
-    <div onClick={onClick} className="group cursor-pointer rounded-2xl overflow-hidden bg-[#006065] text-white dark:bg-[#006065] border border-white/15 dark:border-white/15 hover:border-indigo-400/50 transition-all hover:-translate-y-0.5 shadow-sm hover:shadow-md">
+    <div onClick={onClick} className="group cursor-pointer rounded-2xl overflow-hidden bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-[#006065] dark:bg-[#131A2C] border border-white/15 dark:border-white/15 hover:border-indigo-400/50 transition-all hover:-translate-y-0.5 shadow-sm hover:shadow-md">
       <div className="aspect-video bg-white/10 dark:bg-secondary relative flex items-center justify-center overflow-hidden">
         {video.thumbnail_url ? (
           <img src={video.thumbnail_url} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={video.title} />
@@ -120,7 +120,7 @@ function VideoCard({ video, onClick }) {
           </div>
         )}
       </div>
-      <div className="p-4 bg-[#006065] text-white dark:bg-[#006065]">
+      <div className="p-4 bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-[#006065] dark:bg-[#131A2C]">
         <p className="text-sm font-semibold text-white dark:text-white line-clamp-1">{video.title || 'Untitled'}</p>
         <p className="text-xs text-white/70 dark:text-muted-foreground mt-1">{new Date(video.created_at).toLocaleDateString()}</p>
       </div>
@@ -867,7 +867,7 @@ export default function SpaceDashboard() {
                         <div className="min-w-0">
                           <p className="text-sm font-bold text-slate-900 dark:text-white truncate flex items-center gap-2">
                             {p.full_name}
-                            {isSpacemanMember && <span className="shrink-0 w-1.5 h-1.5 rounded-full bg-[#006065]" title="Spaceman" />}
+                            {isSpacemanMember && <span className="shrink-0 w-1.5 h-1.5 rounded-full bg-[#006065] dark:bg-[#131A2C]" title="Spaceman" />}
                           </p>
                           <p className="text-xs font-medium text-slate-500 truncate">{p.email}</p>
                         </div>
@@ -883,7 +883,7 @@ export default function SpaceDashboard() {
                           {isMem ? 'Remove' : 'Add'}
                         </button>
                       ) : (
-                        isMem && <span className="text-[10px] font-bold uppercase tracking-wider text-[#006065] dark:text-[#00beac] bg-[#006065]/10 dark:bg-[#00beac]/10 px-2.5 py-1 rounded-full">Member</span>
+                        isMem && <span className="text-[10px] font-bold uppercase tracking-wider text-[#006065] dark:text-[#00beac] bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#00beac]/10 px-2.5 py-1 rounded-full">Member</span>
                       )}
                       </div>
                     </div>

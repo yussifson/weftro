@@ -192,7 +192,7 @@ export default function ActionItems() {
   return (
     <div className="min-h-full bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-12 font-sans page-enter">
       {/* Header */}
-      <div className="relative overflow-hidden border-b border-slate-200 dark:border-slate-800 bg-[#006065] text-white px-6 py-10">
+      <div className="relative overflow-hidden border-b border-slate-200 dark:border-slate-800 bg-[#006065] dark:bg-[#131A2C] text-white px-6 py-10">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(16,185,129,0.07),transparent_60%)] pointer-events-none" />
         <div className="max-w-5xl mx-auto relative z-10">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -226,7 +226,7 @@ export default function ActionItems() {
           {items.length > 0 && (
             <div className="mt-4 h-2 bg-white/10 rounded-full overflow-hidden max-w-lg">
               <div
-                className="h-full bg-[#006065] rounded-full transition-all duration-500"
+                className="h-full bg-[#006065] dark:bg-[#131A2C] rounded-full transition-all duration-500"
                 style={{ width: `${(doneCount / items.length) * 100}%` }}
               />
             </div>
@@ -326,7 +326,7 @@ export default function ActionItems() {
                           {format(new Date(item.importedAt), 'MMM d')}
                         </span>
                         {isExported && (
-                          <span className="text-[10px] font-bold text-[#006065] dark:text-[#fad503] bg-[#006065]/10 dark:bg-[#006065]/30 px-2 py-0.5 rounded-full">Exported</span>
+                          <span className="text-[10px] font-bold text-[#006065] dark:text-[#fad503] bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 px-2 py-0.5 rounded-full">Exported</span>
                         )}
                       </div>
                     </div>
@@ -336,7 +336,7 @@ export default function ActionItems() {
                       <div className="relative shrink-0 group">
                         <button
                           onClick={() => setExpandedItem(isExpanded ? null : item.id)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#006065]/10 dark:bg-[#006065]/30 hover:bg-[#006065]/20 text-[#006065] dark:text-[#00beac] rounded-xl text-xs font-semibold transition-colors"
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 hover:bg-[#006065] dark:bg-[#131A2C]/20 text-[#006065] dark:text-[#00beac] rounded-xl text-xs font-semibold transition-colors"
                         >
                           <Send className="w-3.5 h-3.5" />
                           Export

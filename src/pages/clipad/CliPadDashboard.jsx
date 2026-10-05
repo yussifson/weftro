@@ -26,11 +26,11 @@ function StatCard({ icon: Icon, value, label, trend }) {
   return (
     <div className="relative overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between p-5 group">
       <div className="flex items-start justify-between mb-4">
-        <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-[#006065]/10 dark:bg-[#006065]/30 border border-[#006065]/20 dark:border-[#006065]/40 shadow-sm">
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 border border-[#006065]/20 dark:border-[#006065]/40 shadow-sm">
           <Icon className="w-5 h-5 text-[#006065] dark:text-[#fad503]" />
         </div>
         {trend && (
-          <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm ${trend > 0 ? 'text-[#006065] bg-[#006065]/10 border border-[#006065]/20' : 'text-slate-600 bg-slate-100 border border-slate-200'}`}>
+          <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm ${trend > 0 ? 'text-[#006065] bg-[#006065] dark:bg-[#131A2C]/10 border border-[#006065]/20' : 'text-slate-600 bg-slate-100 border border-slate-200'}`}>
             {trend > 0 ? 'â†‘' : 'â†“'} {Math.abs(trend)}%
           </span>
         )}
@@ -55,7 +55,7 @@ function SpaceCard({ space, onClick }) {
       className="group p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-[#006065]/40 dark:hover:border-[#006065]/80 cursor-pointer transition-all duration-300 hover:-translate-y-1 shadow-sm hover:shadow-md"
     >
       <div className="flex items-start gap-3 mb-5">
-        <div className="w-10 h-10 rounded-xl flex items-center justify-center text-[#fad503] bg-[#006065] shadow-sm">
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center text-[#fad503] bg-[#006065] dark:bg-[#131A2C] shadow-sm">
           <SpaceIcon className="w-5 h-5" />
         </div>
         <div className="flex-1 min-w-0">
@@ -68,7 +68,7 @@ function SpaceCard({ space, onClick }) {
         <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-bold border ${
           space.is_private
             ? 'bg-slate-50 text-slate-600 border-slate-200'
-            : 'bg-[#006065]/5 text-[#006065] border-[#006065]/10'
+            : 'bg-[#006065] dark:bg-[#131A2C]/5 text-[#006065] border-[#006065]/10'
         }`}>
           {space.is_private ? <Lock className="w-3 h-3" /> : <Globe className="w-3 h-3" />}
           {space.is_private ? 'Private' : 'Public'}
@@ -108,7 +108,7 @@ function VideoCard({ video, onClick }) {
         {video.thumbnail_url ? (
           <img src={video.thumbnail_url} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={video.title} />
         ) : (
-          <div className="absolute inset-0 w-full h-full bg-[#006065] group-hover:scale-105 transition-transform duration-500 opacity-90">
+          <div className="absolute inset-0 w-full h-full bg-[#006065] dark:bg-[#131A2C] group-hover:scale-105 transition-transform duration-500 opacity-90">
           </div>
         )}
         <div className="absolute inset-0 bg-slate-900/10 group-hover:bg-slate-900/30 transition-all duration-300 flex items-center justify-center">
@@ -149,7 +149,7 @@ function ActionItemRow({ item }) {
   };
   return (
     <div className="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
-      <button onClick={toggle} className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-300 ${done ? 'bg-[#006065] border-[#006065]' : 'border-slate-300 dark:border-slate-600 hover:border-[#006065]/50'}`}>
+      <button onClick={toggle} className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-300 ${done ? 'bg-[#006065] dark:bg-[#131A2C] border-[#006065]' : 'border-slate-300 dark:border-slate-600 hover:border-[#006065]/50'}`}>
         {done && <CheckCircle className="w-3 h-3 text-white" />}
       </button>
       <div className="flex-1 min-w-0">
@@ -397,7 +397,7 @@ export default function CliPadDashboard() {
             disabled={isCreatingMeeting}
             className="flex items-center gap-4 p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-[#006065]/30 active:scale-[0.98] transition-all duration-200 group text-left"
           >
-            <div className="w-12 h-12 rounded-xl bg-[#006065] text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+            <div className="w-12 h-12 rounded-xl bg-[#006065] dark:bg-[#131A2C] text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
               {isCreatingMeeting
                 ? <div className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
                 : <Video className="w-5 h-5 text-[#fad503]" />}
@@ -413,7 +413,7 @@ export default function CliPadDashboard() {
             onClick={() => navigate('/record')}
             className="flex items-center gap-4 p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-[#006065]/30 active:scale-[0.98] transition-all duration-200 group text-left"
           >
-            <div className="w-12 h-12 rounded-xl bg-[#006065] text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+            <div className="w-12 h-12 rounded-xl bg-[#006065] dark:bg-[#131A2C] text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
               <Camera className="w-5 h-5 text-[#fad503]" />
             </div>
             <div>
@@ -518,7 +518,7 @@ export default function CliPadDashboard() {
             {/* AI Intelligence Insight */}
             <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-800 rounded-3xl  shadow-[0_2px_16px_rgba(0,0,0,0.03)] p-4 md:p-6 shadow-sm">
               <div className="flex items-center gap-2.5 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-[#006065]/10 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-lg bg-[#006065] dark:bg-[#131A2C]/10 flex items-center justify-center">
                   <Brain className="w-4.5 h-4.5 text-[#006065] dark:text-[#006065]" />
                 </div>
                 <span className="text-sm font-bold text-[#006065] dark:text-[#006065] font-extrabold uppercase tracking-widest">AI Insight</span>
@@ -574,7 +574,7 @@ export default function CliPadDashboard() {
                             <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold ${
                               m.space.is_private
                                 ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400'
-                                : 'bg-[#006065]/10 dark:bg-[#006065]/30 text-[#006065] dark:text-[#fad503]'
+                                : 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 text-[#006065] dark:text-[#fad503]'
                             }`}>
                               {m.space.is_private ? <Lock className="w-2.5 h-2.5" /> : <Globe className="w-2.5 h-2.5" />}
                               {m.space.is_private ? 'Private' : 'Public'}

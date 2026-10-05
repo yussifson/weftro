@@ -143,14 +143,14 @@ export default function ClipadSidebar({ forceMobile }) {
   return (
     <aside 
       className={cn(
-        "hidden md:flex flex-col bg-[#006065] text-white border-r border-white/10 transition-all duration-300 z-50 shrink-0 relative shadow-xl",
+        "hidden md:flex flex-col bg-[#006065] dark:bg-[#0D1626] text-white border-r border-white/10 transition-all duration-300 z-50 shrink-0 relative shadow-xl",
         forceMobile && "hidden",
         isCollapsed ? "w-[72px]" : "w-[260px]",
         "h-full overflow-hidden"
       )}
     >
       {/* Header */}
-      <div className={cn("h-[64px] flex items-center shrink-0 transition-all border-b border-white/10 bg-[#006065]", isCollapsed ? "px-0 justify-center" : "px-4 justify-between")}>
+      <div className={cn("h-[64px] flex items-center shrink-0 transition-all border-b border-white/10 bg-[#006065] dark:bg-[#0D1626]", isCollapsed ? "px-0 justify-center" : "px-4 justify-between")}>
         {isCollapsed ? (
           <button 
             onClick={() => setIsCollapsed(false)} 
@@ -173,7 +173,7 @@ export default function ClipadSidebar({ forceMobile }) {
         )}
       </div>
 
-      <div className={cn("flex-1 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-white/5 [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-white/30 pb-4 bg-[#006065]", isCollapsed ? "px-2" : "px-3")}>
+      <div className={cn("flex-1 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-white/5 [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-white/30 pb-4 bg-[#006065] dark:bg-[#0D1626]", isCollapsed ? "px-2" : "px-3")}>
         {/* Menu */}
         <div className="py-2">
           {!isCollapsed && <div className="px-3 py-1.5 text-[11px] font-bold text-white/40 tracking-wider uppercase">General</div>}
@@ -251,7 +251,7 @@ export default function ClipadSidebar({ forceMobile }) {
       </div>
 
       {/* User Profile Footer */}
-      <div className={cn("p-4 border-t border-white/10 bg-[#006065] text-white", isCollapsed ? "flex justify-center" : "")}>
+      <div className={cn("p-4 border-t border-white/10 bg-[#006065] dark:bg-[#0D1626] text-white", isCollapsed ? "flex justify-center" : "")}>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <div className="flex items-center gap-3 cursor-pointer group">
@@ -273,7 +273,7 @@ export default function ClipadSidebar({ forceMobile }) {
               )}
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align={isCollapsed ? "center" : "end"} className="w-56 font-sans bg-[#006065] border-white/15 text-white shadow-2xl">
+          <DropdownMenuContent align={isCollapsed ? "center" : "end"} className="w-56 font-sans bg-[#006065] dark:bg-[#131A2C] border-white/15 text-white shadow-2xl">
             <DropdownMenuLabel className="font-semibold px-3 py-2 flex flex-col">
               <span className="text-white font-bold">{user?.full_name || 'User'}</span>
               <span className="text-xs text-white/60 font-normal">{user?.email}</span>

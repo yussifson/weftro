@@ -8,7 +8,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 const DEFAULT_STAGES = [
   { id: 'todo', label: 'To Do', color: 'bg-slate-500' },
   { id: 'in_progress', label: 'In Progress', color: 'bg-indigo-500' },
-  { id: 'done', label: 'Done', color: 'bg-[#006065]' }
+  { id: 'done', label: 'Done', color: 'bg-[#006065] dark:bg-[#131A2C]' }
 ];
 
 export default function TaskBoard({ spaceId }) {

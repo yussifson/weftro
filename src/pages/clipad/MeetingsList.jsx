@@ -168,7 +168,7 @@ export default function MeetingsList() {
           <button
             onClick={startInstantMeeting}
             disabled={isCreating}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#006065] hover:bg-[#004e52] text-[#fad503] font-bold text-sm shadow-md shadow-[#006065]/20 transition-all disabled:opacity-60 shrink-0 active:scale-95"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004e52] text-[#fad503] font-bold text-sm shadow-md shadow-[#006065]/20 transition-all disabled:opacity-60 shrink-0 active:scale-95"
           >
             {isCreating ? <div className="w-4 h-4 border-2 border-white/30 border-t-transparent rounded-full animate-spin" /> : <Video className="w-4 h-4" />}
             Start Instant Meeting
@@ -200,7 +200,7 @@ export default function MeetingsList() {
 
         {loading ? (
           <div className="space-y-4">
-            {[1,2,3,4].map(i => <div key={i} className="h-24 rounded-2xl bg-[#006065] text-white dark:bg-[#006065] animate-pulse border border-white/15 dark:border-white/15" />)}
+            {[1,2,3,4].map(i => <div key={i} className="h-24 rounded-2xl bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-[#006065] dark:bg-[#131A2C] animate-pulse border border-white/15 dark:border-white/15" />)}
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-24 border border-dashed border-slate-200 dark:border-slate-800 rounded-3xl">
@@ -212,7 +212,7 @@ export default function MeetingsList() {
           <div className="relative pl-6 border-l-2 border-[#006065]/20 dark:border-[#006065]/40 space-y-6">
             {filtered.map(m => (
               <div key={m.id} className="relative group">
-                <div className="absolute -left-[35px] w-6 h-6 rounded-full bg-[#006065] border-2 border-[#fad503] flex items-center justify-center shadow-sm mt-5">
+                <div className="absolute -left-[35px] w-6 h-6 rounded-full bg-[#006065] dark:bg-[#131A2C] border-2 border-[#fad503] flex items-center justify-center shadow-sm mt-5">
                   <div className="w-2 h-2 rounded-full bg-[#fad503]" />
                 </div>
                 <div
@@ -227,7 +227,7 @@ export default function MeetingsList() {
                       <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
                         m.space.is_private
                           ? 'bg-rose-100 dark:bg-rose-500/20 text-rose-700 dark:text-rose-400'
-                          : 'bg-[#006065]/10 dark:bg-[#006065]/10 text-[#006065] dark:text-[#00beac]'
+                          : 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/10 text-[#006065] dark:text-[#00beac]'
                       }`}>
                         {m.space.is_private ? <Lock className="w-2.5 h-2.5" /> : <Globe className="w-2.5 h-2.5" />}
                         {m.space.is_private ? 'Private' : 'Public'}
@@ -248,7 +248,7 @@ export default function MeetingsList() {
 
                 <div className="flex items-center gap-3 md:w-48 justify-end shrink-0">
                   {m.actions_open > 0 ? (
-                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#006065]/10 border border-[#006065]/20 text-[#006065] text-xs font-semibold">
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#006065] dark:bg-[#131A2C]/10 border border-[#006065]/20 text-[#006065] text-xs font-semibold">
                       <Target className="w-3.5 h-3.5" /> {m.actions_open} open tasks
                     </div>
                   ) : m.actions_total > 0 ? (

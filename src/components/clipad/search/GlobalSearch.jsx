@@ -19,7 +19,7 @@ import ThinkingAccordion, { parseThinking } from '@/components/chat/ThinkingAcco
 const TYPE_META = {
   meeting:     { icon: Calendar,      label: 'Meeting',   color: 'text-blue-700 dark:text-blue-400',       bg: 'bg-blue-100 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700/50',     route: (id) => `/meetings/${id}` },
   video:       { icon: Video,         label: 'Video',     color: 'text-purple-700 dark:text-purple-400',   bg: 'bg-purple-100 dark:bg-purple-900/30 border border-purple-200 dark:border-purple-700/50', route: (id) => `/watch/${id}` },
-  doc:         { icon: FileText,      label: 'Doc',       color: 'text-[#004e52] dark:text-[#00beac]', bg: 'bg-[#006065]/20 dark:bg-[#004e52]/30 border border-emerald-200 dark:border-emerald-700/50', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=docs&docId=${id}` : null },
+  doc:         { icon: FileText,      label: 'Doc',       color: 'text-[#004e52] dark:text-[#00beac]', bg: 'bg-[#006065] dark:bg-[#131A2C]/20 dark:bg-[#004e52]/30 border border-emerald-200 dark:border-emerald-700/50', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=docs&docId=${id}` : null },
   task:        { icon: CheckCircle,   label: 'Task',      color: 'text-amber-700 dark:text-amber-400',     bg: 'bg-amber-100 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700/50',   route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=tasks&taskId=${id}` : null },
   message:     { icon: MessageSquare, label: 'Chat',      color: 'text-indigo-700 dark:text-indigo-400',   bg: 'bg-indigo-100 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-700/50', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=chat` : null },
   decision:    { icon: ShieldAlert,   label: 'Decision',  color: 'text-rose-700 dark:text-rose-400',       bg: 'bg-rose-100 dark:bg-rose-900/30 border border-rose-200 dark:border-rose-700/50',     route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=decisions` : null },
@@ -258,7 +258,7 @@ export default function GlobalSearch() {
         if (activeProviders.includes('jira') || activeProviders.includes('linear'))
           newSuggestions.unshift({ key: 'dyn2', text: 'Show me my active Jira tickets', type: 'integration', icon: CheckCircle, color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-100 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/60' });
         if (activeProviders.includes('slack') || activeProviders.includes('ms_teams'))
-          newSuggestions.unshift({ key: 'dyn3', text: 'Summarize recent Slack messages', type: 'message', icon: MessageSquare, color: 'text-[#006065] dark:text-[#00beac]', bg: 'bg-[#006065]/20 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/60' });
+          newSuggestions.unshift({ key: 'dyn3', text: 'Summarize recent Slack messages', type: 'message', icon: MessageSquare, color: 'text-[#006065] dark:text-[#00beac]', bg: 'bg-[#006065] dark:bg-[#131A2C]/20 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/60' });
         const finalSuggestions = newSuggestions.slice(0, 6).map((item, i) => ({ ...item, key: (i + 1).toString() }));
         setDynamicSuggestions(finalSuggestions);
       });
@@ -578,7 +578,7 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
         <div className="hidden md:block w-full max-w-sm rounded-full p-[1.5px] bg-gradient-to-r from-blue-500 to-pink-500 hover:shadow-md transition-shadow cursor-text group">
           <button
             onClick={() => setIsOpen(true)}
-            className="flex items-center h-10 w-full bg-[#006065] rounded-full px-4 text-white/60 hover:text-white transition-colors"
+            className="flex items-center h-10 w-full bg-[#006065] dark:bg-[#131A2C] rounded-full px-4 text-white/60 hover:text-white transition-colors"
           >
             <Search className="w-[18px] h-[18px] shrink-0 text-white/60" />
             <div className="w-[1px] h-5 bg-white/20 mx-3 shrink-0" />

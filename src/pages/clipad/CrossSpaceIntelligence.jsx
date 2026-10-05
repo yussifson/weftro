@@ -270,7 +270,7 @@ Respond in valid JSON only:
             { label: 'Siloed Spaces', value: siloedSpaces.length, color: siloedSpaces.length > 3 ? 'text-rose-300' : 'text-[#fad503]' },
             { label: 'Duplicate Blockers', value: blockerCollisions.length, color: blockerCollisions.length > 2 ? 'text-rose-300' : 'text-[#fad503]' },
           ].map(s => (
-            <div key={s.label} className="rounded-2xl border border-white/15 bg-[#006065] text-white p-4 text-center shadow-md">
+            <div key={s.label} className="rounded-2xl border border-white/15 bg-[#006065] dark:bg-[#131A2C] text-white p-4 text-center shadow-md">
               <p className={`text-2xl font-black ${s.color}`}>{s.value}</p>
               <p className="text-[10px] font-semibold uppercase tracking-wide text-white/70 mt-1">{s.label}</p>
             </div>
@@ -288,7 +288,7 @@ Respond in valid JSON only:
                   aiSummary.org_silos_risk === 'critical' ? 'bg-red-500/10 text-red-400' :
                   aiSummary.org_silos_risk === 'high' ? 'bg-orange-500/10 text-orange-400' :
                   aiSummary.org_silos_risk === 'medium' ? 'bg-amber-500/10 text-amber-400' :
-                  'bg-[#006065]/10 text-[#00beac]'
+                  'bg-[#006065] dark:bg-[#131A2C]/10 text-[#00beac]'
                 }`}>
                   {aiSummary.org_silos_risk} silo risk
                 </span>

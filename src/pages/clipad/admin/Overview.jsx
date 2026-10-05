@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 
 const ACTION_ICONS = {
   login:           { icon: LogIn,      color: 'text-blue-500',    bg: 'bg-blue-50 dark:bg-blue-900/20' },
-  plan_upgrade:    { icon: TrendingUp, color: 'text-[#006065]', bg: 'bg-[#006065]/10 dark:bg-[#004e52]/20' },
+  plan_upgrade:    { icon: TrendingUp, color: 'text-[#006065]', bg: 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#004e52]/20' },
   meeting_created: { icon: Activity,   color: 'text-violet-500',  bg: 'bg-violet-50 dark:bg-violet-900/20' },
   video_recorded:  { icon: Video,      color: 'text-orange-500',  bg: 'bg-orange-50 dark:bg-orange-900/20' },
 };
@@ -75,17 +75,17 @@ export default function Overview() {
       <div className="flex flex-col h-full bg-transparent  p-4 sm:p-6 md:p-8 animate-pulse">
         <div className="flex justify-between items-start mb-8">
           <div>
-            <div className="h-8 bg-[#006065] text-white border border-white/15/15 dark:bg-slate-800 rounded w-48 mb-2"></div>
-            <div className="h-4 bg-[#006065] text-white border border-white/15/15 dark:bg-slate-800 rounded w-32"></div>
+            <div className="h-8 bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/15 dark:bg-slate-800 rounded w-48 mb-2"></div>
+            <div className="h-4 bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/15 dark:bg-slate-800 rounded w-32"></div>
           </div>
-          <div className="h-10 bg-[#006065] text-white border border-white/15/15 dark:bg-slate-800 rounded w-32"></div>
+          <div className="h-10 bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/15 dark:bg-slate-800 rounded w-32"></div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="bg-[#006065] text-white dark:bg-[#006065] p-6 rounded-2xl h-32"></div>
+            <div key={i} className="bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-[#006065] dark:bg-[#131A2C] p-6 rounded-2xl h-32"></div>
           ))}
         </div>
-        <div className="bg-[#006065] text-white dark:bg-[#006065] p-6 rounded-2xl h-64 mb-8"></div>
+        <div className="bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-[#006065] dark:bg-[#131A2C] p-6 rounded-2xl h-64 mb-8"></div>
       </div>
     );
   }
@@ -94,7 +94,7 @@ export default function Overview() {
     { title: "Total Companies", value: stats.companies, icon: Building2, color: "text-blue-500", bg: "bg-blue-50 dark:bg-blue-900/20" },
     { title: "Total Spaces", value: stats.spaces, icon: Layers, color: "text-indigo-500", bg: "bg-indigo-50 dark:bg-indigo-900/20" },
     { title: "Registered Users", value: stats.users, icon: Users, color: "text-purple-500", bg: "bg-purple-50 dark:bg-purple-900/20" },
-    { title: "Total Logins Audited", value: stats.logins, icon: Activity, color: "text-[#006065]", bg: "bg-[#006065]/10 dark:bg-[#004e52]/20" },
+    { title: "Total Logins Audited", value: stats.logins, icon: Activity, color: "text-[#006065]", bg: "bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#004e52]/20" },
   ];
 
   return (
@@ -141,14 +141,14 @@ export default function Overview() {
               <Activity className="w-4 h-4 text-indigo-500" /> Recent System Activity
             </CardTitle>
             <div className="flex items-center gap-1 text-[11px] text-[#006065] font-semibold">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#006065] animate-pulse" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#006065] dark:bg-[#131A2C] animate-pulse" />
               Live
             </div>
           </CardHeader>
           <CardContent className="flex-1 overflow-y-auto max-h-[380px] space-y-1">
             {recentActivities.length > 0 ? (
               recentActivities.map((log) => {
-                const meta = ACTION_ICONS[log.action] || { icon: Activity, color: 'text-white/70', bg: 'bg-[#006065] text-white border border-white/15/10 dark:bg-secondary' };
+                const meta = ACTION_ICONS[log.action] || { icon: Activity, color: 'text-white/70', bg: 'bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/10 dark:bg-secondary' };
                 const Icon = meta.icon;
                 return (
                   <div key={log.id} className="flex items-start gap-3 py-2.5 border-b border-border last:border-0">
@@ -208,7 +208,7 @@ export default function Overview() {
                       'px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider shrink-0 ml-3',
                       clipadPlan.toLowerCase().includes('enterprise') ? 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400' :
                       clipadPlan.toLowerCase().includes('pro') ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
-                      'bg-[#006065] text-white border border-white/15/10 text-white/80 dark:bg-secondary dark:text-muted-foreground'
+                      'bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/10 text-white/80 dark:bg-secondary dark:text-muted-foreground'
                     )}>
                       {clipadPlan}
                     </span>

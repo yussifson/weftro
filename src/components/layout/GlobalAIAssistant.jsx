@@ -1144,7 +1144,7 @@ RULES FOR MULTI-STEP REASONING & AUTOMATIONS:
  <div className="flex-1 flex flex-col min-w-0 relative">
 
   {/* Header â€” Solid Sticky Controls */}
-  <div className="bg-[#006065] text-white backdrop-blur-md px-4 py-3 flex justify-between items-center shrink-0 sticky top-0 z-[101] border-b border-[#006065]/50">
+  <div className="bg-[#006065] dark:bg-[#131A2C] text-white backdrop-blur-md px-4 py-3 flex justify-between items-center shrink-0 sticky top-0 z-[101] border-b border-[#006065]/50">
     <div className="flex-1"></div>
     <div className="flex items-center gap-1.5 justify-end">
       <DropdownMenu>
@@ -1196,7 +1196,7 @@ RULES FOR MULTI-STEP REASONING & AUTOMATIONS:
  return (
  <div key={i} className={`flex gap-3 max-w-full items-start ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
   {msg.role === 'user' ? (
-    <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm bg-[#006065] text-[#fad503] font-bold border border-[#006065]/20 text-xs">
+    <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm bg-[#006065] dark:bg-[#131A2C] text-[#fad503] font-bold border border-[#006065]/20 text-xs">
       <User className="w-4 h-4" />
     </div>
   ) : (
@@ -1321,7 +1321,7 @@ RULES FOR MULTI-STEP REASONING & AUTOMATIONS:
              type="button"
              onClick={() => handleSend()}
              disabled={isLoading}
-             className="w-7 h-7 bg-[#006065] hover:bg-[#004e52] disabled:opacity-50 text-white rounded-full flex items-center justify-center transition-all shadow-sm"
+             className="w-7 h-7 bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004e52] disabled:opacity-50 text-white rounded-full flex items-center justify-center transition-all shadow-sm"
            >
              <Send className="w-3.5 h-3.5 ml-0.5" />
            </button>

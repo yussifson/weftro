@@ -549,7 +549,7 @@ Do not wrap in markdown or backticks.`
                   />
                   <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
                     <DictationButton onResult={txt => setCommentText(prev => (prev + ' ' + txt).trim())} isRecording={isRecording} setIsRecording={setIsRecording} />
-                    <button type="submit" disabled={submitting || !commentText.trim()} className="p-2 bg-[#006065] hover:bg-[#004e52] text-white rounded-lg disabled:opacity-50 transition-colors shadow-sm">
+                    <button type="submit" disabled={submitting || !commentText.trim()} className="p-2 bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004e52] text-white rounded-lg disabled:opacity-50 transition-colors shadow-sm">
                       <Send className="w-4 h-4" />
                     </button>
                   </div>

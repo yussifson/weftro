@@ -273,7 +273,7 @@ Respond in valid JSON only:
                 )}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   {aiPulse.win_of_the_week && (
-                    <div className="p-3 rounded-xl bg-[#006065]/5 border border-[#006065]/20">
+                    <div className="p-3 rounded-xl bg-[#006065] dark:bg-[#131A2C]/5 border border-[#006065]/20">
                       <p className="text-[10px] font-bold text-[#00beac] uppercase tracking-wider mb-1">Win of the Week</p>
                       <p className="text-xs text-foreground/80">{aiPulse.win_of_the_week}</p>
                     </div>

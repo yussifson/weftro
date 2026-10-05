@@ -150,7 +150,7 @@ export default function DecisionLedger() {
   return (
     <div className="min-h-full bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans page-enter pb-12">
       {/* Header */}
-      <div className="relative overflow-hidden border-b border-slate-200 dark:border-slate-800 bg-[#006065] text-white px-6 py-10">
+      <div className="relative overflow-hidden border-b border-slate-200 dark:border-slate-800 bg-[#006065] dark:bg-[#131A2C] text-white px-6 py-10">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(245,158,11,0.08),transparent_60%)] pointer-events-none" />
         <div className="max-w-5xl mx-auto relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
@@ -252,13 +252,13 @@ export default function DecisionLedger() {
               return (
                 <div key={item.id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 hover:border-[#006065]/50 transition-all hover:shadow-sm">
                   <div className="flex flex-col md:flex-row md:items-start gap-4">
-                    <div className="w-12 h-12 rounded-full bg-[#006065]/10 dark:bg-[#006065]/30 flex items-center justify-center shrink-0 border border-[#006065]/20 dark:border-[#006065]/50">
+                    <div className="w-12 h-12 rounded-full bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 flex items-center justify-center shrink-0 border border-[#006065]/20 dark:border-[#006065]/50">
                       <CheckCircle2 className="w-6 h-6 text-[#006065] dark:text-[#fad503]" />
                     </div>
 
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-2 mb-2">
-                        <span className="text-xs font-bold text-[#006065] dark:text-[#fad503] uppercase tracking-wider bg-[#006065]/10 dark:bg-[#006065]/30 px-2 py-0.5 rounded-md">
+                        <span className="text-xs font-bold text-[#006065] dark:text-[#fad503] uppercase tracking-wider bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 px-2 py-0.5 rounded-md">
                           {item._type === 'native' ? 'Ã°Å¸Â¤â€“ AI-Detected' : 'Ã°Å¸â€œâ€ž Knowledge Source'}
                         </span>
                         <span className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
@@ -266,10 +266,10 @@ export default function DecisionLedger() {
                         </span>
                         {item.outcome_status && (
                           <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${
-                            item.outcome_status === 'successful' ? 'bg-[#006065]/10 dark:bg-[#006065]/30 border-[#006065]/30 dark:border-[#fad503]/30 text-[#00beac]' :
+                            item.outcome_status === 'successful' ? 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 border-[#006065]/30 dark:border-[#fad503]/30 text-[#00beac]' :
                             item.outcome_status === 'unsuccessful' ? 'bg-red-500/10 border-red-500/30 text-red-400' :
-                            item.outcome_status === 'partial' ? 'bg-[#006065]/10 dark:bg-[#006065]/30 border-amber-500/30 text-amber-400' :
-                            'bg-[#006065]/10 dark:bg-[#006065]/30 border-blue-500/30 text-blue-400'
+                            item.outcome_status === 'partial' ? 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 border-amber-500/30 text-amber-400' :
+                            'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 border-blue-500/30 text-blue-400'
                           }`}>
                             {item.outcome_status}
                           </span>
@@ -325,7 +325,7 @@ export default function DecisionLedger() {
                         {item._type === 'native' && (
                           <button
                             onClick={() => navigate(`${window.location.pathname.startsWith('/clipad') ? '/clipad' : ''}/decisions/${item.nativeId}/replay`)}
-                            className="ml-auto flex items-center gap-1.5 px-3 py-1.5 bg-[#006065]/10 dark:bg-[#006065]/30 border border-indigo-500/20 text-[#006065] dark:text-[#fad503] rounded-lg text-xs font-semibold hover:bg-indigo-500/20 transition-colors"
+                            className="ml-auto flex items-center gap-1.5 px-3 py-1.5 bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 border border-indigo-500/20 text-[#006065] dark:text-[#fad503] rounded-lg text-xs font-semibold hover:bg-indigo-500/20 transition-colors"
                           >
                             <Play className="w-3 h-3" fill="currentColor" />
                             Replay Decision

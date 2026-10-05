@@ -186,7 +186,7 @@ export default function IntegrationAnalytics() {
           
           <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-[#006065] text-[#fad503] flex items-center justify-center">
+              <div className="w-12 h-12 rounded-xl bg-[#006065] dark:bg-[#131A2C] text-[#fad503] flex items-center justify-center">
                 <Network className="w-6 h-6" />
               </div>
               <div>
@@ -330,8 +330,8 @@ export default function IntegrationAnalytics() {
                               <AlertTriangle className="w-3.5 h-3.5" /> Error
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-[#006065]/20 text-[#004e52] dark:bg-[#006065]/20 dark:text-[#006065]">
-                              <div className="w-2 h-2 rounded-full bg-[#006065]" /> Active
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-[#006065] dark:bg-[#131A2C]/20 text-[#004e52] dark:bg-[#006065] dark:bg-[#131A2C]/20 dark:text-[#006065]">
+                              <div className="w-2 h-2 rounded-full bg-[#006065] dark:bg-[#131A2C]" /> Active
                             </span>
                           )}
                         </td>

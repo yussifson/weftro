@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils';
 
 const ACTION_COLORS = {
   login:           { bg: 'bg-blue-500/10',   text: 'text-blue-500',   label: 'Login' },
-  plan_upgrade:    { bg: 'bg-[#006065]/10', text: 'text-[#006065]',label: 'Plan Upgrade' },
+  plan_upgrade:    { bg: 'bg-[#006065] dark:bg-[#131A2C]/10', text: 'text-[#006065]',label: 'Plan Upgrade' },
   meeting_created: { bg: 'bg-violet-500/10',  text: 'text-violet-500', label: 'Meeting' },
   video_recorded:  { bg: 'bg-orange-500/10',  text: 'text-orange-500', label: 'Recording' },
   impersonate:     { bg: 'bg-purple-500/10',  text: 'text-purple-500', label: 'Impersonate' },
@@ -184,7 +184,7 @@ export default function AuditMonitor() {
       <div className="border border-border rounded-xl bg-card overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="bg-transparent dark:bg-[#006065]/50">
+            <TableRow className="bg-transparent dark:bg-[#006065] dark:bg-[#131A2C]/50">
               <TableHead className="w-36"><Clock className="w-3.5 h-3.5 inline mr-1" />Timestamp</TableHead>
               <TableHead><User className="w-3.5 h-3.5 inline mr-1" />User</TableHead>
               <TableHead><Building2 className="w-3.5 h-3.5 inline mr-1" />Company</TableHead>

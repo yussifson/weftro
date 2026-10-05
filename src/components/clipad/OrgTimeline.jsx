@@ -18,7 +18,7 @@ const EVENT_ICONS = {
 const EVENT_COLORS = {
   meeting_saved: 'bg-indigo-100 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400',
   decision_created: 'bg-amber-100 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400',
-  task_completed: 'bg-[#006065]/20 text-[#006065] dark:bg-[#006065]/20 dark:text-[#00beac]',
+  task_completed: 'bg-[#006065] dark:bg-[#131A2C]/20 text-[#006065] dark:bg-[#006065] dark:bg-[#131A2C]/20 dark:text-[#00beac]',
   video_uploaded: 'bg-rose-100 text-rose-600 dark:bg-rose-500/20 dark:text-rose-400',
   blocker_raised: 'bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-400',
   default: 'bg-slate-100 text-slate-600 dark:bg-slate-500/20 dark:text-muted-foreground'

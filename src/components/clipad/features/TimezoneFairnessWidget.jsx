@@ -181,7 +181,7 @@ Distribution: Early morning (00-06 UTC): ${earlyMorning}, Business hours (08-18 
   const scoreColor = score >= 75 ? 'text-[#006065] dark:text-[#00beac]'
     : score >= 50 ? 'text-amber-600 dark:text-amber-400'
     : 'text-red-600 dark:text-red-400';
-  const barColor = score >= 75 ? 'bg-[#006065]' : score >= 50 ? 'bg-amber-500' : 'bg-red-500';
+  const barColor = score >= 75 ? 'bg-[#006065] dark:bg-[#131A2C]' : score >= 50 ? 'bg-amber-500' : 'bg-red-500';
 
   return (
     <div className="bg-white dark:bg-card rounded-xl shadow-sm border border-slate-200 dark:border-border p-5">

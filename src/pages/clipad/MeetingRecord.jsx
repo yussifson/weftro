@@ -24,7 +24,7 @@ function CopyButton({ text }) {
     setTimeout(() => setCopied(false), 2000);
   };
   return (
-    <button onClick={copy} className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg transition-all ${copied ? 'text-[#006065] bg-[#006065]/10' : 'text-muted-foreground hover:text-slate-600 dark:text-slate-300 bg-secondary hover:bg-secondary'}`}>
+    <button onClick={copy} className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg transition-all ${copied ? 'text-[#006065] bg-[#006065] dark:bg-[#131A2C]/10' : 'text-muted-foreground hover:text-slate-600 dark:text-slate-300 bg-secondary hover:bg-secondary'}`}>
       {copied ? <><Check className="w-3 h-3" /> Copied</> : <><Copy className="w-3 h-3" /> Copy</>}
     </button>
   );
@@ -68,7 +68,7 @@ function ActionItemRow({ item, onUpdate }) {
     <div className="flex items-start gap-3 py-3">
       <button
         onClick={toggle}
-        className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${done ? 'bg-[#006065] border-[#006065]' : 'border-gray-600 hover:border-primary'}`}
+        className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${done ? 'bg-[#006065] dark:bg-[#131A2C] border-[#006065]' : 'border-gray-600 hover:border-primary'}`}
       >
         {done && <Check className="w-3 h-3 text-foreground" strokeWidth={3} />}
       </button>
@@ -482,7 +482,7 @@ export default function MeetingRecord() {
             <div className="mb-6 px-4 sm:px-0">
               <div className="flex items-center gap-3 mb-2">
                 {meeting.ai_summary && (
-                  <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#006065]/10 dark:bg-[#006065]/30 border border-[#006065]/20 text-[#006065] dark:text-[#fad503] text-[10px] font-bold uppercase tracking-wider">
+                  <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 border border-[#006065]/20 text-[#006065] dark:text-[#fad503] text-[10px] font-bold uppercase tracking-wider">
                     <Sparkles className="w-3 h-3" /> AI Summary Ready
                   </span>
                 )}
@@ -597,7 +597,7 @@ export default function MeetingRecord() {
           </div>
         ) : meeting.ai_summary && !hasFeature(plan, 'hasAdvancedAI') ? (
           <SectionCard icon={Brain} iconColor="from-emerald-500 to-emerald-600" title="AI Intelligence Locked" defaultOpen>
-            <div className="relative overflow-hidden rounded-xl bg-transparent dark:bg-[#006065] border border-slate-200 dark:border-slate-800 p-8 text-center">
+            <div className="relative overflow-hidden rounded-xl bg-transparent dark:bg-[#006065] dark:bg-[#131A2C] border border-slate-200 dark:border-slate-800 p-8 text-center">
               <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white dark:to-slate-950/90 pointer-events-none" />
               <Lock className="w-8 h-8 text-[#006065] mx-auto mb-4" />
               <h3 className="text-lg font-bold text-white dark:text-slate-100 relative z-10 mb-2">Advanced AI & Smart Follow-ups</h3>
@@ -606,7 +606,7 @@ export default function MeetingRecord() {
               </p>
               <button 
                 onClick={() => navigate('/clipad/billing')}
-                className="relative z-10 px-6 py-2.5 rounded-full bg-[#006065] hover:bg-[#004e52] text-white font-bold text-sm shadow-xl transition-colors"
+                className="relative z-10 px-6 py-2.5 rounded-full bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004e52] text-white font-bold text-sm shadow-xl transition-colors"
               >
                 Upgrade to Pro
               </button>

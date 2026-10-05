@@ -315,7 +315,7 @@ export default function BlockerRadar({ workspaceId, spaceId, isWorkspaceView = f
                   {isOpen && canResolve && (
                     <button
                       onClick={() => handleResolve(blocker.id)}
-                      className="text-xs bg-[#006065]/10 hover:bg-[#006065]/20 text-[#006065] dark:text-[#00beac] border border-[#006065]/30 px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap flex items-center gap-1"
+                      className="text-xs bg-[#006065] dark:bg-[#131A2C]/10 hover:bg-[#006065] dark:bg-[#131A2C]/20 text-[#006065] dark:text-[#00beac] border border-[#006065]/30 px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap flex items-center gap-1"
                     >
                       <CheckCircle className="w-3 h-3" /> Resolve
                     </button>

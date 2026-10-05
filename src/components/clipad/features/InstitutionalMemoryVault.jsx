@@ -183,7 +183,7 @@ ${knowledgeContext}`
   };
 
   return (
-    <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-md bg-[#006065] text-white p-6 md:p-8">
+    <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-md bg-[#006065] dark:bg-[#131A2C] text-white p-6 md:p-8">
       <div className="absolute top-0 right-0 p-4 md:p-8 opacity-10 pointer-events-none">
         <Database className="w-40 h-40 text-white" />
       </div>
@@ -287,7 +287,7 @@ ${knowledgeContext}`
                       
                       if (type === 'M' || type === 'meeting') { route = `/clipad/meetings/${id}`; title = title !== `Node ${id}` ? title : 'Meeting Record'; colorClass = "bg-indigo-50 border-indigo-100 text-indigo-700 dark:bg-indigo-900/20 dark:border-indigo-800 dark:text-indigo-400"; }
                       if (type === 'V' || type === 'video') { route = `/clipad/videos/${id}`; title = title !== `Node ${id}` ? title : 'Video Record'; colorClass = "bg-purple-50 border-purple-100 text-purple-700 dark:bg-purple-900/20 dark:border-purple-800 dark:text-purple-400"; }
-                      if (type === 'D' || type === 'decision') { title = title !== `Node ${id}` ? title : 'Recorded Decision'; colorClass = "bg-[#006065]/10 border-emerald-100 text-[#004e52] dark:bg-[#004e52]/20 dark:border-emerald-800 dark:text-[#00beac]"; }
+                      if (type === 'D' || type === 'decision') { title = title !== `Node ${id}` ? title : 'Recorded Decision'; colorClass = "bg-[#006065] dark:bg-[#131A2C]/10 border-emerald-100 text-[#004e52] dark:bg-[#004e52]/20 dark:border-emerald-800 dark:text-[#00beac]"; }
                       if (type === 'B' || type === 'blocker') { title = title !== `Node ${id}` ? title : 'Blocker'; colorClass = "bg-amber-50 border-amber-100 text-amber-700 dark:bg-amber-900/20 dark:border-amber-800 dark:text-amber-400"; }
                       if (type === 'T' || type === 'task') { title = title !== `Node ${id}` ? title : 'Action Item'; colorClass = "bg-blue-50 border-blue-100 text-blue-700 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-400"; }
                       if (type === 'I' || type === 'imported') { route = url || '#'; title = title !== `Node ${id}` ? title : 'External Knowledge'; colorClass = "bg-sky-50 border-sky-100 text-sky-700 dark:bg-sky-900/20 dark:border-sky-800 dark:text-sky-400"; }

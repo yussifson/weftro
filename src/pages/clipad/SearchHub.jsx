@@ -16,16 +16,16 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 const TYPE_META = {
-  person:      { icon: Users,         label: 'Person',    color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065]/10 dark:bg-[#006065]/30 border border-[#006065]/20' },
-  meeting:     { icon: Calendar,      label: 'Meeting',   color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065]/10 dark:bg-[#006065]/30 border border-[#006065]/20', route: (id) => `/meetings/${id}` },
-  video:       { icon: Video,         label: 'Video',     color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065]/10 dark:bg-[#006065]/30 border border-[#006065]/20', route: (id) => `/watch/${id}` },
-  doc:         { icon: FileText,      label: 'Doc',       color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065]/10 dark:bg-[#006065]/30 border border-[#006065]/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=docs&docId=${id}` : null },
-  task:        { icon: CheckCircle,   label: 'Task',      color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065]/10 dark:bg-[#006065]/30 border border-[#006065]/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=tasks&taskId=${id}` : null },
-  message:     { icon: MessageSquare, label: 'Chat',      color: 'text-[#006065] dark:text-indigo-400', bg: 'bg-[#006065]/10 border border-[#006065]/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=chat` : null },
-  decision:    { icon: ShieldAlert,   label: 'Decision',  color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065]/10 dark:bg-[#006065]/30 border border-[#006065]/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=decisions` : null },
-  blocker:     { icon: AlertTriangle, label: 'Blocker',   color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065]/10 dark:bg-[#006065]/30 border border-[#006065]/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=overview` : null },
-  standup:     { icon: Zap,           label: 'Standup',   color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065]/10 dark:bg-[#006065]/30 border border-[#006065]/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=standup` : null },
-  integration: { icon: ExternalLink,  label: 'Imported',  color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065]/10 dark:bg-[#006065]/30 border border-[#006065]/20', route: () => `/integrations` },
+  person:      { icon: Users,         label: 'Person',    color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 border border-[#006065]/20' },
+  meeting:     { icon: Calendar,      label: 'Meeting',   color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 border border-[#006065]/20', route: (id) => `/meetings/${id}` },
+  video:       { icon: Video,         label: 'Video',     color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 border border-[#006065]/20', route: (id) => `/watch/${id}` },
+  doc:         { icon: FileText,      label: 'Doc',       color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 border border-[#006065]/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=docs&docId=${id}` : null },
+  task:        { icon: CheckCircle,   label: 'Task',      color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 border border-[#006065]/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=tasks&taskId=${id}` : null },
+  message:     { icon: MessageSquare, label: 'Chat',      color: 'text-[#006065] dark:text-indigo-400', bg: 'bg-[#006065] dark:bg-[#131A2C]/10 border border-[#006065]/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=chat` : null },
+  decision:    { icon: ShieldAlert,   label: 'Decision',  color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 border border-[#006065]/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=decisions` : null },
+  blocker:     { icon: AlertTriangle, label: 'Blocker',   color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 border border-[#006065]/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=overview` : null },
+  standup:     { icon: Zap,           label: 'Standup',   color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 border border-[#006065]/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=standup` : null },
+  integration: { icon: ExternalLink,  label: 'Imported',  color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 border border-[#006065]/20', route: () => `/integrations` },
 };
 
 const FILTER_TABS = [
@@ -547,7 +547,7 @@ export default function SearchHub() {
                 <button
                   type="submit"
                   disabled={!query.trim()}
-                  className="px-6 py-3 sm:py-2.5 bg-[#006065] hover:bg-[#006065]/90 disabled:opacity-40 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 shrink-0 shadow-md text-sm"
+                  className="px-6 py-3 sm:py-2.5 bg-[#006065] dark:bg-[#131A2C] hover:bg-[#006065] dark:bg-[#131A2C]/90 disabled:opacity-40 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 shrink-0 shadow-md text-sm"
                 >
                   {isSearching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                   <span className="hidden sm:inline">Search</span>
@@ -619,7 +619,7 @@ export default function SearchHub() {
                  <button
                    key={tab.id}
                    onClick={() => setActiveFilter(tab.id)}
-                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors ${isActive ? 'bg-[#006065] text-[#fad503] font-bold shadow-sm border border-[#006065]' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700'}`}
+                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors ${isActive ? 'bg-[#006065] dark:bg-[#131A2C] text-[#fad503] font-bold shadow-sm border border-[#006065]' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700'}`}
                  >
                    <Icon className="w-3.5 h-3.5" /> {tab.label}
                  </button>
@@ -658,7 +658,7 @@ export default function SearchHub() {
                           <div
                             key={`${item.type}-${item.id}`}
                             onClick={() => setSelectedResult(item)}
-                            className={`p-4 rounded-xl border transition-all cursor-pointer ${isSelected ? 'bg-[#006065]/5 dark:bg-indigo-900/10 border-indigo-200 dark:border-indigo-800 shadow-sm ring-1 ring-indigo-500/20' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-sm'}`}
+                            className={`p-4 rounded-xl border transition-all cursor-pointer ${isSelected ? 'bg-[#006065] dark:bg-[#131A2C]/5 dark:bg-indigo-900/10 border-indigo-200 dark:border-indigo-800 shadow-sm ring-1 ring-indigo-500/20' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-sm'}`}
                           >
                             <div className="flex items-start justify-between gap-3 mb-2">
                                <div className="flex items-center gap-2">
@@ -702,7 +702,7 @@ export default function SearchHub() {
                                 const route = TYPE_META[selectedResult.type].route(selectedResult.id, selectedResult.space_id);
                                 if (route) navigate(route);
                               }}
-                              className="flex items-center gap-1 text-[11px] font-bold text-[#006065] dark:text-indigo-400 hover:bg-[#006065]/5 dark:hover:bg-indigo-900/30 px-2 py-1 rounded transition-colors"
+                              className="flex items-center gap-1 text-[11px] font-bold text-[#006065] dark:text-indigo-400 hover:bg-[#006065] dark:bg-[#131A2C]/5 dark:hover:bg-indigo-900/30 px-2 py-1 rounded transition-colors"
                             >
                               Open <ArrowUpRight className="w-3 h-3" />
                             </button>
@@ -750,7 +750,7 @@ export default function SearchHub() {
                                     <span className="text-xs font-bold text-slate-600 dark:text-slate-300">{firstName.charAt(0)}</span>
                                   </div>
                                ) : (
-                                  <div className="w-8 h-8 rounded-xl bg-[#006065] flex items-center justify-center shadow-md">
+                                  <div className="w-8 h-8 rounded-xl bg-[#006065] dark:bg-[#131A2C] flex items-center justify-center shadow-md">
        <CliPadLogo size={18} color="#ffffff" />
      </div>
                                )}
@@ -779,7 +779,7 @@ export default function SearchHub() {
                                      <button onClick={() => handleCopy(msg.content, idx)} className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" title="Copy text">
                                         {copiedMsgIndex === idx ? <CheckCheck className="w-3.5 h-3.5 text-[#006065]" /> : <Copy className="w-3.5 h-3.5" />}
                                      </button>
-                                     <button onClick={() => handleSpeak(msg.content, idx)} className={`p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors ${isSpeakingMsgIndex === idx ? 'text-[#006065] bg-[#006065]/5 dark:bg-indigo-900/30' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`} title={isSpeakingMsgIndex === idx ? "Stop speaking" : "Read aloud"}>
+                                     <button onClick={() => handleSpeak(msg.content, idx)} className={`p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors ${isSpeakingMsgIndex === idx ? 'text-[#006065] bg-[#006065] dark:bg-[#131A2C]/5 dark:bg-indigo-900/30' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`} title={isSpeakingMsgIndex === idx ? "Stop speaking" : "Read aloud"}>
                                         {isSpeakingMsgIndex === idx ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
                                      </button>
                                      <div className="w-px h-3 bg-slate-200 dark:bg-slate-700 mx-1" />
@@ -799,7 +799,7 @@ export default function SearchHub() {
                    {isSynthesizing && (
                       <div className="flex gap-4 max-w-3xl mr-auto">
                          <div className="shrink-0 mt-1">
-                            <div className="w-8 h-8 rounded-xl bg-[#006065] flex items-center justify-center shadow-md animate-pulse">
+                            <div className="w-8 h-8 rounded-xl bg-[#006065] dark:bg-[#131A2C] flex items-center justify-center shadow-md animate-pulse">
        <CliPadLogo size={18} color="#ffffff" />
      </div>
                          </div>
@@ -827,7 +827,7 @@ export default function SearchHub() {
                       <button
                         type="submit"
                         disabled={!followUpInput.trim() || isSynthesizing}
-                        className="p-2 rounded-lg bg-indigo-600 hover:bg-[#006065] text-white disabled:opacity-50 transition-colors shrink-0"
+                        className="p-2 rounded-lg bg-indigo-600 hover:bg-[#006065] dark:bg-[#131A2C] text-white disabled:opacity-50 transition-colors shrink-0"
                       >
                          {isSynthesizing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4 ml-0.5" />}
                       </button>

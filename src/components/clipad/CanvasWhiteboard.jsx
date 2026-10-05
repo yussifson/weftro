@@ -447,7 +447,7 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
         <button onClick={() => setShowMobileTools(!showMobileTools)} className="px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold flex items-center gap-2 shadow-sm text-slate-700">
           Tools {showMobileTools ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
         </button>
-        <button onClick={onClose} className="px-4 py-1.5 rounded-xl bg-[#006065] hover:bg-[#004e52] text-white text-xs font-bold shadow-sm flex items-center gap-1.5">
+        <button onClick={onClose} className="px-4 py-1.5 rounded-xl bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004e52] text-white text-xs font-bold shadow-sm flex items-center gap-1.5">
           âœ• Close
         </button>
       </div>
@@ -459,7 +459,7 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
         <div className="flex items-center gap-0.5 bg-white border border-slate-200 rounded-xl p-1 shadow-sm">
           {TOOLS.map(t => (
             <button key={t.id} onClick={() => setTool(t.id)} title={`${t.label} (${t.shortcut})`}
-              className={`w-8 h-8 rounded-lg text-sm font-medium flex items-center justify-center transition-all ${tool === t.id ? 'bg-[#006065] text-white shadow-sm' : 'hover:bg-slate-100 text-slate-600'}`}>
+              className={`w-8 h-8 rounded-lg text-sm font-medium flex items-center justify-center transition-all ${tool === t.id ? 'bg-[#006065] dark:bg-[#131A2C] text-white shadow-sm' : 'hover:bg-slate-100 text-slate-600'}`}>
               {t.icon}
             </button>
           ))}
@@ -489,7 +489,7 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
         <div className="flex items-center gap-0.5 bg-white border border-slate-200 rounded-xl p-1 shadow-sm">
           {SIZES.map(s => (
             <button key={s} onClick={() => setSize(s)}
-              className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all ${size === s ? 'bg-[#006065]' : 'hover:bg-slate-100'}`}>
+              className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all ${size === s ? 'bg-[#006065] dark:bg-[#131A2C]' : 'hover:bg-slate-100'}`}>
               <div className="rounded-full bg-current" style={{ width: Math.min(s + 2, 16), height: Math.min(s + 2, 16), color: size === s ? 'white' : '#334155' }} />
             </button>
           ))}
@@ -512,7 +512,7 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
           <button onClick={undo} title="Undo (Ctrl+Z)" className="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-sm">â†©</button>
           <button onClick={redo} title="Redo (Ctrl+Y)" className="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-sm">â†ª</button>
           <button onClick={() => setShowGrid(g => !g)} title="Toggle grid"
-            className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold transition-all ${showGrid ? 'bg-[#006065] text-white' : 'hover:bg-slate-100 text-slate-600'}`}>âŠž</button>
+            className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold transition-all ${showGrid ? 'bg-[#006065] dark:bg-[#131A2C] text-white' : 'hover:bg-slate-100 text-slate-600'}`}>âŠž</button>
           <button onClick={download} title="Export PNG" className="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-600 text-sm">ðŸ’¾</button>
           <button onClick={clearBoard} title="Clear" className="w-8 h-8 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-500 text-sm">ðŸ—‘</button>
         </div>
@@ -541,7 +541,7 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
 
         {/* Close */}
         <button onClick={onClose}
-          className="ml-auto px-4 py-1.5 rounded-xl bg-[#006065] hover:bg-[#004e52] text-white text-xs font-bold shadow-sm transition-all hidden md:flex items-center gap-1.5">
+          className="ml-auto px-4 py-1.5 rounded-xl bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004e52] text-white text-xs font-bold shadow-sm transition-all hidden md:flex items-center gap-1.5">
           âœ• Close
         </button>
       </div>
