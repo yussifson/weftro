@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { supabase } from '@/api/supabaseClient';
@@ -100,7 +100,7 @@ export default function CliPadLogin() {
       <Helmet>
         <title>Log In â€” KERINT Collaborative Workspace</title>
         <meta name="description" content="Log in to your enterprise-grade collaborative productivity workspace." />
-        <link rel="icon" type="image/svg+xml" href="/clipad-favicon-round.svg" />
+        <link rel="icon" type="image/svg+xml" href="/clipad-logo.svg" />
       </Helmet>
       <div className="min-h-screen w-full bg-white flex flex-col lg:flex-row font-sans text-slate-900 overflow-hidden select-none">
         
@@ -109,10 +109,10 @@ export default function CliPadLogin() {
           <div className="max-w-md w-full mx-auto my-auto py-4">
             
             {/* Top Logo */}
-            <div className="flex items-center gap-2.5 mb-6 sm:mb-8">
-              <CliPadLogo size={32} color="#00beac" dotColor="#fad503" />
-              <span className="font-extrabold text-2xl tracking-tight text-slate-900">KERINT</span>
+            <div className="flex justify-center mb-6 sm:mb-8">
+              <CliPadLogo height={48} iconOnly={true} />
             </div>
+
 
             {/* Title & Subtitle */}
             <div className="mb-6">
@@ -239,7 +239,7 @@ export default function CliPadLogin() {
                 type="button"
                 className="w-full h-11 px-3 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-sm cursor-pointer"
               >
-                <Logo hideText={true} className="w-4 h-4 text-[#006065]" />
+                <img src="/optavel-favicon.svg" alt="Optavel" className="w-4 h-4" />
                 Log in with Optavel SSO
               </button>
               <button 
@@ -389,7 +389,7 @@ export default function CliPadLogin() {
 
                   <div className="flex items-center justify-between text-[8px] text-slate-400 pt-1.5 border-t border-slate-100">
                     <span>KERINT V3</span>
-                    <span className="text-[#00beac] font-bold">â— System Operational</span>
+                    <span className="text-[#006065] font-bold">â— System Operational</span>
                   </div>
                 </div>
               </div>

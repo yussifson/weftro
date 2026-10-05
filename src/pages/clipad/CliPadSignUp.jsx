@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { supabase } from '@/api/supabaseClient';
@@ -65,9 +65,9 @@ export default function CliPadSignUp() {
   return (
     <>
       <Helmet>
-        <title>Sign Up â€” KERINT Collaborative Workspace</title>
+        <title>Sign Up — KERINT Collaborative Workspace</title>
         <meta name="description" content="Create your enterprise-grade collaborative productivity workspace." />
-        <link rel="icon" type="image/svg+xml" href="/clipad-favicon-round.svg" />
+        <link rel="icon" type="image/svg+xml" href="/clipad-logo.svg" />
       </Helmet>
       <div className="min-h-screen w-full bg-white flex flex-col lg:flex-row font-sans text-slate-900 overflow-hidden select-none">
         
@@ -77,7 +77,7 @@ export default function CliPadSignUp() {
             
             {/* Top Logo */}
             <div className="flex items-center gap-2.5 mb-6 sm:mb-8">
-              <CliPadLogo size={32} color="#00beac" dotColor="#fad503" />
+              <CliPadLogo size={32} color="#006065" dotColor="#fad503" />
               <span className="font-extrabold text-2xl tracking-tight text-slate-900">KERINT</span>
             </div>
 
@@ -165,7 +165,7 @@ export default function CliPadSignUp() {
                 type="button"
                 className="w-full h-11 px-3 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-sm cursor-pointer"
               >
-                <Logo hideText={true} className="w-4 h-4 text-[#006065]" />
+                <img src="/optavel-favicon.svg" alt="Optavel" className="w-4 h-4" />
                 Sign up with Optavel SSO
               </button>
               <button 
@@ -229,7 +229,7 @@ export default function CliPadSignUp() {
                 <div className="w-44 bg-[#006065] text-white p-3 flex flex-col justify-between shrink-0">
                   <div>
                     <div className="flex items-center gap-1.5 mb-4">
-                      <CliPadLogo size={16} color="#00beac" dotColor="#fad503" />
+                      <CliPadLogo size={16} color="#006065" dotColor="#fad503" />
                       <span className="font-bold tracking-tight text-xs text-white">KERINT V3</span>
                     </div>
 
@@ -268,7 +268,7 @@ export default function CliPadSignUp() {
                         <div className="text-[8px] text-slate-500">Manage your workspace intelligence</div>
                       </div>
                       <div className="bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full text-slate-400 text-[8px] flex items-center gap-1">
-                        ðŸ” Search memory...
+                        🔍 Search memory...
                       </div>
                     </div>
 
@@ -309,7 +309,7 @@ export default function CliPadSignUp() {
 
                   <div className="flex items-center justify-between text-[8px] text-slate-400 pt-1.5 border-t border-slate-100">
                     <span>KERINT V3</span>
-                    <span className="text-[#00beac] font-bold">â— System Operational</span>
+                    <span className="text-[#006065] font-bold">● System Operational</span>
                   </div>
                 </div>
               </div>
