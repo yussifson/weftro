@@ -283,8 +283,8 @@ export default function CliPadLogin() {
           
           {/* Top Branding & Headline */}
           <div className="relative z-10">
-            <div className="flex items-center gap-2 mb-4">
-              <CliPadLogo size={32} color="#ffffff" dotColor="#fad503" />
+            <div className="mb-8">
+              <CliPadLogo height={80} white={true} />
             </div>
             <h2 className="text-3xl lg:text-4xl font-extrabold text-white leading-tight tracking-tight max-w-md mt-2">
               AI-Powered Organizational Memory & Intelligence
@@ -309,7 +309,7 @@ export default function CliPadLogin() {
                 <div className="w-44 bg-[#006065] text-white p-3 flex flex-col justify-between shrink-0">
                   <div>
                     <div className="flex items-center gap-1.5 mb-4">
-                      <CliPadLogo size={16} color="#00beac" dotColor="#fad503" />
+                      <CliPadLogo height={16} white={true} iconOnly={true} />
                       <span className="font-bold tracking-tight text-xs text-white">KERINT V3</span>
                     </div>
 
