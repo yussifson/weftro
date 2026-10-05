@@ -6,7 +6,7 @@ import { logAuditEvent } from '@/lib/auditLogger';
 import { useToast } from '@/components/ui/use-toast';
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { Logo } from '@/components/ui/Logo';
-import { KERINTLogo } from '@/components/ui/KERINTLogo';
+import { CliPadLogo } from '@/components/ui/CliPadLogo';
 
 export default function CliPadLogin() {
   const navigate = useNavigate();
@@ -110,7 +110,7 @@ export default function CliPadLogin() {
             
             {/* Top Logo */}
             <div className="flex items-center gap-2.5 mb-6 sm:mb-8">
-              <KERINTLogo size={32} color="#00beac" dotColor="#fad503" />
+              <CliPadLogo size={32} color="#00beac" dotColor="#fad503" />
               <span className="font-extrabold text-2xl tracking-tight text-slate-900">KERINT</span>
             </div>
 
@@ -284,7 +284,7 @@ export default function CliPadLogin() {
           {/* Top Branding & Headline */}
           <div className="relative z-10">
             <div className="flex items-center gap-2 mb-4">
-              <KERINTLogo size={32} color="#ffffff" dotColor="#fad503" />
+              <CliPadLogo size={32} color="#ffffff" dotColor="#fad503" />
             </div>
             <h2 className="text-3xl lg:text-4xl font-extrabold text-white leading-tight tracking-tight max-w-md mt-2">
               AI-Powered Organizational Memory & Intelligence
@@ -309,7 +309,7 @@ export default function CliPadLogin() {
                 <div className="w-44 bg-[#006065] text-white p-3 flex flex-col justify-between shrink-0">
                   <div>
                     <div className="flex items-center gap-1.5 mb-4">
-                      <KERINTLogo size={16} color="#00beac" dotColor="#fad503" />
+                      <CliPadLogo size={16} color="#00beac" dotColor="#fad503" />
                       <span className="font-bold tracking-tight text-xs text-white">KERINT V3</span>
                     </div>
 
