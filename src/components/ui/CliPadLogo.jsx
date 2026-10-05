@@ -1,15 +1,15 @@
 import React from 'react';
 
-export function KerintLogo({ className = '', style = {} }) {
+export function KerintLogo({ className = '', style = {}, color = "#006065" }) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="-14 -14 205 76" className={className} style={{ width: 'auto', height: '100%', ...style }} role="img">
       <title>KERINT</title>
       <g transform="translate(-8 -8)">
-        <path stroke="#006065" d="M33 11.5H11.5V52.5H52.5V33" fill="none" strokeWidth="7" strokeLinejoin="miter"/>
+        <path stroke={color} d="M33 11.5H11.5V52.5H52.5V33" fill="none" strokeWidth="7" strokeLinejoin="miter"/>
         <polygon fill="#fad503" points="44,11 53,20 44,29 35,20"/>
       </g>
       <g transform="translate(68 11.6) scale(.62)">
-        <g fill="#006065">
+        <g fill={color}>
           <rect x="0" y="0" width="6" height="40"/>
           <polygon points="20,0 28,0 17,20 28,40 20,40 9,20"/>
           <path transform="translate(34 0)" d="M0 0H24V6H6V17H20V23H6V34H24V40H0Z"/>
