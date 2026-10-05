@@ -142,35 +142,7 @@ export default function SearchHub() {
   // Ref so the early-mounting useEffect can call runSearch after it is defined
   const runSearchRef = React.useRef(null);
 
-  // Restore inputs on mount
-  useEffect(() => {
-    if (!user?.id) return;
-    const savedQuery = localStorage.getItem(`search_hub_query_${user.id}`);
-    const savedFollowUp = localStorage.getItem(`search_hub_followup_${user.id}`);
-    if (savedQuery) setQuery(savedQuery);
-    if (savedFollowUp) setFollowUpInput(savedFollowUp);
-  }, [user?.id]);
-
-  // Persist inputs on change
-  useEffect(() => {
-    if (user?.id) {
-      if (query) {
-        localStorage.setItem(`search_hub_query_${user.id}`, query);
-      } else {
-        localStorage.removeItem(`search_hub_query_${user.id}`);
-      }
-    }
-  }, [query, user?.id]);
-
-  useEffect(() => {
-    if (user?.id) {
-      if (followUpInput) {
-        localStorage.setItem(`search_hub_followup_${user.id}`, followUpInput);
-      } else {
-        localStorage.removeItem(`search_hub_followup_${user.id}`);
-      }
-    }
-  }, [followUpInput, user?.id]);
+  
 
   // Load persistent chat history from Supabase on mount
   useEffect(() => {
@@ -605,49 +577,42 @@ export default function SearchHub() {
         /* â”€â”€ SEARCH STATE (Premium Split Layout) â”€â”€ */
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Header specific to search state */}
-          <header className="h-16 shrink-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center px-4 md:px-8 gap-4 md:gap-8 z-10 shadow-sm">
-            <button 
-              onClick={() => { setHasPerformedSearch(false); setQuery(''); setResults([]); setAiAnswer(''); }} 
-              className="hidden md:flex items-center gap-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 px-3 py-1.5 rounded-lg transition-colors font-bold text-sm shadow-sm"
-            >
-              <ArrowLeft className="w-4 h-4" /> New Search
-            </button>
+            {/* Removed top header search bar per user request */}
 
-            <div className="flex-1 max-w-3xl">
-              <form onSubmit={(e) => { e.preventDefault(); setSearchParams({ q: query }); runSearch(); }} className="relative group">
+          
+            {/* FILTER TABS & SEARCH BAR */}
+            <div className="shrink-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 md:px-8 py-2 overflow-x-auto hide-scrollbar flex items-center gap-3">
+              <button
+                onClick={() => { setHasPerformedSearch(false); setQuery(''); setResults([]); setAiAnswer(''); setSearchParams({}); }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors bg-[#fad503] text-[#006065] shadow-sm border border-[#fad503] hover:brightness-105"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" /> New Search
+              </button>
+
+              <form onSubmit={(e) => { e.preventDefault(); setSearchParams({ q: query }); runSearch(); }} className="relative group shrink-0 w-64 md:w-80">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Search className="h-4 w-4 text-slate-400 group-focus-within:text-[#006065] transition-colors" />
+                  <Search className="h-3.5 w-3.5 text-slate-400 group-focus-within:text-[#006065] transition-colors" />
                 </div>
                 <input
                   type="text"
                   autoFocus
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search organizational memory..."
-                  className="block w-full pl-10 pr-12 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 text-sm focus:ring-2 focus:ring-[#006065] focus:border-[#006065] dark:focus:ring-[#006065] transition-all placeholder:text-slate-400"
+                  placeholder="Search memory..."
+                  className="block w-full pl-9 pr-8 py-1.5 border border-slate-200 dark:border-slate-700 rounded-full bg-slate-50 dark:bg-slate-800 text-xs focus:ring-2 focus:ring-[#006065] focus:border-[#006065] dark:focus:ring-[#006065] transition-all placeholder:text-slate-400 font-medium"
                 />
                 {query && (
                   <div className="absolute inset-y-0 right-0 pr-1 flex items-center gap-1">
-                    <button type="button" onClick={() => { setQuery(''); setHasPerformedSearch(false); }} className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-md">
-                      <X className="w-3.5 h-3.5" />
+                    <button type="button" onClick={() => { setQuery(''); setHasPerformedSearch(false); setSearchParams({}); }} className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-full">
+                      <X className="w-3 h-3" />
                     </button>
                   </div>
                 )}
               </form>
-            </div>
-            
-            <button 
-              onClick={() => { setHasPerformedSearch(false); setQuery(''); setResults([]); setAiAnswer(''); }} 
-              className="md:hidden p-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg transition-colors"
-              title="New Search"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </button>
-          </header>
 
-          {/* FILTER TABS */}
-          <div className="shrink-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 md:px-8 py-2 overflow-x-auto hide-scrollbar flex gap-2">
-            {FILTER_TABS.map(tab => {
+              <div className="h-5 w-px bg-slate-200 dark:bg-slate-700 mx-1 shrink-0" />
+              
+              {FILTER_TABS.map(tab => {
                const Icon = tab.icon;
                const isActive = activeFilter === tab.id;
                return (
