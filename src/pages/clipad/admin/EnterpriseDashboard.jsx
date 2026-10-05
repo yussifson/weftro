@@ -117,7 +117,7 @@ export default function EnterpriseDashboard() {
               value={`${metrics?.storageUsedGB || 0} GB`}
               subtext={`of 50GB Limit (${storagePercentage.toFixed(1)}%)`}
               progress={storagePercentage}
-              progressColor="bg-[#00beac]"
+              progressColor="bg-[#006065]"
             />
             <MetricCard 
               icon={<FolderKanban className="w-5 h-5 text-amber-500" />} 
@@ -209,8 +209,8 @@ export default function EnterpriseDashboard() {
                   <AreaChart data={trends}>
                     <defs>
                       <linearGradient id="colorVideos" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#00beac" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="#00beac" stopOpacity={0}/>
+                        <stop offset="5%" stopColor="#006065" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="#006065" stopOpacity={0}/>
                       </linearGradient>
                       <linearGradient id="colorMeetings" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
@@ -225,7 +225,7 @@ export default function EnterpriseDashboard() {
                       itemStyle={{ color: '#fff' }}
                     />
                     <Legend />
-                    <Area type="monotone" dataKey="videos" name="Async Videos" stroke="#00beac" strokeWidth={3} fillOpacity={1} fill="url(#colorVideos)" />
+                    <Area type="monotone" dataKey="videos" name="Async Videos" stroke="#006065" strokeWidth={3} fillOpacity={1} fill="url(#colorVideos)" />
                     <Area type="monotone" dataKey="meetings" name="Meeting Records" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorMeetings)" />
                   </AreaChart>
                 </ResponsiveContainer>

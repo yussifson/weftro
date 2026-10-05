@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Folder, Shield, BarChart2, Network, Clock, Scale, CheckSquare, Map, Plug, Search, Settings, HelpCircle, PanelLeftClose, PanelLeft, ChevronUp, ChevronDown, Activity, LogOut, Target, TrendingUp, GitMerge, HeartPulse, Sparkles, Home } from 'lucide-react';
+import { Globe, Folder, Shield, BarChart2, Network, Clock, Scale, CheckSquare, Map, Plug, Search, Settings, HelpCircle, PanelLeftClose, PanelLeft, ChevronUp, ChevronDown, Activity, LogOut, Target, TrendingUp, GitMerge, HeartPulse, Sparkles, Home } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CliPadLogo } from '@/components/ui/CliPadLogo';
 import { useAuth } from '@/lib/AuthContext';
@@ -71,6 +71,7 @@ export default function ClipadSidebar({ forceMobile }) {
   const mainItems = [
     { label: 'Home', path: '/dashboard', icon: Home },
     { label: 'Search', path: '/search', icon: Search },
+      { label: 'Landing Page', path: '/landing', icon: Globe },
     { label: 'Spaces', path: '/spaces', icon: Folder },
   ];
 
@@ -161,9 +162,9 @@ export default function ClipadSidebar({ forceMobile }) {
           </button>
         ) : (
           <>
-            <div className="flex items-center gap-3 cursor-pointer group" onClick={() => navigate('/dashboard')}>
-              <div className="h-10 transition-transform group-hover:scale-105">
-                <CliPadLogo color="#ffffff" className="h-full" />
+            <div className="flex items-center gap-3 cursor-pointer group" onClick={() => navigate('/landing')}>
+              <div className="flex items-center transition-transform group-hover:scale-105">
+                <CliPadLogo white height={36} />
               </div>
             </div>
             <button onClick={() => setIsCollapsed(true)} className="text-white/60 hover:text-white transition-colors p-1.5 rounded-lg hover:bg-white/10">
@@ -301,3 +302,5 @@ export default function ClipadSidebar({ forceMobile }) {
     </aside>
   );
 }
+
+

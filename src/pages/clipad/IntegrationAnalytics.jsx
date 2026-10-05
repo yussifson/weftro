@@ -211,7 +211,7 @@ export default function IntegrationAnalytics() {
               value={`${metrics?.activeConnections} / ${metrics?.totalConnections}`} 
               icon={Plug} color="text-[#006065] dark:text-[#fad503]" bg="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:border-[#006065]/30 hover:shadow-lg transition-all" 
               subtitle={metrics?.errorCount > 0 ? `${metrics.errorCount} requiring attention` : 'All systems operational'}
-              subtitleClass={metrics?.errorCount > 0 ? 'text-rose-500' : 'text-[#006065] dark:text-[#00beac]'}
+              subtitleClass={metrics?.errorCount > 0 ? 'text-rose-500' : 'text-[#006065] dark:text-[#006065]'}
             />
             <MetricCard 
               title="Total Knowledge Items" 
@@ -244,8 +244,8 @@ export default function IntegrationAnalytics() {
                     <AreaChart data={timelineData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                       <defs>
                         <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#00beac" stopOpacity={0.3}/>
-                          <stop offset="95%" stopColor="#00beac" stopOpacity={0}/>
+                          <stop offset="5%" stopColor="#006065" stopOpacity={0.3}/>
+                          <stop offset="95%" stopColor="#006065" stopOpacity={0}/>
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
@@ -254,7 +254,7 @@ export default function IntegrationAnalytics() {
                       <Tooltip 
                         contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
                       />
-                      <Area type="monotone" dataKey="totalItems" name="Total Corpus" stroke="#00beac" strokeWidth={3} fillOpacity={1} fill="url(#colorTotal)" />
+                      <Area type="monotone" dataKey="totalItems" name="Total Corpus" stroke="#006065" strokeWidth={3} fillOpacity={1} fill="url(#colorTotal)" />
                       <Area type="monotone" dataKey="newItems" name="New Daily" stroke="#10b981" strokeWidth={2} fillOpacity={0} />
                     </AreaChart>
                   </ResponsiveContainer>
@@ -330,7 +330,7 @@ export default function IntegrationAnalytics() {
                               <AlertTriangle className="w-3.5 h-3.5" /> Error
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-[#006065]/20 text-[#004e52] dark:bg-[#006065]/20 dark:text-[#00beac]">
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-[#006065]/20 text-[#004e52] dark:bg-[#006065]/20 dark:text-[#006065]">
                               <div className="w-2 h-2 rounded-full bg-[#006065]" /> Active
                             </span>
                           )}

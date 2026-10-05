@@ -32,6 +32,7 @@ const KnowledgeGraph = React.lazy(() => import('@/pages/clipad/KnowledgeGraph'))
 const ActionItems = React.lazy(() => import('@/pages/clipad/ActionItems'));
 const KnowledgeJourney = React.lazy(() => import('@/pages/clipad/KnowledgeJourney'));
 const IntegrationAnalytics = React.lazy(() => import('@/pages/clipad/IntegrationAnalytics'));
+const MeetLandingPage = React.lazy(() => import('@/pages/MeetLandingPage'));
 const CliPadDashboard = React.lazy(() => import('@/pages/clipad/CliPadDashboard'));
 const CliPadLogin = React.lazy(() => import('@/pages/clipad/CliPadLogin'));
 const CliPadSignUp = React.lazy(() => import('@/pages/clipad/CliPadSignUp'));
@@ -99,7 +100,12 @@ function App() {
                         <Route path="/login" element={<CliPadLogin />} />
                         <Route path="/signup" element={<CliPadSignUp />} />
                         <Route path="/custom-pricing" element={<CliPadCustomPricing />} />
-                        <Route path="/" element={<RootRedirect />} />
+                        <Route path="/" element={<MeetLandingPage />} />
+                        <Route path="/landing" element={<MeetLandingPage />} />
+                        <Route path="/home" element={<MeetLandingPage />} />
+                        <Route path="/marketing" element={<MeetLandingPage />} />
+                        <Route path="/about" element={<MeetLandingPage />} />
+                        <Route path="/meet" element={<MeetLandingPage />} />
 
                         <Route element={<ClipadLayout />}>
                           <Route path="/dashboard" element={<CliPadDashboard />} />
@@ -167,6 +173,8 @@ function App() {
 }
 
 export default App;
+
+
 
 
 
