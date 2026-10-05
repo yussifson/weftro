@@ -720,7 +720,97 @@ export default function SearchHub() {
              <div className="col-span-1 lg:col-span-7 flex flex-col h-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden relative">
                 
                 {/* Chat Header */}
-                
+                <div className="h-14 border-b border-slate-100 dark:border-slate-800 px-5 flex items-center gap-3 shrink-0 bg-slate-50 dark:bg-slate-900/50">
+                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-inner">
+                      <Sparkles className="w-4 h-4 text-white" />
+                   </div>
+                   <div>
+                     <h3 className="font-bold text-sm text-slate-900 dark:text-white leading-none">Orbit AI Synthesis</h3>
+                     <span className="text-[10px] text-slate-500 font-medium">Enterprise Intelligence Engine</span>
+                   </div>
+                </div>
+
+                {/* Chat Messages */}
+                <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
+                   {chatHistory.length === 0 && !isSynthesizing ? (
+                      <div className="flex flex-col items-center justify-center h-full text-center max-w-sm mx-auto">
+                         <div className="w-16 h-16 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center mb-4 border border-slate-100 dark:border-slate-700">
+                           <Sparkles className="w-8 h-8 text-slate-300 dark:text-slate-600" />
+                         </div>
+                         <h3 className="font-bold text-slate-900 dark:text-white mb-2">No active synthesis</h3>
+                         <p className="text-sm text-slate-500">Ask a question above and Orbit AI will analyze your organizational knowledge to synthesize an answer.</p>
+                      </div>
+                   ) : (
+                      chatHistory.map((msg, idx) => (
+                         <div key={idx} className={`flex gap-4 max-w-3xl ${msg.role === 'user' ? 'ml-auto flex-row-reverse' : 'mr-auto'}`}>
+                            
+                            <div className="shrink-0 mt-1">
+                               {msg.role === 'user' ? (
+                                  <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center border border-slate-300 dark:border-slate-600">
+                                    <span className="text-xs font-bold text-slate-600 dark:text-slate-300">{firstName.charAt(0)}</span>
+                                  </div>
+                               ) : (
+                                  <div className="w-8 h-8 rounded-xl bg-[#006065] flex items-center justify-center shadow-md">
+       <CliPadLogo size={18} color="#ffffff" />
+     </div>
+                               )}
+                            </div>
+
+                            <div className={`flex flex-col gap-1.5 ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
+                               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-1">
+                                 {msg.role === 'user' ? 'You' : 'Orbit AI'}
+                               </span>
+                               
+                               <div className={`text-sm leading-relaxed ${msg.role === 'user' ? 'px-5 py-3 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm rounded-3xl rounded-tr-sm' : 'py-2 text-slate-800 dark:text-slate-200'}`}>
+                                  {msg.role === 'assistant' ? (
+                                     <ReactMarkdown 
+                                       remarkPlugins={[remarkGfm]}
+                                       className="prose prose-sm dark:prose-invert max-w-none prose-p:leading-relaxed prose-pre:bg-slate-900 prose-pre:border prose-pre:border-slate-700 prose-code:text-slate-900 dark:prose-code:text-slate-200 prose-code:bg-slate-100 dark:prose-code:bg-slate-800 prose-code:px-1 prose-code:rounded prose-code:before:content-none prose-code:after:content-none prose-a:text-[#006065]"
+                                     >
+                                        {msg.content}
+                                     </ReactMarkdown>
+                                  ) : (
+                                     <span>{msg.content}</span>
+                                  )}
+                               </div>
+
+                               {msg.role === 'assistant' && (
+                                  <div className="flex items-center gap-1 mt-1">
+                                     <button onClick={() => handleCopy(msg.content, idx)} className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" title="Copy text">
+                                        {copiedMsgIndex === idx ? <CheckCheck className="w-3.5 h-3.5 text-[#006065]" /> : <Copy className="w-3.5 h-3.5" />}
+                                     </button>
+                                     <button onClick={() => handleSpeak(msg.content, idx)} className={`p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors ${isSpeakingMsgIndex === idx ? 'text-[#006065] bg-[#006065]/5 dark:bg-indigo-900/30' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`} title={isSpeakingMsgIndex === idx ? "Stop speaking" : "Read aloud"}>
+                                        {isSpeakingMsgIndex === idx ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+                                     </button>
+                                     <div className="w-px h-3 bg-slate-200 dark:bg-slate-700 mx-1" />
+                                     <button onClick={() => setVotedMsgState(p => ({...p, [idx]: 'up'}))} className={`p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors ${votedMsgState[idx] === 'up' ? 'text-[#006065]' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}>
+                                        <ThumbsUp className="w-3.5 h-3.5" />
+                                     </button>
+                                     <button onClick={() => setVotedMsgState(p => ({...p, [idx]: 'down'}))} className={`p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors ${votedMsgState[idx] === 'down' ? 'text-rose-500' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}>
+                                        <ThumbsDown className="w-3.5 h-3.5" />
+                                     </button>
+                                  </div>
+                               )}
+                            </div>
+                         </div>
+                      ))
+                   )}
+
+                   {isSynthesizing && (
+                      <div className="flex gap-4 max-w-3xl mr-auto">
+                         <div className="shrink-0 mt-1">
+                            <div className="w-8 h-8 rounded-xl bg-[#006065] flex items-center justify-center shadow-md animate-pulse">
+       <CliPadLogo size={18} color="#ffffff" />
+     </div>
+                         </div>
+                         <div className="flex flex-col gap-1.5 items-start">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-1">Orbit AI</span>
+                            <div className="py-2 flex items-center gap-2">
+                               <Loader2 className="w-4 h-4 text-[#006065] animate-spin" />
+                               <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Synthesizing insights...</span>
+                            </div>
+                         </div>
+                      </div>
                    )}
                    <div ref={chatBottomRef} />
                 </div>
