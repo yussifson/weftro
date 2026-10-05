@@ -5,7 +5,7 @@ export default function SEO({ title, description, image, url, type = 'website', 
   const siteUrl = window.location.origin;
   const currentUrl = url || window.location.href;
   const imageUrl = image || `${siteUrl}/optavel-favicon.svg`;
-  const defaultDesc = "CliPad is an enterprise-grade collaborative productivity workspace that unifies chat, spaces, video meetings, and action items in one place.";
+  const defaultDesc = "KERINT is an enterprise-grade collaborative productivity workspace that unifies chat, spaces, video meetings, and action items in one place.";
 
   return (
     <Helmet>

@@ -34,7 +34,7 @@ html, body {
     --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
-    --primary: 149 100% 33%; /* Vibrant Emerald Green */
+    --primary: 183 100% 20%; /* Dark Teal #006065 */
     --primary-foreground: 0 0% 100%;
     --secondary: 210 40% 96%;
     --secondary-foreground: 222 47% 11%;
@@ -55,7 +55,7 @@ html, body {
     --radius: 0.75rem;
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 222 47% 15%;
-    --sidebar-primary: 149 100% 33%;
+    --sidebar-primary: 183 100% 20%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 210 40% 96%;
     --sidebar-accent-foreground: 222 47% 15%;
@@ -103,7 +103,7 @@ html, body {
     --popover-foreground: 0 0% 100%;
     
     /* Brand Green Accent #0AF395 */
-    --primary: 156 92% 50%;
+    --primary: 51 98% 50%; /* Yellow #fad503 */
     --primary-foreground: 222 36% 9.2%; /* Dark text on bright green */
     
     /* Secondary Surface elements */

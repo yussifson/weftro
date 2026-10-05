@@ -36,7 +36,7 @@ const pillars = [
   },
   {
     icon: Camera,
-    color: 'from-green-500 to-emerald-500',
+    color: 'from-green-500 to-primary',
     glow: 'shadow-green-500/20',
     title: 'Async Video Messages',
     desc: 'Record camera, screen, or both in picture-in-picture. Share an instant link. Viewers leave timestamped comments and emoji reactions at exact moments.'
@@ -57,7 +57,7 @@ const pillars = [
   },
   {
     icon: Target,
-    color: 'from-green-500 to-emerald-500',
+    color: 'from-green-500 to-primary',
     glow: 'shadow-green-500/20',
     title: 'Sales & Demo Layer',
     desc: 'Record personalised video proposals. Know who watched, how much, where they paused, and whether they shared it — before your follow-up call.'
@@ -118,14 +118,14 @@ const slides = [
     description: 'Create persistent rooms for every project. Record picture-in-picture async updates and share instantly.',
     render: () => (
       <div className="relative flex flex-col items-center justify-center w-full h-full select-none">
-        <div className="absolute w-64 h-64 rounded-full border-2 border-indigo-100 animate-pulse" />
-        <div className="absolute w-44 h-44 rounded-full bg-indigo-50" />
-        <div className="relative w-32 h-32 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-400 flex items-center justify-center shadow-2xl shadow-indigo-500/40">
+        <div className="absolute w-64 h-64 rounded-full border-2 border-[#fad503]/20 animate-pulse" />
+        <div className="absolute w-44 h-44 rounded-full bg-[#fad503]/10" />
+        <div className="relative w-32 h-32 rounded-full bg-gradient-to-br from-[#fad503] to-[#fad503]/80 flex items-center justify-center shadow-2xl shadow-[#fad503]/40">
           <Layers className="w-14 h-14 text-white" strokeWidth={1.5} />
         </div>
         <div className="absolute top-6 right-10 bg-background border border-border rounded-xl px-3 py-1.5 shadow-lg flex items-center gap-1.5">
-          <Camera className="w-3 h-3 text-indigo-500" />
-          <span className="text-xs font-semibold text-indigo-600">Async Ready</span>
+          <Camera className="w-3 h-3 text-[#fad503]" />
+          <span className="text-xs font-semibold text-[#fad503]">Async Ready</span>
         </div>
         <div className="absolute bottom-10 left-6 bg-background border border-border rounded-xl px-3 py-1.5 shadow-lg">
           <span className="text-xs font-medium text-muted-foreground font-mono">Design Team Space</span>
@@ -139,14 +139,14 @@ const slides = [
     description: 'Every meeting produces a full summary, extracted action items, and key decisions within 2 minutes of ending.',
     render: () => (
       <div className="relative flex flex-col items-center justify-center w-full h-full select-none">
-        <div className="absolute w-64 h-64 rounded-full border-2 border-pink-100 animate-pulse" />
-        <div className="absolute w-44 h-44 rounded-full bg-pink-50" />
-        <div className="relative w-32 h-32 rounded-full bg-gradient-to-br from-pink-500 to-rose-400 flex items-center justify-center shadow-2xl shadow-pink-500/40">
+        <div className="absolute w-64 h-64 rounded-full border-2 border-teal-100 animate-pulse" />
+        <div className="absolute w-44 h-44 rounded-full bg-teal-50" />
+        <div className="relative w-32 h-32 rounded-full bg-gradient-to-br from-teal-500 to-teal-400 flex items-center justify-center shadow-2xl shadow-teal-500/40">
           <Brain className="w-14 h-14 text-white" strokeWidth={1.5} />
         </div>
         <div className="absolute top-4 right-8 bg-background border border-border rounded-xl px-3 py-1.5 shadow-lg flex items-center gap-2">
-          <Brain className="w-3 h-3 text-pink-500" />
-          <span className="text-xs font-semibold text-pink-600">Summary Gen</span>
+          <Brain className="w-3 h-3 text-teal-500" />
+          <span className="text-xs font-semibold text-teal-600">Summary Gen</span>
         </div>
         <div className="absolute bottom-8 left-4 bg-background border border-border rounded-xl px-3 py-2 shadow-lg text-center">
           <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider block">Action Items</span>
@@ -161,21 +161,21 @@ const slides = [
     description: 'Participants receive only their personal action items with full context. No more reading through entire transcripts.',
     render: () => (
       <div className="relative flex flex-col items-center justify-center w-full h-full select-none">
-        <div className="absolute w-64 h-64 rounded-full border-2 border-emerald-100 animate-pulse" />
-        <div className="absolute w-44 h-44 rounded-full bg-emerald-50" />
-        <div className="relative w-32 h-32 rounded-full bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center shadow-2xl shadow-emerald-500/40">
+        <div className="absolute w-64 h-64 rounded-full border-2 border-primary/10 animate-pulse" />
+        <div className="absolute w-44 h-44 rounded-full bg-primary/5" />
+        <div className="relative w-32 h-32 rounded-full bg-gradient-to-br from-primary to-teal-400 flex items-center justify-center shadow-2xl shadow-primary/40">
           <Zap className="w-14 h-14 text-white" strokeWidth={1.5} />
         </div>
         <div className="absolute bottom-6 flex -space-x-3">
-          {['bg-blue-400', 'bg-rose-400', 'bg-amber-400', 'bg-emerald-400'].map((c, i) => (
+          {['bg-primary/80', 'bg-[#fad503]', 'bg-teal-400', 'bg-primary/80'].map((c, i) => (
             <div key={i} className={`w-9 h-9 rounded-full ${c} border-2 border-background flex items-center justify-center`}>
               <Users className="w-4 h-4 text-white" />
             </div>
           ))}
         </div>
         <div className="absolute top-4 right-6 bg-background border border-border rounded-xl px-3 py-1.5 shadow-lg flex items-center gap-1.5">
-          <CheckCircle className="w-3 h-3 text-emerald-500" />
-          <span className="text-xs font-semibold text-emerald-600">Context aware</span>
+          <CheckCircle className="w-3 h-3 text-primary" />
+          <span className="text-xs font-semibold text-primary">Context aware</span>
         </div>
       </div>
     ),
@@ -427,11 +427,11 @@ export default function MeetLandingPage() {
     <div className={`light min-h-screen bg-white text-slate-900 flex flex-col font-sans relative transition-all duration-500 ease-in-out overflow-x-hidden ${supportPanel ? 'lg:pr-[400px]' : ''}`}>
       <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
         <div className="absolute -top-[20%] -left-[10%] w-[70vw] h-[70vw] rounded-full bg-primary/5 blur-[120px]" />
-        <div className="absolute -bottom-[20%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-orange-500/5 blur-[120px]" />
+        <div className="absolute -bottom-[20%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-[#fad503]/5 blur-[120px]" />
       </div>
       <SEO 
-        title="CliPad - #1 Enterprise AI-Powered Organizational Memory Layer" 
-        description="CliPad is a free, secure, enterprise-grade collaborative productivity workspace. Connect your team with chat, spaces, and HD video meetings instantly. Trusted by teams worldwide." 
+        title="KERINT - #1 Enterprise AI-Powered Organizational Memory Layer" 
+        description="KERINT is a free, secure, enterprise-grade collaborative productivity workspace. Connect your team with chat, spaces, and HD video meetings instantly. Trusted by teams worldwide." 
         type="website"
       />
       <header className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 border-b border-slate-200/50 bg-white/80 backdrop-blur-md shadow-sm">
@@ -439,7 +439,7 @@ export default function MeetLandingPage() {
           <div className="w-10 h-10 flex items-center justify-center text-primary">
             <CliPadLogo size={36} />
           </div>
-          <span className="text-xl font-bold tracking-tight text-slate-900">CliPad</span>
+          <span className="text-xl font-bold tracking-tight text-slate-900">KERINT</span>
         </div>
         
         {/* Desktop Nav */}
@@ -476,18 +476,18 @@ export default function MeetLandingPage() {
 
       <main className="relative z-10 flex-1 flex flex-col md:flex-row items-center justify-center p-6 md:p-12 gap-12 md:gap-16 max-w-7xl mx-auto w-full">
         <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left space-y-8 max-w-xl">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-50/90 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/30 shadow-md transition-all duration-300 hover:scale-105 select-none">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-primary/5 dark:bg-primary/10 text-primary dark:text-primary/80 border border-primary/20 dark:border-primary/30 shadow-md transition-all duration-300 hover:scale-105 select-none">
             <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary/80 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
             </span>
-            <span>CliPad 2.0 Live</span>
+            <span>KERINT V3 Live</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-normal text-slate-800 leading-tight tracking-tight">
             #1 Enterprise AI-powered organizational memory and intelligence layer.<br />Now free for everyone.
           </h1>
           <p className="text-lg text-slate-500 leading-relaxed">
-            CliPad captures, connects, and preserves your company's knowledge—through meetings, async video, collaboration, and intelligent context.
+            KERINT captures, connects, and preserves your company's knowledge—through meetings, async video, collaboration, and intelligent context.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center gap-4 w-full pt-2">
@@ -612,7 +612,7 @@ export default function MeetLandingPage() {
           <div className="text-center mb-16">
 
             <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-5">Choose the perfect plan for your team.</h2>
-            <p className="text-muted-foreground text-lg max-w-xl mx-auto">Scale your operations seamlessly with Clipad.</p>
+            <p className="text-muted-foreground text-lg max-w-xl mx-auto">Scale your operations seamlessly with KERINT.</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -648,7 +648,7 @@ export default function MeetLandingPage() {
                     {tier.features.map((f) => (
                       <div key={f} className="flex items-start gap-2.5">
                         <CheckCircle className={`w-4 h-4 shrink-0 mt-0.5 ${
-                          tier.highlight ? 'text-primary' : tier.name === 'Custom' ? 'text-orange-500' : 'text-emerald-500'
+                          tier.highlight ? 'text-primary' : tier.name === 'Custom' ? 'text-[#fad503]' : 'text-primary'
                         }`} />
                         <span className="text-xs text-foreground/85 leading-relaxed">{f}</span>
                       </div>
@@ -735,17 +735,17 @@ export default function MeetLandingPage() {
                   </tr>
                   <tr className="border-b border-border/60 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
                     <td className="p-4 font-semibold text-foreground">Screen Sharing & Whiteboard</td>
-                    <td className="p-4 text-center text-emerald-500 font-bold">&check;</td>
-                    <td className="p-4 text-center text-emerald-500 font-bold bg-primary/5">&check;</td>
-                    <td className="p-4 text-center text-emerald-500 font-bold">&check;</td>
-                    <td className="p-4 text-center text-emerald-500 font-bold">&check;</td>
+                    <td className="p-4 text-center text-primary font-bold">&check;</td>
+                    <td className="p-4 text-center text-primary font-bold bg-primary/5">&check;</td>
+                    <td className="p-4 text-center text-primary font-bold">&check;</td>
+                    <td className="p-4 text-center text-primary font-bold">&check;</td>
                   </tr>
                   <tr className="border-b border-border/60 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
                     <td className="p-4 font-semibold text-foreground">Live Chat & Reactions</td>
-                    <td className="p-4 text-center text-emerald-500 font-bold">&check;</td>
-                    <td className="p-4 text-center text-emerald-500 font-bold bg-primary/5">&check;</td>
-                    <td className="p-4 text-center text-emerald-500 font-bold">&check;</td>
-                    <td className="p-4 text-center text-emerald-500 font-bold">&check;</td>
+                    <td className="p-4 text-center text-primary font-bold">&check;</td>
+                    <td className="p-4 text-center text-primary font-bold bg-primary/5">&check;</td>
+                    <td className="p-4 text-center text-primary font-bold">&check;</td>
+                    <td className="p-4 text-center text-primary font-bold">&check;</td>
                   </tr>
 
                   {/* Category 2: Async Video & Recording */}
@@ -778,8 +778,8 @@ export default function MeetLandingPage() {
                   <tr className="border-b border-border/60 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
                     <td className="p-4 font-semibold text-foreground">Password Protection & Expiring Links</td>
                     <td className="p-4 text-center text-muted-foreground">&mdash;</td>
-                    <td className="p-4 text-center text-emerald-500 font-bold bg-primary/5">&check;</td>
-                    <td className="p-4 text-center text-emerald-500 font-bold">&check;</td>
+                    <td className="p-4 text-center text-primary font-bold bg-primary/5">&check;</td>
+                    <td className="p-4 text-center text-primary font-bold">&check;</td>
                     <td className="p-4 text-center font-bold text-foreground">Domain Gating & Custom DRM</td>
                   </tr>
 
@@ -806,8 +806,8 @@ export default function MeetLandingPage() {
                   <tr className="border-b border-border/60 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
                     <td className="p-4 font-semibold text-foreground">Cross-Space Search & Discovery</td>
                     <td className="p-4 text-center text-muted-foreground">&mdash;</td>
-                    <td className="p-4 text-center text-emerald-500 font-bold bg-primary/5">&check;</td>
-                    <td className="p-4 text-center text-emerald-500 font-bold">&check;</td>
+                    <td className="p-4 text-center text-primary font-bold bg-primary/5">&check;</td>
+                    <td className="p-4 text-center text-primary font-bold">&check;</td>
                     <td className="p-4 text-center font-bold text-foreground">Semantic Vector Index</td>
                   </tr>
 
@@ -834,8 +834,8 @@ export default function MeetLandingPage() {
                   <tr className="border-b border-border/60 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
                     <td className="p-4 font-semibold text-foreground">Smart Follow-up Action Emails</td>
                     <td className="p-4 text-center text-muted-foreground">&mdash;</td>
-                    <td className="p-4 text-center text-emerald-500 font-bold bg-primary/5">&check;</td>
-                    <td className="p-4 text-center text-emerald-500 font-bold">&check;</td>
+                    <td className="p-4 text-center text-primary font-bold bg-primary/5">&check;</td>
+                    <td className="p-4 text-center text-primary font-bold">&check;</td>
                     <td className="p-4 text-center font-bold text-foreground">Custom SMTP & Templates</td>
                   </tr>
                   <tr className="border-b border-border/60 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
@@ -877,7 +877,7 @@ export default function MeetLandingPage() {
                     <td className="p-4 font-semibold text-foreground">Enterprise Audit Trail</td>
                     <td className="p-4 text-center text-muted-foreground">&mdash;</td>
                     <td className="p-4 text-center text-muted-foreground bg-primary/5">&mdash;</td>
-                    <td className="p-4 text-center text-emerald-500 font-bold">&check;</td>
+                    <td className="p-4 text-center text-primary font-bold">&check;</td>
                     <td className="p-4 text-center font-bold text-foreground">Immutable SIEM Stream</td>
                   </tr>
                   <tr className="border-b border-border/60 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
@@ -979,14 +979,14 @@ export default function MeetLandingPage() {
             </div>
 
             <div className="bg-card border border-border p-8 rounded-3xl shadow-sm hover:shadow-md transition-all text-center flex flex-col items-center">
-              <div className="w-16 h-16 rounded-2xl bg-blue-500/10 flex items-center justify-center mb-6">
-                <PhoneCall className="w-8 h-8 text-blue-500" />
+              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-6">
+                <PhoneCall className="w-8 h-8 text-primary" />
               </div>
               <h3 className="text-xl font-bold mb-3">Request a Call</h3>
               <p className="text-muted-foreground text-sm mb-6 flex-1">Submit your details and a dedicated support representative will call you back shortly.</p>
               <button 
                 onClick={() => setSupportPanel('call')}
-                className="w-full py-3 rounded-xl bg-blue-500 hover:bg-blue-600 text-white font-semibold transition-colors"
+                className="w-full py-3 rounded-xl bg-primary hover:bg-primary/90 text-white font-semibold transition-colors"
               >
                 Request Call
               </button>
@@ -1001,7 +1001,7 @@ export default function MeetLandingPage() {
               <div className="text-primary mr-1">
                 <CliPadLogo size={24} />
               </div>
-              <span>&copy; {new Date().getFullYear()} CliPad by Optavel Technologies</span>
+              <span>&copy; {new Date().getFullYear()} KERINT by Optavel Technologies</span>
             </div>
             <div className="flex items-center gap-6 text-sm text-muted-foreground">
               <span className="hover:text-muted-foreground cursor-pointer transition-colors">Privacy</span>
@@ -1021,8 +1021,8 @@ export default function MeetLandingPage() {
           
           <div className="p-8 md:p-10 text-center flex flex-col items-center">
             {/* Icon */}
-            <div className="w-16 h-16 bg-emerald-500/10 dark:bg-emerald-500/20 rounded-2xl flex items-center justify-center mb-6">
-              <Video className="w-8 h-8 text-emerald-500" />
+            <div className="w-16 h-16 bg-primary/10 dark:bg-primary/20 rounded-2xl flex items-center justify-center mb-6">
+              <Video className="w-8 h-8 text-primary" />
             </div>
 
             {/* Text */}
@@ -1040,7 +1040,7 @@ export default function MeetLandingPage() {
                 </div>
                 <Button
                   type="button"
-                  className="rounded-xl shrink-0 gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold shadow-lg shadow-emerald-500/20 transition-all px-5 py-3 h-auto"
+                  className="rounded-xl shrink-0 gap-2 bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/20 transition-all px-5 py-3 h-auto"
                   onClick={() => {
                     navigator.clipboard.writeText(laterLink);
                     toast({ title: 'Copied!', description: 'Meeting link copied to clipboard.' });
@@ -1135,7 +1135,7 @@ export default function MeetLandingPage() {
                         className="w-full mt-1 px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50" 
                       />
                     </div>
-                    <Button type="submit" disabled={submittingSupport} className="w-full rounded-xl mt-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold">
+                    <Button type="submit" disabled={submittingSupport} className="w-full rounded-xl mt-4 bg-primary hover:bg-primary/90 text-white font-semibold">
                       {submittingSupport ? 'Submitting...' : 'Request Call'}
                     </Button>
                     </form>
