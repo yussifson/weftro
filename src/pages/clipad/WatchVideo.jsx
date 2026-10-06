@@ -439,7 +439,7 @@ return <LockWall type={accessDenied.type} unlockAt={accessDenied.unlockAt || nul
         {/* Contextual Action Bar */}
         <div className="flex items-center justify-between px-6 py-4 bg-white dark:bg-card border-b border-slate-200 dark:border-border shadow-sm mb-4">
           <button onClick={() => navigate(-1)} className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/95 dark:bg-[#202c33]/95 backdrop-blur-md border border-black/5 dark:border-white/5 shadow-sm hover:shadow-md text-sm font-semibold text-slate-900 dark:text-foreground transition-all hover:-translate-y-0.5">
-            <ArrowLeft className="w-4 h-4 text-slate-500" /> Back
+            <ArrowLeft className="w-4 h-4 text-slate-500 dark:text-muted-foreground" /> Back
           </button>
           <div className="flex items-center gap-2">
             <span className="text-xs text-slate-500 dark:text-muted-foreground flex items-center gap-1 font-medium"><Eye className="w-3.5 h-3.5" /> {views} views</span>
@@ -733,7 +733,7 @@ return <LockWall type={accessDenied.type} unlockAt={accessDenied.unlockAt || nul
                     value={commentText}
                     onChange={e => setCommentText(e.target.value)}
                     placeholder={`Comment at ${formatTime(currentTime)}â€¦`}
-                    className="w-full pl-4 pr-12 py-3 rounded-xl bg-white/95 dark:bg-[#202c33]/95 border border-black/5 dark:border-white/5 text-white dark:text-foreground text-sm placeholder-slate-400 focus:outline-none focus:border-primary/50 shadow-[0_2px_10px_rgba(0,0,0,0.04)] transition-all"
+                    className="w-full pl-4 pr-12 py-3 rounded-xl bg-white/95 dark:bg-[#202c33]/95 border border-black/5 dark:border-white/5 text-white dark:text-foreground text-sm placeholder-slate-400 dark:placeholder-muted-foreground focus:outline-none focus:border-primary/50 shadow-[0_2px_10px_rgba(0,0,0,0.04)] transition-all"
                   />
                   <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
                     <DictationButton onResult={txt => setCommentText(prev => (prev + ' ' + txt).trim())} isRecording={isRecording} setIsRecording={setIsRecording} />
@@ -743,7 +743,7 @@ return <LockWall type={accessDenied.type} unlockAt={accessDenied.unlockAt || nul
                   </div>
                 </div>
                 <div className="flex items-center justify-end mt-2 px-1">
-                  <label className="flex items-center gap-2 text-xs font-medium text-slate-500 cursor-pointer hover:text-white/90 dark:hover:text-white/50">
+                  <label className="flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-muted-foreground cursor-pointer hover:text-white/90 dark:hover:text-white/50">
                     <input type="checkbox" checked={isAnonymous} onChange={e => setIsAnonymous(e.target.checked)} className="rounded text-primary focus:ring-primary w-3.5 h-3.5" />
                     Post Anonymously
                   </label>

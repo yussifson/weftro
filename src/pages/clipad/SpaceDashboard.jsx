@@ -105,7 +105,7 @@ function VideoCard({ video, onClick }) {
           </div>
         )}
         <div className="absolute inset-0 bg-black/10 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center">
-          <div className="w-12 h-12 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center shadow-lg transform scale-90 group-hover:scale-100 transition-transform duration-300">
+          <div className="w-12 h-12 rounded-full bg-white/90 dark:bg-background/90 backdrop-blur-md flex items-center justify-center shadow-lg transform scale-90 group-hover:scale-100 transition-transform duration-300">
             <Play className="w-5 h-5 text-indigo-600 fill-current ml-1" />
           </div>
         </div>
@@ -470,18 +470,18 @@ export default function SpaceDashboard() {
           <div className="flex items-center justify-between p-4 mt-2 bg-slate-50 dark:bg-card rounded-lg border border-slate-200 dark:border-border">
             <div>
               <p className="text-sm font-semibold">Meeting Privacy</p>
-              <p className="text-xs text-slate-500">{privacyType === 'private' ? 'Only org members can join.' : 'External guests can knock to join.'}</p>
+              <p className="text-xs text-slate-500 dark:text-muted-foreground">{privacyType === 'private' ? 'Only org members can join.' : 'External guests can knock to join.'}</p>
             </div>
             <div className="flex bg-slate-200 dark:bg-slate-800 p-1 rounded-md">
               <button
                 onClick={() => setPrivacyType('private')}
-                className={`px-3 py-1.5 text-xs font-semibold rounded transition-all ${privacyType === 'private' ? 'bg-white dark:bg-slate-700 shadow' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                className={`px-3 py-1.5 text-xs font-semibold rounded transition-all ${privacyType === 'private' ? 'bg-white dark:bg-slate-700 shadow' : 'text-slate-500 dark:text-muted-foreground hover:text-slate-700 dark:hover:text-slate-300'}`}
               >
                 Private
               </button>
               <button
                 onClick={() => setPrivacyType('public')}
-                className={`px-3 py-1.5 text-xs font-semibold rounded transition-all ${privacyType === 'public' ? 'bg-white dark:bg-slate-700 shadow' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                className={`px-3 py-1.5 text-xs font-semibold rounded transition-all ${privacyType === 'public' ? 'bg-white dark:bg-slate-700 shadow' : 'text-slate-500 dark:text-muted-foreground hover:text-slate-700 dark:hover:text-slate-300'}`}
               >
                 Public
               </button>
@@ -489,7 +489,7 @@ export default function SpaceDashboard() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowPrivacyModal(false)}>Cancel</Button>
-            <Button className="bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-bold border-0 shadow-sm" onClick={confirmJoinMeeting}>Start Meeting</Button>
+            <Button className="bg-yellow-400 hover:bg-yellow-500 text-slate-900 dark:text-foreground font-bold border-0 shadow-sm" onClick={confirmJoinMeeting}>Start Meeting</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -502,15 +502,15 @@ export default function SpaceDashboard() {
           </DialogHeader>
           <form onSubmit={handleEditSpace} className="space-y-4 py-2">
             <div>
-              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1 block">Name</label>
+              <label className="text-xs font-semibold text-slate-500 dark:text-muted-foreground uppercase tracking-wider mb-1 block">Name</label>
               <input type="text" value={editName} onChange={e => setEditName(e.target.value)} className="w-full bg-white dark:bg-card border border-slate-200 dark:border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900" required />
             </div>
             <div>
-              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1 block">Description</label>
+              <label className="text-xs font-semibold text-slate-500 dark:text-muted-foreground uppercase tracking-wider mb-1 block">Description</label>
               <textarea value={editDesc} onChange={e => setEditDesc(e.target.value)} className="w-full bg-white dark:bg-card border border-slate-200 dark:border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 resize-none h-20" />
             </div>
             <div className="flex items-center gap-2 mt-4">
-              <input type="checkbox" id="private-space" checked={editIsPrivate} onChange={e => setEditIsPrivate(e.target.checked)} className="rounded border-slate-300 text-slate-900 focus:ring-slate-900" />
+              <input type="checkbox" id="private-space" checked={editIsPrivate} onChange={e => setEditIsPrivate(e.target.checked)} className="rounded border-slate-300 dark:border-border text-slate-900 dark:text-foreground focus:ring-slate-900" />
               <label htmlFor="private-space" className="text-sm font-medium">Private Space</label>
             </div>
             <div className="flex justify-between items-center pt-4 border-t border-slate-100 dark:border-border mt-4">
@@ -531,13 +531,13 @@ export default function SpaceDashboard() {
         <div className="h-16 flex items-center px-4 border-b border-slate-200 dark:border-border gap-3 shrink-0 justify-between">
           <div className="flex items-center gap-3 overflow-hidden">
              {sidebarOpen && (
-                <button onClick={() => navigate('/spaces')} className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-muted-foreground dark:hover:text-white bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-accent rounded-md transition-all shadow-sm">
+                <button onClick={() => navigate('/spaces')} className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-slate-600 dark:text-muted-foreground hover:text-slate-900 dark:text-muted-foreground dark:hover:text-white bg-slate-100 dark:bg-secondary hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-accent rounded-md transition-all shadow-sm">
                   <ArrowLeft className="w-3.5 h-3.5" /> Back
                 </button>
              )}
              <span className={`font-bold text-sm truncate transition-opacity duration-300 ${sidebarOpen ? 'opacity-100' : 'opacity-0 hidden'}`}>{space.name}</span>
           </div>
-          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-accent rounded-md transition-colors shrink-0" title={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}>
+          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-1.5 text-slate-400 hover:text-slate-600 dark:text-muted-foreground hover:bg-slate-100 dark:hover:bg-accent rounded-md transition-colors shrink-0" title={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}>
               {sidebarOpen ? <PanelLeftClose className="w-5 h-5 transition-transform duration-300" /> : <PanelLeft className="w-5 h-5 transition-transform duration-300" />}
             </button>
         </div>
@@ -576,12 +576,12 @@ export default function SpaceDashboard() {
       {/* MOBILE HEADER (only visible on small screens) */}
       <div className="md:hidden fixed top-0 left-0 right-0 h-14 bg-white dark:bg-card border-b border-slate-200 dark:border-border flex items-center px-4 z-40 justify-between shadow-sm">
          <div className="flex items-center gap-2">
-           <button onClick={() => navigate('/spaces')} className="flex items-center gap-1.5 px-2 py-1 text-xs font-semibold text-slate-600 bg-slate-100 rounded-md">
+           <button onClick={() => navigate('/spaces')} className="flex items-center gap-1.5 px-2 py-1 text-xs font-semibold text-slate-600 dark:text-muted-foreground bg-slate-100 dark:bg-secondary rounded-md">
              <ArrowLeft className="w-3.5 h-3.5" /> Back
            </button>
            <span className="font-bold text-sm truncate ml-2">{space.name}</span>
          </div>
-         <button onClick={() => setShowMembers(true)} className="p-2 text-slate-500">
+         <button onClick={() => setShowMembers(true)} className="p-2 text-slate-500 dark:text-muted-foreground">
            <Users className="w-5 h-5" />
          </button>
       </div>
@@ -599,7 +599,7 @@ export default function SpaceDashboard() {
               <button
                 key={tab.id}
                 onClick={() => handleTabChange(tab.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 mx-1 text-xs whitespace-nowrap rounded-full transition-all ${isActive ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-foreground font-medium' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-accent'}`}
+                className={`flex items-center gap-1.5 px-3 py-1.5 mx-1 text-xs whitespace-nowrap rounded-full transition-all ${isActive ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-foreground font-medium' : 'text-slate-500 dark:text-muted-foreground hover:bg-slate-50 dark:hover:bg-accent'}`}
               >
                 <Icon className="w-3.5 h-3.5" /> {tab.label}
               </button>
@@ -628,7 +628,7 @@ export default function SpaceDashboard() {
              </button>
              <button
               onClick={handleJoinMeeting}
-              className={`flex items-center gap-2 px-4 py-1.5 rounded-md font-semibold text-sm transition-all ${isLive ? 'bg-rose-500 hover:bg-rose-600 text-white animate-pulse shadow-md' : 'bg-yellow-400 hover:bg-yellow-500 text-slate-900 shadow-sm border border-yellow-500/20'}`}
+              className={`flex items-center gap-2 px-4 py-1.5 rounded-md font-semibold text-sm transition-all ${isLive ? 'bg-rose-500 hover:bg-rose-600 text-white animate-pulse shadow-md' : 'bg-yellow-400 hover:bg-yellow-500 text-slate-900 dark:text-foreground shadow-sm border border-yellow-500/20'}`}
              >
               {isLive ? <Activity className="w-4 h-4" /> : <Video className="w-4 h-4" />}
               {isLive ? 'Join Live' : 'Start Meeting'}
@@ -671,11 +671,11 @@ export default function SpaceDashboard() {
                       <h3 className="text-base font-bold text-slate-900 dark:text-foreground flex items-center gap-2">
                         <Camera className="w-4 h-4 text-indigo-500" /> Recent Videos
                       </h3>
-                      <button onClick={() => setActiveTab('videos')} className="text-xs font-semibold text-slate-500 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-md transition-colors">View all</button>
+                      <button onClick={() => setActiveTab('videos')} className="text-xs font-semibold text-slate-500 dark:text-muted-foreground hover:text-slate-700 dark:text-foreground bg-slate-100 dark:bg-secondary hover:bg-slate-200 dark:bg-accent px-3 py-1.5 rounded-md transition-colors">View all</button>
                     </div>
                     {videos.length === 0 ? (
                       <div className="py-10 text-center border border-dashed border-slate-200 dark:border-border rounded-lg bg-slate-50 dark:bg-card/50">
-                        <p className="text-sm text-slate-500 font-medium">No videos yet.</p>
+                        <p className="text-sm text-slate-500 dark:text-muted-foreground font-medium">No videos yet.</p>
                       </div>
                     ) : (
                       <div className="grid grid-cols-2 gap-4">{videos.slice(0,4).map(v => <VideoCard key={v.id} video={v} onClick={() => navigate(`/watch/${v.id}`)} />)}</div>
@@ -688,18 +688,18 @@ export default function SpaceDashboard() {
                       <h3 className="text-base font-bold text-slate-900 dark:text-foreground flex items-center gap-2">
                         <Calendar className="w-4 h-4 text-[#006065]" /> Recent Meetings
                       </h3>
-                      <button onClick={() => setActiveTab('meetings')} className="text-xs font-semibold text-slate-500 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-md transition-colors">View all</button>
+                      <button onClick={() => setActiveTab('meetings')} className="text-xs font-semibold text-slate-500 dark:text-muted-foreground hover:text-slate-700 dark:text-foreground bg-slate-100 dark:bg-secondary hover:bg-slate-200 dark:bg-accent px-3 py-1.5 rounded-md transition-colors">View all</button>
                     </div>
                     {meetings.length === 0 ? (
                       <div className="py-10 text-center border border-dashed border-slate-200 dark:border-border rounded-lg bg-slate-50 dark:bg-card/50">
-                        <p className="text-sm text-slate-500 font-medium">No meetings yet.</p>
+                        <p className="text-sm text-slate-500 dark:text-muted-foreground font-medium">No meetings yet.</p>
                       </div>
                     ) : (
                       <div className="divide-y divide-slate-100 dark:divide-slate-800 border border-slate-100 dark:border-border rounded-lg overflow-hidden">
                         {meetings.slice(0,5).map(m => (
                           <div key={m.id} onClick={() => navigate(`/meetings/${m.id}`)} className="px-5 py-4 hover:bg-slate-50 dark:hover:bg-accent cursor-pointer transition-colors">
                             <p className="text-sm font-semibold text-slate-900 dark:text-foreground">{m.title || 'Team Meeting'}</p>
-                            <p className="text-xs text-slate-500 mt-1">{new Date(m.created_at).toLocaleString()}</p>
+                            <p className="text-xs text-slate-500 dark:text-muted-foreground mt-1">{new Date(m.created_at).toLocaleString()}</p>
                           </div>
                         ))}
                       </div>
@@ -712,17 +712,17 @@ export default function SpaceDashboard() {
             {/* OTHER TABS */}
             {activeTab === 'videos' && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-                {videos.length === 0 ? <p className="text-slate-500 text-sm">No videos found.</p> : videos.map(v => <VideoCard key={v.id} video={v} onClick={() => navigate(`/watch/${v.id}`)} />)}
+                {videos.length === 0 ? <p className="text-slate-500 dark:text-muted-foreground text-sm">No videos found.</p> : videos.map(v => <VideoCard key={v.id} video={v} onClick={() => navigate(`/watch/${v.id}`)} />)}
               </div>
             )}
             
             {activeTab === 'meetings' && (
               <div className="space-y-4">
-                {meetings.length === 0 ? <p className="text-slate-500 text-sm">No meetings found.</p> : meetings.map(m => (
-                   <div key={m.id} onClick={() => navigate(`/meetings/${m.id}`)} className="bg-white dark:bg-card border border-slate-200 dark:border-border p-5 rounded-xl hover:shadow-sm cursor-pointer flex justify-between items-center transition-all hover:border-slate-300">
+                {meetings.length === 0 ? <p className="text-slate-500 dark:text-muted-foreground text-sm">No meetings found.</p> : meetings.map(m => (
+                   <div key={m.id} onClick={() => navigate(`/meetings/${m.id}`)} className="bg-white dark:bg-card border border-slate-200 dark:border-border p-5 rounded-xl hover:shadow-sm cursor-pointer flex justify-between items-center transition-all hover:border-slate-300 dark:border-border">
                      <div>
                        <h3 className="font-semibold text-slate-900 dark:text-foreground">{m.title || 'Team Meeting'}</h3>
-                       <p className="text-xs text-slate-500 mt-1">{new Date(m.created_at).toLocaleString()}</p>
+                       <p className="text-xs text-slate-500 dark:text-muted-foreground mt-1">{new Date(m.created_at).toLocaleString()}</p>
                        {m.ai_summary && <p className="text-sm text-slate-600 dark:text-muted-foreground mt-2 line-clamp-1">{m.ai_summary}</p>}
                      </div>
                      <ArrowRight className="w-5 h-5 text-slate-300" />
@@ -803,7 +803,7 @@ export default function SpaceDashboard() {
           <div className="relative w-full max-w-[400px] h-full bg-white dark:bg-card border-l border-slate-200 dark:border-border shadow-2xl flex flex-col transform transition-transform animate-in slide-in-from-right duration-300">
             
             {/* Header */}
-            <div className="px-6 py-5 flex items-center justify-between shrink-0 bg-slate-50/50 dark:bg-card/50">
+            <div className="px-6 py-5 flex items-center justify-between shrink-0 bg-slate-50 dark:bg-background/50 dark:bg-card/50">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center shrink-0">
                   <Users className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
@@ -812,7 +812,7 @@ export default function SpaceDashboard() {
                   <h2 className="text-base font-bold text-slate-900 dark:text-foreground leading-none mb-1">
                     {isAdmin(user) ? 'Manage Access' : 'Space Members'}
                   </h2>
-                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{spaceMembers.length} Members</p>
+                  <p className="text-xs font-semibold text-slate-500 dark:text-muted-foreground uppercase tracking-wider">{spaceMembers.length} Members</p>
                 </div>
               </div>
               <button onClick={() => setShowMembers(false)} className="w-8 h-8 flex items-center justify-center bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-accent rounded-full transition-colors">
@@ -869,7 +869,7 @@ export default function SpaceDashboard() {
                             {p.full_name}
                             {isSpacemanMember && <span className="shrink-0 w-1.5 h-1.5 rounded-full bg-[#006065] dark:bg-[#131A2C]" title="Spaceman" />}
                           </p>
-                          <p className="text-xs font-medium text-slate-500 truncate">{p.email}</p>
+                          <p className="text-xs font-medium text-slate-500 dark:text-muted-foreground truncate">{p.email}</p>
                         </div>
                       </div>
                       <div className="shrink-0 ml-3">

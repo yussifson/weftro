@@ -17,7 +17,7 @@ const FeatureGate = ({ featureName, limitName, children, fallback, fallbackType 
  <div className="relative group inline-block">
  <div className="opacity-50 pointer-events-none">{children}</div>
  <div className="absolute inset-0 z-10 flex items-center justify-center cursor-pointer" onClick={() => setShowUpgradeModal(true)}>
- <Lock className="w-5 h-5 text-slate-500 group-hover:text-primary transition-colors" />
+ <Lock className="w-5 h-5 text-slate-500 dark:text-muted-foreground group-hover:text-primary transition-colors" />
  </div>
  {showUpgradeModal && <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} reason={`The ${featureName} feature requires a higher plan.`} />}
  </div>
@@ -35,7 +35,7 @@ const FeatureGate = ({ featureName, limitName, children, fallback, fallbackType 
  <div className="relative group inline-block">
  <div className="opacity-50 pointer-events-none">{children}</div>
  <div className="absolute inset-0 z-10 flex items-center justify-center cursor-pointer" onClick={() => setShowUpgradeModal(true)}>
- <Lock className="w-5 h-5 text-slate-500 group-hover:text-primary transition-colors" />
+ <Lock className="w-5 h-5 text-slate-500 dark:text-muted-foreground group-hover:text-primary transition-colors" />
  </div>
  {showUpgradeModal && <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} reason={`You have reached the limit for ${limitName} (${limitStatus.max}). Please upgrade to add more.`} />}
  </div>

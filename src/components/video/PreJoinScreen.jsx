@@ -325,7 +325,7 @@ export default function PreJoinScreen({ roomName, onJoin, defaultName = 'Guest' 
 
         <div className="space-y-5">
           <div className="bg-white/50 dark:bg-[#111827]/50 backdrop-blur-sm border border-slate-200 dark:border-border rounded-2xl px-5 py-4 flex items-center justify-between">
-            <span className="text-sm font-medium text-slate-500">Joining as</span>
+            <span className="text-sm font-medium text-slate-500 dark:text-muted-foreground">Joining as</span>
             <span className="font-semibold text-slate-900 dark:text-foreground">{defaultName || 'Guest'}</span>
           </div>
 
@@ -338,7 +338,7 @@ export default function PreJoinScreen({ roomName, onJoin, defaultName = 'Guest' 
 
           <Button
             variant="ghost"
-            className="w-full text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 py-6 rounded-2xl font-medium"
+            className="w-full text-slate-500 dark:text-muted-foreground hover:text-slate-700 dark:hover:text-slate-300 py-6 rounded-2xl font-medium"
             onClick={() => {
               navigator.clipboard.writeText(window.location.origin + '/join/' + (roomName || window.location.pathname.split('/').pop()));
               toast({ title: 'Copied!', description: 'Meeting link copied to clipboard.' });

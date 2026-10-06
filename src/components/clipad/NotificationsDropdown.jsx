@@ -142,7 +142,7 @@ export default function NotificationsDropdown() {
   return (
     <Popover onOpenChange={(open) => { if (open) markAllAsRead(); }}>
       <PopoverTrigger asChild>
-        <button className="relative w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-muted-foreground dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-accent transition-colors">
+        <button className="relative w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 dark:text-muted-foreground hover:text-slate-900 dark:text-muted-foreground dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-accent transition-colors">
           <Bell className="w-5 h-5" />
           {unreadCount > 0 && (
             <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-rose-500 rounded-full animate-pulse border-2 border-white dark:border-slate-900 shadow-sm" />
@@ -159,9 +159,9 @@ export default function NotificationsDropdown() {
         <ScrollArea className="h-80">
           {notifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-40 text-center px-4">
-              <Bell className="w-8 h-8 text-slate-300 dark:text-slate-700 mb-2" />
+              <Bell className="w-8 h-8 text-slate-300 dark:text-slate-700 dark:text-foreground mb-2" />
               <p className="text-sm font-medium text-slate-500 dark:text-muted-foreground">All caught up!</p>
-              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">No new notifications.</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-muted-foreground mt-1">No new notifications.</p>
             </div>
           ) : (
             <div className="flex flex-col divide-y divide-slate-100 dark:divide-slate-800/50">
@@ -189,14 +189,14 @@ export default function NotificationsDropdown() {
                           size="sm" 
                           variant="outline" 
                           onClick={(e) => handleGroupRequest(notification, 'reject', e)} 
-                          className="h-7 text-[10px] px-2.5 rounded text-slate-500"
+                          className="h-7 text-[10px] px-2.5 rounded text-slate-500 dark:text-muted-foreground"
                         >
                           <X className="w-3 h-3 mr-1"/> Reject
                         </Button>
                       </div>
                     )}
 
-                    <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-2 font-medium uppercase tracking-wider">
+                    <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-muted-foreground mt-2 font-medium uppercase tracking-wider">
                       {notification.created_at ? formatDistanceToNow(new Date(notification.created_at), { addSuffix: true }) : 'Just now'}
                     </p>
                   </div>

@@ -427,7 +427,7 @@ export default function MeetingRecord() {
       {/* Contextual Action Bar */}
       <div className="flex items-center justify-between px-6 py-4 bg-white dark:bg-card border-b border-slate-200 dark:border-border shadow-sm mb-4">
           <button onClick={() => navigate('/meetings')} className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/95 dark:bg-[#202c33]/95 backdrop-blur-md border border-black/5 dark:border-white/5 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] text-sm font-semibold text-slate-900 dark:text-foreground transition-all hover:-translate-y-0.5">
-            <ArrowLeft className="w-4 h-4 text-slate-500" /> Meetings
+            <ArrowLeft className="w-4 h-4 text-slate-500 dark:text-muted-foreground" /> Meetings
           </button>
         <div className="flex items-center gap-2">
           {!meeting.ai_summary && (
@@ -601,7 +601,7 @@ export default function MeetingRecord() {
               <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white dark:to-slate-950/90 pointer-events-none" />
               <Lock className="w-8 h-8 text-[#006065] mx-auto mb-4" />
               <h3 className="text-lg font-bold text-white dark:text-slate-100 relative z-10 mb-2">Advanced AI & Smart Follow-ups</h3>
-              <p className="text-sm text-slate-500 max-w-sm mx-auto relative z-10 mb-6">
+              <p className="text-sm text-slate-500 dark:text-muted-foreground max-w-sm mx-auto relative z-10 mb-6">
                 Upgrade to Pro to unlock the full AI Intelligence layer, sentiment analysis, and automated smart follow-ups.
               </p>
               <button 

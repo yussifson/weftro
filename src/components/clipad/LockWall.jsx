@@ -131,7 +131,7 @@ export default function LockWall({ type = 'manual', unlockAt = null, title = 'th
           {/* Passcode Unlock Form for Locked/Scheduled content */}
           {(!isNotFound && !isPrivate) && (
             <div className="w-full bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-border/50 rounded-2xl p-5 mb-6 text-left space-y-3">
-              <label className="text-[10px] text-slate-500 uppercase tracking-widest font-bold block">Creator Access Key</label>
+              <label className="text-[10px] text-slate-500 dark:text-muted-foreground uppercase tracking-widest font-bold block">Creator Access Key</label>
               <div className="flex gap-2">
                 <input
                   type="password"

@@ -104,7 +104,7 @@ export default function SmartMomentTimeline({ companyId, meetingId, videoId, tra
                 V3 Intelligence
               </span>
             </h3>
-            <p className="text-xs text-slate-500">Key decisions, commitments, risks, and topics detected from conversation.</p>
+            <p className="text-xs text-slate-500 dark:text-muted-foreground">Key decisions, commitments, risks, and topics detected from conversation.</p>
           </div>
         </div>
 
@@ -128,7 +128,7 @@ export default function SmartMomentTimeline({ companyId, meetingId, videoId, tra
       ) : moments.length === 0 ? (
         <div className="p-6 text-center border-2 border-dashed border-slate-200 dark:border-border rounded-xl">
           <Zap className="w-8 h-8 mx-auto text-slate-300 mb-2" />
-          <p className="text-xs text-slate-500">No Smart Moments detected yet. Click "Detect Moments" to analyze transcript.</p>
+          <p className="text-xs text-slate-500 dark:text-muted-foreground">No Smart Moments detected yet. Click "Detect Moments" to analyze transcript.</p>
         </div>
       ) : (
         <div className="relative pl-6 border-l-2 border-slate-200 dark:border-border space-y-4">
@@ -145,7 +145,7 @@ export default function SmartMomentTimeline({ companyId, meetingId, videoId, tra
                   <div className="w-1.5 h-1.5 rounded-full bg-cyan-500" />
                 </div>
 
-                <div className="p-4 rounded-xl border border-slate-200 dark:border-border bg-white dark:bg-card hover:border-slate-300 transition-all shadow-sm">
+                <div className="p-4 rounded-xl border border-slate-200 dark:border-border bg-white dark:bg-card hover:border-slate-300 dark:border-border transition-all shadow-sm">
                   <div className="flex items-center justify-between gap-2 mb-1.5">
                     <div className="flex items-center gap-2">
                       {moment.timestamp_start && (
@@ -163,7 +163,7 @@ export default function SmartMomentTimeline({ companyId, meetingId, videoId, tra
                       </span>
 
                       {moment.speaker_name && (
-                        <span className="text-xs text-slate-500 font-medium">by {moment.speaker_name}</span>
+                        <span className="text-xs text-slate-500 dark:text-muted-foreground font-medium">by {moment.speaker_name}</span>
                       )}
                     </div>
 
@@ -253,7 +253,7 @@ export default function SmartMomentTimeline({ companyId, meetingId, videoId, tra
               <button
                 type="button"
                 onClick={() => setEditingMoment(null)}
-                className="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-100"
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 dark:text-muted-foreground hover:bg-slate-100 dark:bg-secondary"
               >
                 Cancel
               </button>

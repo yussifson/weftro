@@ -21,7 +21,7 @@ const EVENT_COLORS = {
   task_completed: 'bg-[#006065] dark:bg-[#131A2C]/20 text-[#006065] dark:bg-[#006065] dark:bg-[#131A2C]/20 dark:text-[#00beac]',
   video_uploaded: 'bg-rose-100 text-rose-600 dark:bg-rose-500/20 dark:text-rose-400',
   blocker_raised: 'bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-400',
-  default: 'bg-slate-100 text-slate-600 dark:bg-slate-500/20 dark:text-muted-foreground'
+  default: 'bg-slate-100 dark:bg-secondary text-slate-600 dark:bg-slate-50 dark:bg-background0/20 dark:text-muted-foreground'
 };
 
 export default function OrgTimeline({ workspaceId, spaceId }) {
@@ -170,7 +170,7 @@ export default function OrgTimeline({ workspaceId, spaceId }) {
         </div>
       ) : events.length === 0 ? (
         <div className="text-center py-10 md:py-16 px-4 bg-slate-50 dark:bg-secondary/30 rounded-2xl md:rounded-3xl border border-slate-200 dark:border-border/50">
-          <Clock className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
+          <Clock className="w-12 h-12 text-slate-300 dark:text-slate-600 dark:text-muted-foreground mx-auto mb-4" />
           <h3 className="text-lg font-bold text-slate-900 dark:text-foreground mb-2">No Events Found</h3>
           <p className="text-sm text-slate-500 dark:text-muted-foreground max-w-sm mx-auto">
             {filter === 'all' 
@@ -217,7 +217,7 @@ export default function OrgTimeline({ workspaceId, spaceId }) {
                     
                     {event.source_id && (
                       <div className="mt-4 flex items-center justify-between border-t border-slate-100 dark:border-border pt-3">
-                        <span className="text-xs font-medium text-slate-500 hover:text-primary transition-colors flex items-center gap-1">
+                        <span className="text-xs font-medium text-slate-500 dark:text-muted-foreground hover:text-primary transition-colors flex items-center gap-1">
                           View Source <ChevronRight className="w-3 h-3" />
                         </span>
                         {event.importance >= 7 && (

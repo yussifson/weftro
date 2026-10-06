@@ -130,7 +130,7 @@ export default function VideosList() {
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search recordings..."
-              className="w-full pl-11 pr-4 py-3 rounded-xl bg-white/95 dark:bg-[#202c33]/95 backdrop-blur-md border border-black/5 dark:border-white/5 text-slate-900 dark:text-foreground text-sm placeholder-slate-400 focus:outline-none focus:border-primary/50 shadow-[0_2px_10px_rgba(0,0,0,0.04)] transition-all"
+              className="w-full pl-11 pr-4 py-3 rounded-xl bg-white/95 dark:bg-[#202c33]/95 backdrop-blur-md border border-black/5 dark:border-white/5 text-slate-900 dark:text-foreground text-sm placeholder-slate-400 dark:placeholder-muted-foreground focus:outline-none focus:border-primary/50 shadow-[0_2px_10px_rgba(0,0,0,0.04)] transition-all"
             />
           </div>
         </div>
@@ -143,7 +143,7 @@ export default function VideosList() {
           <div className="text-center py-24 border border-dashed border-slate-200 dark:border-border rounded-3xl bg-white dark:bg-card">
             <Video className="w-16 h-16 text-slate-400 mx-auto mb-4" />
             <h3 className="text-xl font-bold text-slate-500 dark:text-muted-foreground mb-2">No recordings found</h3>
-            <p className="text-slate-500 text-sm">Click the Record Video button to create your first async video.</p>
+            <p className="text-slate-500 dark:text-muted-foreground text-sm">Click the Record Video button to create your first async video.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">

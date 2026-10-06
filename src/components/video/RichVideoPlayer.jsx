@@ -453,27 +453,27 @@ Do not wrap in markdown or backticks.`
 
       {/* Sidebar (Right) */}
       {sidebarOpen && (
-      <div className="flex flex-col h-[500px] bg-slate-100/50 dark:bg-card/50 rounded-2xl border border-slate-200 dark:border-border p-4 animate-in slide-in-from-right-8 duration-300">
+      <div className="flex flex-col h-[500px] bg-slate-100 dark:bg-secondary/50 dark:bg-card/50 rounded-2xl border border-slate-200 dark:border-border p-4 animate-in slide-in-from-right-8 duration-300">
         
         {/* Tabs */}
-        <div className="flex items-center gap-2 mb-4 bg-slate-200/50 dark:bg-secondary/50 p-1 rounded-xl">
+        <div className="flex items-center gap-2 mb-4 bg-slate-200 dark:bg-accent/50 dark:bg-secondary/50 p-1 rounded-xl">
           <button 
             onClick={() => setActiveTab('comments')}
-            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${activeTab === 'comments' ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-foreground' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${activeTab === 'comments' ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-foreground' : 'text-slate-500 dark:text-muted-foreground hover:text-slate-700 dark:hover:text-slate-300'}`}
           >
             Comments
           </button>
           {recordType === 'meeting' && hasFeature(user, 'hasAdvancedAI') && (
             <button 
               onClick={() => setActiveTab('transcript')}
-              className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${activeTab === 'transcript' ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-foreground' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+              className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${activeTab === 'transcript' ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-foreground' : 'text-slate-500 dark:text-muted-foreground hover:text-slate-700 dark:hover:text-slate-300'}`}
             >
               Transcript
             </button>
           )}
           <button 
             onClick={() => setActiveTab('chapters')}
-            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${activeTab === 'chapters' ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-foreground' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${activeTab === 'chapters' ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-foreground' : 'text-slate-500 dark:text-muted-foreground hover:text-slate-700 dark:hover:text-slate-300'}`}
           >
             Chapters
           </button>
@@ -482,7 +482,7 @@ Do not wrap in markdown or backticks.`
         {activeTab === 'chapters' && (
           <div className="flex flex-col h-full overflow-hidden">
             <div className="flex items-center justify-between mb-3">
-              <h5 className="font-bold text-xs uppercase tracking-wider text-slate-500">AI Chapters</h5>
+              <h5 className="font-bold text-xs uppercase tracking-wider text-slate-500 dark:text-muted-foreground">AI Chapters</h5>
               <button
                 onClick={handleGenerateAiChapters}
                 disabled={isGeneratingChapters}
@@ -515,8 +515,8 @@ Do not wrap in markdown or backticks.`
             <div className="flex-1 overflow-y-auto space-y-3 mb-4 pr-2">
               {comments.length === 0 ? (
                 <div className="py-8 text-center">
-                  <MessageSquare className="w-8 h-8 text-slate-300 dark:text-slate-700 mx-auto mb-2" />
-                  <p className="text-xs text-slate-500">No comments yet.</p>
+                  <MessageSquare className="w-8 h-8 text-slate-300 dark:text-slate-700 dark:text-foreground mx-auto mb-2" />
+                  <p className="text-xs text-slate-500 dark:text-muted-foreground">No comments yet.</p>
                 </div>
               ) : (
                 comments.map(c => (
@@ -556,7 +556,7 @@ Do not wrap in markdown or backticks.`
                 </div>
               </form>
             ) : (
-              <p className="text-xs text-slate-500 text-center italic">Comments disabled.</p>
+              <p className="text-xs text-slate-500 dark:text-muted-foreground text-center italic">Comments disabled.</p>
             )}
           </>
         )}
@@ -565,7 +565,7 @@ Do not wrap in markdown or backticks.`
           <div className="flex flex-col h-full">
             <div className="flex-1 overflow-y-auto space-y-4 mb-4 pr-2">
               {transcripts.length === 0 ? (
-                <div className="py-8 text-center text-slate-500 text-sm">Transcript not available.</div>
+                <div className="py-8 text-center text-slate-500 dark:text-muted-foreground text-sm">Transcript not available.</div>
               ) : (
                 transcripts.map((t, idx) => (
                   <div key={t.id || idx} className="group">

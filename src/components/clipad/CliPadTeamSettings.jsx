@@ -381,7 +381,7 @@ export default function CliPadTeamSettings() {
                           <Rocket className="w-3.5 h-3.5" /> Spaceman
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-500/10 text-slate-500 dark:text-muted-foreground text-xs font-semibold">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-50 dark:bg-background0/10 text-slate-500 dark:text-muted-foreground text-xs font-semibold">
                           <User className="w-3.5 h-3.5" /> Member
                         </span>
                       )

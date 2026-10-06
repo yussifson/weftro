@@ -113,7 +113,7 @@ export default function FeaturesCircle() {
                     setRotation(r => r - (diff * 60));
                     setActiveIndex(i);
                   }}
-                  className={`w-full h-full rounded-2xl flex items-center justify-center transition-all duration-500 shadow-xl border border-white/20 backdrop-blur-sm ${isActive ? `bg-gradient-to-br ${p.color} ${p.glow} scale-125 z-20` : 'bg-white/90 dark:bg-secondary/90 border-slate-200/50 dark:border-border/50 opacity-70 hover:opacity-100 hover:scale-110 z-10'}`}
+                  className={`w-full h-full rounded-2xl flex items-center justify-center transition-all duration-500 shadow-xl border border-white/20 backdrop-blur-sm ${isActive ? `bg-gradient-to-br ${p.color} ${p.glow} scale-125 z-20` : 'bg-white/90 dark:bg-secondary/90 border-slate-200 dark:border-border/50 dark:border-border/50 opacity-70 hover:opacity-100 hover:scale-110 z-10'}`}
                 >
                   <Icon className={`w-6 h-6 drop-shadow-sm ${isActive ? 'text-white' : 'text-slate-600 dark:text-foreground'}`} />
                 </button>

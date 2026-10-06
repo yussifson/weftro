@@ -30,7 +30,7 @@ const STARTER_PROMPTS = [
   { icon: FileText,   color: 'text-pink-500',    label: 'Summarize',         text: 'Summarize the recent meeting activity and decisions' },
   { icon: PenTool,    color: 'text-orange-500',  label: 'Help me write',     text: 'Help me draft an email update for the team' },
   { icon: ImageIcon,  color: 'text-[#006065]', label: 'Create image',      text: 'Create an image concept for our project presentation' },
-  { icon: MoreHorizontal, color: 'text-slate-500', label: 'More',            text: 'What else can you do? Show me all your capabilities.' },
+  { icon: MoreHorizontal, color: 'text-slate-500 dark:text-muted-foreground', label: 'More',            text: 'What else can you do? Show me all your capabilities.' },
 ];
 
 /* â”€â”€â”€ Markdown renderer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
@@ -831,7 +831,7 @@ ${orgContext?.contextText || 'Workspace data is loading. You can still answer ge
             </div>
           ) : sessions.length === 0 ? (
             <div className="text-center pt-8 px-3">
-              <MessageSquare className="w-5 h-5 text-slate-300 dark:text-slate-600 mx-auto mb-2" />
+              <MessageSquare className="w-5 h-5 text-slate-300 dark:text-slate-600 dark:text-muted-foreground mx-auto mb-2" />
               <p className="text-[11px] text-slate-400">No chats yet. Start a new conversation!</p>
             </div>
           ) : (
@@ -846,7 +846,7 @@ ${orgContext?.contextText || 'Workspace data is loading. You can still answer ge
                       className={`group relative flex items-center gap-2 px-2.5 py-2 rounded-xl cursor-pointer transition-all mb-0.5 ${
                         activeSessionId === session.id
                           ? 'bg-primary/10 text-primary'
-                          : 'hover:bg-slate-200/60 dark:hover:bg-white/5 text-slate-700 dark:text-muted-foreground'
+                          : 'hover:bg-slate-200 dark:bg-accent/60 dark:hover:bg-white/5 text-slate-700 dark:text-muted-foreground'
                       }`}
                     >
                       {editingTitleId === session.id ? (
@@ -1145,7 +1145,7 @@ ${orgContext?.contextText || 'Workspace data is loading. You can still answer ge
             <div className="flex items-center gap-1 text-[11px] text-slate-400">
               <Zap className="w-3 h-3 text-violet-500" />
               <span className="font-medium">Kimi K2.5</span>
-              {orgContext && <span className="text-slate-300 dark:text-slate-600">Â· Workspace ready</span>}
+              {orgContext && <span className="text-slate-300 dark:text-slate-600 dark:text-muted-foreground">Â· Workspace ready</span>}
             </div>
             <div className="flex items-center gap-2">
               <button

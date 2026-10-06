@@ -72,8 +72,8 @@ export default function GlobalVideoOverlay() {
         <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between gap-3 px-4 py-2 bg-green-600 text-white text-sm font-medium animate-in slide-in-from-top duration-300">
           <div className="flex items-center gap-2">
             <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-60" />
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white" />
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white dark:bg-card opacity-60" />
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white dark:bg-card" />
             </span>
             <span>You have an ongoing video call</span>
           </div>

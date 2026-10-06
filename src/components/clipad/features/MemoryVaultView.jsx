@@ -108,7 +108,7 @@ export default function MemoryVaultView({ companyId, userId, spaceId }) {
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors whitespace-nowrap ${
                   active
                     ? 'bg-cyan-500 text-white shadow-sm'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-muted-foreground hover:bg-slate-200'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-muted-foreground hover:bg-slate-200 dark:bg-accent'
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />
@@ -129,7 +129,7 @@ export default function MemoryVaultView({ companyId, userId, spaceId }) {
             />
             <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400" />
           </div>
-          <button type="submit" className="p-1.5 bg-slate-100 dark:bg-slate-800 rounded-lg hover:bg-slate-200">
+          <button type="submit" className="p-1.5 bg-slate-100 dark:bg-slate-800 rounded-lg hover:bg-slate-200 dark:bg-accent">
             <Filter className="w-4 h-4 text-slate-600 dark:text-muted-foreground" />
           </button>
         </form>
@@ -144,7 +144,7 @@ export default function MemoryVaultView({ companyId, userId, spaceId }) {
         <div className="p-12 text-center border-2 border-dashed border-slate-200 dark:border-border rounded-xl">
           <Brain className="w-10 h-10 mx-auto text-slate-300 mb-3" />
           <h3 className="text-base font-semibold text-slate-700 dark:text-slate-200">No memories found</h3>
-          <p className="text-xs text-slate-500 mt-1">Ingest meetings, documents, or notes to build organizational knowledge.</p>
+          <p className="text-xs text-slate-500 dark:text-muted-foreground mt-1">Ingest meetings, documents, or notes to build organizational knowledge.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -188,7 +188,7 @@ export default function MemoryVaultView({ companyId, userId, spaceId }) {
                   </p>
                 </div>
 
-                <div className="pt-3 border-t border-slate-100 dark:border-border flex items-center justify-between text-xs text-slate-500">
+                <div className="pt-3 border-t border-slate-100 dark:border-border flex items-center justify-between text-xs text-slate-500 dark:text-muted-foreground">
                   <div className="flex items-center gap-2 truncate">
                     {mem.source_type && (
                       <span className="truncate flex items-center gap-1 font-mono text-[11px]">
@@ -210,7 +210,7 @@ export default function MemoryVaultView({ companyId, userId, spaceId }) {
                         setCorrectingMemory(mem);
                         setCorrectionText(mem.content);
                       }}
-                      className="text-xs font-medium text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+                      className="text-xs font-medium text-slate-500 dark:text-muted-foreground hover:text-slate-800 dark:hover:text-slate-200"
                     >
                       Update
                     </button>
@@ -229,7 +229,7 @@ export default function MemoryVaultView({ companyId, userId, spaceId }) {
             <h3 className="text-lg font-bold text-slate-900 dark:text-foreground mb-2 flex items-center gap-2">
               <History className="w-5 h-5 text-cyan-500" /> Source Provenance Trace
             </h3>
-            <p className="text-xs text-slate-500 mb-4">Memory ID: {provenanceModal.memory_id}</p>
+            <p className="text-xs text-slate-500 dark:text-muted-foreground mb-4">Memory ID: {provenanceModal.memory_id}</p>
 
             <div className="space-y-3 bg-slate-50 dark:bg-background p-4 rounded-xl border border-slate-200 dark:border-border text-xs">
               <div>
@@ -280,7 +280,7 @@ export default function MemoryVaultView({ companyId, userId, spaceId }) {
             <h3 className="text-lg font-bold text-slate-900 dark:text-foreground flex items-center gap-2">
               <RefreshCw className="w-5 h-5 text-cyan-500" /> Update / Supersede Memory
             </h3>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-500 dark:text-muted-foreground">
               Superseding this memory creates a new active version while preserving historical provenance.
             </p>
 
@@ -298,7 +298,7 @@ export default function MemoryVaultView({ companyId, userId, spaceId }) {
               <button
                 type="button"
                 onClick={() => setCorrectingMemory(null)}
-                className="px-4 py-2 rounded-lg text-xs font-medium text-slate-600 dark:text-muted-foreground hover:bg-slate-100"
+                className="px-4 py-2 rounded-lg text-xs font-medium text-slate-600 dark:text-muted-foreground hover:bg-slate-100 dark:bg-secondary"
               >
                 Cancel
               </button>

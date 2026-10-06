@@ -104,7 +104,7 @@ export default function MeetingROIDashboard({ workspaceId, spaceId }) {
           <div className="bg-slate-50 dark:bg-secondary/50 rounded-xl p-6 text-center border border-slate-100 dark:border-border/50">
             <AlertCircle className="w-8 h-8 text-slate-400 mx-auto mb-2" />
             <p className="text-sm font-medium text-slate-600 dark:text-foreground">No meeting data analyzed yet.</p>
-            <p className="text-xs text-slate-500 mt-1">Run your first meeting to start calculating ROI.</p>
+            <p className="text-xs text-slate-500 dark:text-muted-foreground mt-1">Run your first meeting to start calculating ROI.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -116,9 +116,9 @@ export default function MeetingROIDashboard({ workspaceId, spaceId }) {
               </div>
               <div className="flex items-baseline gap-2">
                 <span className="text-3xl font-black text-slate-900 dark:text-foreground">{metrics.lowRoiMeetings}</span>
-                <span className="text-sm text-slate-500">meetings</span>
+                <span className="text-sm text-slate-500 dark:text-muted-foreground">meetings</span>
               </div>
-              <p className="text-xs text-slate-500 mt-2">Flagged as reducible to async</p>
+              <p className="text-xs text-slate-500 dark:text-muted-foreground mt-2">Flagged as reducible to async</p>
             </div>
 
             {/* Metric 2: Hours Saved */}

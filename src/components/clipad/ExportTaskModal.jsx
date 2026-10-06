@@ -50,8 +50,8 @@ export default function ExportTaskModal({ isOpen, onClose, task, meetingTitle, m
           </button>
         </div>
 
-        <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-border text-xs space-y-1.5">
-          <span className="font-semibold text-slate-500 uppercase tracking-wider text-[10px]">Action Item</span>
+        <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-border/60 dark:border-border text-xs space-y-1.5">
+          <span className="font-semibold text-slate-500 dark:text-muted-foreground uppercase tracking-wider text-[10px]">Action Item</span>
           <p className="font-medium text-slate-800 dark:text-slate-200 text-sm">{task.title || task.name}</p>
           {meetingTitle && (
             <p className="text-slate-400 text-[11px] flex items-center gap-1">

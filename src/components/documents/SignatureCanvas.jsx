@@ -101,7 +101,7 @@ export default function SignatureCanvas({ onSave, onCancel }) {
         </Button>
       </div>
       
-      <div className="relative w-full h-64 bg-white dark:bg-slate-50 border-2 border-dashed border-border rounded-xl overflow-hidden shadow-inner">
+      <div className="relative w-full h-64 bg-white dark:bg-slate-50 dark:bg-background border-2 border-dashed border-border rounded-xl overflow-hidden shadow-inner">
         <canvas
           ref={canvasRef}
           onMouseDown={startDrawing}

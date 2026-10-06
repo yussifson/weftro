@@ -259,7 +259,7 @@ export default function PreJoinScreen({ roomName, onJoin, defaultName = '' }) {
 
           <Button
             variant="ghost"
-            className="w-full text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 py-6 rounded-2xl font-medium"
+            className="w-full text-slate-500 dark:text-muted-foreground hover:text-slate-700 dark:hover:text-slate-300 py-6 rounded-2xl font-medium"
             onClick={() => {
               navigator.clipboard.writeText(window.location.href);
               toast({ title: 'Copied!', description: 'Meeting link copied to clipboard.' });

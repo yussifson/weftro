@@ -142,7 +142,7 @@ export default function FollowUpEngine({ spaceId, workspaceId }) {
   if (loading) return (
     <div className="py-8 flex flex-col items-center justify-center gap-2">
       <Loader2 className="w-6 h-6 border-primary text-primary animate-spin" />
-      <p className="text-xs text-slate-500">Analyzing follow-ups and drafting AI messages...</p>
+      <p className="text-xs text-slate-500 dark:text-muted-foreground">Analyzing follow-ups and drafting AI messages...</p>
     </div>
   );
 
@@ -150,7 +150,7 @@ export default function FollowUpEngine({ spaceId, workspaceId }) {
 
   return (
     <div className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-2xl overflow-hidden shadow-sm">
-      <div className="flex items-center justify-between px-6 py-5 border-b border-slate-200 dark:border-border bg-slate-50/50 dark:bg-secondary/20">
+      <div className="flex items-center justify-between px-6 py-5 border-b border-slate-200 dark:border-border bg-slate-50 dark:bg-background/50 dark:bg-secondary/20">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-orange-100 dark:bg-orange-500/20 flex items-center justify-center text-orange-600 dark:text-orange-400">
             <Target className="w-4 h-4" />
@@ -176,7 +176,7 @@ export default function FollowUpEngine({ spaceId, workspaceId }) {
               </div>
             </div>
             
-            <p className="text-xs text-slate-500 mb-3">{nudge.description}</p>
+            <p className="text-xs text-slate-500 dark:text-muted-foreground mb-3">{nudge.description}</p>
             
             <div className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-lg p-3 relative">
               <div className="absolute -top-2 left-3 bg-white dark:bg-card px-1">

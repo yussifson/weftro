@@ -174,7 +174,7 @@ function PersonCard({ person, navigate, setIsOpen }) {
         </div>
         <div>
           <div className="font-bold text-sm text-slate-900 dark:text-foreground">{person.label}</div>
-          <div className="text-[11px] text-slate-500">{person.snippet}</div>
+          <div className="text-[11px] text-slate-500 dark:text-muted-foreground">{person.snippet}</div>
         </div>
         <span className="ml-auto text-[10px] font-bold text-violet-600 dark:text-violet-400 bg-violet-100 dark:bg-violet-900/50 px-2 py-0.5 rounded-full border border-violet-200 dark:border-violet-700">Person</span>
       </div>
@@ -182,15 +182,15 @@ function PersonCard({ person, navigate, setIsOpen }) {
       {activity && (
         <div className="grid grid-cols-3 gap-2 text-[11px]">
           <div>
-            <div className="font-bold text-slate-500 uppercase tracking-wider mb-1 flex items-center gap-1"><Calendar className="w-3 h-3" /> Meetings</div>
+            <div className="font-bold text-slate-500 dark:text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1"><Calendar className="w-3 h-3" /> Meetings</div>
             {activity.meetings.length === 0 ? <div className="text-slate-400">None found</div> : activity.meetings.map(m => <div key={m.id} className="text-slate-700 dark:text-muted-foreground truncate">{m.title}</div>)}
           </div>
           <div>
-            <div className="font-bold text-slate-500 uppercase tracking-wider mb-1 flex items-center gap-1"><CheckCircle className="w-3 h-3" /> Tasks</div>
+            <div className="font-bold text-slate-500 dark:text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1"><CheckCircle className="w-3 h-3" /> Tasks</div>
             {activity.tasks.length === 0 ? <div className="text-slate-400">None found</div> : activity.tasks.map(t => <div key={t.id} className="text-slate-700 dark:text-muted-foreground truncate">{t.title}</div>)}
           </div>
           <div>
-            <div className="font-bold text-slate-500 uppercase tracking-wider mb-1 flex items-center gap-1"><Zap className="w-3 h-3" /> Standups</div>
+            <div className="font-bold text-slate-500 dark:text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1"><Zap className="w-3 h-3" /> Standups</div>
             {activity.standups.length === 0 ? <div className="text-slate-400">None found</div> : activity.standups.map(s => <div key={s.id} className="text-slate-700 dark:text-muted-foreground truncate">{s.today?.substring(0, 60)}</div>)}
           </div>
         </div>
@@ -696,7 +696,7 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
                         <button key={`recent-${idx}`} onClick={() => { setQuery(search); handleSearch(search); }}
                           className="w-full text-left flex items-center gap-3 p-2 rounded-lg hover:bg-white dark:hover:bg-slate-900 hover:shadow-sm border border-transparent hover:border-slate-200 dark:hover:border-slate-800 transition-all group">
                           <div className="w-7 h-7 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0">
-                            <Clock className="w-3.5 h-3.5 text-slate-500" />
+                            <Clock className="w-3.5 h-3.5 text-slate-500 dark:text-muted-foreground" />
                           </div>
                           <span className="text-sm font-semibold text-slate-700 dark:text-muted-foreground group-hover:text-slate-900 dark:group-hover:text-white">{search}</span>
                         </button>
@@ -759,7 +759,7 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
 
                     {aiSources.length > 0 && !isSynthesizing && (
                       <div className="mt-4 pt-3 border-t border-indigo-100 dark:border-indigo-800/30">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2 block">Sources</span>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-muted-foreground mb-2 block">Sources</span>
                         <div className="flex flex-wrap gap-2">
                           {aiSources.map((src, i) => {
                             const meta = TYPE_META[src.type] || TYPE_META.doc;
@@ -780,8 +780,8 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
 
                 {filteredResults.length === 0 && !isSearching && !isSynthesizing ? (
                   <div className="py-12 text-center flex flex-col items-center">
-                    <Search className="w-8 h-8 text-slate-300 dark:text-slate-600 mb-3" />
-                    <p className="text-sm text-slate-500 font-medium">No matches found for "{query}"</p>
+                    <Search className="w-8 h-8 text-slate-300 dark:text-slate-600 dark:text-muted-foreground mb-3" />
+                    <p className="text-sm text-slate-500 dark:text-muted-foreground font-medium">No matches found for "{query}"</p>
                     <p className="text-xs text-slate-400 mt-1">Try a different term or ask Orbit AI.</p>
                   </div>
                 ) : (
@@ -793,7 +793,7 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
                           {peopleResults.map((p, idx) => {
                             const isSelected = selectedIndex === idx;
                             return (
-                              <button key={p.id} onMouseEnter={() => setSelectedIndex(idx)} className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all ${isSelected ? 'bg-indigo-50 border-indigo-200 dark:bg-indigo-900/20 dark:border-indigo-800 shadow-sm' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-border hover:border-slate-300'}`}>
+                              <button key={p.id} onMouseEnter={() => setSelectedIndex(idx)} className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all ${isSelected ? 'bg-indigo-50 border-indigo-200 dark:bg-indigo-900/20 dark:border-indigo-800 shadow-sm' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-border hover:border-slate-300 dark:border-border'}`}>
                                 <img src={p.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${p.label}`} className="w-5 h-5 rounded-full" alt="" />
                                 <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">{p.label}</span>
                               </button>
@@ -829,7 +829,7 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
                               <div className="flex items-center gap-2 overflow-hidden">
                                 <span className="font-bold text-sm text-slate-900 dark:text-foreground truncate">{item.label}</span>
                                 {item.provider && (
-                                  <span className="shrink-0 text-[10px] font-mono text-slate-500 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">
+                                  <span className="shrink-0 text-[10px] font-mono text-slate-500 dark:text-muted-foreground bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">
                                     {item.provider}
                                   </span>
                                 )}

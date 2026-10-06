@@ -424,7 +424,7 @@ export default function MeetLandingPage() {
 
 
   return (
-    <div className={`light min-h-screen bg-white text-slate-900 flex flex-col font-sans relative transition-all duration-500 ease-in-out overflow-x-hidden ${supportPanel ? 'lg:pr-[400px]' : ''}`}>
+    <div className={`light min-h-screen bg-white dark:bg-card text-slate-900 dark:text-foreground flex flex-col font-sans relative transition-all duration-500 ease-in-out overflow-x-hidden ${supportPanel ? 'lg:pr-[400px]' : ''}`}>
       <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
         <div className="absolute -top-[20%] -left-[10%] w-[70vw] h-[70vw] rounded-full bg-primary/5 blur-[120px]" />
         <div className="absolute -bottom-[20%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-[#fad503]/5 blur-[120px]" />
@@ -434,12 +434,12 @@ export default function MeetLandingPage() {
         description="KERINT is a free, secure, enterprise-grade collaborative productivity workspace. Connect your team with chat, spaces, and HD video meetings instantly. Trusted by teams worldwide." 
         type="website"
       />
-      <header className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 border-b border-slate-200/50 bg-white/80 backdrop-blur-md shadow-sm">
+      <header className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-border/50 bg-white/80 dark:bg-background/80 backdrop-blur-md shadow-sm">
         <div className="flex items-center gap-2.5">
           <div className="w-10 h-10 flex items-center justify-center text-primary">
             <CliPadLogo size={36} />
           </div>
-          <span className="text-xl font-bold tracking-tight text-slate-900">KERINT</span>
+          <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-foreground">KERINT</span>
         </div>
         
         {/* Desktop Nav */}
@@ -450,7 +450,7 @@ export default function MeetLandingPage() {
         </div>
         
         <div className="flex items-center gap-4">
-          <div className="hidden md:flex items-center gap-2 text-sm font-semibold tabular-nums bg-slate-100/80 px-3 py-1.5 rounded-xl border border-slate-200/60 shadow-inner text-slate-700">
+          <div className="hidden md:flex items-center gap-2 text-sm font-semibold tabular-nums bg-slate-100 dark:bg-secondary/80 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-border/60 shadow-inner text-slate-700 dark:text-foreground">
             <Clock className="w-4 h-4 text-primary" />
             <span>{timeStr}</span>
             <span className="text-slate-300 mx-0.5">|</span>
@@ -486,7 +486,7 @@ export default function MeetLandingPage() {
           <h1 className="text-4xl md:text-5xl font-normal text-slate-800 leading-tight tracking-tight">
             #1 Enterprise AI-powered organizational memory and intelligence layer.<br />Now free for everyone.
           </h1>
-          <p className="text-lg text-slate-500 leading-relaxed">
+          <p className="text-lg text-slate-500 dark:text-muted-foreground leading-relaxed">
             KERINT captures, connects, and preserves your company's knowledge—through meetings, async video, collaboration, and intelligent context.
           </p>
 
@@ -505,17 +505,17 @@ export default function MeetLandingPage() {
               <DropdownMenuContent align="start" className="w-64 p-2 shadow-xl border-slate-100 rounded-xl">
                 <DropdownMenuItem
                   onClick={() => handleCreateMeeting('later')}
-                  className="flex items-center gap-3 p-3 cursor-pointer rounded-lg hover:bg-slate-50"
+                  className="flex items-center gap-3 p-3 cursor-pointer rounded-lg hover:bg-slate-50 dark:bg-background"
                 >
-                  <LinkIcon className="w-5 h-5 text-slate-500" />
-                  <span className="font-medium text-slate-700">Create a meeting for later</span>
+                  <LinkIcon className="w-5 h-5 text-slate-500 dark:text-muted-foreground" />
+                  <span className="font-medium text-slate-700 dark:text-foreground">Create a meeting for later</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => handleCreateMeeting('instant')}
-                  className="flex items-center gap-3 p-3 cursor-pointer rounded-lg hover:bg-slate-50"
+                  className="flex items-center gap-3 p-3 cursor-pointer rounded-lg hover:bg-slate-50 dark:bg-background"
                 >
-                  <Plus className="w-5 h-5 text-slate-500" />
-                  <span className="font-medium text-slate-700">Start an instant meeting</span>
+                  <Plus className="w-5 h-5 text-slate-500 dark:text-muted-foreground" />
+                  <span className="font-medium text-slate-700 dark:text-foreground">Start an instant meeting</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -529,7 +529,7 @@ export default function MeetLandingPage() {
                 value={meetingCode}
                 onChange={(e) => setMeetingCode(e.target.value)}
                 placeholder="Enter a code or link"
-                className="block w-full pl-11 pr-14 py-3 border border-slate-200 rounded-xl leading-5 bg-transparent placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary sm:text-sm transition-colors"
+                className="block w-full pl-11 pr-14 py-3 border border-slate-200 dark:border-border rounded-xl leading-5 bg-transparent placeholder-slate-400 dark:placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary sm:text-sm transition-colors"
               />
               {meetingCode && (
                 <button
@@ -546,9 +546,9 @@ export default function MeetLandingPage() {
         <div className="flex-1 hidden md:flex items-center justify-center relative min-h-[520px]">
           <button
             onClick={prevSlide}
-            className="absolute left-0 z-10 w-10 h-10 rounded-full bg-white hover:bg-slate-50 shadow-md border border-slate-100 flex items-center justify-center transition-all"
+            className="absolute left-0 z-10 w-10 h-10 rounded-full bg-white dark:bg-card hover:bg-slate-50 dark:bg-background shadow-md border border-slate-100 flex items-center justify-center transition-all"
           >
-            <ChevronLeft className="w-5 h-5 text-slate-500" />
+            <ChevronLeft className="w-5 h-5 text-slate-500 dark:text-muted-foreground" />
           </button>
           <div className="flex flex-col items-center text-center w-full max-w-md px-12">
             <div className="w-full h-[340px] relative mb-8">
@@ -564,10 +564,10 @@ export default function MeetLandingPage() {
               ))}
             </div>
             <div className="h-28">
-              <h2 className="text-2xl font-semibold text-slate-900 mb-2 tracking-tight">
+              <h2 className="text-2xl font-semibold text-slate-900 dark:text-foreground mb-2 tracking-tight">
                 {slides[currentSlide].title}
               </h2>
-              <p className="text-sm text-slate-500 leading-relaxed max-w-xs mx-auto">
+              <p className="text-sm text-slate-500 dark:text-muted-foreground leading-relaxed max-w-xs mx-auto">
                 {slides[currentSlide].description}
               </p>
             </div>
@@ -579,7 +579,7 @@ export default function MeetLandingPage() {
                   className={`h-2 rounded-full transition-all duration-300 ${
                     i === currentSlide
                       ? 'bg-primary w-6'
-                      : 'bg-slate-200 w-2 hover:bg-slate-300'
+                      : 'bg-slate-200 dark:bg-accent w-2 hover:bg-slate-300'
                   }`}
                 />
               ))}
@@ -587,9 +587,9 @@ export default function MeetLandingPage() {
           </div>
           <button
             onClick={nextSlide}
-            className="absolute right-0 z-10 w-10 h-10 rounded-full bg-white hover:bg-slate-50 shadow-md border border-slate-100 flex items-center justify-center transition-all"
+            className="absolute right-0 z-10 w-10 h-10 rounded-full bg-white dark:bg-card hover:bg-slate-50 dark:bg-background shadow-md border border-slate-100 flex items-center justify-center transition-all"
           >
-            <ChevronRight className="w-5 h-5 text-slate-500" />
+            <ChevronRight className="w-5 h-5 text-slate-500 dark:text-muted-foreground" />
           </button>
         </div>
       </main>
@@ -714,33 +714,33 @@ export default function MeetLandingPage() {
                 </thead>
                 <tbody className="text-xs text-slate-600 dark:text-muted-foreground">
                   {/* Category 1: Live Video Meetings */}
-                  <tr className="bg-slate-100/60 dark:bg-white/5 font-bold text-foreground border-y border-border">
+                  <tr className="bg-slate-100 dark:bg-secondary/60 dark:bg-white/5 font-bold text-foreground border-y border-border">
                     <td colSpan={5} className="py-2.5 px-5 text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-muted-foreground">
                       Live Video Meetings
                     </td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
+                  <tr className="border-b border-border/60 hover:bg-slate-50 dark:bg-background/50 dark:hover:bg-white/5 transition-colors">
                     <td className="p-4 font-semibold text-foreground">Participants per Call</td>
                     <td className="p-4 text-center">10</td>
                     <td className="p-4 text-center font-bold text-primary bg-primary/5">300</td>
                     <td className="p-4 text-center font-bold text-foreground">Unlimited</td>
                     <td className="p-4 text-center font-bold text-foreground">Unlimited (Custom)</td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
+                  <tr className="border-b border-border/60 hover:bg-slate-50 dark:bg-background/50 dark:hover:bg-white/5 transition-colors">
                     <td className="p-4 font-semibold text-foreground">Video & Audio Quality</td>
                     <td className="p-4 text-center">720p HD</td>
                     <td className="p-4 text-center font-bold text-primary bg-primary/5">1080p Full HD</td>
                     <td className="p-4 text-center font-bold text-foreground">4K Ultra HD</td>
                     <td className="p-4 text-center font-bold text-foreground">4K + Media Relays</td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
+                  <tr className="border-b border-border/60 hover:bg-slate-50 dark:bg-background/50 dark:hover:bg-white/5 transition-colors">
                     <td className="p-4 font-semibold text-foreground">Screen Sharing & Whiteboard</td>
                     <td className="p-4 text-center text-primary font-bold">&check;</td>
                     <td className="p-4 text-center text-primary font-bold bg-primary/5">&check;</td>
                     <td className="p-4 text-center text-primary font-bold">&check;</td>
                     <td className="p-4 text-center text-primary font-bold">&check;</td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
+                  <tr className="border-b border-border/60 hover:bg-slate-50 dark:bg-background/50 dark:hover:bg-white/5 transition-colors">
                     <td className="p-4 font-semibold text-foreground">Live Chat & Reactions</td>
                     <td className="p-4 text-center text-primary font-bold">&check;</td>
                     <td className="p-4 text-center text-primary font-bold bg-primary/5">&check;</td>
@@ -749,33 +749,33 @@ export default function MeetLandingPage() {
                   </tr>
 
                   {/* Category 2: Async Video & Recording */}
-                  <tr className="bg-slate-100/60 dark:bg-white/5 font-bold text-foreground border-y border-border">
+                  <tr className="bg-slate-100 dark:bg-secondary/60 dark:bg-white/5 font-bold text-foreground border-y border-border">
                     <td colSpan={5} className="py-2.5 px-5 text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-muted-foreground">
                       Async Video & Screen Recording
                     </td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
+                  <tr className="border-b border-border/60 hover:bg-slate-50 dark:bg-background/50 dark:hover:bg-white/5 transition-colors">
                     <td className="p-4 font-semibold text-foreground">Async Video Limit</td>
                     <td className="p-4 text-center">10 videos/mo (15m)</td>
                     <td className="p-4 text-center font-bold text-primary bg-primary/5">Unlimited (1 hr)</td>
                     <td className="p-4 text-center font-bold text-foreground">Unlimited</td>
                     <td className="p-4 text-center font-bold text-foreground">Unlimited</td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
+                  <tr className="border-b border-border/60 hover:bg-slate-50 dark:bg-background/50 dark:hover:bg-white/5 transition-colors">
                     <td className="p-4 font-semibold text-foreground">PiP Webcam + Screen Canvas</td>
                     <td className="p-4 text-center">Standard</td>
                     <td className="p-4 text-center font-bold text-primary bg-primary/5">HD Studio</td>
                     <td className="p-4 text-center font-bold text-foreground">4K Studio</td>
                     <td className="p-4 text-center font-bold text-foreground">Custom Studio</td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
+                  <tr className="border-b border-border/60 hover:bg-slate-50 dark:bg-background/50 dark:hover:bg-white/5 transition-colors">
                     <td className="p-4 font-semibold text-foreground">Viewer Analytics & Drop-off Heatmaps</td>
                     <td className="p-4 text-center text-muted-foreground">&mdash;</td>
                     <td className="p-4 text-center font-bold text-primary bg-primary/5">Views & Retention</td>
                     <td className="p-4 text-center font-bold text-foreground">Drop-off Heatmaps</td>
                     <td className="p-4 text-center font-bold text-foreground">Custom BI & Telemetry</td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
+                  <tr className="border-b border-border/60 hover:bg-slate-50 dark:bg-background/50 dark:hover:bg-white/5 transition-colors">
                     <td className="p-4 font-semibold text-foreground">Password Protection & Expiring Links</td>
                     <td className="p-4 text-center text-muted-foreground">&mdash;</td>
                     <td className="p-4 text-center text-primary font-bold bg-primary/5">&check;</td>
@@ -784,26 +784,26 @@ export default function MeetLandingPage() {
                   </tr>
 
                   {/* Category 3: Team Spaces */}
-                  <tr className="bg-slate-100/60 dark:bg-white/5 font-bold text-foreground border-y border-border">
+                  <tr className="bg-slate-100 dark:bg-secondary/60 dark:bg-white/5 font-bold text-foreground border-y border-border">
                     <td colSpan={5} className="py-2.5 px-5 text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-muted-foreground">
                       Team Spaces & Collaboration
                     </td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
+                  <tr className="border-b border-border/60 hover:bg-slate-50 dark:bg-background/50 dark:hover:bg-white/5 transition-colors">
                     <td className="p-4 font-semibold text-foreground">Persistent Team Spaces</td>
                     <td className="p-4 text-center">Up to 5</td>
                     <td className="p-4 text-center font-bold text-primary bg-primary/5">Unlimited</td>
                     <td className="p-4 text-center font-bold text-foreground">Unlimited</td>
                     <td className="p-4 text-center font-bold text-foreground">Multi-Tenant Spaces</td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
+                  <tr className="border-b border-border/60 hover:bg-slate-50 dark:bg-background/50 dark:hover:bg-white/5 transition-colors">
                     <td className="p-4 font-semibold text-foreground">Shared Space Notes & Action Boards</td>
                     <td className="p-4 text-center">Basic</td>
                     <td className="p-4 text-center font-bold text-primary bg-primary/5">Collaborative</td>
                     <td className="p-4 text-center font-bold text-foreground">Collaborative</td>
                     <td className="p-4 text-center font-bold text-foreground">Two-way Jira/CRM Sync</td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
+                  <tr className="border-b border-border/60 hover:bg-slate-50 dark:bg-background/50 dark:hover:bg-white/5 transition-colors">
                     <td className="p-4 font-semibold text-foreground">Cross-Space Search & Discovery</td>
                     <td className="p-4 text-center text-muted-foreground">&mdash;</td>
                     <td className="p-4 text-center text-primary font-bold bg-primary/5">&check;</td>
@@ -812,33 +812,33 @@ export default function MeetLandingPage() {
                   </tr>
 
                   {/* Category 4: Meeting Intelligence */}
-                  <tr className="bg-slate-100/60 dark:bg-white/5 font-bold text-foreground border-y border-border">
+                  <tr className="bg-slate-100 dark:bg-secondary/60 dark:bg-white/5 font-bold text-foreground border-y border-border">
                     <td colSpan={5} className="py-2.5 px-5 text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-muted-foreground">
                       Meeting Intelligence & Automation
                     </td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
+                  <tr className="border-b border-border/60 hover:bg-slate-50 dark:bg-background/50 dark:hover:bg-white/5 transition-colors">
                     <td className="p-4 font-semibold text-foreground">Automated Multilingual Transcripts</td>
                     <td className="p-4 text-center text-muted-foreground">&mdash;</td>
                     <td className="p-4 text-center font-bold text-primary bg-primary/5">30+ Languages</td>
                     <td className="p-4 text-center font-bold text-foreground">50+ Languages</td>
                     <td className="p-4 text-center font-bold text-foreground">100+ & Custom Vocab</td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
+                  <tr className="border-b border-border/60 hover:bg-slate-50 dark:bg-background/50 dark:hover:bg-white/5 transition-colors">
                     <td className="p-4 font-semibold text-foreground">Executive Summaries & Action Items</td>
                     <td className="p-4 text-center">Basic</td>
                     <td className="p-4 text-center font-bold text-primary bg-primary/5">Full Extraction</td>
                     <td className="p-4 text-center font-bold text-foreground">Full Extraction</td>
                     <td className="p-4 text-center font-bold text-foreground">Custom Prompts & Tone</td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
+                  <tr className="border-b border-border/60 hover:bg-slate-50 dark:bg-background/50 dark:hover:bg-white/5 transition-colors">
                     <td className="p-4 font-semibold text-foreground">Smart Follow-up Action Emails</td>
                     <td className="p-4 text-center text-muted-foreground">&mdash;</td>
                     <td className="p-4 text-center text-primary font-bold bg-primary/5">&check;</td>
                     <td className="p-4 text-center text-primary font-bold">&check;</td>
                     <td className="p-4 text-center font-bold text-foreground">Custom SMTP & Templates</td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
+                  <tr className="border-b border-border/60 hover:bg-slate-50 dark:bg-background/50 dark:hover:bg-white/5 transition-colors">
                     <td className="p-4 font-semibold text-foreground">Speaker Talk-Time & Sentiment</td>
                     <td className="p-4 text-center text-muted-foreground">&mdash;</td>
                     <td className="p-4 text-center font-bold text-primary bg-primary/5">Talk-time Ratio</td>
@@ -847,40 +847,40 @@ export default function MeetLandingPage() {
                   </tr>
 
                   {/* Category 5: Storage & Governance */}
-                  <tr className="bg-slate-100/60 dark:bg-white/5 font-bold text-foreground border-y border-border">
+                  <tr className="bg-slate-100 dark:bg-secondary/60 dark:bg-white/5 font-bold text-foreground border-y border-border">
                     <td colSpan={5} className="py-2.5 px-5 text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-muted-foreground">
                       Storage, Governance & Support
                     </td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
+                  <tr className="border-b border-border/60 hover:bg-slate-50 dark:bg-background/50 dark:hover:bg-white/5 transition-colors">
                     <td className="p-4 font-semibold text-foreground">Cloud Storage Limit</td>
                     <td className="p-4 text-center font-bold">2 GB</td>
                     <td className="p-4 text-center font-bold text-primary bg-primary/5">15 GB</td>
                     <td className="p-4 text-center font-bold text-foreground">50 GB</td>
                     <td className="p-4 text-center font-bold text-foreground">Terabyte Scale / BYO-S3</td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
+                  <tr className="border-b border-border/60 hover:bg-slate-50 dark:bg-background/50 dark:hover:bg-white/5 transition-colors">
                     <td className="p-4 font-semibold text-foreground">Custom Branding & Branded Rooms</td>
                     <td className="p-4 text-center text-muted-foreground">&mdash;</td>
                     <td className="p-4 text-center text-muted-foreground bg-primary/5">&mdash;</td>
                     <td className="p-4 text-center font-bold text-foreground">Logos & Colors</td>
                     <td className="p-4 text-center font-bold text-foreground">Full White-Label & Subdomains</td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
+                  <tr className="border-b border-border/60 hover:bg-slate-50 dark:bg-background/50 dark:hover:bg-white/5 transition-colors">
                     <td className="p-4 font-semibold text-foreground">Single Sign-On (SSO)</td>
                     <td className="p-4 text-center text-muted-foreground">&mdash;</td>
                     <td className="p-4 text-center text-muted-foreground bg-primary/5">&mdash;</td>
                     <td className="p-4 text-center font-bold text-foreground">Google & SAML 2.0</td>
                     <td className="p-4 text-center font-bold text-foreground">Okta, Azure AD, SAML, SCIM</td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
+                  <tr className="border-b border-border/60 hover:bg-slate-50 dark:bg-background/50 dark:hover:bg-white/5 transition-colors">
                     <td className="p-4 font-semibold text-foreground">Enterprise Audit Trail</td>
                     <td className="p-4 text-center text-muted-foreground">&mdash;</td>
                     <td className="p-4 text-center text-muted-foreground bg-primary/5">&mdash;</td>
                     <td className="p-4 text-center text-primary font-bold">&check;</td>
                     <td className="p-4 text-center font-bold text-foreground">Immutable SIEM Stream</td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
+                  <tr className="border-b border-border/60 hover:bg-slate-50 dark:bg-background/50 dark:hover:bg-white/5 transition-colors">
                     <td className="p-4 font-semibold text-foreground">SLA & Dedicated Support</td>
                     <td className="p-4 text-center">Community</td>
                     <td className="p-4 text-center font-bold text-primary bg-primary/5">Standard Email</td>
@@ -995,9 +995,9 @@ export default function MeetLandingPage() {
         </section>
 
         {/* ΓöÇΓöÇ FOOTER ΓöÇΓöÇ */}
-        <footer className="border-t border-border py-6 px-6 md:px-12 bg-slate-50/50">
+        <footer className="border-t border-border py-6 px-6 md:px-12 bg-slate-50 dark:bg-background/50">
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2 text-slate-500 text-sm font-medium">
+            <div className="flex items-center gap-2 text-slate-500 dark:text-muted-foreground text-sm font-medium">
               <div className="text-primary mr-1">
                 <CliPadLogo size={24} />
               </div>
@@ -1033,7 +1033,7 @@ export default function MeetLandingPage() {
 
             {/* Link Box */}
             <div className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-4">
-              <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 text-left">Meeting Link</p>
+              <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 dark:text-muted-foreground uppercase tracking-widest mb-2 text-left">Meeting Link</p>
               <div className="flex items-center gap-3">
                 <div className="flex-1 min-w-0 bg-white dark:bg-white/5 px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 overflow-hidden">
                   <span className="text-sm text-slate-700 dark:text-slate-200 font-mono truncate block w-full select-all">{laterLink}</span>
@@ -1080,14 +1080,14 @@ export default function MeetLandingPage() {
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: '100%', opacity: 0 }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed right-0 top-0 bottom-0 w-[400px] max-w-full bg-white shadow-[-10px_0_30px_rgba(0,0,0,0.05)] flex flex-col z-[110] border-l-4 border-primary"
+              className="fixed right-0 top-0 bottom-0 w-[400px] max-w-full bg-white dark:bg-card shadow-[-10px_0_30px_rgba(0,0,0,0.05)] flex flex-col z-[110] border-l-4 border-primary"
               onClick={e => e.stopPropagation()}
             >
               <div className="flex items-center justify-between p-6 border-b border-slate-100">
                 <h3 className="text-xl font-bold">{supportPanel === 'chat' ? 'Live Chat Support' : 'Request a Call'}</h3>
                 <button 
                   onClick={() => { setSupportPanel(null); setShowHumanForm(false); }} 
-                  className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-800 transition-all"
+                  className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-secondary text-slate-500 dark:text-muted-foreground hover:bg-slate-200 dark:bg-accent hover:text-slate-800 transition-all"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -1116,7 +1116,7 @@ export default function MeetLandingPage() {
                       }
                     }}>
                     <div>
-                      <label className="text-sm font-medium text-slate-700">Name</label>
+                      <label className="text-sm font-medium text-slate-700 dark:text-foreground">Name</label>
                       <input 
                         type="text" 
                         required 
@@ -1126,7 +1126,7 @@ export default function MeetLandingPage() {
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-slate-700">Phone Number</label>
+                      <label className="text-sm font-medium text-slate-700 dark:text-foreground">Phone Number</label>
                       <input 
                         type="tel" 
                         required 

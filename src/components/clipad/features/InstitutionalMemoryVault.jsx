@@ -283,7 +283,7 @@ ${knowledgeContext}`
 
                       let route = '#';
                       let icon = Link;
-                      let colorClass = "bg-slate-50 text-slate-600 border-slate-200 dark:bg-secondary dark:text-muted-foreground";
+                      let colorClass = "bg-slate-50 dark:bg-background text-slate-600 dark:text-muted-foreground border-slate-200 dark:bg-secondary dark:text-muted-foreground";
                       
                       if (type === 'M' || type === 'meeting') { route = `/clipad/meetings/${id}`; title = title !== `Node ${id}` ? title : 'Meeting Record'; colorClass = "bg-indigo-50 border-indigo-100 text-indigo-700 dark:bg-indigo-900/20 dark:border-indigo-800 dark:text-indigo-400"; }
                       if (type === 'V' || type === 'video') { route = `/clipad/videos/${id}`; title = title !== `Node ${id}` ? title : 'Video Record'; colorClass = "bg-purple-50 border-purple-100 text-purple-700 dark:bg-purple-900/20 dark:border-purple-800 dark:text-purple-400"; }

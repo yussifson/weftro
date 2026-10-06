@@ -118,7 +118,7 @@ export default function DailyBriefingWidget() {
 
   if (loading) {
     return (
-      <div className="p-5 rounded-2xl bg-white dark:bg-card border border-slate-200/80 dark:border-border shadow-sm animate-pulse flex items-center justify-between">
+      <div className="p-5 rounded-2xl bg-white dark:bg-card border border-slate-200 dark:border-border/80 dark:border-border shadow-sm animate-pulse flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-xl bg-[#006065] dark:bg-[#131A2C]/10 border border-[#006065] dark:border-border/20 flex items-center justify-center">
             <Sparkles className="w-4.5 h-4.5 text-[#006065] animate-spin" />
@@ -132,7 +132,7 @@ export default function DailyBriefingWidget() {
   if (!briefing) return null;
 
   return (
-    <div className="relative overflow-hidden rounded-2xl bg-white dark:bg-card border border-slate-200/90 dark:border-border shadow-sm transition-all duration-300 hover:shadow-md p-5 group">
+    <div className="relative overflow-hidden rounded-2xl bg-white dark:bg-card border border-slate-200 dark:border-border/90 dark:border-border shadow-sm transition-all duration-300 hover:shadow-md p-5 group">
       {/* Top glowing accent bar */}
       <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 rounded-t-2xl" />
 
@@ -175,7 +175,7 @@ export default function DailyBriefingWidget() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Yesterday's Highlights */}
             {briefing.highlights?.length > 0 && (
-              <div className="p-4 rounded-xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/70 dark:border-border/80 space-y-2">
+              <div className="p-4 rounded-xl bg-slate-50 dark:bg-background/80 dark:bg-slate-800/40 border border-slate-200 dark:border-border/70 dark:border-border/80 space-y-2">
                 <h4 className="text-[11px] font-bold uppercase tracking-wider text-[#006065] dark:text-[#00beac] flex items-center gap-1.5">
                   <Calendar className="w-3.5 h-3.5" /> Yesterday's Key Highlights
                 </h4>
@@ -191,7 +191,7 @@ export default function DailyBriefingWidget() {
             )}
 
             {/* Top Priorities & Risks */}
-            <div className="p-4 rounded-xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/70 dark:border-border/80 space-y-2">
+            <div className="p-4 rounded-xl bg-slate-50 dark:bg-background/80 dark:bg-slate-800/40 border border-slate-200 dark:border-border/70 dark:border-border/80 space-y-2">
               <h4 className="text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5" /> Today's Priorities
               </h4>
@@ -205,7 +205,7 @@ export default function DailyBriefingWidget() {
               </ul>
 
               {briefing.risks?.length > 0 && (
-                <div className="mt-3 pt-2.5 border-t border-slate-200/80 dark:border-border/60">
+                <div className="mt-3 pt-2.5 border-t border-slate-200 dark:border-border/80 dark:border-border/60">
                   <span className="text-[11px] font-bold text-red-600 dark:text-red-400 uppercase tracking-wider flex items-center gap-1 mb-1">
                     <AlertTriangle className="w-3.5 h-3.5" /> Risks / Blockers
                   </span>
@@ -224,7 +224,7 @@ export default function DailyBriefingWidget() {
 
           {/* Footer Bar */}
           <div className="mt-4 pt-3 border-t border-slate-100 dark:border-border/80 flex items-center justify-between text-xs">
-            <span className="text-[11px] font-medium text-slate-400 dark:text-slate-500">
+            <span className="text-[11px] font-medium text-slate-400 dark:text-slate-500 dark:text-muted-foreground">
               Powered by Orbit AI
             </span>
             <button

@@ -619,7 +619,7 @@ export default function SearchHub() {
                  <button
                    key={tab.id}
                    onClick={() => setActiveFilter(tab.id)}
-                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors ${isActive ? 'bg-[#006065] dark:bg-[#131A2C] text-[#fad503] font-bold shadow-sm border border-[#006065] dark:border-border' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-muted-foreground dark:hover:bg-accent'}`}
+                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors ${isActive ? 'bg-[#006065] dark:bg-[#131A2C] text-[#fad503] font-bold shadow-sm border border-[#006065] dark:border-border' : 'bg-slate-100 dark:bg-secondary text-slate-600 dark:text-muted-foreground hover:bg-slate-200 dark:bg-slate-800 dark:text-muted-foreground dark:hover:bg-accent'}`}
                  >
                    <Icon className="w-3.5 h-3.5" /> {tab.label}
                  </button>
@@ -633,7 +633,7 @@ export default function SearchHub() {
              {/* LEFT SIDE: SEARCH RESULTS */}
              <div className="col-span-1 lg:col-span-5 flex flex-col h-full overflow-hidden">
                 <div className="flex items-center justify-between mb-3 shrink-0 px-1">
-                   <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500">Results</h2>
+                   <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-muted-foreground">Results</h2>
                    <span className="text-xs font-semibold bg-slate-200 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-600 dark:text-muted-foreground">{filteredResults.length} found</span>
                 </div>
                 
@@ -641,12 +641,12 @@ export default function SearchHub() {
                    {isSearching ? (
                       <div className="flex flex-col items-center justify-center h-40">
                          <Loader2 className="w-6 h-6 text-[#006065] animate-spin mb-2" />
-                         <span className="text-xs text-slate-500">Searching workspace...</span>
+                         <span className="text-xs text-slate-500 dark:text-muted-foreground">Searching workspace...</span>
                       </div>
                    ) : filteredResults.length === 0 ? (
                       <div className="flex flex-col items-center justify-center p-8 text-center bg-white dark:bg-card border border-slate-200 dark:border-border border-dashed rounded-xl h-40">
                          <Search className="w-6 h-6 text-slate-300 mb-2" />
-                         <span className="text-sm text-slate-500">No results found for your query.</span>
+                         <span className="text-sm text-slate-500 dark:text-muted-foreground">No results found for your query.</span>
                       </div>
                    ) : (
                       filteredResults.map(item => {
@@ -695,7 +695,7 @@ export default function SearchHub() {
                 {selectedResult && (
                    <div className="shrink-0 mt-4 bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl p-5 shadow-lg animate-in slide-in-from-bottom-4 duration-300">
                       <div className="flex items-center justify-between mb-3 border-b border-slate-100 dark:border-border pb-3">
-                         <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Record Preview</span>
+                         <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-muted-foreground">Record Preview</span>
                          {TYPE_META[selectedResult.type]?.route && (
                             <button
                               onClick={() => {
@@ -726,7 +726,7 @@ export default function SearchHub() {
                    </div>
                    <div>
                      <h3 className="font-bold text-sm text-slate-900 dark:text-foreground leading-none">Orbit AI Synthesis</h3>
-                     <span className="text-[10px] text-slate-500 font-medium">Enterprise Intelligence Engine</span>
+                     <span className="text-[10px] text-slate-500 dark:text-muted-foreground font-medium">Enterprise Intelligence Engine</span>
                    </div>
                 </div>
 
@@ -735,10 +735,10 @@ export default function SearchHub() {
                    {chatHistory.length === 0 && !isSynthesizing ? (
                       <div className="flex flex-col items-center justify-center h-full text-center max-w-sm mx-auto">
                          <div className="w-16 h-16 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center mb-4 border border-slate-100 dark:border-border">
-                           <Sparkles className="w-8 h-8 text-slate-300 dark:text-slate-600" />
+                           <Sparkles className="w-8 h-8 text-slate-300 dark:text-slate-600 dark:text-muted-foreground" />
                          </div>
                          <h3 className="font-bold text-slate-900 dark:text-foreground mb-2">No active synthesis</h3>
-                         <p className="text-sm text-slate-500">Ask a question above and Orbit AI will analyze your organizational knowledge to synthesize an answer.</p>
+                         <p className="text-sm text-slate-500 dark:text-muted-foreground">Ask a question above and Orbit AI will analyze your organizational knowledge to synthesize an answer.</p>
                       </div>
                    ) : (
                       chatHistory.map((msg, idx) => (

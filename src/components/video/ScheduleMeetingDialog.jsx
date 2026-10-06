@@ -246,7 +246,7 @@ export default function ScheduleMeetingDialog({ open, onOpenChange, onScheduled 
                   </div>
                 </div>
 
-                <Button onClick={() => onOpenChange(false)} variant="ghost" className="mt-6 w-full sm:w-auto px-8 text-slate-500 hover:text-slate-700 shrink-0">
+                <Button onClick={() => onOpenChange(false)} variant="ghost" className="mt-6 w-full sm:w-auto px-8 text-slate-500 dark:text-muted-foreground hover:text-slate-700 dark:text-foreground shrink-0">
                   Done
                 </Button>
               </div>
@@ -321,7 +321,7 @@ export default function ScheduleMeetingDialog({ open, onOpenChange, onScheduled 
                                 }`}
                               >
                                 <div className="flex items-center gap-3">
-                                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isSelected ? 'bg-primary text-primary-foreground' : 'bg-gray-100 text-gray-500'}`}>
+                                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isSelected ? 'bg-primary text-primary-foreground' : 'bg-gray-100 dark:bg-card text-gray-500'}`}>
                                     <Users className="w-4 h-4" />
                                   </div>
                                   <div>
@@ -353,7 +353,7 @@ export default function ScheduleMeetingDialog({ open, onOpenChange, onScheduled 
                                 }`}
                               >
                                 <div className="flex items-center gap-3">
-                                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isSelected ? 'bg-primary text-primary-foreground' : 'bg-gray-100 text-gray-500'}`}>
+                                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isSelected ? 'bg-primary text-primary-foreground' : 'bg-gray-100 dark:bg-card text-gray-500'}`}>
                                     <Briefcase className="w-4 h-4" />
                                   </div>
                                   <div>

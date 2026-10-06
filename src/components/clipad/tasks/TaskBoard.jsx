@@ -6,7 +6,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 const DEFAULT_STAGES = [
-  { id: 'todo', label: 'To Do', color: 'bg-slate-500' },
+  { id: 'todo', label: 'To Do', color: 'bg-slate-50 dark:bg-background0' },
   { id: 'in_progress', label: 'In Progress', color: 'bg-indigo-500' },
   { id: 'done', label: 'Done', color: 'bg-[#006065] dark:bg-[#131A2C]' }
 ];

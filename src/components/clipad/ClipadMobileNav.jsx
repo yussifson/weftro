@@ -119,7 +119,7 @@ export default function ClipadMobileNav({ isMarketing = false, forceMobile = fal
               {/* User Info */}
               {user && (
                 <div className="flex items-center gap-3 px-4 py-4 border-b border-white/10 bg-white/5">
-                  <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center font-bold text-sm shrink-0 overflow-hidden shadow-md text-[#006065]">
+                  <div className="w-10 h-10 rounded-full bg-white dark:bg-card flex items-center justify-center font-bold text-sm shrink-0 overflow-hidden shadow-md text-[#006065]">
                     {user.avatar_url || user?.user_metadata?.avatar_url ? (
                       <img src={user.avatar_url || user.user_metadata.avatar_url} alt="" className="w-full h-full object-cover" />
                     ) : (
@@ -199,9 +199,9 @@ export default function ClipadMobileNav({ isMarketing = false, forceMobile = fal
                 {/* Optavel Account */}
                 <button
                   onClick={() => window.location.href = 'https://account.optavel.com'}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[14px] hover:bg-slate-100/80 dark:hover:bg-white/[0.06] transition-colors group"
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[14px] hover:bg-slate-100 dark:bg-secondary/80 dark:hover:bg-white/[0.06] transition-colors group"
                 >
-                  <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-muted-foreground flex items-center justify-center group-hover:scale-105 transition-transform shadow-sm border border-slate-200/50 dark:border-transparent">
+                  <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-muted-foreground flex items-center justify-center group-hover:scale-105 transition-transform shadow-sm border border-slate-200 dark:border-border/50 dark:border-transparent">
                     <User className="w-4 h-4" />
                   </div>
                   <span className="text-[13px] font-medium text-slate-700 dark:text-muted-foreground">Account</span>
@@ -222,7 +222,7 @@ export default function ClipadMobileNav({ isMarketing = false, forceMobile = fal
               </div>
 
               {/* Sign Out */}
-              <div className="border-t border-slate-200/50 dark:border-white/[0.06] mx-3 my-1" />
+              <div className="border-t border-slate-200 dark:border-border/50 dark:border-white/[0.06] mx-3 my-1" />
               <div className="p-2 pt-1">
                 <button
                   onClick={async () => { await logout(); navigate('/login'); }}

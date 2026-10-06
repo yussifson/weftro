@@ -168,7 +168,7 @@ Distribution: Early morning (00-06 UTC): ${earlyMorning}, Business hours (08-18 
           <Globe className="w-5 h-5 text-teal-500" />
           <h2 className="text-lg font-bold text-slate-900 dark:text-foreground">Timezone Fairness</h2>
         </div>
-        <div className="flex items-center gap-3 py-6 justify-center text-slate-400 dark:text-slate-500">
+        <div className="flex items-center gap-3 py-6 justify-center text-slate-400 dark:text-slate-500 dark:text-muted-foreground">
           <Loader2 className="w-5 h-5 animate-spin" />
           <span className="text-sm">{analyzing ? 'AI is analyzing meeting patternsâ€¦' : 'Loadingâ€¦'}</span>
         </div>

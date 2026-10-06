@@ -242,7 +242,7 @@ export default function AddChatDialog({ open, onOpenChange, onChatCreated }) {
                   {getFilteredList(activeTab === "staff" ? staff : clients).map(item => (
                     <div key={item.id} className="flex items-center space-x-3 p-2 hover:bg-muted/50 rounded-xl cursor-pointer" onClick={() => handleToggleUser(item.id)}>
                       <Checkbox checked={selectedUsers.includes(item.id)} onCheckedChange={() => handleToggleUser(item.id)} />
-                      <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
+                      <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-secondary flex items-center justify-center shrink-0">
                          <span className="text-xs font-semibold text-primary tracking-[0.04em]">{(item.full_name || item.name || item.first_name || 'U')[0].toUpperCase()}</span>
                       </div>
                       <div className="flex-1 min-w-0">

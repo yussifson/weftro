@@ -132,7 +132,7 @@ Do NOT invent facts. Only use data from the knowledge base provided.`,
           {loading ? (
             <div className="flex flex-col items-center justify-center py-6 text-center">
               <Loader2 className="w-6 h-6 text-indigo-400 animate-spin mb-2" />
-              <p className="text-xs font-medium text-slate-500">Searching org memory...</p>
+              <p className="text-xs font-medium text-slate-500 dark:text-muted-foreground">Searching org memory...</p>
             </div>
           ) : (
             recommendations.map(rec => (
@@ -143,7 +143,7 @@ Do NOT invent facts. Only use data from the knowledge base provided.`,
                   </div>
                   <div>
                     <h4 className="text-sm font-bold text-slate-900 dark:text-foreground leading-tight">{rec.title}</h4>
-                    <p className="text-xs text-slate-500 mt-0.5">{rec.content}</p>
+                    <p className="text-xs text-slate-500 dark:text-muted-foreground mt-0.5">{rec.content}</p>
                   </div>
                 </div>
                 

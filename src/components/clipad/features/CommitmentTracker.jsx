@@ -151,7 +151,7 @@ export default function CommitmentTracker({ spaceId }) {
                   ? 'bg-[#006065] dark:bg-[#131A2C]/10/50 border-emerald-100 dark:bg-emerald-900/10 dark:border-emerald-900/30'
                   : c.status === 'missed'
                   ? 'bg-red-50/50 border-red-100 dark:bg-red-900/10 dark:border-red-900/30'
-                  : 'bg-slate-50 border-slate-100 dark:bg-secondary/50 dark:border-border/50'
+                  : 'bg-slate-50 dark:bg-background border-slate-100 dark:bg-secondary/50 dark:border-border/50'
               }`}
             >
               <div className="flex items-start justify-between">
@@ -208,7 +208,7 @@ export default function CommitmentTracker({ spaceId }) {
 
               {c.due_date && (
                 <div className="mt-2 pl-8">
-                  <span className="text-xs text-slate-500 flex items-center gap-1">
+                  <span className="text-xs text-slate-500 dark:text-muted-foreground flex items-center gap-1">
                     <Clock className="w-3 h-3" /> Due: {new Date(c.due_date).toLocaleDateString()}
                   </span>
                 </div>

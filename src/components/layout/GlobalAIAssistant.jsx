@@ -1167,9 +1167,9 @@ RULES FOR MULTI-STEP REASONING & AUTOMATIONS:
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setIsExpanded(!isExpanded)} className="cursor-pointer font-semibold text-xs py-2.5 rounded-lg hidden md:flex">
             {isExpanded ? (
-              <><Minimize2 className="w-4 h-4 mr-2 text-slate-500" /> {t("collapse", "Collapse Panel")}</>
+              <><Minimize2 className="w-4 h-4 mr-2 text-slate-500 dark:text-muted-foreground" /> {t("collapse", "Collapse Panel")}</>
             ) : (
-              <><Maximize2 className="w-4 h-4 mr-2 text-slate-500" /> {t("expand", "Expand Panel")}</>
+              <><Maximize2 className="w-4 h-4 mr-2 text-slate-500 dark:text-muted-foreground" /> {t("expand", "Expand Panel")}</>
             )}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={onClose} className="cursor-pointer font-semibold text-xs py-2.5 rounded-lg text-red-600 dark:text-red-400 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950/30">
@@ -1211,9 +1211,9 @@ RULES FOR MULTI-STEP REASONING & AUTOMATIONS:
   }`}>
  {msg.content === '...' ? (
     <div className="flex items-center gap-1.5 py-1.5 min-w-[36px]">
-      <span className="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-slate-500 animate-bounce" style={{ animationDelay: '0ms' }} />
-      <span className="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-slate-500 animate-bounce" style={{ animationDelay: '150ms' }} />
-      <span className="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-slate-500 animate-bounce" style={{ animationDelay: '300ms' }} />
+      <span className="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-slate-50 dark:bg-background0 animate-bounce" style={{ animationDelay: '0ms' }} />
+      <span className="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-slate-50 dark:bg-background0 animate-bounce" style={{ animationDelay: '150ms' }} />
+      <span className="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-slate-50 dark:bg-background0 animate-bounce" style={{ animationDelay: '300ms' }} />
     </div>
   ) : (
     <FormatMessage content={msg.content} />
@@ -1309,7 +1309,7 @@ RULES FOR MULTI-STEP REASONING & AUTOMATIONS:
          placeholder={isRecording ? 'Listening...' : 'Ask me anything...'}
          rows={1}
          className={`w-full bg-transparent border-none focus:ring-0 resize-none px-3 py-2 pr-12 text-[14px] text-slate-900 dark:text-foreground outline-none leading-relaxed min-h-[40px] max-h-[160px] overflow-y-auto ${
-         isRecording ? 'placeholder:text-red-400 placeholder:animate-pulse' : 'placeholder:text-slate-400 dark:placeholder:text-slate-500'
+         isRecording ? 'placeholder:text-red-400 placeholder:animate-pulse' : 'placeholder:text-slate-400 dark:placeholder:text-slate-500 dark:text-muted-foreground'
          }`}
          disabled={isLoading}
          onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend();}}}
@@ -1345,7 +1345,7 @@ RULES FOR MULTI-STEP REASONING & AUTOMATIONS:
      {/* Footer Row */}
      <div className="flex items-center justify-end px-3 pt-2 mt-1 border-t border-slate-100 dark:border-border">
        <div className="flex items-center gap-4">
-         <button onClick={() => toast({ title: 'Shortcuts', description: 'Press Cmd+K to search, Shift+Enter for new line.' })} className="flex items-center gap-1.5 text-[11px] font-medium text-slate-400 hover:text-slate-600 transition-colors">
+         <button onClick={() => toast({ title: 'Shortcuts', description: 'Press Cmd+K to search, Shift+Enter for new line.' })} className="flex items-center gap-1.5 text-[11px] font-medium text-slate-400 hover:text-slate-600 dark:text-muted-foreground transition-colors">
            <Command className="w-3.5 h-3.5" /> Shortcuts
          </button>
          <div className="flex items-center gap-1.5">
@@ -1353,7 +1353,7 @@ RULES FOR MULTI-STEP REASONING & AUTOMATIONS:
            <button
              type="button"
              onClick={() => fileInputRef.current?.click()}
-             className="flex items-center gap-1.5 text-[11px] font-medium text-slate-400 hover:text-slate-600 transition-colors"
+             className="flex items-center gap-1.5 text-[11px] font-medium text-slate-400 hover:text-slate-600 dark:text-muted-foreground transition-colors"
            >
              <Paperclip className="w-3.5 h-3.5" /> Attach
            </button>

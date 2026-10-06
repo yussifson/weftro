@@ -21,13 +21,13 @@ import {
 const MOOD_OPTIONS = [
   { value: 'great',      label: 'Great',      emoji: 'ðŸš€', color: 'text-[#006065] bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/10 border-emerald-200 dark:border-[#006065] dark:border-border/20' },
   { value: 'good',       label: 'Good',       emoji: 'ðŸ˜Š', color: 'text-blue-500 bg-blue-50 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20' },
-  { value: 'neutral',    label: 'Neutral',    emoji: 'ðŸ˜', color: 'text-slate-500 bg-slate-100 dark:bg-secondary border-slate-200 dark:border-border' },
+  { value: 'neutral',    label: 'Neutral',    emoji: 'ðŸ˜', color: 'text-slate-500 dark:text-muted-foreground bg-slate-100 dark:bg-secondary border-slate-200 dark:border-border' },
   { value: 'struggling', label: 'Struggling', emoji: 'ðŸ˜“', color: 'text-amber-500 bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20' },
   { value: 'blocked',    label: 'Blocked',    emoji: 'ðŸ”´', color: 'text-rose-500 bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/20' },
 ];
 
 const PRIORITY_OPTIONS = [
-  { value: 'low',    label: 'Low',    color: 'text-slate-500' },
+  { value: 'low',    label: 'Low',    color: 'text-slate-500 dark:text-muted-foreground' },
   { value: 'normal', label: 'Normal', color: 'text-blue-500' },
   { value: 'high',   label: 'High',   color: 'text-amber-500' },
   { value: 'urgent', label: 'Urgent', color: 'text-rose-500' },
@@ -474,7 +474,7 @@ export default function StandupPanel({ spaceId }) {
                     setShowTagMenu(!showTagMenu);
                     if (!showTagMenu) fetchMyResources();
                   }}
-                  className="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-border bg-white dark:bg-card text-sm text-slate-500 hover:border-primary/40 transition-colors text-left"
+                  className="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-border bg-white dark:bg-card text-sm text-slate-500 dark:text-muted-foreground hover:border-primary/40 transition-colors text-left"
                 >
                   <span className="flex items-center gap-2"><Tag className="w-4 h-4" /> Tag a resource or external link...</span>
                   <ChevronDown className="w-4 h-4 opacity-50" />
@@ -490,11 +490,11 @@ export default function StandupPanel({ spaceId }) {
                       {tagMenuTab === 'external' ? (
                         <div className="p-3 space-y-3">
                           <div>
-                            <label className="text-[10px] font-bold text-slate-500 uppercase mb-1 block">URL</label>
+                            <label className="text-[10px] font-bold text-slate-500 dark:text-muted-foreground uppercase mb-1 block">URL</label>
                             <input value={extUrl} onChange={e => setExtUrl(e.target.value)} placeholder="https://..." className="w-full text-xs px-2 py-1.5 border border-slate-200 dark:border-border rounded focus:outline-none focus:border-primary bg-white dark:bg-secondary text-foreground" />
                           </div>
                           <div>
-                            <label className="text-[10px] font-bold text-slate-500 uppercase mb-1 block">Title</label>
+                            <label className="text-[10px] font-bold text-slate-500 dark:text-muted-foreground uppercase mb-1 block">Title</label>
                             <input value={extTitle} onChange={e => setExtTitle(e.target.value)} placeholder="Resource Title" className="w-full text-xs px-2 py-1.5 border border-slate-200 dark:border-border rounded focus:outline-none focus:border-primary bg-white dark:bg-secondary text-foreground" />
                           </div>
                           <button

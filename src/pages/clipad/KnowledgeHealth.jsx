@@ -301,7 +301,7 @@ export default function KnowledgeHealth() {
                 }
               }}
               disabled={isGenerating || !healthData}
-              className="w-full py-3.5 bg-white text-indigo-900 font-black rounded-xl hover:bg-indigo-50 hover:shadow-lg hover:-translate-y-0.5 transition-all focus:ring-4 focus:ring-indigo-300 active:scale-95 disabled:opacity-70 disabled:cursor-wait flex items-center justify-center gap-2"
+              className="w-full py-3.5 bg-white dark:bg-card text-indigo-900 font-black rounded-xl hover:bg-indigo-50 hover:shadow-lg hover:-translate-y-0.5 transition-all focus:ring-4 focus:ring-indigo-300 active:scale-95 disabled:opacity-70 disabled:cursor-wait flex items-center justify-center gap-2"
             >
               {isGenerating ? (
                 <>

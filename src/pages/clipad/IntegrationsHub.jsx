@@ -469,7 +469,7 @@ export default function IntegrationsHub() {
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`px-5 py-2 text-sm font-bold transition-all rounded-lg whitespace-nowrap ${isActive ? 'bg-white dark:bg-card text-[#006065] dark:text-[#fad503] shadow-sm ring-1 ring-black/5 dark:ring-white/10' : 'text-slate-500 hover:text-slate-700 dark:text-muted-foreground dark:hover:text-slate-200 hover:bg-black/5 dark:hover:bg-white/5'}`}
+                className={`px-5 py-2 text-sm font-bold transition-all rounded-lg whitespace-nowrap ${isActive ? 'bg-white dark:bg-card text-[#006065] dark:text-[#fad503] shadow-sm ring-1 ring-black/5 dark:ring-white/10' : 'text-slate-500 dark:text-muted-foreground hover:text-slate-700 dark:text-muted-foreground dark:hover:text-slate-200 hover:bg-black/5 dark:hover:bg-white/5'}`}
               >
                 {cat}
               </button>
@@ -957,16 +957,16 @@ export default function IntegrationsHub() {
             <div className="space-y-3 mb-5">
               {/* Personal */}
               <button onClick={() => setSelectedScope('personal')} className={`w-full flex items-start gap-4 p-4 rounded-xl border-2 transition-all text-left ${selectedScope === 'personal' ? 'border-violet-500 bg-violet-50 dark:bg-[#006065] dark:bg-[#131A2C]/10' : 'border-white/15 dark:border-border hover:border-white/20 dark:hover:border-slate-600'}`}>
-                <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${selectedScope === 'personal' ? 'bg-violet-500 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}`}><User className="w-4 h-4" /></div>
+                <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${selectedScope === 'personal' ? 'bg-violet-500 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-muted-foreground'}`}><User className="w-4 h-4" /></div>
                 <div>
-                  <div className="flex items-center gap-2"><span className="text-sm font-bold text-slate-900 dark:text-foreground">Personal</span><span className="text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 px-2 py-0.5 rounded-full">Only you</span></div>
+                  <div className="flex items-center gap-2"><span className="text-sm font-bold text-slate-900 dark:text-foreground">Personal</span><span className="text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-muted-foreground px-2 py-0.5 rounded-full">Only you</span></div>
                   <p className="text-xs text-slate-500 dark:text-muted-foreground mt-0.5">Only you can see and query data from this connection.</p>
                 </div>
               </button>
 
               {/* Space */}
               <button onClick={() => setSelectedScope('space')} className={`w-full flex items-start gap-4 p-4 rounded-xl border-2 transition-all text-left ${selectedScope === 'space' ? 'border-blue-500 bg-blue-50 dark:bg-[#006065] dark:bg-[#131A2C]/10' : 'border-white/15 dark:border-border hover:border-white/20 dark:hover:border-slate-600'}`}>
-                <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${selectedScope === 'space' ? 'bg-blue-500 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}`}><Users className="w-4 h-4" /></div>
+                <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${selectedScope === 'space' ? 'bg-blue-500 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-muted-foreground'}`}><Users className="w-4 h-4" /></div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2"><span className="text-sm font-bold text-slate-900 dark:text-foreground">Space</span><span className="text-[10px] font-semibold bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 text-[#006065] dark:text-[#fad503] px-2 py-0.5 rounded-full">Space members only</span></div>
                   <p className="text-xs text-slate-500 dark:text-muted-foreground mt-0.5">Only members of the selected space can access this data.</p>
@@ -986,7 +986,7 @@ export default function IntegrationsHub() {
 
               {/* Company-wide */}
               <button onClick={() => isAdmin && setSelectedScope('company')} className={`w-full flex items-start gap-4 p-4 rounded-xl border-2 transition-all text-left ${!isAdmin ? 'opacity-40 cursor-not-allowed' : selectedScope === 'company' ? 'border-[#006065] dark:border-border bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/10' : 'border-white/15 dark:border-border hover:border-white/20 dark:hover:border-slate-600'}`}>
-                <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${selectedScope === 'company' && isAdmin ? 'bg-[#006065] dark:bg-[#fad503] text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}`}><Globe className="w-4 h-4" /></div>
+                <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${selectedScope === 'company' && isAdmin ? 'bg-[#006065] dark:bg-[#fad503] text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-muted-foreground'}`}><Globe className="w-4 h-4" /></div>
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-sm font-bold text-slate-900 dark:text-foreground">Company-wide</span>

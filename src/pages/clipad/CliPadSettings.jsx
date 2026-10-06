@@ -156,7 +156,7 @@ export default function CliPadSettings() {
                 <h3 className="font-bold text-slate-900 dark:text-foreground flex items-center gap-2">Branded Meeting Rooms {hasFeature(plan, 'hasBrandedRooms') && <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded-md bg-white dark:bg-[#fad503]/20 text-[#006065] dark:text-[#fad503]">Active</span>}</h3>
                 <p className="text-sm text-slate-500 dark:text-muted-foreground mt-1">Customize your clipboard meeting rooms with company logos and colors.</p>
               </div>
-              {!hasFeature(plan, 'hasBrandedRooms') && <button onClick={() => setActiveTab('billing')} className="px-4 py-2 rounded-xl bg-white text-white dark:bg-[#fad503] dark:text-[#006065] text-sm font-bold hover:bg-[#fad503]/90 transition-colors">Upgrade</button>}
+              {!hasFeature(plan, 'hasBrandedRooms') && <button onClick={() => setActiveTab('billing')} className="px-4 py-2 rounded-xl bg-white dark:bg-card text-white dark:bg-[#fad503] dark:text-[#006065] text-sm font-bold hover:bg-[#fad503]/90 transition-colors">Upgrade</button>}
               {hasFeature(plan, 'hasBrandedRooms') && <button onClick={() => toast({title: "Branding", description: "Company branding is automatically applied from your company profile settings."})} className="px-4 py-2 rounded-xl bg-white/10 border border-white/15 text-slate-900 dark:text-foreground text-sm font-bold hover:bg-slate-200 dark:bg-slate-700 transition-colors">Configure</button>}
             </div>
 
@@ -165,7 +165,7 @@ export default function CliPadSettings() {
                 <h3 className="font-bold text-slate-900 dark:text-foreground flex items-center gap-2"><Headphones className="w-4 h-4"/> SLA & Dedicated Support {hasFeature(plan, 'hasSLA') && <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded-md bg-white dark:bg-[#fad503]/20 text-[#006065] dark:text-[#fad503]">Active</span>}</h3>
                 <p className="text-sm text-slate-500 dark:text-muted-foreground mt-1">24/7 priority support and guaranteed uptime SLA.</p>
               </div>
-              {!hasFeature(plan, 'hasSLA') && <button onClick={() => setActiveTab('billing')} className="px-4 py-2 rounded-xl bg-white text-white dark:bg-[#fad503] dark:text-[#006065] text-sm font-bold hover:bg-[#fad503]/90 transition-colors">Upgrade</button>}
+              {!hasFeature(plan, 'hasSLA') && <button onClick={() => setActiveTab('billing')} className="px-4 py-2 rounded-xl bg-white dark:bg-card text-white dark:bg-[#fad503] dark:text-[#006065] text-sm font-bold hover:bg-[#fad503]/90 transition-colors">Upgrade</button>}
               {hasFeature(plan, 'hasSLA') && <button onClick={() => { window.location.href = "mailto:support@optavel.com"; toast({title: "Support", description: "Opening your email client to contact our enterprise support team."})}} className="px-4 py-2 rounded-xl bg-white/10 border border-white/15 text-slate-900 dark:text-foreground text-sm font-bold hover:bg-slate-200 dark:bg-slate-700 transition-colors">Contact Support</button>}
             </div>
 
@@ -174,7 +174,7 @@ export default function CliPadSettings() {
                 <h3 className="font-bold text-slate-900 dark:text-foreground flex items-center gap-2"><Lock className="w-4 h-4"/> SSO & Compliance Recording {hasFeature(plan, 'hasComplianceRecording') && <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded-md bg-white dark:bg-[#fad503]/20 text-[#006065] dark:text-[#fad503]">Active</span>}</h3>
                 <p className="text-sm text-slate-500 dark:text-muted-foreground mt-1">Single Sign-On enforcement and mandatory compliance recordings.</p>
               </div>
-              {!hasFeature(plan, 'hasComplianceRecording') && <button onClick={() => setActiveTab('billing')} className="px-4 py-2 rounded-xl bg-white text-white dark:bg-[#fad503] dark:text-[#006065] text-sm font-bold hover:bg-[#fad503]/90 transition-colors">Upgrade</button>}
+              {!hasFeature(plan, 'hasComplianceRecording') && <button onClick={() => setActiveTab('billing')} className="px-4 py-2 rounded-xl bg-white dark:bg-card text-white dark:bg-[#fad503] dark:text-[#006065] text-sm font-bold hover:bg-[#fad503]/90 transition-colors">Upgrade</button>}
               {hasFeature(plan, 'hasComplianceRecording') && <button onClick={() => toast({title: "SSO Config", description: "SSO settings have been verified and applied to your company workspace."})} className="px-4 py-2 rounded-xl bg-white/10 border border-white/15 text-slate-900 dark:text-foreground text-sm font-bold hover:bg-slate-200 dark:bg-slate-700 transition-colors">Configure</button>}
             </div>
 
@@ -183,7 +183,7 @@ export default function CliPadSettings() {
                 <h3 className="font-bold text-slate-900 dark:text-foreground flex items-center gap-2"><Puzzle className="w-4 h-4"/> Custom Integrations <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded-md bg-white dark:bg-[#fad503]/20 text-[#006065] dark:text-[#fad503]">Coming Soon</span></h3>
                 <p className="text-sm text-slate-500 dark:text-muted-foreground mt-1">Connect CliPad directly into your proprietary internal systems.</p>
               </div>
-              {!hasFeature(plan, 'hasCustomIntegrations') && <button onClick={() => setActiveTab('billing')} className="px-4 py-2 rounded-xl bg-white text-white dark:bg-[#fad503] dark:text-[#006065] text-sm font-bold hover:bg-[#fad503]/90 transition-colors">Upgrade</button>}
+              {!hasFeature(plan, 'hasCustomIntegrations') && <button onClick={() => setActiveTab('billing')} className="px-4 py-2 rounded-xl bg-white dark:bg-card text-white dark:bg-[#fad503] dark:text-[#006065] text-sm font-bold hover:bg-[#fad503]/90 transition-colors">Upgrade</button>}
               {hasFeature(plan, 'hasCustomIntegrations') && <button className="px-4 py-2 rounded-xl bg-white/10 border border-white/15 text-slate-900 dark:text-foreground/50 text-sm font-bold disabled:opacity-50" disabled>Configure</button>}
             </div>
           </div>
@@ -246,7 +246,7 @@ export default function CliPadSettings() {
                     <p className="text-xs text-slate-500 dark:text-muted-foreground mt-0.5">Receive email with AI summary after meetings</p>
                   </div>
                   <div onClick={() => toggle('aiSummaries')} className={`w-10 h-6 rounded-full transition-colors relative ${settings.aiSummaries ? 'bg-white dark:bg-[#fad503]' : 'bg-slate-200 dark:bg-slate-700'}`}>
-                    <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all ${settings.aiSummaries ? 'left-5' : 'left-1'}`} />
+                    <div className={`absolute top-1 w-4 h-4 rounded-full bg-white dark:bg-card shadow transition-all ${settings.aiSummaries ? 'left-5' : 'left-1'}`} />
                   </div>
                 </label>
                 <div className="h-px bg-white/10 w-full" />
@@ -256,7 +256,7 @@ export default function CliPadSettings() {
                     <p className="text-xs text-slate-500 dark:text-muted-foreground mt-0.5">Daily reminder of pending tasks</p>
                   </div>
                   <div onClick={() => toggle('actionItemReminders')} className={`w-10 h-6 rounded-full transition-colors relative ${settings.actionItemReminders ? 'bg-white dark:bg-[#fad503]' : 'bg-slate-200 dark:bg-slate-700'}`}>
-                    <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all ${settings.actionItemReminders ? 'left-5' : 'left-1'}`} />
+                    <div className={`absolute top-1 w-4 h-4 rounded-full bg-white dark:bg-card shadow transition-all ${settings.actionItemReminders ? 'left-5' : 'left-1'}`} />
                   </div>
                 </label>
                 <div className="h-px bg-white/10 w-full" />
@@ -272,10 +272,10 @@ export default function CliPadSettings() {
                     onChange={(e) => updateSetting('chatMentionsDelivery', e.target.value)}
                     className="bg-white/10 border border-slate-200 dark:border-border text-slate-900 dark:text-foreground text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#00beac]"
                   >
-                    <option value="realtime" className="bg-white text-slate-900 dark:text-foreground">Real-time</option>
-                    <option value="daily" className="bg-white text-slate-900 dark:text-foreground">Daily Digest</option>
-                    <option value="weekly" className="bg-white text-slate-900 dark:text-foreground">Weekly Digest</option>
-                    <option value="off" className="bg-white text-slate-900 dark:text-foreground">Off</option>
+                    <option value="realtime" className="bg-white dark:bg-card text-slate-900 dark:text-foreground">Real-time</option>
+                    <option value="daily" className="bg-white dark:bg-card text-slate-900 dark:text-foreground">Daily Digest</option>
+                    <option value="weekly" className="bg-white dark:bg-card text-slate-900 dark:text-foreground">Weekly Digest</option>
+                    <option value="off" className="bg-white dark:bg-card text-slate-900 dark:text-foreground">Off</option>
                   </select>
                 </div>
                 <div className="h-px bg-white/10 w-full" />
@@ -289,10 +289,10 @@ export default function CliPadSettings() {
                     onChange={(e) => updateSetting('taskAssignmentDelivery', e.target.value)}
                     className="bg-white/10 border border-slate-200 dark:border-border text-slate-900 dark:text-foreground text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#00beac]"
                   >
-                    <option value="realtime" className="bg-white text-slate-900 dark:text-foreground">Real-time</option>
-                    <option value="daily" className="bg-white text-slate-900 dark:text-foreground">Daily Digest</option>
-                    <option value="weekly" className="bg-white text-slate-900 dark:text-foreground">Weekly Digest</option>
-                    <option value="off" className="bg-white text-slate-900 dark:text-foreground">Off</option>
+                    <option value="realtime" className="bg-white dark:bg-card text-slate-900 dark:text-foreground">Real-time</option>
+                    <option value="daily" className="bg-white dark:bg-card text-slate-900 dark:text-foreground">Daily Digest</option>
+                    <option value="weekly" className="bg-white dark:bg-card text-slate-900 dark:text-foreground">Weekly Digest</option>
+                    <option value="off" className="bg-white dark:bg-card text-slate-900 dark:text-foreground">Off</option>
                   </select>
                 </div>
               </div>
@@ -309,7 +309,7 @@ export default function CliPadSettings() {
                     <p className="font-semibold text-slate-900 dark:text-foreground text-sm group-hover:text-[#006065] dark:text-[#fad503] transition-colors">Camera on by default</p>
                   </div>
                   <div onClick={() => toggle('cameraDefault')} className={`w-10 h-6 rounded-full transition-colors relative ${settings.cameraDefault ? 'bg-white dark:bg-[#fad503]' : 'bg-slate-200 dark:bg-slate-700'}`}>
-                    <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all ${settings.cameraDefault ? 'left-5' : 'left-1'}`} />
+                    <div className={`absolute top-1 w-4 h-4 rounded-full bg-white dark:bg-card shadow transition-all ${settings.cameraDefault ? 'left-5' : 'left-1'}`} />
                   </div>
                 </label>
                 <div className="h-px bg-white/10 w-full" />
@@ -318,7 +318,7 @@ export default function CliPadSettings() {
                     <p className="font-semibold text-slate-900 dark:text-foreground text-sm group-hover:text-[#006065] dark:text-[#fad503] transition-colors">Microphone on by default</p>
                   </div>
                   <div onClick={() => toggle('micDefault')} className={`w-10 h-6 rounded-full transition-colors relative ${settings.micDefault ? 'bg-white dark:bg-[#fad503]' : 'bg-slate-200 dark:bg-slate-700'}`}>
-                    <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all ${settings.micDefault ? 'left-5' : 'left-1'}`} />
+                    <div className={`absolute top-1 w-4 h-4 rounded-full bg-white dark:bg-card shadow transition-all ${settings.micDefault ? 'left-5' : 'left-1'}`} />
                   </div>
                 </label>
                 <div className="h-px bg-white/10 w-full" />
@@ -327,7 +327,7 @@ export default function CliPadSettings() {
                     <p className="font-semibold text-slate-900 dark:text-foreground text-sm group-hover:text-[#006065] dark:text-[#fad503] transition-colors">Blur background</p>
                   </div>
                   <div onClick={() => toggle('blurBackground')} className={`w-10 h-6 rounded-full transition-colors relative ${settings.blurBackground ? 'bg-white dark:bg-[#fad503]' : 'bg-slate-200 dark:bg-slate-700'}`}>
-                    <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all ${settings.blurBackground ? 'left-5' : 'left-1'}`} />
+                    <div className={`absolute top-1 w-4 h-4 rounded-full bg-white dark:bg-card shadow transition-all ${settings.blurBackground ? 'left-5' : 'left-1'}`} />
                   </div>
                 </label>
               </div>

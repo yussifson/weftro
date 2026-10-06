@@ -210,7 +210,7 @@ export default function SpaceChat({ spaceId }) {
             <h2 className="font-bold text-lg text-slate-900 dark:text-foreground">Space Chats</h2>
             <button 
               onClick={() => setShowNewChannel(!showNewChannel)}
-              className="w-8 h-8 rounded-full hover:bg-slate-100 dark:hover:bg-accent flex items-center justify-center text-slate-500 hover:text-slate-700 transition-colors"
+              className="w-8 h-8 rounded-full hover:bg-slate-100 dark:hover:bg-accent flex items-center justify-center text-slate-500 dark:text-muted-foreground hover:text-slate-700 dark:text-foreground transition-colors"
               title="New Chat"
             >
               <Plus className="w-5 h-5" />
@@ -244,7 +244,7 @@ export default function SpaceChat({ spaceId }) {
               <div className="flex justify-end gap-2">
                 <button 
                   onClick={() => setShowNewChannel(false)}
-                  className="px-2.5 py-1 text-xs font-semibold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
+                  className="px-2.5 py-1 text-xs font-semibold text-slate-500 dark:text-muted-foreground hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
                 >
                   Cancel
                 </button>
@@ -270,7 +270,7 @@ export default function SpaceChat({ spaceId }) {
                   : 'text-slate-600 dark:text-muted-foreground hover:bg-slate-200 dark:hover:bg-accent hover:text-slate-900 dark:hover:text-white'
               }`}
             >
-              <Hash className={`w-4 h-4 shrink-0 transition-colors ${activeChannel?.id === channel.id ? 'text-[#006065] dark:text-[#fad503] dark:text-[#006065] dark:text-[#fad503]' : 'text-slate-400 group-hover:text-slate-500'}`} />
+              <Hash className={`w-4 h-4 shrink-0 transition-colors ${activeChannel?.id === channel.id ? 'text-[#006065] dark:text-[#fad503] dark:text-[#006065] dark:text-[#fad503]' : 'text-slate-400 group-hover:text-slate-500 dark:text-muted-foreground'}`} />
               <span className="truncate">{channel.name}</span>
             </button>
           ))}
@@ -284,7 +284,7 @@ export default function SpaceChat({ spaceId }) {
             <div className="h-16 px-4 md:px-6 border-b border-slate-200 dark:border-border bg-white/95 dark:bg-background/95 backdrop-blur-xl flex items-center justify-between sticky top-0 z-10 shrink-0">
               <div className="flex items-center gap-3">
                 <button 
-                  className="md:hidden p-1.5 -ml-1.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100 dark:hover:bg-accent rounded-md transition-colors"
+                  className="md:hidden p-1.5 -ml-1.5 text-slate-500 dark:text-muted-foreground hover:text-slate-900 dark:text-foreground hover:bg-slate-100 dark:hover:bg-accent rounded-md transition-colors"
                   onClick={() => setSidebarOpen(true)}
                 >
                   <Menu className="w-5 h-5" />
@@ -329,10 +329,10 @@ export default function SpaceChat({ spaceId }) {
               {messages.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-slate-400 animate-in fade-in duration-500 max-w-sm mx-auto text-center">
                   <div className="w-16 h-16 bg-slate-100 dark:bg-card border border-slate-200 dark:border-border rounded-full flex items-center justify-center mb-4 shadow-inner">
-                    <MessageSquare className="w-8 h-8 text-slate-300 dark:text-slate-600" />
+                    <MessageSquare className="w-8 h-8 text-slate-300 dark:text-slate-600 dark:text-muted-foreground" />
                   </div>
                   <p className="font-bold text-slate-900 dark:text-foreground text-lg mb-1">Welcome to #{activeChannel.name}</p>
-                  <p className="text-sm font-medium text-slate-500">This is the start of the #{activeChannel.name} channel. Be the first to start the conversation!</p>
+                  <p className="text-sm font-medium text-slate-500 dark:text-muted-foreground">This is the start of the #{activeChannel.name} channel. Be the first to start the conversation!</p>
                 </div>
               ) : (
                 messages.map((msg, i) => {
@@ -379,7 +379,7 @@ export default function SpaceChat({ spaceId }) {
                   value={newMessage}
                   onChange={e => setNewMessage(e.target.value)}
                   placeholder={`Message #${activeChannel.name}`}
-                  className="flex-1 bg-transparent border-0 focus:ring-0 resize-none max-h-40 min-h-[56px] py-4 px-4 text-[15px] text-slate-900 dark:text-foreground placeholder:text-slate-500 font-medium"
+                  className="flex-1 bg-transparent border-0 focus:ring-0 resize-none max-h-40 min-h-[56px] py-4 px-4 text-[15px] text-slate-900 dark:text-foreground placeholder:text-slate-500 dark:text-muted-foreground font-medium"
                   rows={1}
                   onKeyDown={e => {
                     if (e.key === 'Enter' && !e.shiftKey) {
@@ -403,7 +403,7 @@ export default function SpaceChat({ spaceId }) {
             </div>
           </>
         ) : (
-          <div className="flex-1 flex flex-col items-center justify-center text-slate-500">
+          <div className="flex-1 flex flex-col items-center justify-center text-slate-500 dark:text-muted-foreground">
             <Hash className="w-16 h-16 mb-4 text-slate-200 dark:text-slate-800" />
             <p className="font-bold text-lg text-slate-700 dark:text-muted-foreground">No channels found</p>
             <p className="text-sm font-medium mt-1 text-slate-400">Create a channel in the sidebar to start chatting.</p>

@@ -135,7 +135,7 @@ export default function SupportAIChat() {
   };
 
   return (
-    <div className="flex flex-col h-full w-full bg-slate-50/50">
+    <div className="flex flex-col h-full w-full bg-slate-50 dark:bg-background/50">
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map(msg => (
           <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -144,7 +144,7 @@ export default function SupportAIChat() {
                 ? 'bg-primary text-primary-foreground rounded-tr-sm' 
                 : msg.sender === 'admin'
                   ? 'bg-indigo-50 border border-indigo-100 text-indigo-900 rounded-tl-sm shadow-sm'
-                  : 'bg-white border border-slate-200 text-slate-700 rounded-tl-sm shadow-sm'
+                  : 'bg-white dark:bg-card border border-slate-200 dark:border-border text-slate-700 dark:text-foreground rounded-tl-sm shadow-sm'
             }`}>
               <div className="flex items-center gap-2 mb-1">
                 {msg.sender === 'ai' ? <Bot className="w-3.5 h-3.5 text-primary" /> : msg.sender === 'admin' ? <User className="w-3.5 h-3.5 text-indigo-600" /> : <User className="w-3.5 h-3.5 opacity-70" />}
@@ -158,7 +158,7 @@ export default function SupportAIChat() {
         ))}
         {isTyping && (
           <div className="flex justify-start">
-            <div className="bg-white border border-slate-200 rounded-2xl rounded-tl-sm p-4 shadow-sm flex items-center gap-1.5">
+            <div className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-2xl rounded-tl-sm p-4 shadow-sm flex items-center gap-1.5">
               <div className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
               <div className="w-1.5 h-1.5 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
               <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
@@ -168,7 +168,7 @@ export default function SupportAIChat() {
         <div ref={endOfMessagesRef} />
       </div>
 
-      <div className="p-4 bg-white border-t border-slate-100 flex flex-col gap-3">
+      <div className="p-4 bg-white dark:bg-card border-t border-slate-100 flex flex-col gap-3">
         {status !== 'escalated' && status !== 'admin_joined' && (
           <Button 
             variant="outline" 
@@ -191,7 +191,7 @@ export default function SupportAIChat() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder={status === 'admin_joined' ? "Type to live agent..." : "Type your message..."}
-            className="w-full pl-4 pr-12 py-3 bg-slate-50 border border-slate-200 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 rounded-full text-sm outline-none transition-all"
+            className="w-full pl-4 pr-12 py-3 bg-slate-50 dark:bg-background border border-slate-200 dark:border-border focus:border-primary/50 focus:ring-2 focus:ring-primary/20 rounded-full text-sm outline-none transition-all"
           />
           <button 
             type="submit" 

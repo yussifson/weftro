@@ -75,7 +75,7 @@ export function IconPicker({ value, onChange }) {
                     key={name}
                     title={name}
                     type="button"
-                    className={`flex aspect-square items-center justify-center rounded-lg border-[0.5px] border-black/9 dark:border-white/8 transition-colors hover:bg-slate-100 hover:text-primary ${
+                    className={`flex aspect-square items-center justify-center rounded-lg border-[0.5px] border-black/9 dark:border-white/8 transition-colors hover:bg-slate-100 dark:bg-secondary hover:text-primary ${
                       value === name
                         ? 'bg-primary/15 border-primary text-primary'
                         : 'bg-transparent border-transparent text-[#71717a] dark:text-gray-400'

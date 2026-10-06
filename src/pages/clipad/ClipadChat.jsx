@@ -393,16 +393,16 @@ export default function ClipadChat({ isDockedMode = false }) {
         <Button variant="ghost" size="icon" onClick={() => {
           toggleChatDock();
           if (!isChatDocked && location.pathname === '/chat') navigate('/dashboard');
-        }} className="hidden md:inline-flex w-9 h-9 rounded-full hover:bg-slate-100 dark:hover:bg-accent text-slate-500 hover:text-slate-700 dark:text-muted-foreground dark:hover:text-slate-300" title="Dock to Right Sidebar">
+        }} className="hidden md:inline-flex w-9 h-9 rounded-full hover:bg-slate-100 dark:hover:bg-accent text-slate-500 dark:text-muted-foreground hover:text-slate-700 dark:text-muted-foreground dark:hover:text-slate-300" title="Dock to Right Sidebar">
           <ChevronsRight className="w-5 h-5 text-slate-500 dark:text-muted-foreground hover:text-white" />
         </Button>
-       <Button variant="ghost" size="icon" onClick={() => setIsSidebarCollapsed(true)} className="w-9 h-9 rounded-full hover:bg-slate-100 dark:hover:bg-accent text-slate-500 hover:text-slate-700 dark:text-muted-foreground dark:hover:text-slate-300" title="Collapse Sidebar">
+       <Button variant="ghost" size="icon" onClick={() => setIsSidebarCollapsed(true)} className="w-9 h-9 rounded-full hover:bg-slate-100 dark:hover:bg-accent text-slate-500 dark:text-muted-foreground hover:text-slate-700 dark:text-muted-foreground dark:hover:text-slate-300" title="Collapse Sidebar">
          <PanelLeftClose className="w-5 h-5 text-slate-600 dark:text-muted-foreground" />
        </Button>
        {!isPortalUser && (
        <DropdownMenu>
          <DropdownMenuTrigger asChild>
-           <Button variant="ghost" size="icon" className="w-9 h-9 rounded-full hover:bg-slate-100 dark:hover:bg-accent text-slate-500 hover:text-slate-700 dark:text-muted-foreground dark:hover:text-slate-300">
+           <Button variant="ghost" size="icon" className="w-9 h-9 rounded-full hover:bg-slate-100 dark:hover:bg-accent text-slate-500 dark:text-muted-foreground hover:text-slate-700 dark:text-muted-foreground dark:hover:text-slate-300">
              <MoreVertical className="w-5 h-5 text-slate-600 dark:text-muted-foreground" />
            </Button>
          </DropdownMenuTrigger>
@@ -418,13 +418,13 @@ export default function ClipadChat({ isDockedMode = false }) {
    </div>
  ) : (
    <>
-     <Button variant="ghost" size="icon" onClick={() => setIsSidebarCollapsed(false)} className="w-10 h-10 rounded-full hover:bg-slate-100 dark:hover:bg-accent text-slate-500 hover:text-slate-700 dark:text-muted-foreground dark:hover:text-slate-300 mx-auto" title="Expand Sidebar">
+     <Button variant="ghost" size="icon" onClick={() => setIsSidebarCollapsed(false)} className="w-10 h-10 rounded-full hover:bg-slate-100 dark:hover:bg-accent text-slate-500 dark:text-muted-foreground hover:text-slate-700 dark:text-muted-foreground dark:hover:text-slate-300 mx-auto" title="Expand Sidebar">
        <PanelLeftOpen className="w-5 h-5" />
      </Button>
      {!isPortalUser && (
        <DropdownMenu>
          <DropdownMenuTrigger asChild>
-           <Button variant="ghost" size="icon" className="w-10 h-10 rounded-full hover:bg-slate-100 dark:hover:bg-accent text-slate-500 hover:text-slate-700 dark:text-muted-foreground dark:hover:text-slate-300 mx-auto" title="New Chat">
+           <Button variant="ghost" size="icon" className="w-10 h-10 rounded-full hover:bg-slate-100 dark:hover:bg-accent text-slate-500 dark:text-muted-foreground hover:text-slate-700 dark:text-muted-foreground dark:hover:text-slate-300 mx-auto" title="New Chat">
              <Plus className="w-5 h-5" />
            </Button>
          </DropdownMenuTrigger>
@@ -449,7 +449,7 @@ export default function ClipadChat({ isDockedMode = false }) {
  value={searchQuery}
  onChange={(e) => setSearchQuery(e.target.value)}
  placeholder={t("search_chats", "Search or start new chat")} 
- className="w-full bg-slate-100 dark:bg-background text-slate-900 dark:text-foreground border border-slate-200 dark:border-border rounded-xl px-4 py-2 pl-9 text-sm focus:ring-1 focus:ring-[#00beac] focus:outline-none placeholder:text-slate-500 transition-all"
+ className="w-full bg-slate-100 dark:bg-background text-slate-900 dark:text-foreground border border-slate-200 dark:border-border rounded-xl px-4 py-2 pl-9 text-sm focus:ring-1 focus:ring-[#00beac] focus:outline-none placeholder:text-slate-500 dark:text-muted-foreground transition-all"
  />
  </div>
  </div>
@@ -480,7 +480,7 @@ export default function ClipadChat({ isDockedMode = false }) {
   key={room.id}
   className={cn(
   "flex items-center gap-3 px-3 py-3 transition-all duration-200 group relative",
-  isActive ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-foreground rounded-xl font-bold shadow-sm border border-slate-200 dark:border-border mx-2 my-1" : "hover:bg-slate-200/50 dark:hover:bg-accent/50 text-slate-700 dark:text-muted-foreground rounded-xl mx-2 my-1 cursor-pointer transition-colors",
+  isActive ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-foreground rounded-xl font-bold shadow-sm border border-slate-200 dark:border-border mx-2 my-1" : "hover:bg-slate-200 dark:bg-accent/50 dark:hover:bg-accent/50 text-slate-700 dark:text-muted-foreground rounded-xl mx-2 my-1 cursor-pointer transition-colors",
   isSidebarCollapsed && "justify-center px-1 mx-0"
   )}
  >
@@ -551,7 +551,7 @@ export default function ClipadChat({ isDockedMode = false }) {
       </div>
       
       <div className="p-3 border-b border-slate-200 dark:border-border shrink-0">
-        <input type="text" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-slate-100 dark:bg-background text-slate-900 dark:text-foreground border border-slate-200 dark:border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#00beac] placeholder:text-slate-500" />
+        <input type="text" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-slate-100 dark:bg-background text-slate-900 dark:text-foreground border border-slate-200 dark:border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#00beac] placeholder:text-slate-500 dark:text-muted-foreground" />
       </div>
 
       <div className="flex-1 overflow-y-auto custom-scrollbar">
@@ -564,7 +564,7 @@ export default function ClipadChat({ isDockedMode = false }) {
             const isActive = activeRoomId === room.id;
 
             return (
-              <div key={room.id} className={cn("flex items-center gap-2 p-2 rounded-xl transition-colors group relative", isActive ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-foreground font-bold shadow-sm border border-slate-200 dark:border-border" : "hover:bg-slate-200/50 dark:hover:bg-accent/50 text-slate-700 dark:text-muted-foreground cursor-pointer")}>
+              <div key={room.id} className={cn("flex items-center gap-2 p-2 rounded-xl transition-colors group relative", isActive ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-foreground font-bold shadow-sm border border-slate-200 dark:border-border" : "hover:bg-slate-200 dark:bg-accent/50 dark:hover:bg-accent/50 text-slate-700 dark:text-muted-foreground cursor-pointer")}>
                 <div className="flex-1 flex items-center gap-2 min-w-0 cursor-pointer" onClick={() => setActiveRoomId(room.id)}>
                 <div className="relative flex-shrink-0">
                   {room.room_type === "group" ? (
@@ -604,11 +604,11 @@ export default function ClipadChat({ isDockedMode = false }) {
   {/* Chat Header */}
   <div className="p-4 border-b border-slate-200 dark:border-border flex items-center justify-between bg-white dark:bg-card/40 text-slate-900 dark:text-foreground sticky top-0 z-10 shadow-sm border-b border-slate-200 dark:border-border">
     <div className="flex items-center gap-3">
-      <button onClick={() => setActiveRoomId(null)} className="md:hidden mr-1 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-accent text-slate-500 hover:text-slate-900 dark:hover:text-white">
+      <button onClick={() => setActiveRoomId(null)} className="md:hidden mr-1 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-accent text-slate-500 dark:text-muted-foreground hover:text-slate-900 dark:hover:text-white">
         <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 4l1.4 1.4L7.8 11H20v2H7.8l5.6 5.6L12 20l-8-8 8-8z"></path></svg>
       </button>
       {isDockedMode && (
-        <button onClick={() => setActiveRoomId(null)} className="p-1 rounded hover:bg-secondary/50 text-slate-500 hover:text-slate-900 dark:hover:text-white">
+        <button onClick={() => setActiveRoomId(null)} className="p-1 rounded hover:bg-secondary/50 text-slate-500 dark:text-muted-foreground hover:text-slate-900 dark:hover:text-white">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 4l1.4 1.4L7.8 11H20v2H7.8l5.6 5.6L12 20l-8-8 8-8z"></path></svg>
         </button>
       )}
@@ -656,7 +656,7 @@ export default function ClipadChat({ isDockedMode = false }) {
       })()}
     </div>
     
-    <div className="flex items-center gap-4 text-slate-500 hover:text-slate-900 dark:hover:text-white">
+    <div className="flex items-center gap-4 text-slate-500 dark:text-muted-foreground hover:text-slate-900 dark:hover:text-white">
       <button onClick={() => {
         toggleChatDock();
         if (!isChatDocked && location.pathname === '/chat') navigate('/dashboard');
@@ -718,7 +718,7 @@ export default function ClipadChat({ isDockedMode = false }) {
  {/* Chat Messages */}
  <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-2 z-10">
  <div className="text-center my-2 flex justify-center">
- <span className="text-xs text-slate-500 bg-slate-100 dark:bg-slate-800 dark:text-muted-foreground border border-slate-200 dark:border-border px-3 py-1.5 rounded-xl tracking-[0.04em]">
+ <span className="text-xs text-slate-500 dark:text-muted-foreground bg-slate-100 dark:bg-slate-800 dark:text-muted-foreground border border-slate-200 dark:border-border px-3 py-1.5 rounded-xl tracking-[0.04em]">
  Messages and calls are end-to-end encrypted. No one outside of this chat, not even Slate, can read or listen to them.
  </span>
  </div>
@@ -818,7 +818,7 @@ export default function ClipadChat({ isDockedMode = false }) {
  <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="p-0.5 bg-white/70 hover:bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-black/40 dark:hover:bg-black/80 rounded-full text-slate-500 dark:text-muted-foreground dark:text-foreground backdrop-blur-sm shadow-sm transition-all" title="Message Options">
+        <button className="p-0.5 bg-white/70 dark:bg-background/80 hover:bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-black/40 dark:hover:bg-black/80 rounded-full text-slate-500 dark:text-muted-foreground dark:text-foreground backdrop-blur-sm shadow-sm transition-all" title="Message Options">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </button>
       </DropdownMenuTrigger>
@@ -873,7 +873,7 @@ export default function ClipadChat({ isDockedMode = false }) {
  
  <Popover open={showEmojiPicker} onOpenChange={setShowEmojiPicker}>
  <PopoverTrigger asChild>
- <Button variant="ghost" size="icon" className="w-11 h-11 rounded-full text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 shrink-0 transition-colors">
+ <Button variant="ghost" size="icon" className="w-11 h-11 rounded-full text-slate-500 dark:text-muted-foreground hover:text-slate-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 shrink-0 transition-colors">
  <Smile className="w-6 h-6" />
  </Button>
  </PopoverTrigger>
@@ -884,7 +884,7 @@ export default function ClipadChat({ isDockedMode = false }) {
 
  <Popover open={showAttachMenu} onOpenChange={setShowAttachMenu}>
  <PopoverTrigger asChild>
- <Button variant="ghost" size="icon" className="w-11 h-11 rounded-full text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 shrink-0 transition-colors">
+ <Button variant="ghost" size="icon" className="w-11 h-11 rounded-full text-slate-500 dark:text-muted-foreground hover:text-slate-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 shrink-0 transition-colors">
  {isUploading ? <OrbitLoader size="md" /> : <Paperclip className="w-6 h-6" />}
  </Button>
  </PopoverTrigger>
@@ -911,7 +911,7 @@ export default function ClipadChat({ isDockedMode = false }) {
  onChange={e => setInputValue(e.target.value)}
  onKeyDown={e => e.key === 'Enter' && handleSend()}
  placeholder="Type a message"
- className="w-full bg-transparent border-none px-4 py-3 text-sm focus:ring-0 focus:outline-none placeholder:text-slate-500 text-white"
+ className="w-full bg-transparent border-none px-4 py-3 text-sm focus:ring-0 focus:outline-none placeholder:text-slate-500 dark:text-muted-foreground text-white"
  />
  <button onClick={handleAiAssist} className="absolute right-2 p-1.5 text-primary hover:bg-black/5 dark:hover:bg-white/10 rounded-full transition-colors" title="AI Magic Rewrite">
  <Sparkles className="w-4 h-4" />

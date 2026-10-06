@@ -76,12 +76,12 @@ export const PaywallModal = ({ isOpen, onClose, featureName = "This feature", li
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden bg-white border shadow-2xl rounded-2xl dark:bg-card border-slate-200 dark:border-border"
+          className="relative w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden bg-white dark:bg-card border shadow-2xl rounded-2xl dark:bg-card border-slate-200 dark:border-border"
         >
           {/* Header Graphic */}
           <div className="relative shrink-0 h-24 overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-600">
             <div className="absolute inset-0 opacity-20 mix-blend-overlay bg-[radial-gradient(#rgba(255,255,255,0.15)_1px,transparent_1px)] [background-size:16px_16px]"></div>
-            <div className="absolute flex items-center justify-center w-16 h-16 transform -translate-x-1/2 bg-white rounded-full shadow-lg left-1/2 -bottom-8 dark:bg-card">
+            <div className="absolute flex items-center justify-center w-16 h-16 transform -translate-x-1/2 bg-white dark:bg-card rounded-full shadow-lg left-1/2 -bottom-8 dark:bg-card">
               <Sparkles className="w-8 h-8 text-indigo-500" />
             </div>
           </div>
@@ -148,7 +148,7 @@ export const PaywallModal = ({ isOpen, onClose, featureName = "This feature", li
                 </span>
               )}
             </button>
-            <p className="mt-4 text-xs text-slate-500 dark:text-slate-500">
+            <p className="mt-4 text-xs text-slate-500 dark:text-slate-500 dark:text-muted-foreground">
               Secured by Paystack. Cancel anytime.
             </p>
           </div>

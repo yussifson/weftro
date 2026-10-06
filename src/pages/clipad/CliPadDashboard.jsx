@@ -30,7 +30,7 @@ function StatCard({ icon: Icon, value, label, trend }) {
           <Icon className="w-5 h-5 text-[#006065] dark:text-[#fad503]" />
         </div>
         {trend && (
-          <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm ${trend > 0 ? 'text-[#006065] bg-[#006065] dark:bg-[#131A2C]/10 border border-[#006065] dark:border-border/20' : 'text-slate-600 bg-slate-100 border border-slate-200'}`}>
+          <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm ${trend > 0 ? 'text-[#006065] bg-[#006065] dark:bg-[#131A2C]/10 border border-[#006065] dark:border-border/20' : 'text-slate-600 dark:text-muted-foreground bg-slate-100 dark:bg-secondary border border-slate-200 dark:border-border'}`}>
             {trend > 0 ? 'â†‘' : 'â†“'} {Math.abs(trend)}%
           </span>
         )}
@@ -67,7 +67,7 @@ function SpaceCard({ space, onClick }) {
       <div className="flex items-center justify-between mb-4">
         <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-bold border ${
           space.is_private
-            ? 'bg-slate-50 text-slate-600 border-slate-200'
+            ? 'bg-slate-50 dark:bg-background text-slate-600 dark:text-muted-foreground border-slate-200 dark:border-border'
             : 'bg-[#006065] dark:bg-[#131A2C]/5 text-[#006065] border-[#006065] dark:border-border/10'
         }`}>
           {space.is_private ? <Lock className="w-3 h-3" /> : <Globe className="w-3 h-3" />}
@@ -112,7 +112,7 @@ function VideoCard({ video, onClick }) {
           </div>
         )}
         <div className="absolute inset-0 bg-slate-900/10 group-hover:bg-slate-900/30 transition-all duration-300 flex items-center justify-center">
-          <div className="w-12 h-12 rounded-full bg-white/95 backdrop-blur-md flex items-center justify-center shadow-lg transform scale-90 group-hover:scale-100 transition-transform duration-300">
+          <div className="w-12 h-12 rounded-full bg-white/95 dark:bg-background/95 backdrop-blur-md flex items-center justify-center shadow-lg transform scale-90 group-hover:scale-100 transition-transform duration-300">
             <Play className="w-5 h-5 text-[#006065] fill-current ml-1" />
           </div>
         </div>
@@ -124,8 +124,8 @@ function VideoCard({ video, onClick }) {
           {video.space && (
             <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-bold shadow-sm backdrop-blur-md ${
               video.space.is_private
-                ? 'bg-white/90 text-slate-700'
-                : 'bg-[#fad503]/90 text-slate-900'
+                ? 'bg-white/90 dark:bg-background/90 text-slate-700 dark:text-foreground'
+                : 'bg-[#fad503]/90 text-slate-900 dark:text-foreground'
             }`}>
               {video.space.is_private ? <Lock className="w-3 h-3" /> : <Globe className="w-3 h-3" />}
               {video.space.is_private ? 'Private' : 'Public'}
@@ -135,7 +135,7 @@ function VideoCard({ video, onClick }) {
       </div>
       <div className="p-4 flex-1 flex flex-col justify-between">
         <p className="text-sm font-bold text-slate-900 dark:text-foreground line-clamp-1 mb-1">{video.title || 'Untitled Recording'}</p>
-        <p className="text-xs text-slate-500 font-semibold flex items-center gap-1"><Calendar className="w-3 h-3" /> {new Date(video.created_at).toLocaleDateString()}</p>
+        <p className="text-xs text-slate-500 dark:text-muted-foreground font-semibold flex items-center gap-1"><Calendar className="w-3 h-3" /> {new Date(video.created_at).toLocaleDateString()}</p>
       </div>
     </div>
   );
@@ -153,7 +153,7 @@ function ActionItemRow({ item }) {
         {done && <CheckCircle className="w-3 h-3 text-white" />}
       </button>
       <div className="flex-1 min-w-0">
-        <p className={`text-sm font-bold leading-snug transition-colors ${done ? 'line-through text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-200'}`}>{item.title}</p>
+        <p className={`text-sm font-bold leading-snug transition-colors ${done ? 'line-through text-slate-400 dark:text-slate-500 dark:text-muted-foreground' : 'text-slate-700 dark:text-slate-200'}`}>{item.title}</p>
         {item.due_date && <p className="text-xs font-semibold text-slate-400 mt-1 flex items-center gap-1.5"><Clock className="w-3 h-3" /> Due {new Date(item.due_date).toLocaleDateString()}</p>}
       </div>
     </div>
@@ -327,7 +327,7 @@ export default function CliPadDashboard() {
   };
 
   return (
-    <div className="min-h-full bg-[#f8fafc] dark:bg-background text-[#0f172a] font-sans overflow-x-hidden pb-24 md:pb-8">
+    <div className="min-h-full bg-[#f8fafc] dark:bg-background text-[#0f172a] dark:text-foreground font-sans overflow-x-hidden pb-24 md:pb-8">
       <SpaceSelectorModal 
         open={showSpaceSelector} 
         onOpenChange={setShowSpaceSelector} 

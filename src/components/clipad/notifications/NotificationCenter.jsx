@@ -159,7 +159,7 @@ export default function NotificationCenter() {
         )}
       </DropdownMenuTrigger>
       
-      <DropdownMenuContent align="end" sideOffset={8} className="w-[calc(100vw-24px)] sm:w-80 max-w-[340px] p-0 bg-white/95 dark:bg-card/95 backdrop-blur-2xl text-foreground shadow-[0_8px_40px_rgba(0,0,0,0.15)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.4)] border border-slate-200/60 dark:border-white/10 rounded-2xl overflow-hidden">
+      <DropdownMenuContent align="end" sideOffset={8} className="w-[calc(100vw-24px)] sm:w-80 max-w-[340px] p-0 bg-white/95 dark:bg-card/95 backdrop-blur-2xl text-foreground shadow-[0_8px_40px_rgba(0,0,0,0.15)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.4)] border border-slate-200 dark:border-border/60 dark:border-white/10 rounded-2xl overflow-hidden">
         <div className="flex items-center justify-between px-3 py-2.5 border-b border-slate-100 dark:border-border">
           <DropdownMenuLabel className="p-0 font-bold text-sm">Notifications</DropdownMenuLabel>
           {unreadCount > 0 && (
@@ -178,9 +178,9 @@ export default function NotificationCenter() {
         <div className="max-h-[55vh] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-700">
           {notifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
-              <Bell className="w-8 h-8 text-slate-300 dark:text-slate-600 mb-3" />
+              <Bell className="w-8 h-8 text-slate-300 dark:text-slate-600 dark:text-muted-foreground mb-3" />
               <p className="text-sm font-medium text-slate-500 dark:text-muted-foreground">No notifications yet</p>
-              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">We'll let you know when something happens</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-muted-foreground mt-1">We'll let you know when something happens</p>
             </div>
           ) : (
             <div className="flex flex-col">
@@ -210,7 +210,7 @@ export default function NotificationCenter() {
                       <p className="text-[11px] text-slate-500 dark:text-muted-foreground line-clamp-2 leading-relaxed">
                         {notification.message}
                       </p>
-                      <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium mt-0.5">
+                      <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-muted-foreground font-medium mt-0.5">
                         {new Date(notification.created_at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                       </p>
                     </div>

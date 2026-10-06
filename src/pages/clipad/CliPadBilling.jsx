@@ -357,7 +357,7 @@ export default function CliPadBilling() {
           <button 
             onClick={() => handlePlanClick('free')}
             disabled={currentPlan === 'free' || loading}
-            className={`w-full mt-auto py-2.5 rounded-lg text-sm font-semibold transition-all shadow-sm ${currentPlan === 'free' ? 'bg-slate-100 dark:bg-slate-800 text-slate-500 cursor-default' : 'bg-white dark:bg-card border border-[#006065] dark:border-border/30 hover:border-[#006065] dark:border-border dark:hover:border-[#fad503] text-slate-900 dark:text-foreground shadow-sm'}`}>
+            className={`w-full mt-auto py-2.5 rounded-lg text-sm font-semibold transition-all shadow-sm ${currentPlan === 'free' ? 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-muted-foreground cursor-default' : 'bg-white dark:bg-card border border-[#006065] dark:border-border/30 hover:border-[#006065] dark:border-border dark:hover:border-[#fad503] text-slate-900 dark:text-foreground shadow-sm'}`}>
             {getButtonText('free')}
           </button>
         </div>
@@ -403,7 +403,7 @@ export default function CliPadBilling() {
           <button 
             onClick={() => handlePlanClick('enterprise')}
             disabled={currentPlan === 'enterprise' || loading}
-            className={`w-full mt-auto py-2.5 rounded-lg text-sm font-semibold transition-all shadow-sm ${currentPlan === 'enterprise' ? 'bg-slate-100 dark:bg-slate-800 text-slate-500 cursor-default' : 'bg-white dark:bg-card border border-[#006065] dark:border-border/30 hover:border-[#006065] dark:border-border dark:hover:border-[#fad503] text-slate-900 dark:text-foreground shadow-sm'}`}>
+            className={`w-full mt-auto py-2.5 rounded-lg text-sm font-semibold transition-all shadow-sm ${currentPlan === 'enterprise' ? 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-muted-foreground cursor-default' : 'bg-white dark:bg-card border border-[#006065] dark:border-border/30 hover:border-[#006065] dark:border-border dark:hover:border-[#fad503] text-slate-900 dark:text-foreground shadow-sm'}`}>
             {getButtonText('enterprise')}
           </button>
         </div>

@@ -98,7 +98,7 @@ Do NOT wrap in markdown blocks.`
         </div>
       ) : !alerts || alerts.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center text-center py-4">
-          <CheckCircle className="w-8 h-8 text-slate-300 dark:text-slate-600 mb-2" />
+          <CheckCircle className="w-8 h-8 text-slate-300 dark:text-slate-600 dark:text-muted-foreground mb-2" />
           <p className="text-xs text-slate-500 dark:text-muted-foreground">No overlapping work detected across teams.</p>
         </div>
       ) : (
@@ -121,7 +121,7 @@ Do NOT wrap in markdown blocks.`
                       </a>
                     )}
                   </div>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-slate-500 dark:text-muted-foreground">
                     Also in <strong className="text-slate-700 dark:text-foreground">{alert.space_name || 'Another Space'}</strong>
                   </p>
                   {alert.reason && <p className="text-[10px] text-slate-400 italic line-clamp-2">"{alert.reason}"</p>}

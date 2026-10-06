@@ -171,7 +171,7 @@ export default function AddClipadChatDialog({ open, mode = 'chat', onOpenChange,
                 {getFilteredList().map(item => (
                   <div key={item.id} className="flex items-center space-x-3 p-2 hover:bg-muted/50 rounded-xl cursor-pointer" onClick={() => handleToggleUser(item.id)}>
                     <Checkbox checked={selectedUsers.includes(item.id)} onCheckedChange={() => handleToggleUser(item.id)} />
-                    <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0 overflow-hidden">
+                    <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-secondary flex items-center justify-center shrink-0 overflow-hidden">
                        {item.avatar_url ? (
                          <img src={item.avatar_url} alt={item.full_name} className="w-full h-full object-cover" />
                        ) : (
@@ -213,7 +213,7 @@ export default function AddClipadChatDialog({ open, mode = 'chat', onOpenChange,
                       "flex flex-col items-center justify-center p-3 rounded-xl border transition-all text-sm gap-1",
                       groupPrivacy === 'public' 
                         ? "border-primary bg-primary/5 text-primary shadow-sm" 
-                        : "border-border hover:bg-slate-50 dark:hover:bg-accent text-slate-500"
+                        : "border-border hover:bg-slate-50 dark:hover:bg-accent text-slate-500 dark:text-muted-foreground"
                     )}
                   >
                     <Globe className="w-5 h-5 mb-1" />
@@ -226,7 +226,7 @@ export default function AddClipadChatDialog({ open, mode = 'chat', onOpenChange,
                       "flex flex-col items-center justify-center p-3 rounded-xl border transition-all text-sm gap-1",
                       groupPrivacy === 'private' 
                         ? "border-primary bg-primary/5 text-primary shadow-sm" 
-                        : "border-border hover:bg-slate-50 dark:hover:bg-accent text-slate-500"
+                        : "border-border hover:bg-slate-50 dark:hover:bg-accent text-slate-500 dark:text-muted-foreground"
                     )}
                   >
                     <Lock className="w-5 h-5 mb-1" />

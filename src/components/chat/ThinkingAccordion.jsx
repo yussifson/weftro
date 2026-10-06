@@ -98,11 +98,11 @@ export default function ThinkingAccordion({ thinking, isThinkingDone = true }) {
   if (!thinking) return null;
 
   return (
-    <div className="mb-3 rounded-xl border border-slate-200/80 dark:border-white/10 bg-slate-50/70 dark:bg-white/[0.03] overflow-hidden transition-all text-xs">
+    <div className="mb-3 rounded-xl border border-slate-200 dark:border-border/80 dark:border-white/10 bg-slate-50 dark:bg-background/70 dark:bg-white/[0.03] overflow-hidden transition-all text-xs">
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-3 py-2 flex items-center justify-between text-slate-500 dark:text-muted-foreground hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/50 dark:hover:bg-white/[0.05] transition-colors font-medium select-none"
+        className="w-full px-3 py-2 flex items-center justify-between text-slate-500 dark:text-muted-foreground hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:bg-secondary/50 dark:hover:bg-white/[0.05] transition-colors font-medium select-none"
       >
         <div className="flex items-center gap-2">
           <Brain className={`w-3.5 h-3.5 ${!isThinkingDone ? 'animate-pulse text-amber-500' : 'text-emerald-500'}`} />
@@ -122,7 +122,7 @@ export default function ThinkingAccordion({ thinking, isThinkingDone = true }) {
       </button>
 
       {isOpen && (
-        <div className="px-3.5 py-3 border-t border-slate-200/60 dark:border-white/5 text-[11.5px] font-mono leading-relaxed opacity-75 whitespace-pre-wrap max-h-64 overflow-y-auto bg-slate-900/5 dark:bg-black/30 text-slate-700 dark:text-muted-foreground">
+        <div className="px-3.5 py-3 border-t border-slate-200 dark:border-border/60 dark:border-white/5 text-[11.5px] font-mono leading-relaxed opacity-75 whitespace-pre-wrap max-h-64 overflow-y-auto bg-slate-900/5 dark:bg-black/30 text-slate-700 dark:text-muted-foreground">
           {thinking}
         </div>
       )}

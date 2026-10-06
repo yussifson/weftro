@@ -155,7 +155,7 @@ export default function MemoryTimeline({ topic, workspaceId }) {
     return (
       <div className="p-8 flex flex-col items-center justify-center text-center bg-slate-50 dark:bg-card rounded-3xl border border-slate-200 dark:border-border">
         <Network className="w-8 h-8 text-indigo-400 animate-pulse mb-4" />
-        <p className="text-sm font-medium text-slate-500">Tracing memory graph for "{topic}"...</p>
+        <p className="text-sm font-medium text-slate-500 dark:text-muted-foreground">Tracing memory graph for "{topic}"...</p>
       </div>
     );
   }
@@ -163,8 +163,8 @@ export default function MemoryTimeline({ topic, workspaceId }) {
   if (timeline.length === 0) {
     return (
       <div className="p-8 flex flex-col items-center justify-center text-center bg-slate-50 dark:bg-card rounded-3xl border border-slate-200 dark:border-border">
-        <Brain className="w-8 h-8 text-slate-300 dark:text-slate-600 mb-4" />
-        <p className="text-sm font-medium text-slate-500">No recorded history found for "{topic}".</p>
+        <Brain className="w-8 h-8 text-slate-300 dark:text-slate-600 dark:text-muted-foreground mb-4" />
+        <p className="text-sm font-medium text-slate-500 dark:text-muted-foreground">No recorded history found for "{topic}".</p>
         <p className="text-xs text-slate-400 mt-1">As your team records meetings, decisions, and videos mentioning this topic, they will appear here.</p>
       </div>
     );
@@ -178,7 +178,7 @@ export default function MemoryTimeline({ topic, workspaceId }) {
         </div>
         <div>
           <h3 className="font-bold text-lg text-slate-900 dark:text-foreground leading-none mb-1">Memory Graph</h3>
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest">Tracing: {topic}</p>
+          <p className="text-xs font-semibold text-slate-500 dark:text-muted-foreground uppercase tracking-widest">Tracing: {topic}</p>
         </div>
       </div>
 
@@ -206,7 +206,7 @@ export default function MemoryTimeline({ topic, workspaceId }) {
                     </div>
                     <div>
                       <h4 className="font-bold text-sm text-slate-900 dark:text-slate-100">{node.title}</h4>
-                      <p className="text-xs text-slate-500">{node.date.toLocaleDateString()} at {node.date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+                      <p className="text-xs text-slate-500 dark:text-muted-foreground">{node.date.toLocaleDateString()} at {node.date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
                     </div>
                   </div>
                 </div>

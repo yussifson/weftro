@@ -76,7 +76,7 @@ export default function ContactSalesModal({ isOpen, onClose }) {
             
             <form onSubmit={handleSubmit} className="px-8 pb-8 space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wider">Name</label>
+                <label className="block text-xs font-semibold text-slate-500 dark:text-muted-foreground mb-1.5 uppercase tracking-wider">Name</label>
                 <input
                   required
                   value={form.name}
@@ -86,7 +86,7 @@ export default function ContactSalesModal({ isOpen, onClose }) {
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wider">Email</label>
+                <label className="block text-xs font-semibold text-slate-500 dark:text-muted-foreground mb-1.5 uppercase tracking-wider">Email</label>
                 <input
                   required
                   type="email"
@@ -97,7 +97,7 @@ export default function ContactSalesModal({ isOpen, onClose }) {
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wider">Company</label>
+                <label className="block text-xs font-semibold text-slate-500 dark:text-muted-foreground mb-1.5 uppercase tracking-wider">Company</label>
                 <input
                   required
                   value={form.company}
@@ -107,7 +107,7 @@ export default function ContactSalesModal({ isOpen, onClose }) {
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wider">How can we help?</label>
+                <label className="block text-xs font-semibold text-slate-500 dark:text-muted-foreground mb-1.5 uppercase tracking-wider">How can we help?</label>
                 <textarea
                   required
                   value={form.message}

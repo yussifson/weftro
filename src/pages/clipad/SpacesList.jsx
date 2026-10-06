@@ -223,11 +223,11 @@ export default function SpacesList() {
           <div className="relative w-full max-w-md bg-white dark:bg-card rounded-xl shadow-2xl border border-slate-200 dark:border-border animate-in fade-in zoom-in-95 duration-200">
             <div className="p-6">
               <h2 className="text-xl font-bold mb-1">Create a new space</h2>
-              <p className="text-sm text-slate-500 mb-6">A dedicated area for your team's context and collaboration.</p>
+              <p className="text-sm text-slate-500 dark:text-muted-foreground mb-6">A dedicated area for your team's context and collaboration.</p>
               
               <form onSubmit={createSpace} className="space-y-4">
                 <div>
-                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1 block">Space Name</label>
+                  <label className="text-xs font-semibold text-slate-500 dark:text-muted-foreground uppercase tracking-wider mb-1 block">Space Name</label>
                   <input
                     type="text"
                     value={newName}
@@ -238,7 +238,7 @@ export default function SpacesList() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1 block">Description (Optional)</label>
+                  <label className="text-xs font-semibold text-slate-500 dark:text-muted-foreground uppercase tracking-wider mb-1 block">Description (Optional)</label>
                   <textarea
                     value={newDesc}
                     onChange={e => setNewDesc(e.target.value)}
@@ -252,16 +252,16 @@ export default function SpacesList() {
                     id="private-space"
                     checked={isPrivate}
                     onChange={e => setIsPrivate(e.target.checked)}
-                    className="rounded border-slate-300 text-slate-900 focus:ring-slate-900"
+                    className="rounded border-slate-300 dark:border-border text-slate-900 dark:text-foreground focus:ring-slate-900"
                   />
                   <label htmlFor="private-space" className="text-sm font-medium">Private Space</label>
                 </div>
                 
                 <div className="flex items-center justify-end gap-3 pt-6">
-                  <button type="button" onClick={() => setShowCreate(false)} className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-muted-foreground dark:hover:text-slate-100 transition-colors">
+                  <button type="button" onClick={() => setShowCreate(false)} className="px-4 py-2 text-sm font-medium text-slate-600 dark:text-muted-foreground hover:text-slate-900 dark:text-muted-foreground dark:hover:text-slate-100 transition-colors">
                     Cancel
                   </button>
-                  <button type="submit" disabled={!newName.trim() || creating} className="px-5 py-2 text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200 rounded-lg shadow-sm transition-all disabled:opacity-50 flex items-center gap-2">
+                  <button type="submit" disabled={!newName.trim() || creating} className="px-5 py-2 text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200 dark:bg-accent rounded-lg shadow-sm transition-all disabled:opacity-50 flex items-center gap-2">
                     {creating && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                     Create Space
                   </button>
@@ -324,7 +324,7 @@ export default function SpacesList() {
                <Layers className="w-8 h-8 text-slate-400" />
             </div>
             <h2 className="text-lg font-bold text-slate-900 dark:text-foreground mb-2">No spaces found</h2>
-            <p className="text-slate-500 text-sm max-w-sm">Create a space to organize context, tasks, and meetings for a specific project or team.</p>
+            <p className="text-slate-500 dark:text-muted-foreground text-sm max-w-sm">Create a space to organize context, tasks, and meetings for a specific project or team.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -354,12 +354,12 @@ export default function SpacesList() {
                     <h3 className="font-bold text-slate-900 dark:text-foreground text-base leading-snug line-clamp-1 mb-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                       {space.name}
                     </h3>
-                    <p className="text-xs text-slate-500 line-clamp-2 mt-1">
+                    <p className="text-xs text-slate-500 dark:text-muted-foreground line-clamp-2 mt-1">
                       {space.description || 'No description provided.'}
                     </p>
                   </div>
-                  <div className="px-5 py-3 border-t border-slate-100 dark:border-border bg-slate-50/50 dark:bg-card/50 flex items-center justify-between mt-auto">
-                     <span className="text-xs font-medium text-slate-500 flex items-center gap-1">
+                  <div className="px-5 py-3 border-t border-slate-100 dark:border-border bg-slate-50 dark:bg-background/50 dark:bg-card/50 flex items-center justify-between mt-auto">
+                     <span className="text-xs font-medium text-slate-500 dark:text-muted-foreground flex items-center gap-1">
                         <Users className="w-3.5 h-3.5" /> Team Space
                      </span>
                      <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors group-hover:translate-x-1" />
