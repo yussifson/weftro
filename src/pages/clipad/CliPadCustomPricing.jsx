@@ -247,7 +247,7 @@ export default function CliPadCustomPricing() {
             </button>
             <Link
               to={user ? '/dashboard' : '/login'}
-              className="text-xs font-bold px-4 py-2 rounded-xl bg-[#006065] dark:bg-[#131A2C] hover:bg-slate-800 text-white dark:bg-[#006065] dark:bg-[#131A2C] text-white dark:hover:bg-white/15 dark:text-foreground transition-all shadow-sm"
+              className="text-xs font-bold px-4 py-2 rounded-xl bg-[#006065] dark:bg-[#131A2C] hover:bg-slate-800 text-white dark:bg-card text-white dark:hover:bg-white/15 dark:text-foreground transition-all shadow-sm"
             >
               {user ? 'Go to Dashboard' : 'Sign In'}
             </Link>

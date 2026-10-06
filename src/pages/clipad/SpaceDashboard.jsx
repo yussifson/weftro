@@ -96,7 +96,7 @@ const getVideoColor = (id) => {
 
 function VideoCard({ video, onClick }) {
   return (
-    <div onClick={onClick} className="group cursor-pointer rounded-2xl overflow-hidden bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-[#006065] dark:bg-[#131A2C] border border-white/15 dark:border-white/15 hover:border-indigo-400/50 transition-all hover:-translate-y-0.5 shadow-sm hover:shadow-md">
+    <div onClick={onClick} className="group cursor-pointer rounded-2xl overflow-hidden bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-card border border-white/15 dark:border-white/15 hover:border-indigo-400/50 transition-all hover:-translate-y-0.5 shadow-sm hover:shadow-md">
       <div className="aspect-video bg-white/10 dark:bg-secondary relative flex items-center justify-center overflow-hidden">
         {video.thumbnail_url ? (
           <img src={video.thumbnail_url} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={video.title} />
@@ -120,7 +120,7 @@ function VideoCard({ video, onClick }) {
           </div>
         )}
       </div>
-      <div className="p-4 bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-[#006065] dark:bg-[#131A2C]">
+      <div className="p-4 bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-card">
         <p className="text-sm font-semibold text-white dark:text-foreground line-clamp-1">{video.title || 'Untitled'}</p>
         <p className="text-xs text-white/70 dark:text-muted-foreground mt-1">{new Date(video.created_at).toLocaleDateString()}</p>
       </div>
@@ -883,7 +883,7 @@ export default function SpaceDashboard() {
                           {isMem ? 'Remove' : 'Add'}
                         </button>
                       ) : (
-                        isMem && <span className="text-[10px] font-bold uppercase tracking-wider text-[#006065] dark:text-[#00beac] bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#00beac]/10 px-2.5 py-1 rounded-full">Member</span>
+                        isMem && <span className="text-[10px] font-bold uppercase tracking-wider text-[#006065] dark:text-[#00beac] bg-[#006065] dark:bg-card px-2.5 py-1 rounded-full">Member</span>
                       )}
                       </div>
                     </div>

@@ -63,9 +63,9 @@ export default function LockWall({ type = 'manual', unlockAt = null, title = 'th
   const isNotFound = type === 'not-found';
 
   return (
-    <div className="min-h-[100dvh] w-full bg-slate-50 dark:bg-[#006065] dark:bg-[#131A2C] flex items-center justify-center p-6 relative overflow-hidden">
+    <div className="min-h-[100dvh] w-full bg-slate-50 dark:bg-card flex items-center justify-center p-6 relative overflow-hidden">
       {/* Premium Background Effects */}
-      <div className={`absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full blur-[100px] pointer-events-none ${isNotFound ? 'bg-rose-500/10 dark:bg-rose-500/10' : 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/10'}`} />
+      <div className={`absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full blur-[100px] pointer-events-none ${isNotFound ? 'bg-rose-500/10 dark:bg-rose-500/10' : 'bg-[#006065] dark:bg-card'}`} />
       <div className={`absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full blur-[100px] pointer-events-none ${isNotFound ? 'bg-orange-500/10 dark:bg-orange-500/10' : 'bg-teal-500/10 dark:bg-teal-500/10'}`} />
       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03] dark:opacity-[0.05] pointer-events-none mix-blend-overlay" />
 
@@ -74,7 +74,7 @@ export default function LockWall({ type = 'manual', unlockAt = null, title = 'th
           
           {/* Icon */}
           <div className="relative mb-8 group">
-            <div className={`absolute inset-0 rounded-full blur-xl group-hover:blur-2xl transition-all duration-500 animate-pulse ${isNotFound ? 'bg-rose-500/20 dark:bg-rose-500/30' : 'bg-[#006065] dark:bg-[#131A2C]/20 dark:bg-[#006065] dark:bg-[#131A2C]/30'}`} />
+            <div className={`absolute inset-0 rounded-full blur-xl group-hover:blur-2xl transition-all duration-500 animate-pulse ${isNotFound ? 'bg-rose-500/20 dark:bg-rose-500/30' : 'bg-[#006065] dark:bg-card'}`} />
             <div className="relative w-24 h-24 rounded-full bg-gradient-to-tr from-white to-slate-100 dark:from-slate-800 dark:to-slate-700 border border-slate-200 dark:border-slate-600 flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-500">
               {isScheduled ? (
                 <Clock className="w-10 h-10 text-amber-500" />
@@ -113,7 +113,7 @@ export default function LockWall({ type = 'manual', unlockAt = null, title = 'th
 
           {/* Private space note */}
           {isPrivate && (
-            <div className="w-full bg-[#006065] dark:bg-[#131A2C]/10/50 dark:bg-[#006065] dark:bg-[#131A2C]/10 border border-emerald-100 dark:border-[#006065] dark:border-border/20 rounded-2xl p-5 mb-8 text-left">
+            <div className="w-full bg-[#006065] dark:bg-[#131A2C]/10/50 dark:bg-card border border-emerald-100 dark:border-border/20 rounded-2xl p-5 mb-8 text-left">
               <p className="text-[10px] text-[#006065] dark:text-[#00beac] uppercase tracking-[0.2em] font-bold mb-3">How to get access</p>
               <ul className="text-sm text-emerald-900/80 dark:text-emerald-200 space-y-2.5 font-medium">
                 <li className="flex items-start gap-2.5">

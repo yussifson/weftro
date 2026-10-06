@@ -16,16 +16,16 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 const TYPE_META = {
-  person:      { icon: Users,         label: 'Person',    color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 border border-[#006065] dark:border-border/20' },
-  meeting:     { icon: Calendar,      label: 'Meeting',   color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 border border-[#006065] dark:border-border/20', route: (id) => `/meetings/${id}` },
-  video:       { icon: Video,         label: 'Video',     color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 border border-[#006065] dark:border-border/20', route: (id) => `/watch/${id}` },
-  doc:         { icon: FileText,      label: 'Doc',       color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 border border-[#006065] dark:border-border/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=docs&docId=${id}` : null },
-  task:        { icon: CheckCircle,   label: 'Task',      color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 border border-[#006065] dark:border-border/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=tasks&taskId=${id}` : null },
+  person:      { icon: Users,         label: 'Person',    color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065] dark:bg-card border border-[#006065] dark:border-border/20' },
+  meeting:     { icon: Calendar,      label: 'Meeting',   color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065] dark:bg-card border border-[#006065] dark:border-border/20', route: (id) => `/meetings/${id}` },
+  video:       { icon: Video,         label: 'Video',     color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065] dark:bg-card border border-[#006065] dark:border-border/20', route: (id) => `/watch/${id}` },
+  doc:         { icon: FileText,      label: 'Doc',       color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065] dark:bg-card border border-[#006065] dark:border-border/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=docs&docId=${id}` : null },
+  task:        { icon: CheckCircle,   label: 'Task',      color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065] dark:bg-card border border-[#006065] dark:border-border/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=tasks&taskId=${id}` : null },
   message:     { icon: MessageSquare, label: 'Chat',      color: 'text-[#006065] dark:text-indigo-400', bg: 'bg-[#006065] dark:bg-[#131A2C]/10 border border-[#006065] dark:border-border/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=chat` : null },
-  decision:    { icon: ShieldAlert,   label: 'Decision',  color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 border border-[#006065] dark:border-border/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=decisions` : null },
-  blocker:     { icon: AlertTriangle, label: 'Blocker',   color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 border border-[#006065] dark:border-border/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=overview` : null },
-  standup:     { icon: Zap,           label: 'Standup',   color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 border border-[#006065] dark:border-border/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=standup` : null },
-  integration: { icon: ExternalLink,  label: 'Imported',  color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 border border-[#006065] dark:border-border/20', route: () => `/integrations` },
+  decision:    { icon: ShieldAlert,   label: 'Decision',  color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065] dark:bg-card border border-[#006065] dark:border-border/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=decisions` : null },
+  blocker:     { icon: AlertTriangle, label: 'Blocker',   color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065] dark:bg-card border border-[#006065] dark:border-border/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=overview` : null },
+  standup:     { icon: Zap,           label: 'Standup',   color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065] dark:bg-card border border-[#006065] dark:border-border/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=standup` : null },
+  integration: { icon: ExternalLink,  label: 'Imported',  color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065] dark:bg-card border border-[#006065] dark:border-border/20', route: () => `/integrations` },
 };
 
 const FILTER_TABS = [

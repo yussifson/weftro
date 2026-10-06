@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Folder, Shield, BarChart2, Network, Clock, Scale, CheckSquare, Map, Plug, Search, Settings, HelpCircle, PanelLeftClose, PanelLeft, ChevronUp, ChevronDown, Activity, LogOut, Target, TrendingUp, GitMerge, HeartPulse, Sparkles, Home } from 'lucide-react';
+import { Globe, Folder, Shield, BarChart2, Network, Clock, Scale, CheckSquare, Map, Plug, Search, Settings, HelpCircle, PanelLeftClose, PanelLeft, ChevronUp, ChevronDown, Activity, LogOut, Target, TrendingUp, GitMerge, HeartPulse, Sparkles, Home } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CliPadLogo } from '@/components/ui/CliPadLogo';
 import { useAuth } from '@/lib/AuthContext';
@@ -71,6 +71,7 @@ export default function ClipadSidebar({ forceMobile }) {
   const mainItems = [
     { label: 'Home', path: '/dashboard', icon: Home },
     { label: 'Search', path: '/search', icon: Search },
+      { label: 'Landing Page', path: '/landing', icon: Globe },
     { label: 'Spaces', path: '/spaces', icon: Folder },
   ];
 
@@ -161,7 +162,7 @@ export default function ClipadSidebar({ forceMobile }) {
           </button>
         ) : (
           <>
-            <div className="flex items-center gap-3 cursor-pointer group" onClick={() => navigate('/dashboard')}>
+            <div className="flex items-center gap-3 cursor-pointer group" onClick={() => navigate('/landing')}>
               <div className="flex items-center transition-transform group-hover:scale-105">
                 <CliPadLogo white height={36} />
               </div>
@@ -273,7 +274,7 @@ export default function ClipadSidebar({ forceMobile }) {
               )}
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align={isCollapsed ? "center" : "end"} className="w-56 font-sans bg-[#006065] dark:bg-[#131A2C] border-white/15 text-white shadow-2xl">
+          <DropdownMenuContent align={isCollapsed ? "center" : "end"} className="w-56 font-sans bg-[#006065] dark:bg-[#0D1626] border-white/15 text-white shadow-2xl">
             <DropdownMenuLabel className="font-semibold px-3 py-2 flex flex-col">
               <span className="text-white font-bold">{user?.full_name || 'User'}</span>
               <span className="text-xs text-white/60 font-normal">{user?.email}</span>

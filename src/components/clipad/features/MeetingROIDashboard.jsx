@@ -95,7 +95,7 @@ export default function MeetingROIDashboard({ workspaceId, spaceId }) {
               Estimated savings by replacing low-ROI meetings with async video.
             </p>
           </div>
-          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/10 text-[#004e52] dark:text-[#00beac] rounded-full text-xs font-semibold border border-emerald-200 dark:border-[#006065] dark:border-border/20">
+          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 bg-[#006065] dark:bg-card text-[#004e52] dark:text-[#00beac] rounded-full text-xs font-semibold border border-emerald-200 dark:border-border/20">
             <Sparkles className="w-3.5 h-3.5" /> AI Analyzed
           </div>
         </div>

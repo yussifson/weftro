@@ -482,7 +482,7 @@ export default function MeetingRecord() {
             <div className="mb-6 px-4 sm:px-0">
               <div className="flex items-center gap-3 mb-2">
                 {meeting.ai_summary && (
-                  <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 border border-[#006065] dark:border-border/20 text-[#006065] dark:text-[#fad503] text-[10px] font-bold uppercase tracking-wider">
+                  <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#006065] dark:bg-card border border-[#006065] dark:border-border/20 text-[#006065] dark:text-[#fad503] text-[10px] font-bold uppercase tracking-wider">
                     <Sparkles className="w-3 h-3" /> AI Summary Ready
                   </span>
                 )}
@@ -597,7 +597,7 @@ export default function MeetingRecord() {
           </div>
         ) : meeting.ai_summary && !hasFeature(plan, 'hasAdvancedAI') ? (
           <SectionCard icon={Brain} iconColor="from-emerald-500 to-emerald-600" title="AI Intelligence Locked" defaultOpen>
-            <div className="relative overflow-hidden rounded-xl bg-transparent dark:bg-[#006065] dark:bg-[#131A2C] border border-slate-200 dark:border-border p-8 text-center">
+            <div className="relative overflow-hidden rounded-xl bg-transparent dark:bg-card border border-slate-200 dark:border-border p-8 text-center">
               <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white dark:to-slate-950/90 pointer-events-none" />
               <Lock className="w-8 h-8 text-[#006065] mx-auto mb-4" />
               <h3 className="text-lg font-bold text-white dark:text-slate-100 relative z-10 mb-2">Advanced AI & Smart Follow-ups</h3>

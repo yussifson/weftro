@@ -330,7 +330,7 @@ export default function IntegrationAnalytics() {
                               <AlertTriangle className="w-3.5 h-3.5" /> Error
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-[#006065] dark:bg-[#131A2C]/20 text-[#004e52] dark:bg-[#006065] dark:bg-[#131A2C]/20 dark:text-[#006065]">
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-[#006065] dark:bg-[#131A2C]/20 text-[#004e52] dark:bg-card dark:text-[#006065]">
                               <div className="w-2 h-2 rounded-full bg-[#006065] dark:bg-[#131A2C]" /> Active
                             </span>
                           )}

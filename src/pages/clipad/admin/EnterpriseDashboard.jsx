@@ -74,10 +74,10 @@ export default function EnterpriseDashboard() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-[#006065] dark:bg-[#131A2C] p-6 rounded-2xl h-32"></div>
+            <div key={i} className="bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-card p-6 rounded-2xl h-32"></div>
           ))}
         </div>
-        <div className="bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-[#006065] dark:bg-[#131A2C] p-6 rounded-2xl h-64 mb-8"></div>
+        <div className="bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-card p-6 rounded-2xl h-64 mb-8"></div>
       </div>
     );
   }
@@ -134,7 +134,7 @@ export default function EnterpriseDashboard() {
           </div>
 
           {/* Org Intelligence Health */}
-          <div className="bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-[#006065] dark:bg-[#131A2C] rounded-2xl border border-white/15 dark:border-white/15 p-4 md:p-6 shadow-sm">
+          <div className="bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-card rounded-2xl border border-white/15 dark:border-white/15 p-4 md:p-6 shadow-sm">
             <div className="flex items-center gap-2 mb-6">
               <Activity className="w-5 h-5 text-rose-500" />
               <h2 className="text-lg font-bold text-white dark:text-foreground">Organizational Intelligence</h2>
@@ -159,7 +159,7 @@ export default function EnterpriseDashboard() {
           </div>
 
           {/* Asset List (Detailed Engagement Tracking) */}
-          <div className="bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-[#006065] dark:bg-[#131A2C] rounded-2xl border border-white/15 dark:border-white/15 p-4 md:p-6 shadow-sm overflow-hidden flex flex-col">
+          <div className="bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-card rounded-2xl border border-white/15 dark:border-white/15 p-4 md:p-6 shadow-sm overflow-hidden flex flex-col">
             <h2 className="text-lg font-bold text-white dark:text-foreground mb-2 flex items-center gap-2">
               <Eye className="w-5 h-5 text-indigo-500" />
               Detailed Media Analytics
@@ -201,7 +201,7 @@ export default function EnterpriseDashboard() {
         {/* Right Column - Usage & Audit Stream */}
         <div className="space-y-6">
           {/* Usage Trends */}
-          <div className="bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-[#006065] dark:bg-[#131A2C] rounded-2xl border border-white/15 dark:border-white/15 p-4 md:p-6 shadow-sm">
+          <div className="bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-card rounded-2xl border border-white/15 dark:border-white/15 p-4 md:p-6 shadow-sm">
             <h2 className="text-lg font-bold text-white dark:text-foreground mb-6">30-Day Adoption Trends</h2>
             <div className="h-[250px] w-full">
               {trends.length > 0 ? (
@@ -238,8 +238,8 @@ export default function EnterpriseDashboard() {
             </div>
           </div>
 
-          <div className="bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-[#006065] dark:bg-[#131A2C] rounded-2xl border border-white/15 dark:border-white/15 shadow-sm flex flex-col overflow-hidden h-[450px]">
-            <div className="p-5 border-b border-white/15 dark:border-white/15 bg-transparent dark:bg-[#006065] dark:bg-[#131A2C]">
+          <div className="bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-card rounded-2xl border border-white/15 dark:border-white/15 shadow-sm flex flex-col overflow-hidden h-[450px]">
+            <div className="p-5 border-b border-white/15 dark:border-white/15 bg-transparent dark:bg-card">
               <h2 className="text-lg font-bold text-white dark:text-foreground flex items-center gap-2">
                 <Shield className="w-5 h-5 text-indigo-500" />
                 Security & Audit Log
@@ -290,9 +290,9 @@ export default function EnterpriseDashboard() {
       {/* Asset Engagement Modal */}
       {selectedAsset && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-[#006065] dark:bg-[#131A2C] rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl border border-white/15 dark:border-white/15">
+          <div className="bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-card rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl border border-white/15 dark:border-white/15">
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-6 border-b border-white/15 dark:border-white/15 bg-transparent dark:bg-[#006065] dark:bg-[#131A2C]/50">
+            <div className="flex items-center justify-between p-6 border-b border-white/15 dark:border-white/15 bg-transparent dark:bg-card">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/100/10 flex items-center justify-center">
                   <Video className="w-6 h-6 text-indigo-500" />
@@ -327,14 +327,14 @@ export default function EnterpriseDashboard() {
                         <CheckCircle className="w-4 h-4 text-[#006065]" />
                         Watched ({engagement.viewers.length})
                       </h3>
-                      <div className="bg-transparent dark:bg-[#006065] dark:bg-[#131A2C]/50 rounded-xl border border-white/15 dark:border-white/15 max-h-[300px] overflow-y-auto">
+                      <div className="bg-transparent dark:bg-card rounded-xl border border-white/15 dark:border-white/15 max-h-[300px] overflow-y-auto">
                         {engagement.viewers.length === 0 ? (
                           <p className="p-4 text-sm text-white/70 text-center">Nobody has watched this yet.</p>
                         ) : (
                           <div className="divide-y divide-slate-200 dark:divide-slate-800">
                             {engagement.viewers.map(u => (
                               <div key={u.id} className="p-3 flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/100/20 flex items-center justify-center overflow-hidden shrink-0">
+                                <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-card text-white border border-white/15/100/20 flex items-center justify-center overflow-hidden shrink-0">
                                   {u.avatar_url ? <img src={u.avatar_url} className="w-full h-full object-cover" /> : <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">{(u.full_name || u.email || 'U').charAt(0).toUpperCase()}</span>}
                                 </div>
                                 <div className="min-w-0 flex-1">
@@ -354,7 +354,7 @@ export default function EnterpriseDashboard() {
                         <AlertCircle className="w-4 h-4 text-rose-500" />
                         Did Not Watch ({engagement.nonViewers.length})
                       </h3>
-                      <div className="bg-transparent dark:bg-[#006065] dark:bg-[#131A2C]/50 rounded-xl border border-white/15 dark:border-white/15 max-h-[300px] overflow-y-auto">
+                      <div className="bg-transparent dark:bg-card rounded-xl border border-white/15 dark:border-white/15 max-h-[300px] overflow-y-auto">
                         {engagement.nonViewers.length === 0 ? (
                           <p className="p-4 text-sm text-white/70 text-center">Everyone in the company has watched!</p>
                         ) : (
@@ -381,7 +381,7 @@ export default function EnterpriseDashboard() {
                       <MessageSquare className="w-4 h-4 text-indigo-500" />
                       Engagement Comments ({engagement.comments.length})
                     </h3>
-                    <div className="bg-transparent dark:bg-[#006065] dark:bg-[#131A2C]/50 rounded-xl border border-white/15 dark:border-white/15 h-[650px] overflow-y-auto">
+                    <div className="bg-transparent dark:bg-card rounded-xl border border-white/15 dark:border-white/15 h-[650px] overflow-y-auto">
                       {engagement.comments.length === 0 ? (
                         <div className="flex flex-col items-center justify-center h-full text-white/60 p-6">
                           <MessageSquare className="w-8 h-8 mb-3 opacity-20" />
@@ -392,13 +392,13 @@ export default function EnterpriseDashboard() {
                           {engagement.comments.map(c => (
                             <div key={c.id} className="p-4">
                               <div className="flex items-center gap-2 mb-2">
-                                <div className="w-6 h-6 rounded-full bg-indigo-100 dark:bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/100/20 flex items-center justify-center overflow-hidden">
+                                <div className="w-6 h-6 rounded-full bg-indigo-100 dark:bg-card text-white border border-white/15/100/20 flex items-center justify-center overflow-hidden">
                                   {c.author?.avatar_url ? <img src={c.author?.avatar_url} className="w-full h-full object-cover" /> : <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400">{(c.author?.full_name || c.author?.email || 'U').charAt(0).toUpperCase()}</span>}
                                 </div>
                                 <p className="text-xs font-semibold text-white dark:text-foreground">{c.author?.full_name || c.author?.email || 'Unknown User'}</p>
                                 <span className="text-[10px] text-white/70 ml-auto">{new Date(c.created_at).toLocaleString()}</span>
                               </div>
-                              <p className="text-sm text-white/90 dark:text-foreground bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-[#006065] dark:bg-[#131A2C] p-3 rounded-xl border border-white/15 dark:border-white/15">
+                              <p className="text-sm text-white/90 dark:text-foreground bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-card p-3 rounded-xl border border-white/15 dark:border-white/15">
                                 {c.content || c.text}
                               </p>
                             </div>
@@ -420,7 +420,7 @@ export default function EnterpriseDashboard() {
 
 function MetricCard({ icon, title, value, subtext, progress, progressColor }) {
   return (
-    <div className="bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-[#006065] dark:bg-[#131A2C] rounded-2xl border border-white/15 dark:border-white/15 p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
+    <div className="bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-card rounded-2xl border border-white/15 dark:border-white/15 p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
       {progress !== undefined && (
         <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/10 dark:bg-secondary">
           <div className={`h-full ${progressColor} transition-all`} style={{ width: `${Math.min(progress, 100)}%` }} />

@@ -252,13 +252,13 @@ export default function DecisionLedger() {
               return (
                 <div key={item.id} className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-2xl p-5 hover:border-[#006065] dark:border-border/50 transition-all hover:shadow-sm">
                   <div className="flex flex-col md:flex-row md:items-start gap-4">
-                    <div className="w-12 h-12 rounded-full bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 flex items-center justify-center shrink-0 border border-[#006065] dark:border-border/20 dark:border-[#006065] dark:border-border/50">
+                    <div className="w-12 h-12 rounded-full bg-[#006065] dark:bg-card flex items-center justify-center shrink-0 border border-[#006065] dark:border-border">
                       <CheckCircle2 className="w-6 h-6 text-[#006065] dark:text-[#fad503]" />
                     </div>
 
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-2 mb-2">
-                        <span className="text-xs font-bold text-[#006065] dark:text-[#fad503] uppercase tracking-wider bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 px-2 py-0.5 rounded-md">
+                        <span className="text-xs font-bold text-[#006065] dark:text-[#fad503] uppercase tracking-wider bg-[#006065] dark:bg-card px-2 py-0.5 rounded-md">
                           {item._type === 'native' ? 'Ã°Å¸Â¤â€“ AI-Detected' : 'Ã°Å¸â€œâ€ž Knowledge Source'}
                         </span>
                         <span className="text-xs text-slate-500 dark:text-muted-foreground flex items-center gap-1">
@@ -266,10 +266,10 @@ export default function DecisionLedger() {
                         </span>
                         {item.outcome_status && (
                           <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${
-                            item.outcome_status === 'successful' ? 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 border-[#006065] dark:border-border/30 dark:border-[#fad503]/30 text-[#00beac]' :
+                            item.outcome_status === 'successful' ? 'bg-[#006065] dark:bg-card border-[#006065] dark:border-border/30 dark:border-[#fad503]/30 text-[#00beac]' :
                             item.outcome_status === 'unsuccessful' ? 'bg-red-500/10 border-red-500/30 text-red-400' :
-                            item.outcome_status === 'partial' ? 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 border-amber-500/30 text-amber-400' :
-                            'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 border-blue-500/30 text-blue-400'
+                            item.outcome_status === 'partial' ? 'bg-[#006065] dark:bg-card border-amber-500/30 text-amber-400' :
+                            'bg-[#006065] dark:bg-card border-blue-500/30 text-blue-400'
                           }`}>
                             {item.outcome_status}
                           </span>
@@ -325,7 +325,7 @@ export default function DecisionLedger() {
                         {item._type === 'native' && (
                           <button
                             onClick={() => navigate(`${window.location.pathname.startsWith('/clipad') ? '/clipad' : ''}/decisions/${item.nativeId}/replay`)}
-                            className="ml-auto flex items-center gap-1.5 px-3 py-1.5 bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 border border-indigo-500/20 text-[#006065] dark:text-[#fad503] rounded-lg text-xs font-semibold hover:bg-indigo-500/20 transition-colors"
+                            className="ml-auto flex items-center gap-1.5 px-3 py-1.5 bg-[#006065] dark:bg-card border border-indigo-500/20 text-[#006065] dark:text-[#fad503] rounded-lg text-xs font-semibold hover:bg-indigo-500/20 transition-colors"
                           >
                             <Play className="w-3 h-3" fill="currentColor" />
                             Replay Decision

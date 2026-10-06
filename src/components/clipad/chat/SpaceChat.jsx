@@ -266,7 +266,7 @@ export default function SpaceChat({ spaceId }) {
               onClick={() => { setActiveChannel(channel); setSidebarOpen(false); }}
               className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-semibold transition-all group ${
                 activeChannel?.id === channel.id 
-                  ? 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 text-[#006065] dark:text-[#fad503] dark:text-[#006065] dark:text-[#fad503] shadow-sm' 
+                  ? 'bg-[#006065] dark:bg-card text-[#006065] dark:text-[#fad503] dark:text-[#006065] dark:text-[#fad503] shadow-sm' 
                   : 'text-slate-600 dark:text-muted-foreground hover:bg-slate-200 dark:hover:bg-accent hover:text-slate-900 dark:hover:text-white'
               }`}
             >
@@ -298,7 +298,7 @@ export default function SpaceChat({ spaceId }) {
               <button
                 onClick={handleAISummarize}
                 disabled={isSummarizing || messages.length === 0}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-[#006065] dark:bg-[#131A2C]/5 hover:bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/20 dark:hover:bg-[#006065] dark:bg-[#131A2C]/40 text-[#006065] dark:text-[#fad503] dark:text-[#006065] dark:text-[#fad503] rounded-md text-xs font-bold transition-colors disabled:opacity-50 border border-[#006065] dark:border-border/30 dark:border-[#006065] dark:border-border/40 shadow-sm"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-[#006065] dark:bg-[#131A2C]/5 hover:bg-[#006065] dark:bg-card dark:hover:bg-[#006065] dark:bg-[#131A2C]/40 text-[#006065] dark:text-[#fad503] dark:text-[#006065] dark:text-[#fad503] rounded-md text-xs font-bold transition-colors disabled:opacity-50 border border-[#006065] dark:border-border shadow-sm"
               >
                 {isSummarizing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
                 <span className="hidden sm:inline">AI Summary</span>
@@ -306,7 +306,7 @@ export default function SpaceChat({ spaceId }) {
             </div>
 
             {summaryStr && (
-              <div className="mx-4 md:mx-6 mt-4 p-5 bg-gradient-to-br from-[#006065]/5 to-white dark:from-[#006065]/20 dark:to-slate-900 border border-[#006065] dark:border-border/20 dark:border-[#006065] dark:border-border/40 rounded-xl relative shadow-sm animate-in slide-in-from-top-4">
+              <div className="mx-4 md:mx-6 mt-4 p-5 bg-gradient-to-br from-[#006065]/5 to-white dark:from-[#006065]/20 dark:to-slate-900 border border-[#006065] dark:border-border rounded-xl relative shadow-sm animate-in slide-in-from-top-4">
                 <button 
                   onClick={() => setSummaryStr(null)}
                   className="absolute top-3 right-3 p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-md bg-white/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-accent transition-colors"

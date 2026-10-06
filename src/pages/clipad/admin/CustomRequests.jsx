@@ -438,7 +438,7 @@ export default function CustomRequests() {
           />
         </div>
 
-        <div className="flex items-center gap-1.5 p-1 bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/10 dark:bg-[#006065] dark:bg-[#131A2C] border border-border rounded-xl overflow-x-auto">
+        <div className="flex items-center gap-1.5 p-1 bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/10 dark:bg-card border border-border rounded-xl overflow-x-auto">
           {['all', 'pending', 'contacted', 'in_progress', 'closed'].map((st) => (
             <button
               key={st}
@@ -477,7 +477,7 @@ export default function CustomRequests() {
         ) : (
           <div className="overflow-x-auto">
             <Table>
-              <TableHeader className="bg-transparent/50 dark:bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/5">
+              <TableHeader className="bg-transparent/50 dark:bg-card text-white border border-white/15/5">
                 <TableRow className="border-b border-border">
                   <TableHead className="w-[180px] font-bold text-xs uppercase tracking-wider text-muted-foreground">Prospect & Company</TableHead>
                   <TableHead className="font-bold text-xs uppercase tracking-wider text-muted-foreground">Seats / Scale</TableHead>
@@ -684,7 +684,7 @@ export default function CustomRequests() {
               {selectedRequest.requirements && (
                 <div>
                   <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Custom Requirements & Notes</h4>
-                  <div className="p-4 rounded-xl bg-transparent dark:bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/5 border border-border text-xs text-foreground leading-relaxed whitespace-pre-wrap">
+                  <div className="p-4 rounded-xl bg-transparent dark:bg-card text-white border border-white/15/5 border border-border text-xs text-foreground leading-relaxed whitespace-pre-wrap">
                     {selectedRequest.requirements}
                   </div>
                 </div>

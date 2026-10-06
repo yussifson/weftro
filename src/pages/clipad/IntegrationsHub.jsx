@@ -519,14 +519,14 @@ export default function IntegrationsHub() {
           );
 
           return (
-            <div className="bg-[#006065] dark:bg-[#131A2C]/5 dark:bg-[#006065] dark:bg-[#131A2C]/10 border border-[#006065] dark:border-border/20 dark:border-[#006065] dark:border-border/30 rounded-2xl p-5 space-y-4">
+            <div className="bg-[#006065] dark:bg-card border border-[#006065] dark:border-border rounded-2xl p-5 space-y-4">
               <h2 className="font-bold text-sm text-[#006065] dark:text-[#fad503] flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4" /> {connectedCount} Active Connection{connectedCount !== 1 ? 's' : ''}
                 <span className="ml-auto text-[10px] text-muted-foreground font-normal">Hover a card to change scope</span>
               </h2>
-              <ScopeGroup label="Personal Ã¢â‚¬â€ Only you" items={personal} icon={User} color="text-[#006065] dark:text-[#fad503]" bg="border-[#006065] dark:border-border/20" pill="bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 text-[#006065] dark:text-[#fad503]" />
-              <ScopeGroup label="Space-level" items={space} icon={Users} color="text-[#006065] dark:text-[#fad503]" bg="border-[#006065] dark:border-border/20" pill="bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 text-[#006065] dark:text-[#fad503]" />
-              <ScopeGroup label="Company-wide Ã¢â‚¬â€ Everyone" items={company} icon={Globe} color="text-[#006065] dark:text-[#fad503]" bg="border-[#006065] dark:border-border/20" pill="bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 text-[#006065] dark:text-[#fad503]" />
+              <ScopeGroup label="Personal Ã¢â‚¬â€ Only you" items={personal} icon={User} color="text-[#006065] dark:text-[#fad503]" bg="border-[#006065] dark:border-border/20" pill="bg-[#006065] dark:bg-card text-[#006065] dark:text-[#fad503]" />
+              <ScopeGroup label="Space-level" items={space} icon={Users} color="text-[#006065] dark:text-[#fad503]" bg="border-[#006065] dark:border-border/20" pill="bg-[#006065] dark:bg-card text-[#006065] dark:text-[#fad503]" />
+              <ScopeGroup label="Company-wide Ã¢â‚¬â€ Everyone" items={company} icon={Globe} color="text-[#006065] dark:text-[#fad503]" bg="border-[#006065] dark:border-border/20" pill="bg-[#006065] dark:bg-card text-[#006065] dark:text-[#fad503]" />
             </div>
           );
         })()}
@@ -548,7 +548,7 @@ export default function IntegrationsHub() {
               return (
                 <div
                   key={integration.id}
-                  className={`group relative bg-white dark:bg-card border ${isConnected ? 'border-[#006065] dark:border-border/30 dark:border-[#006065] dark:border-border/50 ring-1 ring-[#006065]/10' : 'border-slate-200 dark:border-border'} rounded-2xl p-6 flex flex-col gap-5 shadow-sm hover:shadow-lg transition-all duration-300 ${!isAllowedToConnect ? 'opacity-75' : 'hover:-translate-y-1'}`}
+                  className={`group relative bg-white dark:bg-card border ${isConnected ? 'border-[#006065] dark:border-border ring-1 ring-[#006065]/10' : 'border-slate-200 dark:border-border'} rounded-2xl p-6 flex flex-col gap-5 shadow-sm hover:shadow-lg transition-all duration-300 ${!isAllowedToConnect ? 'opacity-75' : 'hover:-translate-y-1'}`}
                 >
                   {/* Header */}
                   <div className="flex items-start justify-between gap-3">
@@ -956,7 +956,7 @@ export default function IntegrationsHub() {
 
             <div className="space-y-3 mb-5">
               {/* Personal */}
-              <button onClick={() => setSelectedScope('personal')} className={`w-full flex items-start gap-4 p-4 rounded-xl border-2 transition-all text-left ${selectedScope === 'personal' ? 'border-violet-500 bg-violet-50 dark:bg-[#006065] dark:bg-[#131A2C]/10' : 'border-white/15 dark:border-border hover:border-white/20 dark:hover:border-slate-600'}`}>
+              <button onClick={() => setSelectedScope('personal')} className={`w-full flex items-start gap-4 p-4 rounded-xl border-2 transition-all text-left ${selectedScope === 'personal' ? 'border-violet-500 bg-violet-50 dark:bg-card' : 'border-white/15 dark:border-border hover:border-white/20 dark:hover:border-slate-600'}`}>
                 <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${selectedScope === 'personal' ? 'bg-violet-500 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-muted-foreground'}`}><User className="w-4 h-4" /></div>
                 <div>
                   <div className="flex items-center gap-2"><span className="text-sm font-bold text-slate-900 dark:text-foreground">Personal</span><span className="text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-muted-foreground px-2 py-0.5 rounded-full">Only you</span></div>
@@ -965,10 +965,10 @@ export default function IntegrationsHub() {
               </button>
 
               {/* Space */}
-              <button onClick={() => setSelectedScope('space')} className={`w-full flex items-start gap-4 p-4 rounded-xl border-2 transition-all text-left ${selectedScope === 'space' ? 'border-blue-500 bg-blue-50 dark:bg-[#006065] dark:bg-[#131A2C]/10' : 'border-white/15 dark:border-border hover:border-white/20 dark:hover:border-slate-600'}`}>
+              <button onClick={() => setSelectedScope('space')} className={`w-full flex items-start gap-4 p-4 rounded-xl border-2 transition-all text-left ${selectedScope === 'space' ? 'border-blue-500 bg-blue-50 dark:bg-card' : 'border-white/15 dark:border-border hover:border-white/20 dark:hover:border-slate-600'}`}>
                 <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${selectedScope === 'space' ? 'bg-blue-500 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-muted-foreground'}`}><Users className="w-4 h-4" /></div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2"><span className="text-sm font-bold text-slate-900 dark:text-foreground">Space</span><span className="text-[10px] font-semibold bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 text-[#006065] dark:text-[#fad503] px-2 py-0.5 rounded-full">Space members only</span></div>
+                  <div className="flex items-center gap-2"><span className="text-sm font-bold text-slate-900 dark:text-foreground">Space</span><span className="text-[10px] font-semibold bg-[#006065] dark:bg-card text-[#006065] dark:text-[#fad503] px-2 py-0.5 rounded-full">Space members only</span></div>
                   <p className="text-xs text-slate-500 dark:text-muted-foreground mt-0.5">Only members of the selected space can access this data.</p>
                   {selectedScope === 'space' && (
                     <div className="mt-3" onClick={e => e.stopPropagation()}>
@@ -985,12 +985,12 @@ export default function IntegrationsHub() {
               </button>
 
               {/* Company-wide */}
-              <button onClick={() => isAdmin && setSelectedScope('company')} className={`w-full flex items-start gap-4 p-4 rounded-xl border-2 transition-all text-left ${!isAdmin ? 'opacity-40 cursor-not-allowed' : selectedScope === 'company' ? 'border-[#006065] dark:border-border bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/10' : 'border-white/15 dark:border-border hover:border-white/20 dark:hover:border-slate-600'}`}>
+              <button onClick={() => isAdmin && setSelectedScope('company')} className={`w-full flex items-start gap-4 p-4 rounded-xl border-2 transition-all text-left ${!isAdmin ? 'opacity-40 cursor-not-allowed' : selectedScope === 'company' ? 'border-[#006065] dark:border-border bg-[#006065] dark:bg-card' : 'border-white/15 dark:border-border hover:border-white/20 dark:hover:border-slate-600'}`}>
                 <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${selectedScope === 'company' && isAdmin ? 'bg-[#006065] dark:bg-[#fad503] text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-muted-foreground'}`}><Globe className="w-4 h-4" /></div>
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-sm font-bold text-slate-900 dark:text-foreground">Company-wide</span>
-                    <span className="text-[10px] font-semibold bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 text-[#006065] dark:text-[#fad503] px-2 py-0.5 rounded-full">Everyone</span>
+                    <span className="text-[10px] font-semibold bg-[#006065] dark:bg-card text-[#006065] dark:text-[#fad503] px-2 py-0.5 rounded-full">Everyone</span>
                     {!isAdmin && <span className="text-[10px] font-semibold bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded-full flex items-center gap-1"><Lock className="w-2.5 h-2.5" /> Admin only</span>}
                   </div>
                   <p className="text-xs text-slate-500 dark:text-muted-foreground mt-0.5">All company members can see this data via OrbitFlow and Spotlight.</p>
@@ -1063,7 +1063,7 @@ const API_KEY_CONFIGS = {
     label: 'Trello',                 
     fields: [{ key: 'api_key', label: 'API Key', secret: false }, { key: 'token', label: 'Personal Access Token', secret: true }],
     instructions: (
-      <div className="text-xs text-muted-foreground bg-[#006065] dark:bg-[#131A2C]/5 dark:bg-[#006065] dark:bg-[#131A2C]/20 p-3 rounded-xl mb-4 leading-relaxed">
+      <div className="text-xs text-muted-foreground bg-[#006065] dark:bg-card p-3 rounded-xl mb-4 leading-relaxed">
         <strong>1.</strong> Get your API Key from <a href="https://trello.com/app-key" target="_blank" rel="noreferrer" className="text-[#006065] dark:text-[#fad503] underline font-semibold">Trello Developer</a>.<br />
         <strong>2.</strong> Replace <code>YOUR_API_KEY</code> in the URL below and visit it in a new tab to authorize:<br />
         <code className="block mt-1 p-1 bg-white dark:bg-card text-slate-900 dark:text-foreground dark:bg-black rounded border overflow-hidden whitespace-nowrap text-ellipsis">https://trello.com/1/authorize?expiration=never&name=CliPad&scope=read&response_type=token&key=YOUR_API_KEY</code><br />
@@ -1112,7 +1112,7 @@ function ApiKeyModal({ integration, provider, onSave, onClose }) {
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
       <div className="bg-white dark:bg-card text-slate-900 dark:text-foreground border border-slate-200 dark:border-border rounded-2xl shadow-2xl w-full max-w-md p-6 animate-in fade-in zoom-in-95 duration-200 relative">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl bg-[#006065] dark:bg-[#131A2C]/5 dark:bg-[#006065] dark:bg-[#131A2C]/20 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-[#006065] dark:bg-card flex items-center justify-center">
             <Key className="w-5 h-5 text-[#006065]" />
           </div>
           <div>
@@ -1186,7 +1186,7 @@ function IntegrationConfigModal({ integration, conn, onSave, onClose }) {
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
       <div className="bg-white dark:bg-card text-slate-900 dark:text-foreground border border-slate-200 dark:border-border rounded-2xl shadow-2xl w-full max-w-md p-6 animate-in fade-in zoom-in-95 duration-200 relative">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-[#006065] dark:bg-[#131A2C]/10 flex items-center justify-center text-xl">
+          <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-card flex items-center justify-center text-xl">
             {integration?.icon || <Sliders className="w-5 h-5 text-blue-500" />}
           </div>
           <div>

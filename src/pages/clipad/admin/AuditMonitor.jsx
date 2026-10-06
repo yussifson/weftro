@@ -184,7 +184,7 @@ export default function AuditMonitor() {
       <div className="border border-border rounded-xl bg-card overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="bg-transparent dark:bg-[#006065] dark:bg-[#131A2C]/50">
+            <TableRow className="bg-transparent dark:bg-card">
               <TableHead className="w-36"><Clock className="w-3.5 h-3.5 inline mr-1" />Timestamp</TableHead>
               <TableHead><User className="w-3.5 h-3.5 inline mr-1" />User</TableHead>
               <TableHead><Building2 className="w-3.5 h-3.5 inline mr-1" />Company</TableHead>

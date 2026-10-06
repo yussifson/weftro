@@ -40,7 +40,7 @@ export default function AIInsightsPanel({ spaceId, workspaceId }) {
           type: 'knowledge',
           icon: Lightbulb,
           color: 'text-[#006065]',
-          bg: 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/10',
+          bg: 'bg-[#006065] dark:bg-card',
           title: 'Undocumented Decisions',
           description: 'Several recent meetings mentioned "pricing architecture" but no formal decisions were logged. Should we draft a decision record for this?',
           action: 'Draft Decision'

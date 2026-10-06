@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 
 const ACTION_ICONS = {
   login:           { icon: LogIn,      color: 'text-blue-500',    bg: 'bg-blue-50 dark:bg-blue-900/20' },
-  plan_upgrade:    { icon: TrendingUp, color: 'text-[#006065]', bg: 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#004e52]/20' },
+  plan_upgrade:    { icon: TrendingUp, color: 'text-[#006065]', bg: 'bg-[#006065] dark:bg-card' },
   meeting_created: { icon: Activity,   color: 'text-violet-500',  bg: 'bg-violet-50 dark:bg-violet-900/20' },
   video_recorded:  { icon: Video,      color: 'text-orange-500',  bg: 'bg-orange-50 dark:bg-orange-900/20' },
 };
@@ -82,10 +82,10 @@ export default function Overview() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-[#006065] dark:bg-[#131A2C] p-6 rounded-2xl h-32"></div>
+            <div key={i} className="bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-card p-6 rounded-2xl h-32"></div>
           ))}
         </div>
-        <div className="bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-[#006065] dark:bg-[#131A2C] p-6 rounded-2xl h-64 mb-8"></div>
+        <div className="bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-card p-6 rounded-2xl h-64 mb-8"></div>
       </div>
     );
   }
@@ -94,7 +94,7 @@ export default function Overview() {
     { title: "Total Companies", value: stats.companies, icon: Building2, color: "text-blue-500", bg: "bg-blue-50 dark:bg-blue-900/20" },
     { title: "Total Spaces", value: stats.spaces, icon: Layers, color: "text-indigo-500", bg: "bg-indigo-50 dark:bg-indigo-900/20" },
     { title: "Registered Users", value: stats.users, icon: Users, color: "text-purple-500", bg: "bg-purple-50 dark:bg-purple-900/20" },
-    { title: "Total Logins Audited", value: stats.logins, icon: Activity, color: "text-[#006065]", bg: "bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#004e52]/20" },
+    { title: "Total Logins Audited", value: stats.logins, icon: Activity, color: "text-[#006065]", bg: "bg-[#006065] dark:bg-card" },
   ];
 
   return (

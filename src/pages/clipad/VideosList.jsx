@@ -137,7 +137,7 @@ export default function VideosList() {
 
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {[1,2,3,4,5,6].map(i => <div key={i} className="aspect-video rounded-2xl bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-[#006065] dark:bg-[#131A2C] animate-pulse border border-white/15 dark:border-white/15" />)}
+            {[1,2,3,4,5,6].map(i => <div key={i} className="aspect-video rounded-2xl bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-card animate-pulse border border-white/15 dark:border-white/15" />)}
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-24 border border-dashed border-slate-200 dark:border-border rounded-3xl bg-white dark:bg-card">
@@ -182,7 +182,7 @@ export default function VideosList() {
                       <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold shrink-0 ${
                         v.space.is_private
                           ? 'bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400'
-                          : 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/10 text-[#006065] dark:text-[#00beac]'
+                          : 'bg-[#006065] dark:bg-card text-[#006065] dark:text-[#00beac]'
                       }`}>
                         {v.space.is_private ? <Lock className="w-2.5 h-2.5" /> : <Globe className="w-2.5 h-2.5" />}
                         {v.space.is_private ? 'Private' : 'Public'}

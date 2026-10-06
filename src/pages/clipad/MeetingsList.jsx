@@ -200,7 +200,7 @@ export default function MeetingsList() {
 
         {loading ? (
           <div className="space-y-4">
-            {[1,2,3,4].map(i => <div key={i} className="h-24 rounded-2xl bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-[#006065] dark:bg-[#131A2C] animate-pulse border border-white/15 dark:border-white/15" />)}
+            {[1,2,3,4].map(i => <div key={i} className="h-24 rounded-2xl bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-card animate-pulse border border-white/15 dark:border-white/15" />)}
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-24 border border-dashed border-slate-200 dark:border-border rounded-3xl">
@@ -209,7 +209,7 @@ export default function MeetingsList() {
             <p className="text-slate-400 text-sm">Start a meeting to see it appear here with full AI summaries and action items.</p>
           </div>
         ) : (
-          <div className="relative pl-6 border-l-2 border-[#006065] dark:border-border/20 dark:border-[#006065] dark:border-border/40 space-y-6">
+          <div className="relative pl-6 border-l-2 border-[#006065] dark:border-border space-y-6">
             {filtered.map(m => (
               <div key={m.id} className="relative group">
                 <div className="absolute -left-[35px] w-6 h-6 rounded-full bg-[#006065] dark:bg-[#131A2C] border-2 border-[#fad503] flex items-center justify-center shadow-sm mt-5">
@@ -227,7 +227,7 @@ export default function MeetingsList() {
                       <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
                         m.space.is_private
                           ? 'bg-rose-100 dark:bg-rose-500/20 text-rose-700 dark:text-rose-400'
-                          : 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/10 text-[#006065] dark:text-[#00beac]'
+                          : 'bg-[#006065] dark:bg-card text-[#006065] dark:text-[#00beac]'
                       }`}>
                         {m.space.is_private ? <Lock className="w-2.5 h-2.5" /> : <Globe className="w-2.5 h-2.5" />}
                         {m.space.is_private ? 'Private' : 'Public'}

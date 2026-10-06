@@ -89,7 +89,7 @@ export default function CompanyManagement() {
           </div>
           <div className="h-10 bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/15 dark:bg-slate-800 rounded w-32"></div>
         </div>
-        <div className="bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-[#006065] dark:bg-[#131A2C] p-6 rounded-2xl h-64 mb-8"></div>
+        <div className="bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-card p-6 rounded-2xl h-64 mb-8"></div>
       </div>
     );
   }

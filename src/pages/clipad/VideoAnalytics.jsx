@@ -20,11 +20,11 @@ function StatCard({ icon: Icon, color, value, label, trend }) {
     <div className="group relative p-6 rounded-3xl bg-white dark:bg-card backdrop-blur-xl border border-slate-200 dark:border-border hover:border-primary/30 transition-all duration-300 shadow-sm hover:shadow-lg hover:-translate-y-1 overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent dark:from-white/5 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
       <div className="relative z-10 flex items-start justify-between mb-6">
-        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-inner ${color || 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 text-[#006065] dark:text-[#fad503]'}`}>
+        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-inner ${color || 'bg-[#006065] dark:bg-card text-[#006065] dark:text-[#fad503]'}`}>
           <Icon className="w-6 h-6" />
         </div>
         {trend !== undefined && trend !== null && (
-          <span className={`text-xs font-bold px-2.5 py-1 rounded-full border ${trend > 0 ? 'text-[#006065] bg-[#006065] dark:bg-[#131A2C]/10 border-emerald-100 dark:text-[#00beac] dark:bg-[#006065] dark:bg-[#131A2C]/10 dark:border-[#006065] dark:border-border/20' : trend < 0 ? 'text-red-600 bg-red-50 border-red-100 dark:text-red-400 dark:bg-red-500/10 dark:border-red-500/20' : 'text-slate-500 dark:text-muted-foreground bg-slate-100 dark:bg-secondary border-slate-200 dark:bg-slate-800 dark:border-border dark:text-muted-foreground'}`}>
+          <span className={`text-xs font-bold px-2.5 py-1 rounded-full border ${trend > 0 ? 'text-[#006065] bg-[#006065] dark:bg-[#131A2C]/10 border-emerald-100 dark:text-[#00beac] dark:bg-card dark:border-border/20' : trend < 0 ? 'text-red-600 bg-red-50 border-red-100 dark:text-red-400 dark:bg-red-500/10 dark:border-red-500/20' : 'text-slate-500 dark:text-muted-foreground bg-slate-100 dark:bg-secondary border-slate-200 dark:bg-slate-800 dark:border-border dark:text-muted-foreground'}`}>
             {trend > 0 ? '+' : ''}{trend}%
           </span>
         )}
@@ -265,10 +265,10 @@ export default function VideoAnalytics() {
             
             {/* Top Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <StatCard icon={Eye} color="bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 text-[#006065] dark:text-[#fad503]" value={stats.totalViews} label="Total Views" trend={14} />
-              <StatCard icon={Video} color="bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 text-[#006065] dark:text-[#fad503]" value={stats.totalVideos} label="Videos Recorded" />
-              <StatCard icon={MessageSquare} color="bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 text-[#006065] dark:text-[#fad503]" value={stats.totalComments} label="Comments" trend={8} />
-              <StatCard icon={Heart} color="bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 text-[#006065] dark:text-[#fad503]" value={stats.totalReactions} label="Reactions" />
+              <StatCard icon={Eye} color="bg-[#006065] dark:bg-card text-[#006065] dark:text-[#fad503]" value={stats.totalViews} label="Total Views" trend={14} />
+              <StatCard icon={Video} color="bg-[#006065] dark:bg-card text-[#006065] dark:text-[#fad503]" value={stats.totalVideos} label="Videos Recorded" />
+              <StatCard icon={MessageSquare} color="bg-[#006065] dark:bg-card text-[#006065] dark:text-[#fad503]" value={stats.totalComments} label="Comments" trend={8} />
+              <StatCard icon={Heart} color="bg-[#006065] dark:bg-card text-[#006065] dark:text-[#fad503]" value={stats.totalReactions} label="Reactions" />
             </div>
 
             {hasFeature(plan, 'hasAdvancedAnalytics') ? (
@@ -401,7 +401,7 @@ export default function VideoAnalytics() {
               )}
             </>
             ) : (
-              <div className="mt-8 relative overflow-hidden rounded-3xl bg-transparent dark:bg-[#006065] dark:bg-[#131A2C] border border-slate-200 dark:border-border p-10 text-center shadow-sm">
+              <div className="mt-8 relative overflow-hidden rounded-3xl bg-transparent dark:bg-card border border-slate-200 dark:border-border p-10 text-center shadow-sm">
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white dark:to-slate-950/90 pointer-events-none" />
                 <BarChart3 className="w-12 h-12 text-slate-500 dark:text-muted-foreground mx-auto mb-4 relative z-10" />
                 <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 relative z-10 mb-2">Advanced Analytics Locked</h3>
@@ -472,7 +472,7 @@ export default function VideoAnalytics() {
                 )}
               </div>
 
-              <div className="p-4 border-t border-slate-200 dark:border-border shrink-0 bg-transparent dark:bg-[#006065] dark:bg-[#131A2C]/50">
+              <div className="p-4 border-t border-slate-200 dark:border-border shrink-0 bg-transparent dark:bg-card">
                 <button 
                   onClick={() => navigate(`/watch/${selectedVideo.id}`)}
                   className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm shadow-sm hover:opacity-90 active:scale-95 transition-all flex items-center justify-center gap-2"

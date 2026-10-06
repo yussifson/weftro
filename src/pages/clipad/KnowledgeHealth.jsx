@@ -192,7 +192,7 @@ export default function KnowledgeHealth() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
         {[
           { title: 'Total Meetings', value: rawCounts?.meetings || 0, desc: 'Recorded on platform', icon: Activity, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-500/10' },
-          { title: 'Key Decisions', value: rawCounts?.decisions || 0, desc: 'Extracted automatically', icon: BrainCircuit, color: 'text-[#006065]', bg: 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/10' },
+          { title: 'Key Decisions', value: rawCounts?.decisions || 0, desc: 'Extracted automatically', icon: BrainCircuit, color: 'text-[#006065]', bg: 'bg-[#006065] dark:bg-card' },
           { title: 'Blockers Raised', value: rawCounts?.blockers || 0, desc: 'Identified in syncs', icon: ShieldAlert, color: 'text-rose-500', bg: 'bg-rose-50 dark:bg-rose-500/10' },
           { title: 'Tasks Completed', value: rawCounts?.completed || 0, desc: 'Resolved action items', icon: Target, color: 'text-indigo-500', bg: 'bg-indigo-50 dark:bg-indigo-500/10' },
           { title: 'Imported Data', value: rawCounts?.imported || 0, desc: 'From external integrations', icon: Sparkles, color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-500/10' },
@@ -361,7 +361,7 @@ export default function KnowledgeHealth() {
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {risks.map((risk, idx) => (
-              <div key={idx} className="p-5 rounded-2xl bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-[#006065] dark:bg-[#131A2C] border border-rose-200 dark:border-rose-900/50 shadow-sm flex flex-col gap-3 hover:border-rose-300 transition-colors relative overflow-hidden">
+              <div key={idx} className="p-5 rounded-2xl bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-card border border-rose-200 dark:border-rose-900/50 shadow-sm flex flex-col gap-3 hover:border-rose-300 transition-colors relative overflow-hidden">
                 <div className={`absolute top-0 left-0 right-0 h-1 ${risk.severity === 'critical' ? 'bg-rose-600' : risk.severity === 'high' ? 'bg-rose-500' : 'bg-orange-400'}`} />
                 <div className="flex items-center gap-3">
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${risk.severity === 'critical' ? 'bg-rose-100 text-rose-700' : 'bg-orange-50 text-orange-600'}`}>
@@ -396,7 +396,7 @@ export default function KnowledgeHealth() {
             </div>
           </div>
           <div className="flex gap-3">
-            <div className="w-8 h-8 shrink-0 rounded-full bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/10 flex items-center justify-center text-[#006065] font-bold">2</div>
+            <div className="w-8 h-8 shrink-0 rounded-full bg-[#006065] dark:bg-card flex items-center justify-center text-[#006065] font-bold">2</div>
             <div>
               <h4 className="font-bold text-slate-900 dark:text-foreground">Resolution Speed</h4>
               <p className="text-sm text-white/70 mt-1">Evaluates how quickly blockers raised in standups or meetings are converted into completed tasks.</p>

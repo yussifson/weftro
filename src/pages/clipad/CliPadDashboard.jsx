@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/api/supabaseClient';
 import { getLimit, hasFeature } from '@/lib/clipadPricing';
@@ -26,12 +26,12 @@ function StatCard({ icon: Icon, value, label, trend }) {
   return (
     <div className="relative overflow-hidden rounded-2xl border border-slate-200 dark:border-border bg-white dark:bg-card shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between p-5 group">
       <div className="flex items-start justify-between mb-4">
-        <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 border border-[#006065] dark:border-border/20 dark:border-[#006065] dark:border-border/40 shadow-sm">
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-[#006065]/10 dark:bg-[#006065]/20 border border-[#006065]/20 dark:border-[#006065]/40 shadow-sm">
           <Icon className="w-5 h-5 text-[#006065] dark:text-[#fad503]" />
         </div>
         {trend && (
-          <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm ${trend > 0 ? 'text-[#006065] bg-[#006065] dark:bg-[#131A2C]/10 border border-[#006065] dark:border-border/20' : 'text-slate-600 dark:text-muted-foreground bg-slate-100 dark:bg-secondary border border-slate-200 dark:border-border'}`}>
-            {trend > 0 ? 'â†‘' : 'â†“'} {Math.abs(trend)}%
+          <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm ${trend > 0 ? '\u2191' : '\u2193'}`}>
+            {trend > 0 ? '\u2191' : '\u2193'} {Math.abs(trend)}%
           </span>
         )}
       </div>
@@ -318,11 +318,14 @@ export default function CliPadDashboard() {
 
   const getGreetingEmoji = () => {
     const emojis = [
-      'ðŸ‘‹', 'âœ¨', 'ðŸš€', 'ðŸŒŸ', 'ðŸŽ‰', 'ðŸ’¡', 'ðŸ”¥', 'ðŸ™Œ', 'ðŸ˜Ž', 'â˜•',
-      'ðŸ’ª', 'ðŸŽ¯', 'ðŸŒˆ', 'âš¡', 'ðŸŽˆ', 'ðŸ˜Š', 'ðŸ¤©', 'ðŸŒº', 'ðŸ€', 'ðŸ†',
-      'ðŸ’Ž', 'ðŸŒ»', 'ðŸ¤', 'ðŸ¦‹', 'ðŸ¥³', 'ðŸ™Œ', 'ðŸ¤ ', 'ðŸ”®', 'ðŸŽŠ', 'ðŸ¥°', 'âœŒï¸'
+      '\u{1F44B}', '\u{2728}', '\u{1F680}', '\u{1F31F}', '\u{1F389}',
+      '\u{1F4A1}', '\u{1F525}', '\u{1F64C}', '\u{1F60E}', '\u{2615}',
+      '\u{1F4AA}', '\u{1F3AF}', '\u{1F308}', '\u{26A1}', '\u{1F388}',
+      '\u{1F60A}', '\u{1F929}', '\u{1F33A}', '\u{1F340}', '\u{1F3C6}',
+      '\u{1F48E}', '\u{1F33B}', '\u{1F91D}', '\u{1F98B}', '\u{1F973}',
+      '\u{1F64C}', '\u{1F920}', '\u{1F52E}', '\u{1F38A}', '\u{1F970}', '\u{270C}\u{FE0F}'
     ];
-    const day = new Date().getDate(); // 1-31
+    const day = new Date().getDate();
     return emojis[(day - 1) % emojis.length];
   };
 
@@ -574,7 +577,7 @@ export default function CliPadDashboard() {
                             <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold ${
                               m.space.is_private
                                 ? 'bg-white dark:bg-card text-slate-900 dark:text-foreground border border-slate-200 dark:border-border text-slate-600 dark:text-muted-foreground'
-                                : 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/30 text-[#006065] dark:text-[#fad503]'
+                                : 'bg-[#006065] dark:bg-card text-[#006065] dark:text-[#fad503]'
                             }`}>
                               {m.space.is_private ? <Lock className="w-2.5 h-2.5" /> : <Globe className="w-2.5 h-2.5" />}
                               {m.space.is_private ? 'Private' : 'Public'}

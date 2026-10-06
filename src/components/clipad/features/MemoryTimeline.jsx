@@ -81,7 +81,7 @@ export default function MemoryTimeline({ topic, workspaceId }) {
           date: new Date(d.created_at),
           icon: GitBranch,
           color: 'text-[#006065]',
-          bg: 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/10',
+          bg: 'bg-[#006065] dark:bg-card',
           description: d.rationale || `Decision made regarding "${topic}".`,
           badge: d.status,
           sourceId: d.id,

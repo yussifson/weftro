@@ -1585,7 +1585,7 @@ export default function RecordVideo() {
                       <button
                         key={m.id}
                         onClick={() => setMode(m.id)}
-                        className={`flex flex-col items-center justify-center p-4 md:p-5 rounded-2xl border transition-all duration-300 shadow-sm active:scale-95 ${mode === m.id ? 'border-[#006065] dark:border-[#00beac] bg-[#006065] dark:bg-[#131A2C]/5 dark:bg-[#00beac]/10 text-[#006065] dark:text-[#00beac] ring-1 ring-[#006065]/20' : 'bg-white dark:bg-card border-slate-200 dark:border-border text-slate-600 dark:text-muted-foreground hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-accent/50'}`}
+                        className={`flex flex-col items-center justify-center p-4 md:p-5 rounded-2xl border transition-all duration-300 shadow-sm active:scale-95 ${mode === m.id ? 'border-[#006065] dark:border-[#00beac] bg-[#006065] dark:bg-card text-[#006065] dark:text-[#00beac] ring-1 ring-[#006065]/20' : 'bg-white dark:bg-card border-slate-200 dark:border-border text-slate-600 dark:text-muted-foreground hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-accent/50'}`}
                       >
                         <Icon className={`w-7 h-7 mb-3 ${mode === m.id ? 'text-[#006065] dark:text-[#00beac]' : 'text-slate-400'}`} />
                         <span className="font-bold text-[13px] text-center leading-tight">

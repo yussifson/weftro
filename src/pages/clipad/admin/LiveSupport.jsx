@@ -95,7 +95,7 @@ export default function LiveSupport() {
               onClick={() => setFilter(f)}
               className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all whitespace-nowrap flex-1 sm:flex-none ${
                 filter === f 
-                  ? 'bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-[#006065] dark:bg-[#131A2C] text-white dark:text-foreground shadow-sm' 
+                  ? 'bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-card text-white dark:text-foreground shadow-sm' 
                   : 'text-white/70 dark:text-muted-foreground hover:text-white/90 dark:hover:text-slate-200'
               }`}
             >
@@ -172,7 +172,7 @@ export default function LiveSupport() {
         {loading ? (
           <div className="p-12 text-center text-white/70 font-medium">Loading requests...</div>
         ) : filteredRequests.length === 0 ? (
-          <div className="p-16 flex flex-col items-center justify-center text-center bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-[#006065] dark:bg-[#131A2C] border-[0.5px] border-white/15 dark:border-white/15 rounded-2xl">
+          <div className="p-16 flex flex-col items-center justify-center text-center bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-card border-[0.5px] border-white/15 dark:border-white/15 rounded-2xl">
             <div className="w-16 h-16 bg-transparent dark:bg-secondary rounded-2xl flex items-center justify-center mb-4">
               <MessageSquare className="w-8 h-8 text-white/60" />
             </div>
@@ -181,12 +181,12 @@ export default function LiveSupport() {
           </div>
         ) : (
           filteredRequests.map(req => (
-            <div key={req.id} className="bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-[#006065] dark:bg-[#131A2C] border-[0.5px] border-white/15 dark:border-white/15 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
+            <div key={req.id} className="bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-card border-[0.5px] border-white/15 dark:border-white/15 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex flex-col md:flex-row gap-6 md:items-start justify-between">
                 
                 <div className="flex gap-4 items-start">
                   <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${
-                    req.type === 'call' ? 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400' : 'bg-[#006065] dark:bg-[#131A2C]/10 text-[#006065] dark:bg-[#006065] dark:bg-[#131A2C]/10 dark:text-[#00beac]'
+                    req.type === 'call' ? 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400' : 'bg-[#006065] dark:bg-[#131A2C]/10 text-[#006065] dark:bg-card dark:text-[#00beac]'
                   }`}>
                     {req.type === 'call' ? <PhoneCall className="w-6 h-6" /> : <MessageSquare className="w-6 h-6" />}
                   </div>
@@ -239,7 +239,7 @@ export default function LiveSupport() {
                     </button>
                   )}
                   {req.status === 'resolved' && (
-                    <div className="flex items-center justify-center gap-2 px-4 py-2 bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/10 text-[#006065] dark:text-[#00beac] rounded-xl text-sm font-semibold">
+                    <div className="flex items-center justify-center gap-2 px-4 py-2 bg-[#006065] dark:bg-card text-[#006065] dark:text-[#00beac] rounded-xl text-sm font-semibold">
                       <CheckCircle2 className="w-4 h-4" /> Resolved
                     </div>
                   )}
