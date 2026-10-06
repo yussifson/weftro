@@ -199,7 +199,7 @@ export default function ScheduleMeetingDialog({ open, onOpenChange, onScheduled 
                   <CheckCircle2 className="w-8 h-8" />
                 </div>
                 
-                <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-2 tracking-tight">Meeting Scheduled!</h2>
+                <h2 className="text-2xl font-semibold text-slate-900 dark:text-foreground mb-2 tracking-tight">Meeting Scheduled!</h2>
                 <p className="text-slate-500 dark:text-muted-foreground mb-8 max-w-sm">
                   Your meeting has been set and calendar invitations have been sent to all participants.
                 </p>
@@ -207,7 +207,7 @@ export default function ScheduleMeetingDialog({ open, onOpenChange, onScheduled 
                 <div className="w-full bg-white dark:bg-card/80 backdrop-blur-sm border border-slate-200 dark:border-white/10 rounded-2xl p-5 sm:p-6 text-left shadow-sm space-y-5 relative">
                   <div>
                     <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Meeting Title</p>
-                    <p className="text-lg text-slate-900 dark:text-white font-medium truncate">{scheduledMeeting.title}</p>
+                    <p className="text-lg text-slate-900 dark:text-foreground font-medium truncate">{scheduledMeeting.title}</p>
                   </div>
                   
                   <div className="grid grid-cols-2 gap-4 sm:gap-6">

@@ -155,7 +155,7 @@ export default function FollowUpEngine({ spaceId, workspaceId }) {
           <div className="w-8 h-8 rounded-lg bg-orange-100 dark:bg-orange-500/20 flex items-center justify-center text-orange-600 dark:text-orange-400">
             <Target className="w-4 h-4" />
           </div>
-          <h2 className="font-bold text-slate-900 dark:text-white text-base">AI Follow-Up Engine</h2>
+          <h2 className="font-bold text-slate-900 dark:text-foreground text-base">AI Follow-Up Engine</h2>
         </div>
         <span className="text-xs font-semibold px-2.5 py-1 bg-orange-100 dark:bg-orange-500/20 text-orange-700 dark:text-orange-400 rounded-full">
           {nudges.length} Nudges

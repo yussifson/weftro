@@ -142,7 +142,7 @@ export default function NotificationsDropdown() {
   return (
     <Popover onOpenChange={(open) => { if (open) markAllAsRead(); }}>
       <PopoverTrigger asChild>
-        <button className="relative w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-muted-foreground dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+        <button className="relative w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-muted-foreground dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-accent transition-colors">
           <Bell className="w-5 h-5" />
           {unreadCount > 0 && (
             <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-rose-500 rounded-full animate-pulse border-2 border-white dark:border-slate-900 shadow-sm" />
@@ -169,7 +169,7 @@ export default function NotificationsDropdown() {
                 <div 
                   key={notification.id} 
                   onClick={() => markAsRead(notification.id)}
-                  className={`relative p-4 flex gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group ${!notification.is_read ? 'bg-primary/5' : ''}`}
+                  className={`relative p-4 flex gap-3 hover:bg-slate-50 dark:hover:bg-accent/50 transition-colors cursor-pointer group ${!notification.is_read ? 'bg-primary/5' : ''}`}
                 >
                   <div className={`mt-1 w-2 h-2 rounded-full shrink-0 ${!notification.is_read ? 'bg-primary' : 'bg-transparent'}`} />
                   <div className="flex-1 min-w-0">
@@ -203,7 +203,7 @@ export default function NotificationsDropdown() {
                   {notification.type !== 'group_join_request' && (
                     <button 
                       onClick={(e) => deleteNotification(notification.id, e)}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 hover:text-rose-500 shrink-0 self-start"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-md hover:bg-slate-200 dark:hover:bg-accent text-slate-400 hover:text-rose-500 shrink-0 self-start"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>

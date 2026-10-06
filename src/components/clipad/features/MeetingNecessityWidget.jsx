@@ -151,7 +151,7 @@ export default function MeetingNecessityWidget({ workspaceId }) {
       <div className="bg-white dark:bg-card rounded-xl shadow-sm border border-slate-200 dark:border-border p-5">
         <div className="flex items-center gap-2 mb-4">
           <Activity className="w-5 h-5 text-indigo-500" />
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Meeting Necessity Index</h2>
+          <h2 className="text-lg font-bold text-slate-900 dark:text-foreground">Meeting Necessity Index</h2>
         </div>
         <div className="flex items-center gap-3 py-6 justify-center text-slate-400 dark:text-slate-500">
           <Loader2 className="w-5 h-5 animate-spin" />
@@ -169,7 +169,7 @@ export default function MeetingNecessityWidget({ workspaceId }) {
     <div className="bg-white dark:bg-card rounded-xl shadow-sm border border-slate-200 dark:border-border p-5">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <h2 className="text-lg font-bold text-slate-900 dark:text-foreground flex items-center gap-2">
             <Activity className="w-5 h-5 text-indigo-500" />
             Meeting Necessity Index
           </h2>

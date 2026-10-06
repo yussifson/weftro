@@ -271,7 +271,7 @@ export default function PreJoinScreen({ roomName, onJoin, defaultName = 'Guest' 
           <div className="mt-3 w-full max-w-sm md:max-w-none">
             <button
               onClick={() => setShowDevices(!showDevices)}
-              className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
+              className="flex items-center gap-2 text-xs text-slate-500 dark:text-muted-foreground hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
             >
               <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showDevices ? 'rotate-180' : ''}`} />
               Change camera / microphone
@@ -280,7 +280,7 @@ export default function PreJoinScreen({ roomName, onJoin, defaultName = 'Guest' 
               <div className="mt-2 space-y-2 bg-white/80 dark:bg-card/80 backdrop-blur-xl border border-slate-200 dark:border-border rounded-2xl p-4">
                 {cameras.length > 1 && (
                   <div>
-                    <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1 block">Camera</label>
+                    <label className="text-xs font-semibold text-slate-500 dark:text-muted-foreground mb-1 block">Camera</label>
                     <select
                       value={selectedCamera}
                       onChange={e => handleDeviceChange('camera', e.target.value)}
@@ -296,7 +296,7 @@ export default function PreJoinScreen({ roomName, onJoin, defaultName = 'Guest' 
                 )}
                 {microphones.length > 1 && (
                   <div>
-                    <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1 block">Microphone</label>
+                    <label className="text-xs font-semibold text-slate-500 dark:text-muted-foreground mb-1 block">Microphone</label>
                     <select
                       value={selectedMic}
                       onChange={e => handleDeviceChange('mic', e.target.value)}
@@ -319,14 +319,14 @@ export default function PreJoinScreen({ roomName, onJoin, defaultName = 'Guest' 
       {/* Right Side: Join Form */}
       <div className="relative z-10 flex-1 flex flex-col items-center md:items-start text-center md:text-left justify-center w-full max-w-md bg-transparent p-6 md:p-10 space-y-8">
         <div>
-          <h1 className="text-[2rem] font-medium text-slate-900 dark:text-white tracking-tight leading-tight">Ready to join?</h1>
+          <h1 className="text-[2rem] font-medium text-slate-900 dark:text-foreground tracking-tight leading-tight">Ready to join?</h1>
           <p className="text-slate-500 dark:text-muted-foreground mt-1 text-base">{roomName || 'Secure Meeting'}</p>
         </div>
 
         <div className="space-y-5">
           <div className="bg-white/50 dark:bg-[#111827]/50 backdrop-blur-sm border border-slate-200 dark:border-border rounded-2xl px-5 py-4 flex items-center justify-between">
             <span className="text-sm font-medium text-slate-500">Joining as</span>
-            <span className="font-semibold text-slate-900 dark:text-white">{defaultName || 'Guest'}</span>
+            <span className="font-semibold text-slate-900 dark:text-foreground">{defaultName || 'Guest'}</span>
           </div>
 
           <Button

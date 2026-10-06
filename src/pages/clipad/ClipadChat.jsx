@@ -333,7 +333,7 @@ export default function ClipadChat({ isDockedMode = false }) {
  const firstName = user?.full_name?.split(' ')[0] || user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'there';
 
  return (
-   <div style={{ fontFamily: "'Inter', sans-serif" }} className="flex flex-col h-[100dvh] bg-slate-50 dark:bg-slate-950 overflow-hidden page-enter">
+   <div style={{ fontFamily: "'Inter', sans-serif" }} className="flex flex-col h-[100dvh] bg-slate-50 dark:bg-background overflow-hidden page-enter">
 
 
      {/* Main layout below nav */}
@@ -373,12 +373,12 @@ export default function ClipadChat({ isDockedMode = false }) {
        {/* Sidebar - Chat List */}
       {!isDockedMode ? (
       <div className={cn(
-        "flex flex-col bg-slate-50 dark:bg-slate-900/40 text-slate-900 dark:text-white border-r border-slate-200 dark:border-slate-800 transition-all duration-300 z-20 shrink-0",
+        "flex flex-col bg-slate-50 dark:bg-card/40 text-slate-900 dark:text-foreground border-r border-slate-200 dark:border-border transition-all duration-300 z-20 shrink-0",
         isSidebarCollapsed ? "w-20" : "w-full md:w-80",
         activeRoomId ? "hidden md:flex" : "flex"
       )}>
  <div className={cn(
-   "border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0",
+   "border-b border-slate-200 dark:border-border flex items-center justify-between shrink-0",
    isSidebarCollapsed ? "p-2 flex-col gap-2" : "p-4"
  )}>
  {!isSidebarCollapsed ? (
@@ -387,26 +387,26 @@ export default function ClipadChat({ isDockedMode = false }) {
        <div className="w-10 h-10 rounded-full bg-[#00beac]/20 flex items-center justify-center overflow-hidden shrink-0 border border-[#00beac]/30">
          {user?.avatar_url ? <img src={user.avatar_url} className="w-full h-full object-cover"/> : <MessageSquare className="w-5 h-5 text-[#fad503]" />}
        </div>
-       <h2 className="font-bold text-lg text-slate-900 dark:text-white">Chats</h2>
+       <h2 className="font-bold text-lg text-slate-900 dark:text-foreground">Chats</h2>
      </div>
       <div className="flex items-center gap-1">
         <Button variant="ghost" size="icon" onClick={() => {
           toggleChatDock();
           if (!isChatDocked && location.pathname === '/chat') navigate('/dashboard');
-        }} className="hidden md:inline-flex w-9 h-9 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300" title="Dock to Right Sidebar">
-          <ChevronsRight className="w-5 h-5 text-slate-500 dark:text-slate-400 hover:text-white" />
+        }} className="hidden md:inline-flex w-9 h-9 rounded-full hover:bg-slate-100 dark:hover:bg-accent text-slate-500 hover:text-slate-700 dark:text-muted-foreground dark:hover:text-slate-300" title="Dock to Right Sidebar">
+          <ChevronsRight className="w-5 h-5 text-slate-500 dark:text-muted-foreground hover:text-white" />
         </Button>
-       <Button variant="ghost" size="icon" onClick={() => setIsSidebarCollapsed(true)} className="w-9 h-9 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300" title="Collapse Sidebar">
-         <PanelLeftClose className="w-5 h-5 text-slate-600 dark:text-slate-300" />
+       <Button variant="ghost" size="icon" onClick={() => setIsSidebarCollapsed(true)} className="w-9 h-9 rounded-full hover:bg-slate-100 dark:hover:bg-accent text-slate-500 hover:text-slate-700 dark:text-muted-foreground dark:hover:text-slate-300" title="Collapse Sidebar">
+         <PanelLeftClose className="w-5 h-5 text-slate-600 dark:text-muted-foreground" />
        </Button>
        {!isPortalUser && (
        <DropdownMenu>
          <DropdownMenuTrigger asChild>
-           <Button variant="ghost" size="icon" className="w-9 h-9 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300">
-             <MoreVertical className="w-5 h-5 text-slate-600 dark:text-slate-300" />
+           <Button variant="ghost" size="icon" className="w-9 h-9 rounded-full hover:bg-slate-100 dark:hover:bg-accent text-slate-500 hover:text-slate-700 dark:text-muted-foreground dark:hover:text-slate-300">
+             <MoreVertical className="w-5 h-5 text-slate-600 dark:text-muted-foreground" />
            </Button>
          </DropdownMenuTrigger>
-         <DropdownMenuContent align="end" className="w-48 bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-white border-slate-200 dark:border-slate-800 shadow-xl">
+         <DropdownMenuContent align="end" className="w-48 bg-slate-100 dark:bg-background text-slate-900 dark:text-foreground border-slate-200 dark:border-border shadow-xl">
            <DropdownMenuItem onClick={() => setIsAddChatOpen('chat')}>New Chat</DropdownMenuItem>
            <DropdownMenuItem onClick={() => setIsAddChatOpen('group')}>New Group</DropdownMenuItem>
            <DropdownMenuSeparator />
@@ -418,17 +418,17 @@ export default function ClipadChat({ isDockedMode = false }) {
    </div>
  ) : (
    <>
-     <Button variant="ghost" size="icon" onClick={() => setIsSidebarCollapsed(false)} className="w-10 h-10 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300 mx-auto" title="Expand Sidebar">
+     <Button variant="ghost" size="icon" onClick={() => setIsSidebarCollapsed(false)} className="w-10 h-10 rounded-full hover:bg-slate-100 dark:hover:bg-accent text-slate-500 hover:text-slate-700 dark:text-muted-foreground dark:hover:text-slate-300 mx-auto" title="Expand Sidebar">
        <PanelLeftOpen className="w-5 h-5" />
      </Button>
      {!isPortalUser && (
        <DropdownMenu>
          <DropdownMenuTrigger asChild>
-           <Button variant="ghost" size="icon" className="w-10 h-10 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300 mx-auto" title="New Chat">
+           <Button variant="ghost" size="icon" className="w-10 h-10 rounded-full hover:bg-slate-100 dark:hover:bg-accent text-slate-500 hover:text-slate-700 dark:text-muted-foreground dark:hover:text-slate-300 mx-auto" title="New Chat">
              <Plus className="w-5 h-5" />
            </Button>
          </DropdownMenuTrigger>
-         <DropdownMenuContent align="end" className="w-48 bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-white border-slate-200 dark:border-slate-800 shadow-xl">
+         <DropdownMenuContent align="end" className="w-48 bg-slate-100 dark:bg-background text-slate-900 dark:text-foreground border-slate-200 dark:border-border shadow-xl">
            <DropdownMenuItem onClick={() => setIsAddChatOpen('chat')}>New Chat</DropdownMenuItem>
            <DropdownMenuItem onClick={() => setIsAddChatOpen('group')}>New Group</DropdownMenuItem>
            <DropdownMenuSeparator />
@@ -441,15 +441,15 @@ export default function ClipadChat({ isDockedMode = false }) {
  </div>
  
   {!isSidebarCollapsed && (
-  <div className="p-3 bg-transparent border-b border-slate-200 dark:border-slate-800">
+  <div className="p-3 bg-transparent border-b border-slate-200 dark:border-border">
  <div className="relative">
- <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400" />
+ <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-muted-foreground" />
  <input 
  type="text" 
  value={searchQuery}
  onChange={(e) => setSearchQuery(e.target.value)}
  placeholder={t("search_chats", "Search or start new chat")} 
- className="w-full bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 pl-9 text-sm focus:ring-1 focus:ring-[#00beac] focus:outline-none placeholder:text-slate-500 transition-all"
+ className="w-full bg-slate-100 dark:bg-background text-slate-900 dark:text-foreground border border-slate-200 dark:border-border rounded-xl px-4 py-2 pl-9 text-sm focus:ring-1 focus:ring-[#00beac] focus:outline-none placeholder:text-slate-500 transition-all"
  />
  </div>
  </div>
@@ -480,18 +480,18 @@ export default function ClipadChat({ isDockedMode = false }) {
   key={room.id}
   className={cn(
   "flex items-center gap-3 px-3 py-3 transition-all duration-200 group relative",
-  isActive ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl font-bold shadow-sm border border-slate-200 dark:border-slate-700 mx-2 my-1" : "hover:bg-slate-200/50 dark:hover:bg-slate-800/50 text-slate-700 dark:text-slate-300 rounded-xl mx-2 my-1 cursor-pointer transition-colors",
+  isActive ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-foreground rounded-xl font-bold shadow-sm border border-slate-200 dark:border-border mx-2 my-1" : "hover:bg-slate-200/50 dark:hover:bg-accent/50 text-slate-700 dark:text-muted-foreground rounded-xl mx-2 my-1 cursor-pointer transition-colors",
   isSidebarCollapsed && "justify-center px-1 mx-0"
   )}
  >
  <div className="flex-1 flex items-center gap-3 min-w-0 cursor-pointer" onClick={() => setActiveRoomId(room.id)}>
  <div className="relative flex-shrink-0" title={isSidebarCollapsed ? roomName : undefined}>
  {room.room_type === "group" ? (
- <div className={cn("w-12 h-12 rounded-full flex items-center justify-center overflow-hidden", isActive ? "bg-[#006065] dark:bg-[#131A2C] text-white" : "bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400")}>
+ <div className={cn("w-12 h-12 rounded-full flex items-center justify-center overflow-hidden", isActive ? "bg-[#006065] dark:bg-[#131A2C] text-white" : "bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-muted-foreground")}>
  <Users className="w-6 h-6" />
  </div>
  ) : (
- <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center overflow-hidden shrink-0 shadow-sm border border-slate-200 dark:border-slate-700">
+ <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center overflow-hidden shrink-0 shadow-sm border border-slate-200 dark:border-border">
   <img src={avatarUrl} alt={roomName} className="w-full h-full object-cover"/>
 </div>
  )}
@@ -499,21 +499,21 @@ export default function ClipadChat({ isDockedMode = false }) {
  {!isSidebarCollapsed && (
  <div className="flex-1 min-w-0 pb-1">
   <div className="flex justify-between items-baseline mb-0.5">
-  <p className={cn("text-[15px] font-semibold truncate", isActive ? "text-slate-900 dark:text-white" : "text-slate-700 dark:text-slate-300")}>{roomName}</p>
- <p className={cn("text-xs tracking-[0.04em]", isActive ? "text-slate-500 dark:text-slate-400" : "text-slate-500 dark:text-slate-400")}>{format(new Date(room.updated_at), 'h:mm a')}</p>
+  <p className={cn("text-[15px] font-semibold truncate", isActive ? "text-slate-900 dark:text-foreground" : "text-slate-700 dark:text-muted-foreground")}>{roomName}</p>
+ <p className={cn("text-xs tracking-[0.04em]", isActive ? "text-slate-500 dark:text-muted-foreground" : "text-slate-500 dark:text-muted-foreground")}>{format(new Date(room.updated_at), 'h:mm a')}</p>
  </div>
- <p className={cn("text-xs truncate", isActive ? "text-slate-500 dark:text-slate-400" : "text-slate-500 dark:text-slate-400")}>Click to view messages...</p>
+ <p className={cn("text-xs truncate", isActive ? "text-slate-500 dark:text-muted-foreground" : "text-slate-500 dark:text-muted-foreground")}>Click to view messages...</p>
  </div>
  )}
  </div>
  {room.room_type === "group" && !isSidebarCollapsed && (
    <DropdownMenu>
      <DropdownMenuTrigger asChild>
-       <button className="opacity-0 group-hover:opacity-100 p-1 rounded transition-opacity absolute right-4 top-1/2 -translate-y-1/2 bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-white">
+       <button className="opacity-0 group-hover:opacity-100 p-1 rounded transition-opacity absolute right-4 top-1/2 -translate-y-1/2 bg-slate-100 dark:bg-background text-slate-900 dark:text-foreground">
          <MoreVertical className="w-4 h-4" />
        </button>
      </DropdownMenuTrigger>
-     <DropdownMenuContent align="end" className="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-white border-slate-200 dark:border-slate-800">
+     <DropdownMenuContent align="end" className="bg-slate-100 dark:bg-background text-slate-900 dark:text-foreground border-slate-200 dark:border-border">
        <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setActiveRoomId(room.id); setIsGroupInfoOpen(true); }}>Group Info</DropdownMenuItem>
        {room.chat_participants?.find(p => p.user_id === user.id)?.role === 'admin' && (
          <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setActiveRoomId(room.id); setIsManageMembersOpen(true); }}>Manage Group</DropdownMenuItem>
@@ -525,7 +525,7 @@ export default function ClipadChat({ isDockedMode = false }) {
  );
  })}
  {!loadingRooms && rooms.length === 0 && !isSidebarCollapsed && (
- <div className="flex flex-col items-center justify-center p-8 h-full text-center text-slate-500 dark:text-slate-400">
+ <div className="flex flex-col items-center justify-center p-8 h-full text-center text-slate-500 dark:text-muted-foreground">
  <p>No chats found.</p>
  { !isPortalUser && (
  <Button variant="link" className="text-[#fad503]" onClick={() => setIsAddChatOpen(true)}>Start a new chat</Button>
@@ -537,21 +537,21 @@ export default function ClipadChat({ isDockedMode = false }) {
  ) : (
     /* When docked, show compact sidebar */
     <div className={cn(
-      "flex flex-col bg-slate-50 dark:bg-slate-900/40 text-slate-900 dark:text-white border-r border-slate-200 dark:border-slate-800 transition-all duration-300 z-20 shrink-0",
+      "flex flex-col bg-slate-50 dark:bg-card/40 text-slate-900 dark:text-foreground border-r border-slate-200 dark:border-border transition-all duration-300 z-20 shrink-0",
       activeRoomId ? "hidden" : "w-full"
     )}>
-      <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0">
-        <h2 className="font-bold text-lg text-slate-900 dark:text-white">Chats</h2>
+      <div className="p-4 border-b border-slate-200 dark:border-border flex items-center justify-between shrink-0">
+        <h2 className="font-bold text-lg text-slate-900 dark:text-foreground">Chats</h2>
         <button onClick={() => {
           toggleChatDock();
           if (!isChatDocked && location.pathname === '/chat') navigate('/dashboard');
-        }} className="hidden md:block hover:text-[#fad503] transition-colors text-slate-500 dark:text-slate-400 p-1" title="Undock Chat">
+        }} className="hidden md:block hover:text-[#fad503] transition-colors text-slate-500 dark:text-muted-foreground p-1" title="Undock Chat">
           <ChevronsLeft className="w-5 h-5" />
         </button>
       </div>
       
-      <div className="p-3 border-b border-slate-200 dark:border-slate-800 shrink-0">
-        <input type="text" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#00beac] placeholder:text-slate-500" />
+      <div className="p-3 border-b border-slate-200 dark:border-border shrink-0">
+        <input type="text" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-slate-100 dark:bg-background text-slate-900 dark:text-foreground border border-slate-200 dark:border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#00beac] placeholder:text-slate-500" />
       </div>
 
       <div className="flex-1 overflow-y-auto custom-scrollbar">
@@ -564,7 +564,7 @@ export default function ClipadChat({ isDockedMode = false }) {
             const isActive = activeRoomId === room.id;
 
             return (
-              <div key={room.id} className={cn("flex items-center gap-2 p-2 rounded-xl transition-colors group relative", isActive ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-bold shadow-sm border border-slate-200 dark:border-slate-700" : "hover:bg-slate-200/50 dark:hover:bg-slate-800/50 text-slate-700 dark:text-slate-300 cursor-pointer")}>
+              <div key={room.id} className={cn("flex items-center gap-2 p-2 rounded-xl transition-colors group relative", isActive ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-foreground font-bold shadow-sm border border-slate-200 dark:border-border" : "hover:bg-slate-200/50 dark:hover:bg-accent/50 text-slate-700 dark:text-muted-foreground cursor-pointer")}>
                 <div className="flex-1 flex items-center gap-2 min-w-0 cursor-pointer" onClick={() => setActiveRoomId(room.id)}>
                 <div className="relative flex-shrink-0">
                   {room.room_type === "group" ? (
@@ -576,7 +576,7 @@ export default function ClipadChat({ isDockedMode = false }) {
                       )}
                     </div>
                   ) : (
-                    <div className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center overflow-hidden shrink-0 shadow-sm border border-slate-200 dark:border-slate-700">
+                    <div className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center overflow-hidden shrink-0 shadow-sm border border-slate-200 dark:border-border">
                       <img src={avatarUrl} alt={roomName} className="w-full h-full object-cover"/>
                     </div>
                   )}
@@ -595,16 +595,16 @@ export default function ClipadChat({ isDockedMode = false }) {
 
  {/* Main Chat Area */}
  <div className={cn(
-   "flex-1 flex flex-col bg-[#f8fafc] relative w-full h-full",
+   "flex-1 flex flex-col bg-[#f8fafc] dark:bg-background relative w-full h-full",
    !activeRoomId ? "hidden md:flex" : "flex"
  )}>
 
  {activeRoom ? (
  <>
   {/* Chat Header */}
-  <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-white dark:bg-slate-900/40 text-slate-900 dark:text-white sticky top-0 z-10 shadow-sm border-b border-slate-200 dark:border-slate-800">
+  <div className="p-4 border-b border-slate-200 dark:border-border flex items-center justify-between bg-white dark:bg-card/40 text-slate-900 dark:text-foreground sticky top-0 z-10 shadow-sm border-b border-slate-200 dark:border-border">
     <div className="flex items-center gap-3">
-      <button onClick={() => setActiveRoomId(null)} className="md:hidden mr-1 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white">
+      <button onClick={() => setActiveRoomId(null)} className="md:hidden mr-1 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-accent text-slate-500 hover:text-slate-900 dark:hover:text-white">
         <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 4l1.4 1.4L7.8 11H20v2H7.8l5.6 5.6L12 20l-8-8 8-8z"></path></svg>
       </button>
       {isDockedMode && (
@@ -649,7 +649,7 @@ export default function ClipadChat({ isDockedMode = false }) {
                   toast({ title: 'Contact Info', description: otherProfile ? `${otherProfile.full_name} (${otherProfile.email || 'No email'})` : `Contact Info: ${roomNameForInfo}` });
                 }
               }}>{roomName}</h3>
-              <p className="text-[12px] text-slate-500 dark:text-slate-400">{activeRoom?.room_type === 'group' ? 'View group info' : 'View contact info'}</p>
+              <p className="text-[12px] text-slate-500 dark:text-muted-foreground">{activeRoom?.room_type === 'group' ? 'View group info' : 'View contact info'}</p>
             </div>
           </>
         );
@@ -718,7 +718,7 @@ export default function ClipadChat({ isDockedMode = false }) {
  {/* Chat Messages */}
  <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-2 z-10">
  <div className="text-center my-2 flex justify-center">
- <span className="text-xs text-slate-500 bg-slate-100 dark:bg-slate-800 dark:text-slate-400 border border-slate-200 dark:border-slate-700 px-3 py-1.5 rounded-xl tracking-[0.04em]">
+ <span className="text-xs text-slate-500 bg-slate-100 dark:bg-slate-800 dark:text-muted-foreground border border-slate-200 dark:border-border px-3 py-1.5 rounded-xl tracking-[0.04em]">
  Messages and calls are end-to-end encrypted. No one outside of this chat, not even Slate, can read or listen to them.
  </span>
  </div>
@@ -751,7 +751,7 @@ export default function ClipadChat({ isDockedMode = false }) {
  "relative px-4 py-2.5 text-[14.5px] leading-relaxed rounded-2xl shadow-sm",
  isMe 
  ? "bg-[#006065] dark:bg-[#131A2C] text-white font-medium rounded-br-sm shadow-[0_2px_10px_rgba(0,96,101,0.2)]" 
- : "bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-800 rounded-bl-sm"
+ : "bg-white dark:bg-card text-slate-900 dark:text-foreground border border-slate-200 dark:border-border rounded-bl-sm"
  )}>
  {msg.reply_to_id && (
  <div className="bg-black/10 dark:bg-white/10 border-l-4 border-current rounded-md p-2 mb-1.5 text-xs opacity-90 cursor-pointer tracking-[0.02em] hover:shadow-[0_2px_8px_rgba(0,0,0,0.07)] transition-shadow duration-200" onClick={() => {
@@ -792,7 +792,7 @@ export default function ClipadChat({ isDockedMode = false }) {
         <FileText className="w-8 h-8 text-primary shrink-0" />
         <div className="flex flex-col min-w-0">
           <span className="text-sm font-semibold truncate max-w-[150px] text-primary hover:underline">{fileName}</span>
-          <span className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-[0.04em]">{fileName.split('.').pop() || 'DOCUMENT'}</span>
+          <span className="text-xs text-slate-500 dark:text-muted-foreground uppercase tracking-[0.04em]">{fileName.split('.').pop() || 'DOCUMENT'}</span>
         </div>
       </div>
     );
@@ -803,7 +803,7 @@ export default function ClipadChat({ isDockedMode = false }) {
  <div className="whitespace-pre-wrap pr-12">{msg.content}</div>
  )}
  
- <div className="float-right -mb-1 ml-2 text-[10px] text-slate-500 dark:text-slate-400 flex items-center gap-2 mt-1">
+ <div className="float-right -mb-1 ml-2 text-[10px] text-slate-500 dark:text-muted-foreground flex items-center gap-2 mt-1">
  {msg.is_edited && <span className="mr-1 italic">edited</span>}
  {format(new Date(msg.created_at), 'h:mm a')}
  {isMe && (() => {
@@ -818,7 +818,7 @@ export default function ClipadChat({ isDockedMode = false }) {
  <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="p-0.5 bg-white/70 hover:bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-black/40 dark:hover:bg-black/80 rounded-full text-slate-500 dark:text-slate-400 dark:text-foreground backdrop-blur-sm shadow-sm transition-all" title="Message Options">
+        <button className="p-0.5 bg-white/70 hover:bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-black/40 dark:hover:bg-black/80 rounded-full text-slate-500 dark:text-muted-foreground dark:text-foreground backdrop-blur-sm shadow-sm transition-all" title="Message Options">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </button>
       </DropdownMenuTrigger>
@@ -854,7 +854,7 @@ export default function ClipadChat({ isDockedMode = false }) {
  </div>
 
  {(replyTo || editingMsg) && (
- <div className="px-4 py-2 bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-300 border-t border-slate-200 dark:border-slate-800 backdrop-blur-md border-t border-black/5 dark:border-white/5 flex items-center justify-between z-10 text-sm">
+ <div className="px-4 py-2 bg-slate-50 dark:bg-card text-slate-600 dark:text-muted-foreground border-t border-slate-200 dark:border-border backdrop-blur-md border-t border-black/5 dark:border-white/5 flex items-center justify-between z-10 text-sm">
  <div className="flex-1 min-w-0 border-l-4 border-primary pl-3">
  <p className="font-semibold text-primary">{editingMsg ? "Editing Message" : `Replying to ${participantProfiles[replyTo?.sender_id]?.full_name || 'User'}`}</p>
  <p className="text-[#71717a] dark:text-gray-400 truncate">{editingMsg ? editingMsg.content : replyTo?.content}</p>
@@ -866,7 +866,7 @@ export default function ClipadChat({ isDockedMode = false }) {
  )}
 
  {/* Input Area */}
- <div className="px-4 pt-3 pb-[80px] md:pb-4 bg-white dark:bg-slate-900/40 text-slate-900 dark:text-white border-t border-slate-200 dark:border-slate-800 shadow-xl backdrop-blur-xl z-10 flex items-center gap-2 border-t border-black/5 dark:border-white/5 shadow-[0_-4px_24px_rgba(0,0,0,0.02)] dark:shadow-[0_-4px_24px_rgba(0,0,0,0.2)]">
+ <div className="px-4 pt-3 pb-[80px] md:pb-4 bg-white dark:bg-card/40 text-slate-900 dark:text-foreground border-t border-slate-200 dark:border-border shadow-xl backdrop-blur-xl z-10 flex items-center gap-2 border-t border-black/5 dark:border-white/5 shadow-[0_-4px_24px_rgba(0,0,0,0.02)] dark:shadow-[0_-4px_24px_rgba(0,0,0,0.2)]">
  <input type="file" ref={fileInputRef} className="hidden" onChange={(e) => handleFileUpload(e, 'file')} />
  <input type="file" accept="image/*" id="chat-image-upload" className="hidden" onChange={(e) => handleFileUpload(e, 'image')} />
  <input type="file" accept=".pdf,.doc,.docx,.txt" id="chat-doc-upload" className="hidden" onChange={(e) => handleFileUpload(e, 'doc')} />
@@ -904,7 +904,7 @@ export default function ClipadChat({ isDockedMode = false }) {
  </PopoverContent>
  </Popover>
  
- <div className="flex-1 bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-white rounded-[20px] border border-slate-200 dark:border-slate-700 relative flex items-center border border-black/5 dark:border-white/5 hover:border-primary/30 hover:shadow-md transition-all duration-300 min-h-[44px]">
+ <div className="flex-1 bg-slate-100 dark:bg-background text-slate-900 dark:text-foreground rounded-[20px] border border-slate-200 dark:border-border relative flex items-center border border-black/5 dark:border-white/5 hover:border-primary/30 hover:shadow-md transition-all duration-300 min-h-[44px]">
  <input
  type="text"
  value={inputValue}
@@ -934,11 +934,11 @@ export default function ClipadChat({ isDockedMode = false }) {
  <MessageSquare className="w-12 h-12 text-[#71717a] dark:text-gray-400/30" />
  </div>
  <h2 className="text-3xl font-light text-white font-bold mb-4 tracking-[-0.02em]">Slate Web</h2>
- <p className="text-sm text-slate-600 dark:text-slate-300 max-w-md leading-relaxed mb-8">
+ <p className="text-sm text-slate-600 dark:text-muted-foreground max-w-md leading-relaxed mb-8">
  Collaborate seamlessly with your team across any device.<br/>
  Your organizational memory is securely synchronized and always accessible.
  </p>
- <div className="flex items-center gap-2 text-[13px] text-slate-600 dark:text-slate-300">
+ <div className="flex items-center gap-2 text-[13px] text-slate-600 dark:text-muted-foreground">
  <span className="w-3 h-3 bg-[#d9fdd3] rounded-md flex items-center justify-center"><Check className="w-2 h-2 text-[#005c4b]" /></span>
  End-to-end encrypted
  </div>

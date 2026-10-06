@@ -136,7 +136,7 @@ export default function CliPadLogin() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="Enter your email"
-                      className="w-full pl-10 pr-4 h-11 text-sm bg-white border border-slate-200 text-slate-900 rounded-xl focus:border-[#006065] focus:ring-2 focus:ring-[#006065]/15 transition-all outline-none shadow-sm placeholder:text-slate-400"
+                      className="w-full pl-10 pr-4 h-11 text-sm bg-white border border-slate-200 text-slate-900 rounded-xl focus:border-[#006065] dark:border-border focus:ring-2 focus:ring-[#006065]/15 transition-all outline-none shadow-sm placeholder:text-slate-400"
                       required
                     />
                   </div>
@@ -151,7 +151,7 @@ export default function CliPadLogin() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
-                      className="w-full pl-10 pr-10 h-11 text-sm bg-white border border-slate-200 text-slate-900 rounded-xl focus:border-[#006065] focus:ring-2 focus:ring-[#006065]/15 transition-all outline-none shadow-sm placeholder:text-slate-400"
+                      className="w-full pl-10 pr-10 h-11 text-sm bg-white border border-slate-200 text-slate-900 rounded-xl focus:border-[#006065] dark:border-border focus:ring-2 focus:ring-[#006065]/15 transition-all outline-none shadow-sm placeholder:text-slate-400"
                       required
                     />
                     <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
@@ -304,7 +304,7 @@ export default function CliPadLogin() {
               }}
             >
               {/* Inner Device Screen */}
-              <div className="w-full h-full bg-[#f8fafc] rounded-[22px] overflow-hidden flex flex-row text-[10px] text-slate-800 font-sans shadow-inner">
+              <div className="w-full h-full bg-[#f8fafc] dark:bg-background rounded-[22px] overflow-hidden flex flex-row text-[10px] text-slate-800 font-sans shadow-inner">
                 {/* Sidebar */}
                 <div className="w-44 bg-[#006065] dark:bg-[#131A2C] text-white p-3 flex flex-col justify-between shrink-0">
                   <div>

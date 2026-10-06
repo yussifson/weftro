@@ -200,14 +200,14 @@ function DocEditor({ doc, onSave, isSaving, onBack }) {
       <div className="flex flex-wrap items-center justify-between gap-2 md:gap-4 p-2 sm:p-4 border-b bg-card min-h-[60px]">
         <div className="flex items-center gap-2 flex-1 min-w-[200px]">
           {onBack && (
-            <Button variant="ghost" size="icon" className="md:hidden shrink-0 w-8 h-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800" onClick={onBack}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-slate-700 dark:text-slate-300"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+            <Button variant="ghost" size="icon" className="md:hidden shrink-0 w-8 h-8 rounded-full hover:bg-slate-100 dark:hover:bg-accent" onClick={onBack}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-slate-700 dark:text-muted-foreground"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
             </Button>
           )}
           <input
             value={title || ''}
             onChange={(e) => setTitle(e.target.value)}
-            className="text-lg md:text-2xl font-bold bg-transparent border-none focus:outline-none focus:ring-0 flex-1 placeholder:text-muted-foreground/30 min-w-[100px] text-slate-900 dark:text-white"
+            className="text-lg md:text-2xl font-bold bg-transparent border-none focus:outline-none focus:ring-0 flex-1 placeholder:text-muted-foreground/30 min-w-[100px] text-slate-900 dark:text-foreground"
             placeholder="Untitled Document"
           />
         </div>

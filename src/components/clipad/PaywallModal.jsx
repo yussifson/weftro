@@ -96,7 +96,7 @@ export const PaywallModal = ({ isOpen, onClose, featureName = "This feature", li
 
           {/* Content */}
           <div className="px-6 pt-10 pb-6 text-center overflow-y-auto">
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-foreground mb-2">
               Upgrade to Clipad Pro
             </h2>
             <p className="text-sm text-slate-600 dark:text-muted-foreground mb-6">

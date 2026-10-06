@@ -56,13 +56,13 @@ export default function ClipadLayout() {
   const isImmersive = false;
 
   return (
-    <div data-theme="brand" className="flex flex-row h-[100dvh] w-full overflow-hidden bg-[#f8fafc] text-[#0f172a] pt-[var(--sat)] pb-[var(--sab)] pl-[var(--sal)] pr-[var(--sar)]">
+    <div data-theme="brand" className="flex flex-row h-[100dvh] w-full overflow-hidden bg-[#f8fafc] dark:bg-background text-[#0f172a] pt-[var(--sat)] pb-[var(--sab)] pl-[var(--sal)] pr-[var(--sar)]">
       
       {/* Premium Sidebar Component */}
       <ClipadSidebar forceMobile={forceMobile} />
 
       {/* Main Content Column */}
-      <div ref={containerRef} className="flex flex-col flex-1 w-0 overflow-hidden relative @container bg-[#f8fafc] transition-all">
+      <div ref={containerRef} className="flex flex-col flex-1 w-0 overflow-hidden relative @container bg-[#f8fafc] dark:bg-background transition-all">
         {!isImmersive && <ClipadTopNav forceMobile={forceMobile} />}
         <PullToRefresh className="relative z-30 page-enter pb-[80px] md:pb-0 h-full overflow-y-auto overflow-x-hidden scrollbar-thin">
           {location.pathname === '/chat' && isChatDocked ? (

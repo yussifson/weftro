@@ -35,7 +35,7 @@ const STATUS_CONFIG = {
   pending: { label: 'Pending Review', color: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20' },
   contacted: { label: 'Contacted', color: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20' },
   in_progress: { label: 'In Negotiation', color: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20' },
-  closed: { label: 'Closed / Won', color: 'bg-[#006065] dark:bg-[#131A2C]/10 text-[#006065] dark:text-[#00beac] border-[#006065]/20' },
+  closed: { label: 'Closed / Won', color: 'bg-[#006065] dark:bg-[#131A2C]/10 text-[#006065] dark:text-[#00beac] border-[#006065] dark:border-border/20' },
 };
 
 export default function CustomRequests() {
@@ -518,7 +518,7 @@ export default function CustomRequests() {
                       </TableCell>
 
                       <TableCell className="py-4">
-                        <div className="text-xs font-medium capitalize text-white/90 dark:text-white/50 flex items-center gap-1.5">
+                        <div className="text-xs font-medium capitalize text-white/90 dark:text-foreground/50 flex items-center gap-1.5">
                           <Server className="w-3.5 h-3.5 text-indigo-500" />
                           {(req.deployment || 'cloud').replace('_', ' ')}
                         </div>

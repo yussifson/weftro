@@ -170,17 +170,17 @@ export default function IntegrationAnalytics() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl h-32"></div>
+            <div key={i} className="bg-white dark:bg-card border border-slate-200 dark:border-border p-6 rounded-2xl h-32"></div>
           ))}
         </div>
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl h-64 mb-8"></div>
+        <div className="bg-white dark:bg-card border border-slate-200 dark:border-border p-6 rounded-2xl h-64 mb-8"></div>
       </div>
     );
   }
   if (!isUserAdmin) return <Navigate to="/clipad" replace />;
 
   return (
-    <div className="min-h-full bg-slate-50 dark:bg-slate-950 flex flex-col text-slate-900 dark:text-slate-100 w-full page-enter">
+    <div className="min-h-full bg-slate-50 dark:bg-background flex flex-col text-slate-900 dark:text-slate-100 w-full page-enter">
       <div className="flex-1">
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-10">
           
@@ -193,12 +193,12 @@ export default function IntegrationAnalytics() {
                 <h1 className="text-2xl font-black">
                   Integration Analytics
                 </h1>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Monitor data ingestion, AI processing, and knowledge graph health.</p>
+                <p className="text-sm text-slate-500 dark:text-muted-foreground mt-1">Monitor data ingestion, AI processing, and knowledge graph health.</p>
               </div>
             </div>
             <button 
               onClick={() => window.location.reload()}
-              className="px-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm text-sm font-bold hover:bg-slate-50 dark:hover:bg-slate-800/50 flex items-center gap-2 transition-colors"
+              className="px-4 py-2 bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl shadow-sm text-sm font-bold hover:bg-slate-50 dark:hover:bg-accent/50 flex items-center gap-2 transition-colors"
             >
               <RefreshCw className="w-4 h-4 text-slate-400" /> Refresh Data
             </button>
@@ -209,35 +209,35 @@ export default function IntegrationAnalytics() {
             <MetricCard 
               title="Active Integrations" 
               value={`${metrics?.activeConnections} / ${metrics?.totalConnections}`} 
-              icon={Plug} color="text-[#006065] dark:text-[#fad503]" bg="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:border-[#006065]/30 hover:shadow-lg transition-all" 
+              icon={Plug} color="text-[#006065] dark:text-[#fad503]" bg="bg-white dark:bg-card border border-slate-200 dark:border-border shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:border-[#006065] dark:border-border/30 hover:shadow-lg transition-all" 
               subtitle={metrics?.errorCount > 0 ? `${metrics.errorCount} requiring attention` : 'All systems operational'}
               subtitleClass={metrics?.errorCount > 0 ? 'text-rose-500' : 'text-[#006065] dark:text-[#006065]'}
             />
             <MetricCard 
               title="Total Knowledge Items" 
               value={metrics?.totalItems?.toLocaleString()} 
-              icon={Database} color="text-[#006065] dark:text-[#fad503]" bg="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:border-[#006065]/30 hover:shadow-lg transition-all" 
+              icon={Database} color="text-[#006065] dark:text-[#fad503]" bg="bg-white dark:bg-card border border-slate-200 dark:border-border shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:border-[#006065] dark:border-border/30 hover:shadow-lg transition-all" 
               subtitle="Imported from all sources"
             />
             <MetricCard 
               title="AI Processed (Vectorized)" 
               value={`${metrics?.vectorizedItems?.toLocaleString()}`} 
-              icon={Cpu} color="text-[#006065] dark:text-[#fad503]" bg="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:border-[#006065]/30 hover:shadow-lg transition-all" 
+              icon={Cpu} color="text-[#006065] dark:text-[#fad503]" bg="bg-white dark:bg-card border border-slate-200 dark:border-border shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:border-[#006065] dark:border-border/30 hover:shadow-lg transition-all" 
               subtitle={`${Math.round((metrics?.vectorizedItems / (metrics?.totalItems || 1)) * 100)}% of total corpus`}
             />
             <MetricCard 
               title="Graph Relationships" 
               value={metrics?.totalRelationships?.toLocaleString()} 
-              icon={Network} color="text-[#006065] dark:text-[#fad503]" bg="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:border-[#006065]/30 hover:shadow-lg transition-all" 
+              icon={Network} color="text-[#006065] dark:text-[#fad503]" bg="bg-white dark:bg-card border border-slate-200 dark:border-border shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:border-[#006065] dark:border-border/30 hover:shadow-lg transition-all" 
               subtitle="Detected cross-source links"
             />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
             {/* Chart: Data Ingestion Over Time */}
-            <div className="lg:col-span-2 p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800  shadow-sm flex flex-col hover:border-[#006065]/50 transition-all hover:shadow-md">
+            <div className="lg:col-span-2 p-5 rounded-2xl bg-white dark:bg-card border border-slate-200 dark:border-border  shadow-sm flex flex-col hover:border-[#006065] dark:border-border/50 transition-all hover:shadow-md">
               <h3 className="text-base font-bold mb-1">Knowledge Ingestion (14 Days)</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">Volume of items synced into the organizational memory</p>
+              <p className="text-xs text-slate-500 dark:text-muted-foreground mb-6">Volume of items synced into the organizational memory</p>
               <div className="flex-1 min-h-[300px]">
                 {timelineData.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
@@ -265,9 +265,9 @@ export default function IntegrationAnalytics() {
             </div>
 
             {/* Chart: Source Distribution */}
-            <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800  shadow-sm flex flex-col hover:border-[#006065]/50 transition-all hover:shadow-md">
+            <div className="p-5 rounded-2xl bg-white dark:bg-card border border-slate-200 dark:border-border  shadow-sm flex flex-col hover:border-[#006065] dark:border-border/50 transition-all hover:shadow-md">
               <h3 className="text-base font-bold mb-1">Knowledge Sources</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">Distribution by integration</p>
+              <p className="text-xs text-slate-500 dark:text-muted-foreground mb-6">Distribution by integration</p>
               <div className="flex-1 min-h-[300px] flex items-center justify-center">
                 {providerData.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
@@ -296,7 +296,7 @@ export default function IntegrationAnalytics() {
           </div>
 
           {/* Sync Status Table */}
-          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800  shadow-sm hover:border-[#006065]/50 transition-all hover:shadow-md">
+          <div className="p-5 rounded-2xl bg-white dark:bg-card border border-slate-200 dark:border-border  shadow-sm hover:border-[#006065] dark:border-border/50 transition-all hover:shadow-md">
             <h3 className="text-base font-bold mb-5 flex items-center gap-2">
               <RefreshCw className="w-4 h-4 text-[#006065] dark:text-[#fad503]" />
               Integration Sync Status
@@ -304,7 +304,7 @@ export default function IntegrationAnalytics() {
             
             <div className="overflow-x-auto">
               <table className="w-full text-sm text-left border-collapse">
-                <thead className="text-xs text-slate-500 dark:text-slate-400 uppercase bg-transparent dark:bg-slate-800/50 rounded-t-xl">
+                <thead className="text-xs text-slate-500 dark:text-muted-foreground uppercase bg-transparent dark:bg-slate-800/50 rounded-t-xl">
                   <tr>
                     <th className="px-4 py-3 rounded-tl-xl">Provider</th>
                     <th className="px-6 py-4">Status</th>
@@ -316,12 +316,12 @@ export default function IntegrationAnalytics() {
                 <tbody>
                   {recentSyncs.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="px-4 py-8 text-center text-slate-500 dark:text-slate-400">No active integrations found.</td>
+                      <td colSpan={5} className="px-4 py-8 text-center text-slate-500 dark:text-muted-foreground">No active integrations found.</td>
                     </tr>
                   ) : (
                     recentSyncs.map((sync, i) => (
-                      <tr key={i} className="border-b border-slate-200 dark:border-slate-800 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors">
-                        <td className="px-4 py-4 font-semibold text-slate-900 dark:text-white capitalize flex items-center gap-2">
+                      <tr key={i} className="border-b border-slate-200 dark:border-border last:border-0 hover:bg-slate-50 dark:hover:bg-accent/20 transition-colors">
+                        <td className="px-4 py-4 font-semibold text-slate-900 dark:text-foreground capitalize flex items-center gap-2">
                           {sync.provider.replace('_', ' ')}
                         </td>
                         <td className="px-4 py-4">
@@ -335,15 +335,15 @@ export default function IntegrationAnalytics() {
                             </span>
                           )}
                         </td>
-                        <td className="px-4 py-4 text-slate-500 dark:text-slate-400">
+                        <td className="px-4 py-4 text-slate-500 dark:text-muted-foreground">
                           {sync.lastSync ? new Date(sync.lastSync).toLocaleString() : 'Never'}
                         </td>
                         <td className="px-4 py-4">
-                          <span className="px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-medium text-xs">
+                          <span className="px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-muted-foreground font-medium text-xs">
                             {sync.frequency || 'Manual'}
                           </span>
                         </td>
-                        <td className="px-4 py-4 text-slate-500 dark:text-slate-400 max-w-xs truncate">
+                        <td className="px-4 py-4 text-slate-500 dark:text-muted-foreground max-w-xs truncate">
                           {sync.error ? (
                             <span className="text-rose-500 text-xs" title={sync.error}>{sync.error}</span>
                           ) : (
@@ -366,14 +366,14 @@ export default function IntegrationAnalytics() {
 
 function MetricCard({ title, value, icon: Icon, color, bg, subtitle, subtitleClass = "text-slate-400" }) {
   return (
-    <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800  shadow-sm flex flex-col hover:border-[#006065]/50 transition-all hover:shadow-md">
+    <div className="p-5 rounded-2xl bg-white dark:bg-card border border-slate-200 dark:border-border  shadow-sm flex flex-col hover:border-[#006065] dark:border-border/50 transition-all hover:shadow-md">
       <div className="flex items-center gap-3 mb-3">
         <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${bg} ${color}`}>
           <Icon className="w-5 h-5" />
         </div>
-        <h4 className="text-slate-500 dark:text-slate-400 dark:text-muted-foreground text-xs font-semibold uppercase tracking-wider">{title}</h4>
+        <h4 className="text-slate-500 dark:text-muted-foreground dark:text-muted-foreground text-xs font-semibold uppercase tracking-wider">{title}</h4>
       </div>
-      <div className="text-2xl font-bold text-slate-900 dark:text-white mb-1.5">{value}</div>
+      <div className="text-2xl font-bold text-slate-900 dark:text-foreground mb-1.5">{value}</div>
       <p className={`text-xs mt-auto ${subtitleClass}`}>{subtitle}</p>
     </div>
   );

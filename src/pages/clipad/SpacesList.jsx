@@ -210,7 +210,7 @@ export default function SpacesList() {
 
   const firstName = user?.full_name?.split(' ')[0] || user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'there';
   return (
-    <div style={{ fontFamily: "'Inter', sans-serif" }} className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 page-enter overflow-x-hidden pb-24 md:pb-8">
+    <div style={{ fontFamily: "'Inter', sans-serif" }} className="min-h-screen bg-slate-50 dark:bg-background text-slate-900 dark:text-slate-100 page-enter overflow-x-hidden pb-24 md:pb-8">
 
       {showPaywall && (
         <PaywallModal isOpen={showPaywall} onClose={() => setShowPaywall(false)} featureName="Premium Spaces" />
@@ -220,7 +220,7 @@ export default function SpacesList() {
       {showCreate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setShowCreate(false)} />
-          <div className="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in-95 duration-200">
+          <div className="relative w-full max-w-md bg-white dark:bg-card rounded-xl shadow-2xl border border-slate-200 dark:border-border animate-in fade-in zoom-in-95 duration-200">
             <div className="p-6">
               <h2 className="text-xl font-bold mb-1">Create a new space</h2>
               <p className="text-sm text-slate-500 mb-6">A dedicated area for your team's context and collaboration.</p>
@@ -233,7 +233,7 @@ export default function SpacesList() {
                     value={newName}
                     onChange={e => setNewName(e.target.value)}
                     placeholder="e.g. Q4 Planning"
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 transition-all"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 transition-all"
                     required
                   />
                 </div>
@@ -243,7 +243,7 @@ export default function SpacesList() {
                     value={newDesc}
                     onChange={e => setNewDesc(e.target.value)}
                     placeholder="What is this space for?"
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 transition-all resize-none h-20"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 transition-all resize-none h-20"
                   />
                 </div>
                 <div className="flex items-center gap-2 mt-2">
@@ -258,7 +258,7 @@ export default function SpacesList() {
                 </div>
                 
                 <div className="flex items-center justify-end gap-3 pt-6">
-                  <button type="button" onClick={() => setShowCreate(false)} className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 transition-colors">
+                  <button type="button" onClick={() => setShowCreate(false)} className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-muted-foreground dark:hover:text-slate-100 transition-colors">
                     Cancel
                   </button>
                   <button type="submit" disabled={!newName.trim() || creating} className="px-5 py-2 text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200 rounded-lg shadow-sm transition-all disabled:opacity-50 flex items-center gap-2">
@@ -273,11 +273,11 @@ export default function SpacesList() {
       )}
 
       {/* HEADER */}
-      <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30">
+      <div className="bg-white dark:bg-card border-b border-slate-200 dark:border-border sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-6 md:px-10 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
              <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
-                <Layers className="w-4 h-4 text-slate-600 dark:text-slate-300" />
+                <Layers className="w-4 h-4 text-slate-600 dark:text-muted-foreground" />
              </div>
              <h1 className="text-lg font-bold">Spaces</h1>
           </div>
@@ -288,7 +288,7 @@ export default function SpacesList() {
                   value={search}
                   onChange={e => setSearch(e.target.value)}
                   placeholder="Search spaces..."
-                  className="w-full pl-9 pr-3 py-1.5 rounded-md bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400 transition-all"
+                  className="w-full pl-9 pr-3 py-1.5 rounded-md bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-border text-sm focus:outline-none focus:ring-2 focus:ring-slate-400 transition-all"
                 />
              </div>
              {canCreateSpaces(user) && (
@@ -308,7 +308,7 @@ export default function SpacesList() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search spaces..."
-            className="w-full pl-9 pr-3 py-2 rounded-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400 shadow-sm"
+            className="w-full pl-9 pr-3 py-2 rounded-md bg-white dark:bg-card border border-slate-200 dark:border-border text-sm focus:outline-none focus:ring-2 focus:ring-slate-400 shadow-sm"
           />
         </div>
 
@@ -323,7 +323,7 @@ export default function SpacesList() {
             <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4">
                <Layers className="w-8 h-8 text-slate-400" />
             </div>
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-2">No spaces found</h2>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-foreground mb-2">No spaces found</h2>
             <p className="text-slate-500 text-sm max-w-sm">Create a space to organize context, tasks, and meetings for a specific project or team.</p>
           </div>
         ) : (
@@ -338,7 +338,7 @@ export default function SpacesList() {
                 <div 
                   key={space.id}
                   onClick={() => navigate(`/spaces/${space.id}`)}
-                  className="group relative bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden hover:shadow-md hover:border-slate-300 dark:hover:border-slate-700 transition-all cursor-pointer flex flex-col h-full"
+                  className="group relative bg-white dark:bg-card rounded-xl border border-slate-200 dark:border-border overflow-hidden hover:shadow-md hover:border-slate-300 dark:hover:border-slate-700 transition-all cursor-pointer flex flex-col h-full"
                 >
                   <div className="p-5 flex-1 flex flex-col">
                     <div className="flex justify-between items-start mb-4">
@@ -346,19 +346,19 @@ export default function SpacesList() {
                          <SpaceIcon className="w-6 h-6" />
                        </div>
                        {space.is_private && (
-                         <div className="p-1.5 bg-slate-50 dark:bg-slate-800 rounded-md border border-slate-100 dark:border-slate-700" title="Private Space">
+                         <div className="p-1.5 bg-slate-50 dark:bg-slate-800 rounded-md border border-slate-100 dark:border-border" title="Private Space">
                            <Lock className="w-3.5 h-3.5 text-slate-400" />
                          </div>
                        )}
                     </div>
-                    <h3 className="font-bold text-slate-900 dark:text-white text-base leading-snug line-clamp-1 mb-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                    <h3 className="font-bold text-slate-900 dark:text-foreground text-base leading-snug line-clamp-1 mb-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                       {space.name}
                     </h3>
                     <p className="text-xs text-slate-500 line-clamp-2 mt-1">
                       {space.description || 'No description provided.'}
                     </p>
                   </div>
-                  <div className="px-5 py-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex items-center justify-between mt-auto">
+                  <div className="px-5 py-3 border-t border-slate-100 dark:border-border bg-slate-50/50 dark:bg-card/50 flex items-center justify-between mt-auto">
                      <span className="text-xs font-medium text-slate-500 flex items-center gap-1">
                         <Users className="w-3.5 h-3.5" /> Team Space
                      </span>

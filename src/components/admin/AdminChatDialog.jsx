@@ -124,7 +124,7 @@ export default function AdminChatDialog({ open, onOpenChange, targetUser }) {
         <DialogDescription className="sr-only">Support Chat with {targetUser?.full_name || targetUser?.email}</DialogDescription>
         
         <DialogHeader className="p-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/30 flex-shrink-0">
-          <DialogTitle className="text-slate-900 dark:text-white font-bold flex items-center justify-between">
+          <DialogTitle className="text-slate-900 dark:text-foreground font-bold flex items-center justify-between">
             <span>Support Chat: {targetUser?.full_name || targetUser?.email}</span>
             {chatSession && (
               <span className={`text-xs px-2 py-1 rounded-full font-semibold uppercase tracking-wider ${

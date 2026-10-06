@@ -13,7 +13,7 @@ import {
 
 const STATUS_CONFIG = {
   open: { label: 'Open', color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/30', icon: Clock },
-  completed: { label: 'Done', color: 'text-[#00beac]', bg: 'bg-[#006065] dark:bg-[#131A2C]/10 border-[#006065]/30', icon: CheckCircle2 },
+  completed: { label: 'Done', color: 'text-[#00beac]', bg: 'bg-[#006065] dark:bg-[#131A2C]/10 border-[#006065] dark:border-border/30', icon: CheckCircle2 },
   overdue: { label: 'Overdue', color: 'text-red-400', bg: 'bg-red-500/10 border-red-500/30', icon: AlertTriangle },
   at_risk: { label: 'At Risk', color: 'text-amber-400', bg: 'bg-amber-500/10 border-amber-500/30', icon: Flag },
 };
@@ -77,7 +77,7 @@ function CommitmentCard({ commitment, onStatusChange }) {
             <button
               onClick={() => markStatus('completed')}
               disabled={updating}
-              className="w-7 h-7 rounded-lg bg-[#006065] dark:bg-[#131A2C]/10 border border-[#006065]/20 flex items-center justify-center text-[#00beac] hover:bg-[#006065] dark:bg-[#131A2C]/20 transition-colors"
+              className="w-7 h-7 rounded-lg bg-[#006065] dark:bg-[#131A2C]/10 border border-[#006065] dark:border-border/20 flex items-center justify-center text-[#00beac] hover:bg-[#006065] dark:bg-[#131A2C]/20 transition-colors"
               title="Mark complete"
             >
               <Check className="w-3.5 h-3.5" />

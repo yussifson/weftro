@@ -119,7 +119,7 @@ Do NOT invent facts. Only use data from the knowledge base provided.`,
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-indigo-500"></span>
             </span>}
           </div>
-          <h3 className="font-bold text-sm text-slate-900 dark:text-white">AI Context Engine</h3>
+          <h3 className="font-bold text-sm text-slate-900 dark:text-foreground">AI Context Engine</h3>
         </div>
         <button className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
           <X className={`w-4 h-4 transition-transform ${minimized ? 'rotate-45' : ''}`} />
@@ -142,7 +142,7 @@ Do NOT invent facts. Only use data from the knowledge base provided.`,
                     <rec.icon className="w-4 h-4" />
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-slate-900 dark:text-white leading-tight">{rec.title}</h4>
+                    <h4 className="text-sm font-bold text-slate-900 dark:text-foreground leading-tight">{rec.title}</h4>
                     <p className="text-xs text-slate-500 mt-0.5">{rec.content}</p>
                   </div>
                 </div>

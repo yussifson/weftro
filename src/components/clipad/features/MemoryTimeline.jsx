@@ -177,7 +177,7 @@ export default function MemoryTimeline({ topic, workspaceId }) {
           <Brain className="w-5 h-5" />
         </div>
         <div>
-          <h3 className="font-bold text-lg text-slate-900 dark:text-white leading-none mb-1">Memory Graph</h3>
+          <h3 className="font-bold text-lg text-slate-900 dark:text-foreground leading-none mb-1">Memory Graph</h3>
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest">Tracing: {topic}</p>
         </div>
       </div>

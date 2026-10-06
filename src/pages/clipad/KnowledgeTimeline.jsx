@@ -94,7 +94,7 @@ export default function KnowledgeTimeline() {
   const providers = [...new Set(events.map(e => e.provider))];
 
   return (
-    <div className="min-h-full bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans page-enter pb-12">
+    <div className="min-h-full bg-slate-50 dark:bg-background text-slate-900 dark:text-slate-100 font-sans page-enter pb-12">
       {/* Header */}
       <div className="relative overflow-hidden border-b border-white/15/80 bg-[#006065] dark:bg-[#131A2C] text-white border-b border-white/15/80 px-6 py-8">
         <div className="max-w-5xl mx-auto relative z-10 flex items-start justify-between">
@@ -133,21 +133,21 @@ export default function KnowledgeTimeline() {
               placeholder="Search timeline..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-4 py-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#006065] dark:focus:border-[#fad503] transition-all shadow-sm"
+              className="w-full bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl pl-9 pr-4 py-2 text-sm text-slate-900 dark:text-foreground placeholder:text-slate-400 focus:outline-none focus:border-[#006065] dark:focus:border-[#fad503] transition-all shadow-sm"
             />
           </div>
 
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-md">
-            <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
-              <h3 className="font-bold text-sm text-slate-900 dark:text-white">Data Sources</h3>
+          <div className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-2xl overflow-hidden shadow-md">
+            <div className="px-4 py-3 border-b border-slate-200 dark:border-border bg-slate-50 dark:bg-slate-800/50">
+              <h3 className="font-bold text-sm text-slate-900 dark:text-foreground">Data Sources</h3>
             </div>
             <div className="p-2 space-y-1">
               <button
                 onClick={() => setActiveFilter('all')}
-                className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors ${activeFilter === 'all' ? 'bg-[#006065] dark:bg-[#131A2C]/10 text-[#006065] dark:bg-[#006065] dark:bg-[#131A2C]/30 dark:text-[#fad503] font-bold' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'}`}
+                className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors ${activeFilter === 'all' ? 'bg-[#006065] dark:bg-[#131A2C]/10 text-[#006065] dark:bg-[#006065] dark:bg-[#131A2C]/30 dark:text-[#fad503] font-bold' : 'text-slate-600 dark:text-muted-foreground hover:bg-slate-100 dark:hover:bg-accent hover:text-slate-900 dark:hover:text-white'}`}
               >
                 <div className="flex items-center gap-2"><Database className="w-4 h-4" /> All Sources</div>
-                <span className="text-xs bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded-md text-slate-500 dark:text-slate-400">{events.length}</span>
+                <span className="text-xs bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded-md text-slate-500 dark:text-muted-foreground">{events.length}</span>
               </button>
               {providers.map(p => {
                 const count = events.filter(e => e.provider === p).length;
@@ -156,10 +156,10 @@ export default function KnowledgeTimeline() {
                   <button
                     key={p}
                     onClick={() => setActiveFilter(p)}
-                    className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors ${activeFilter === p ? 'bg-[#006065] dark:bg-[#131A2C]/10 text-[#006065] dark:bg-[#006065] dark:bg-[#131A2C]/30 dark:text-[#fad503] font-bold' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'}`}
+                    className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors ${activeFilter === p ? 'bg-[#006065] dark:bg-[#131A2C]/10 text-[#006065] dark:bg-[#006065] dark:bg-[#131A2C]/30 dark:text-[#fad503] font-bold' : 'text-slate-600 dark:text-muted-foreground hover:bg-slate-100 dark:hover:bg-accent hover:text-slate-900 dark:hover:text-white'}`}
                   >
                     <div className="flex items-center gap-2"><span className="text-base">{intg?.icon || '📄'}</span> {intg?.name || p}</div>
-                    <span className="text-xs bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded-md text-slate-500 dark:text-slate-400">{count}</span>
+                    <span className="text-xs bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded-md text-slate-500 dark:text-muted-foreground">{count}</span>
                   </button>
                 );
               })}
@@ -174,18 +174,18 @@ export default function KnowledgeTimeline() {
               {[...Array(4)].map((_, i) => (
                 <div key={i} className="flex gap-4">
                   <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 shrink-0"></div>
-                  <div className="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 h-24"></div>
+                  <div className="flex-1 bg-white dark:bg-card border border-slate-200 dark:border-border rounded-2xl p-4 h-24"></div>
                 </div>
               ))}
             </div>
           ) : filteredEvents.length === 0 ? (
-            <div className="text-center p-12 border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
+            <div className="text-center p-12 border border-dashed border-slate-200 dark:border-border rounded-2xl bg-white dark:bg-card text-slate-900 dark:text-foreground">
               <Box className="w-8 h-8 text-slate-400 mx-auto mb-3" />
-              <h3 className="font-bold text-slate-900 dark:text-white mb-1">No knowledge found</h3>
-              <p className="text-sm text-slate-500 dark:text-slate-400">Try adjusting your filters or search query.</p>
+              <h3 className="font-bold text-slate-900 dark:text-foreground mb-1">No knowledge found</h3>
+              <p className="text-sm text-slate-500 dark:text-muted-foreground">Try adjusting your filters or search query.</p>
             </div>
           ) : (
-            <div className="relative pl-6 border-l-2 border-[#006065]/20 dark:border-[#006065]/40 space-y-8">
+            <div className="relative pl-6 border-l-2 border-[#006065] dark:border-border/20 dark:border-[#006065] dark:border-border/40 space-y-8">
               {filteredEvents.map((item, index) => {
                 const intg = INTEGRATIONS.find(i => i.id === item.provider || i.provider === item.provider);
                 
@@ -196,7 +196,7 @@ export default function KnowledgeTimeline() {
                       <div className="w-2 h-2 rounded-full bg-[#fad503]" />
                     </div>
                     
-                    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 hover:shadow-lg hover:border-[#006065]/30 dark:hover:border-[#006065]/50 transition-all text-slate-900 dark:text-white">
+                    <div className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-2xl p-5 hover:shadow-lg hover:border-[#006065] dark:border-border/30 dark:hover:border-[#006065] dark:border-border/50 transition-all text-slate-900 dark:text-foreground">
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
                           <span className="text-xl" title={intg?.name}>{intg?.icon || '📄'}</span>
@@ -204,31 +204,31 @@ export default function KnowledgeTimeline() {
                             {item.content_type || 'Document'}
                           </span>
                         </div>
-                        <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+                        <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-muted-foreground">
                           <Clock className="w-3.5 h-3.5" />
                           {format(new Date(item.imported_at), 'MMM d, yyyy • h:mm a')}
                         </div>
                       </div>
                       
-                      <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2 line-clamp-1 group-hover:text-[#006065] dark:group-hover:text-[#fad503] transition-colors">
+                      <h3 className="text-base font-bold text-slate-900 dark:text-foreground mb-2 line-clamp-1 group-hover:text-[#006065] dark:group-hover:text-[#fad503] transition-colors">
                         {item.title || 'Untitled Knowledge Artifact'}
                       </h3>
                       
                       {item.ai_summary ? (
-                        <p className="text-sm text-slate-600 dark:text-slate-300 mb-4 line-clamp-2 leading-relaxed">
+                        <p className="text-sm text-slate-600 dark:text-muted-foreground mb-4 line-clamp-2 leading-relaxed">
                           {item.ai_summary}
                         </p>
                       ) : item.content ? (
-                        <p className="text-sm text-slate-600 dark:text-slate-300 mb-4 line-clamp-2 leading-relaxed opacity-90">
+                        <p className="text-sm text-slate-600 dark:text-muted-foreground mb-4 line-clamp-2 leading-relaxed opacity-90">
                           {item.content.substring(0, 150)}...
                         </p>
                       ) : null}
                       
-                      <div className="flex items-center justify-between mt-auto pt-4 border-t border-slate-100 dark:border-slate-800">
+                      <div className="flex items-center justify-between mt-auto pt-4 border-t border-slate-100 dark:border-border">
                         <div className="flex items-center gap-2 text-xs">
                           {item.author && (
-                            <span className="flex items-center gap-1 text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md">
-                              <span className="font-medium text-slate-900 dark:text-white">{item.author}</span>
+                            <span className="flex items-center gap-1 text-slate-600 dark:text-muted-foreground bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md">
+                              <span className="font-medium text-slate-900 dark:text-foreground">{item.author}</span>
                             </span>
                           )}
                           <span className="text-slate-400 flex items-center gap-1">

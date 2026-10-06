@@ -174,7 +174,7 @@ export default function Overview() {
               })
             ) : (
               <div className="h-full flex flex-col items-center justify-center text-muted-foreground py-12">
-                <Activity className="w-10 h-10 text-white/50 dark:text-white/90 mb-3" />
+                <Activity className="w-10 h-10 text-white/50 dark:text-foreground/90 mb-3" />
                 <p className="text-sm">No recent activity yet</p>
                 <p className="text-xs text-white/60 mt-1">Events appear here as users take actions.</p>
               </div>

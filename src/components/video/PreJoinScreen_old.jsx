@@ -231,19 +231,19 @@ export default function PreJoinScreen({ roomName, onJoin, defaultName = '' }) {
       {/* Right Side: Join Form */}
       <div className="relative z-10 flex-1 flex flex-col items-start justify-center w-full max-w-md bg-transparent p-6 md:p-10 space-y-8">
         <div>
-          <h1 className="text-[2rem] font-medium text-slate-900 dark:text-white tracking-tight leading-tight">Ready to join?</h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1 text-base">{roomName || 'Secure Meeting'}</p>
+          <h1 className="text-[2rem] font-medium text-slate-900 dark:text-foreground tracking-tight leading-tight">Ready to join?</h1>
+          <p className="text-slate-500 dark:text-muted-foreground mt-1 text-base">{roomName || 'Secure Meeting'}</p>
         </div>
 
         <div className="space-y-5">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-700 dark:text-slate-300 ml-1">Your Name</label>
+            <label className="text-sm font-medium text-slate-700 dark:text-muted-foreground ml-1">Your Name</label>
             <input
               type="text"
               placeholder="e.g. Jane Doe"
               value={userName}
               onChange={(e) => setUserName(e.target.value)}
-              className="w-full px-5 py-4 bg-white dark:bg-[#111827] border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-base transition-shadow placeholder:text-slate-400"
+              className="w-full px-5 py-4 bg-white dark:bg-[#111827] border border-slate-300 dark:border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-base transition-shadow placeholder:text-slate-400"
               
               onKeyDown={(e) => { if (e.key === 'Enter' && userName.trim()) handleJoinClick(); }}
             />

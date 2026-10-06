@@ -37,7 +37,7 @@ export default function ClipadAdminLayout() {
   ];
 
   return (
-    <div className="flex h-[100dvh] w-full overflow-hidden bg-[#f8fafc] text-[#0f172a]">
+    <div className="flex h-[100dvh] w-full overflow-hidden bg-[#f8fafc] dark:bg-background text-[#0f172a]">
       
       {/* Sidebar */}
       <aside className="w-64 border-r border-slate-800 bg-[#006065] dark:bg-[#0A0F1C] text-white flex flex-col hidden md:flex shadow-xl">
@@ -88,7 +88,7 @@ export default function ClipadAdminLayout() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col h-full overflow-y-auto relative z-30 page-enter bg-[#f8fafc] text-[#0f172a] scrollbar-thin">
+      <main className="flex-1 flex flex-col h-full overflow-y-auto relative z-30 page-enter bg-[#f8fafc] dark:bg-background text-[#0f172a] scrollbar-thin">
         <div className="md:hidden p-4 border-b border-slate-800 bg-[#006065] dark:bg-[#0A0F1C] text-white flex items-center justify-between">
             <h2 className="text-lg font-black text-white">KERINT Admin</h2>
             <button onClick={() => navigate('/dashboard')}><ArrowLeft className="w-5 h-5 text-white"/></button>

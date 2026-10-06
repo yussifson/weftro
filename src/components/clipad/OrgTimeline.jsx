@@ -156,7 +156,7 @@ export default function OrgTimeline({ workspaceId, spaceId }) {
               className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-colors ${
                 filter === f 
                   ? 'bg-primary text-primary-foreground shadow-sm' 
-                  : 'bg-slate-100 dark:bg-secondary text-slate-600 dark:text-muted-foreground hover:bg-slate-200 dark:hover:bg-slate-700'
+                  : 'bg-slate-100 dark:bg-secondary text-slate-600 dark:text-muted-foreground hover:bg-slate-200 dark:hover:bg-accent'
               }`}
             >
               {f.replace('_', ' ')}
@@ -171,7 +171,7 @@ export default function OrgTimeline({ workspaceId, spaceId }) {
       ) : events.length === 0 ? (
         <div className="text-center py-10 md:py-16 px-4 bg-slate-50 dark:bg-secondary/30 rounded-2xl md:rounded-3xl border border-slate-200 dark:border-border/50">
           <Clock className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
-          <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">No Events Found</h3>
+          <h3 className="text-lg font-bold text-slate-900 dark:text-foreground mb-2">No Events Found</h3>
           <p className="text-sm text-slate-500 dark:text-muted-foreground max-w-sm mx-auto">
             {filter === 'all' 
               ? "Your organizational timeline is empty. Record meetings, make decisions, or complete tasks to see activity here."
@@ -199,7 +199,7 @@ export default function OrgTimeline({ workspaceId, spaceId }) {
                         <span className={`inline-block px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider mb-2 ${colorClass}`}>
                           {event.event_type.replace('_', ' ')}
                         </span>
-                        <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-snug">
+                        <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-foreground leading-snug">
                           {event.title}
                         </h4>
                       </div>

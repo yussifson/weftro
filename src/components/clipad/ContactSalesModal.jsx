@@ -58,7 +58,7 @@ export default function ContactSalesModal({ isOpen, onClose }) {
             <div className="w-16 h-16 bg-[#006065] dark:bg-[#131A2C]/20 dark:bg-[#006065] dark:bg-[#131A2C]/20 text-[#006065] dark:text-[#00beac] rounded-full flex items-center justify-center mb-2">
               <CheckCircle className="w-8 h-8" />
             </div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Message Sent!</h2>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-foreground">Message Sent!</h2>
             <p className="text-slate-500 dark:text-muted-foreground text-sm max-w-[250px]">
               Our sales team will get back to you shortly to discuss a custom plan.
             </p>
@@ -67,7 +67,7 @@ export default function ContactSalesModal({ isOpen, onClose }) {
           <>
             <div className="px-8 pt-8 pb-4">
               <DialogHeader>
-                <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Contact Sales</DialogTitle>
+                <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-foreground mb-2">Contact Sales</DialogTitle>
                 <DialogDescription className="text-slate-500 dark:text-muted-foreground">
                   Fill out the form below and we'll be in touch to build a custom enterprise plan for your team.
                 </DialogDescription>

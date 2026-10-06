@@ -227,7 +227,7 @@ Respond in valid JSON only:
   const totalCollisions = blockerCollisions.length + decisionCollisions.length + commitmentCollisions.length;
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-white">
+    <div className="min-h-screen bg-[#f8fafc] dark:bg-background text-white">
       <div className="max-w-5xl mx-auto px-4 md:px-6 py-6 md:py-8 space-y-6">
 
         {/* Header */}

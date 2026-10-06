@@ -140,7 +140,7 @@ export default function FeaturesCircle() {
               <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${pillars[activeIndex].color} ${pillars[activeIndex].glow} flex items-center justify-center mb-6 shadow-lg shadow-black/10 border border-white/20`}>
                 {React.createElement(pillars[activeIndex].icon, { className: "w-7 h-7 text-white drop-shadow-md" })}
               </div>
-              <h3 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white mb-4 drop-shadow-sm">{pillars[activeIndex].title}</h3>
+              <h3 className="text-3xl font-black tracking-tight text-slate-900 dark:text-foreground mb-4 drop-shadow-sm">{pillars[activeIndex].title}</h3>
               <p className="text-slate-600 dark:text-foreground leading-relaxed text-lg font-medium">{pillars[activeIndex].desc}</p>
             </div>
           </motion.div>

@@ -1080,7 +1080,7 @@ RULES FOR MULTI-STEP REASONING & AUTOMATIONS:
  )}
  
  <div 
- className={`flex bg-slate-50 dark:bg-slate-950 z-[70] transition-all duration-300 overflow-hidden ${
+ className={`flex bg-slate-50 dark:bg-background z-[70] transition-all duration-300 overflow-hidden ${
  // Mobile: Fullscreen native view
  isOpen ? "max-md:fixed max-md:inset-0 max-md:h-[100dvh] max-md:w-full max-md:flex-col max-md:translate-y-0 max-md:opacity-100 max-md:shadow-2xl" : "max-md:fixed max-md:inset-x-0 max-md:bottom-0 max-md:h-0 max-md:translate-y-full max-md:opacity-0 max-md:pointer-events-none"
  } ${
@@ -1097,7 +1097,7 @@ RULES FOR MULTI-STEP REASONING & AUTOMATIONS:
  <div className="flex h-full w-full">
  {/* History Sidebar */}
  {showHistory && (
- <div className="w-52 shrink-0 border-r border-primary/40 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col">
+ <div className="w-52 shrink-0 border-r border-primary/40 bg-white dark:bg-card border-r border-slate-200 dark:border-border flex flex-col">
  <div className="px-3 py-2.5 border-b border-primary/40 flex items-center justify-between">
  <span className="text-[11px] font-semibold uppercase tracking-wider text-[#71717a] dark:text-gray-400 tracking-[0.04em]">{t("chat_history", "Chat History")}</span>
  <div className="flex items-center gap-2">
@@ -1144,7 +1144,7 @@ RULES FOR MULTI-STEP REASONING & AUTOMATIONS:
  <div className="flex-1 flex flex-col min-w-0 relative">
 
   {/* Header â€” Solid Sticky Controls */}
-  <div className="bg-[#006065] dark:bg-[#131A2C] text-white backdrop-blur-md px-4 py-3 flex justify-between items-center shrink-0 sticky top-0 z-[101] border-b border-[#006065]/50">
+  <div className="bg-[#006065] dark:bg-[#131A2C] text-white backdrop-blur-md px-4 py-3 flex justify-between items-center shrink-0 sticky top-0 z-[101] border-b border-[#006065] dark:border-border/50">
     <div className="flex-1"></div>
     <div className="flex items-center gap-1.5 justify-end">
       <DropdownMenu>
@@ -1156,7 +1156,7 @@ RULES FOR MULTI-STEP REASONING & AUTOMATIONS:
             <LayoutGrid className="w-4 h-4" />
           </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-52 z-[100] shadow-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0D1117] p-1.5">
+        <DropdownMenuContent align="end" className="w-52 z-[100] shadow-2xl border border-slate-200 dark:border-border bg-white dark:bg-[#0D1117] p-1.5">
           <DropdownMenuItem onClick={() => setShowHistory(prev => !prev)} className="cursor-pointer font-semibold text-xs py-2.5 rounded-lg">
             <Clock className="w-4 h-4 mr-2 text-emerald-600 dark:text-emerald-400" /> 
             {showHistory ? t("hide_history", "Hide History") : t("chat_history", "Chat History")}
@@ -1190,17 +1190,17 @@ RULES FOR MULTI-STEP REASONING & AUTOMATIONS:
   </div>
 
  {/* Messages */}
- <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6 relative bg-slate-50 dark:bg-slate-950 md:scrollbar-primary">
+ <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6 relative bg-slate-50 dark:bg-background md:scrollbar-primary">
  <div className="relative z-10 space-y-6">
  {messages.filter(m => m.role !== 'system').map((msg, i) => {
  return (
  <div key={i} className={`flex gap-3 max-w-full items-start ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
   {msg.role === 'user' ? (
-    <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm bg-[#006065] dark:bg-[#131A2C] text-[#fad503] font-bold border border-[#006065]/20 text-xs">
+    <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm bg-[#006065] dark:bg-[#131A2C] text-[#fad503] font-bold border border-[#006065] dark:border-border/20 text-xs">
       <User className="w-4 h-4" />
     </div>
   ) : (
-    <div className="w-8 h-8 rounded-full bg-transparent flex items-center justify-center shrink-0 mt-0.5 shadow-sm border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+    <div className="w-8 h-8 rounded-full bg-transparent flex items-center justify-center shrink-0 mt-0.5 shadow-sm border border-slate-200 dark:border-border bg-white dark:bg-card">
       <img src="/clipad-app-icon.png" alt="KERINT" className="w-5 h-5 object-contain" />
     </div>
   )}
@@ -1229,7 +1229,7 @@ RULES FOR MULTI-STEP REASONING & AUTOMATIONS:
  </button>
  <button 
  onClick={() => cancelPendingAction(i)}
- className="bg-slate-100 dark:bg-secondary hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-foreground px-3 py-1.5 rounded-xl text-xs font-medium transition-colors border-[0.5px] border-black/9 dark:border-white/8 border-primary/40  tracking-[0.04em]"
+ className="bg-slate-100 dark:bg-secondary hover:bg-slate-200 dark:hover:bg-accent text-slate-700 dark:text-foreground px-3 py-1.5 rounded-xl text-xs font-medium transition-colors border-[0.5px] border-black/9 dark:border-white/8 border-primary/40  tracking-[0.04em]"
  >
  {t("cancel", "Cancel")}
  </button>
@@ -1250,31 +1250,31 @@ RULES FOR MULTI-STEP REASONING & AUTOMATIONS:
      <h2 className="text-[18px] font-medium text-slate-800 dark:text-slate-200 mb-1">
        Hi {user?.full_name?.split(' ')[0] || 'there'},
      </h2>
-     <h1 className="text-[22px] font-bold text-slate-900 dark:text-white mb-3">
+     <h1 className="text-[22px] font-bold text-slate-900 dark:text-foreground mb-3">
        Welcome back! How can I help?
      </h1>
-     <p className="text-[13px] text-slate-500 dark:text-slate-400 max-w-[280px] mb-8 leading-relaxed">
+     <p className="text-[13px] text-slate-500 dark:text-muted-foreground max-w-[280px] mb-8 leading-relaxed">
        I'm here to help you tackle your tasks. Choose from the prompts below or just tell me what you need!
      </p>
      
      <div className="grid grid-cols-2 md:grid-cols-3 gap-2 w-full max-w-[360px]">
-        <button onClick={() => handleSend("Create a highly realistic image for my current project")} className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm text-left">
-          <Image className="w-[14px] h-[14px] text-emerald-500 shrink-0" /> <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 truncate">Create image</span>
+        <button onClick={() => handleSend("Create a highly realistic image for my current project")} className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-border bg-white dark:bg-card hover:bg-slate-50 dark:hover:bg-accent transition-colors shadow-sm text-left">
+          <Image className="w-[14px] h-[14px] text-emerald-500 shrink-0" /> <span className="text-[11px] font-bold text-slate-700 dark:text-muted-foreground truncate">Create image</span>
         </button>
-        <button onClick={() => handleSend("Analyze my workspace data and provide insights")} className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm text-left">
-          <BarChart2 className="w-[14px] h-[14px] text-blue-500 shrink-0" /> <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 truncate">Analyze data</span>
+        <button onClick={() => handleSend("Analyze my workspace data and provide insights")} className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-border bg-white dark:bg-card hover:bg-slate-50 dark:hover:bg-accent transition-colors shadow-sm text-left">
+          <BarChart2 className="w-[14px] h-[14px] text-blue-500 shrink-0" /> <span className="text-[11px] font-bold text-slate-700 dark:text-muted-foreground truncate">Analyze data</span>
         </button>
-        <button onClick={() => handleSend("Create a detailed implementation plan for my current task")} className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm text-left">
-          <ListTodo className="w-[14px] h-[14px] text-purple-500 shrink-0" /> <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 truncate">Make a plan</span>
+        <button onClick={() => handleSend("Create a detailed implementation plan for my current task")} className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-border bg-white dark:bg-card hover:bg-slate-50 dark:hover:bg-accent transition-colors shadow-sm text-left">
+          <ListTodo className="w-[14px] h-[14px] text-purple-500 shrink-0" /> <span className="text-[11px] font-bold text-slate-700 dark:text-muted-foreground truncate">Make a plan</span>
         </button>
-        <button onClick={() => handleSend("Summarize the most important points from my recent documents")} className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm text-left">
-          <FileText className="w-[14px] h-[14px] text-pink-500 shrink-0" /> <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 truncate">Summarize text</span>
+        <button onClick={() => handleSend("Summarize the most important points from my recent documents")} className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-border bg-white dark:bg-card hover:bg-slate-50 dark:hover:bg-accent transition-colors shadow-sm text-left">
+          <FileText className="w-[14px] h-[14px] text-pink-500 shrink-0" /> <span className="text-[11px] font-bold text-slate-700 dark:text-muted-foreground truncate">Summarize text</span>
         </button>
-        <button onClick={() => handleSend("Help me draft a professional message for my team")} className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm text-left">
-          <PenTool className="w-[14px] h-[14px] text-orange-500 shrink-0" /> <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 truncate">Help me write</span>
+        <button onClick={() => handleSend("Help me draft a professional message for my team")} className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-border bg-white dark:bg-card hover:bg-slate-50 dark:hover:bg-accent transition-colors shadow-sm text-left">
+          <PenTool className="w-[14px] h-[14px] text-orange-500 shrink-0" /> <span className="text-[11px] font-bold text-slate-700 dark:text-muted-foreground truncate">Help me write</span>
         </button>
-        <button onClick={() => handleSend("What else can you do? Show me all your capabilities")} className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm text-left justify-center">
-          <Sparkles className="w-[14px] h-[14px] text-slate-400 shrink-0" /> <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 truncate">More</span>
+        <button onClick={() => handleSend("What else can you do? Show me all your capabilities")} className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-border bg-white dark:bg-card hover:bg-slate-50 dark:hover:bg-accent transition-colors shadow-sm text-left justify-center">
+          <Sparkles className="w-[14px] h-[14px] text-slate-400 shrink-0" /> <span className="text-[11px] font-bold text-slate-700 dark:text-muted-foreground truncate">More</span>
         </button>
      </div>
    </div>
@@ -1294,8 +1294,8 @@ RULES FOR MULTI-STEP REASONING & AUTOMATIONS:
  )}
 
  {/* Input */}
- <div className="px-4 py-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 shadow-[0_-10px_40px_rgba(0,0,0,0.03)] shrink-0 relative z-10">
-   <div className="relative rounded-2xl bg-slate-50 dark:bg-[#131A2B] border border-slate-200 dark:border-slate-800 shadow-sm focus-within:ring-1 focus-within:ring-slate-300 transition-all duration-300 flex flex-col p-2">
+ <div className="px-4 py-4 bg-white dark:bg-card border-t border-slate-200 dark:border-border shadow-[0_-10px_40px_rgba(0,0,0,0.03)] shrink-0 relative z-10">
+   <div className="relative rounded-2xl bg-slate-50 dark:bg-[#131A2B] border border-slate-200 dark:border-border shadow-sm focus-within:ring-1 focus-within:ring-slate-300 transition-all duration-300 flex flex-col p-2">
      
      <div className="flex items-center relative">
        <textarea
@@ -1332,7 +1332,7 @@ RULES FOR MULTI-STEP REASONING & AUTOMATIONS:
              className={`w-8 h-8 flex items-center justify-center rounded-xl transition-colors ${
              isRecording
              ? 'text-red-500 bg-red-50 dark:bg-red-950/30 animate-pulse'
-             : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+             : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-accent'
              }`}
              title={isRecording ? 'Stop recording' : 'Voice input'}
            >
@@ -1343,7 +1343,7 @@ RULES FOR MULTI-STEP REASONING & AUTOMATIONS:
      </div>
      
      {/* Footer Row */}
-     <div className="flex items-center justify-end px-3 pt-2 mt-1 border-t border-slate-100 dark:border-slate-800">
+     <div className="flex items-center justify-end px-3 pt-2 mt-1 border-t border-slate-100 dark:border-border">
        <div className="flex items-center gap-4">
          <button onClick={() => toast({ title: 'Shortcuts', description: 'Press Cmd+K to search, Shift+Enter for new line.' })} className="flex items-center gap-1.5 text-[11px] font-medium text-slate-400 hover:text-slate-600 transition-colors">
            <Command className="w-3.5 h-3.5" /> Shortcuts

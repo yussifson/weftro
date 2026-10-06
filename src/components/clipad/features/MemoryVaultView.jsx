@@ -91,7 +91,7 @@ export default function MemoryVaultView({ companyId, userId, spaceId }) {
       </div>
 
       {/* Filter & Search Controls */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white dark:bg-background p-4 rounded-xl border border-slate-200 dark:border-border">
         <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
           {[
             { id: 'all', label: 'All Scopes', icon: Layers },
@@ -108,7 +108,7 @@ export default function MemoryVaultView({ companyId, userId, spaceId }) {
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors whitespace-nowrap ${
                   active
                     ? 'bg-cyan-500 text-white shadow-sm'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-muted-foreground hover:bg-slate-200'
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />
@@ -125,12 +125,12 @@ export default function MemoryVaultView({ companyId, userId, spaceId }) {
               value={query}
               onChange={e => setQuery(e.target.value)}
               placeholder="Search memories..."
-              className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-border bg-slate-50 dark:bg-card focus:outline-none focus:ring-2 focus:ring-cyan-500"
             />
             <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400" />
           </div>
           <button type="submit" className="p-1.5 bg-slate-100 dark:bg-slate-800 rounded-lg hover:bg-slate-200">
-            <Filter className="w-4 h-4 text-slate-600 dark:text-slate-300" />
+            <Filter className="w-4 h-4 text-slate-600 dark:text-muted-foreground" />
           </button>
         </form>
       </div>
@@ -141,7 +141,7 @@ export default function MemoryVaultView({ companyId, userId, spaceId }) {
           <RefreshCw className="w-6 h-6 animate-spin mr-2" /> Loading Memory Nodes...
         </div>
       ) : memories.length === 0 ? (
-        <div className="p-12 text-center border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
+        <div className="p-12 text-center border-2 border-dashed border-slate-200 dark:border-border rounded-xl">
           <Brain className="w-10 h-10 mx-auto text-slate-300 mb-3" />
           <h3 className="text-base font-semibold text-slate-700 dark:text-slate-200">No memories found</h3>
           <p className="text-xs text-slate-500 mt-1">Ingest meetings, documents, or notes to build organizational knowledge.</p>
@@ -155,7 +155,7 @@ export default function MemoryVaultView({ companyId, userId, spaceId }) {
             return (
               <div
                 key={mem.id}
-                className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-md transition-all flex flex-col justify-between"
+                className="p-4 rounded-xl border border-slate-200 dark:border-border bg-white dark:bg-card hover:shadow-md transition-all flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between mb-2">
@@ -171,7 +171,7 @@ export default function MemoryVaultView({ companyId, userId, spaceId }) {
                       >
                         {mem.memory_tier}
                       </span>
-                      <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-muted-foreground">
                         {mem.memory_type}
                       </span>
                     </div>
@@ -182,13 +182,13 @@ export default function MemoryVaultView({ companyId, userId, spaceId }) {
                     </div>
                   </div>
 
-                  <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-1">{mem.title}</h3>
-                  <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-3 mb-3">
+                  <h3 className="text-sm font-semibold text-slate-900 dark:text-foreground mb-1">{mem.title}</h3>
+                  <p className="text-xs text-slate-600 dark:text-muted-foreground leading-relaxed line-clamp-3 mb-3">
                     {mem.content}
                   </p>
                 </div>
 
-                <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500">
+                <div className="pt-3 border-t border-slate-100 dark:border-border flex items-center justify-between text-xs text-slate-500">
                   <div className="flex items-center gap-2 truncate">
                     {mem.source_type && (
                       <span className="truncate flex items-center gap-1 font-mono text-[11px]">
@@ -225,30 +225,30 @@ export default function MemoryVaultView({ companyId, userId, spaceId }) {
       {/* Provenance Modal */}
       {provenanceModal && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
+          <div className="bg-white dark:bg-card rounded-2xl max-w-lg w-full p-6 border border-slate-200 dark:border-border shadow-2xl">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-foreground mb-2 flex items-center gap-2">
               <History className="w-5 h-5 text-cyan-500" /> Source Provenance Trace
             </h3>
             <p className="text-xs text-slate-500 mb-4">Memory ID: {provenanceModal.memory_id}</p>
 
-            <div className="space-y-3 bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800 text-xs">
+            <div className="space-y-3 bg-slate-50 dark:bg-background p-4 rounded-xl border border-slate-200 dark:border-border text-xs">
               <div>
-                <span className="font-semibold text-slate-700 dark:text-slate-300">Memory Title:</span>
-                <p className="text-slate-900 dark:text-white font-medium mt-0.5">{provenanceModal.title}</p>
+                <span className="font-semibold text-slate-700 dark:text-muted-foreground">Memory Title:</span>
+                <p className="text-slate-900 dark:text-foreground font-medium mt-0.5">{provenanceModal.title}</p>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <span className="font-semibold text-slate-700 dark:text-slate-300">Source Type:</span>
+                  <span className="font-semibold text-slate-700 dark:text-muted-foreground">Source Type:</span>
                   <p className="text-slate-800 dark:text-slate-200 uppercase font-mono">{provenanceModal.source.type || 'N/A'}</p>
                 </div>
                 <div>
-                  <span className="font-semibold text-slate-700 dark:text-slate-300">Speaker / Author:</span>
+                  <span className="font-semibold text-slate-700 dark:text-muted-foreground">Speaker / Author:</span>
                   <p className="text-slate-800 dark:text-slate-200">{provenanceModal.source.speaker || 'System'}</p>
                 </div>
               </div>
               {provenanceModal.source.url && (
                 <div>
-                  <span className="font-semibold text-slate-700 dark:text-slate-300">Source Link:</span>
+                  <span className="font-semibold text-slate-700 dark:text-muted-foreground">Source Link:</span>
                   <a
                     href={provenanceModal.source.url}
                     target="_blank"
@@ -276,8 +276,8 @@ export default function MemoryVaultView({ companyId, userId, spaceId }) {
       {/* Memory Correction / Supersede Modal */}
       {correctingMemory && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <form onSubmit={handleSupersede} className="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <form onSubmit={handleSupersede} className="bg-white dark:bg-card rounded-2xl max-w-lg w-full p-6 border border-slate-200 dark:border-border shadow-2xl space-y-4">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-foreground flex items-center gap-2">
               <RefreshCw className="w-5 h-5 text-cyan-500" /> Update / Supersede Memory
             </h3>
             <p className="text-xs text-slate-500">
@@ -285,12 +285,12 @@ export default function MemoryVaultView({ companyId, userId, spaceId }) {
             </p>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Updated Content</label>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-muted-foreground mb-1">Updated Content</label>
               <textarea
                 value={correctionText}
                 onChange={e => setCorrectionText(e.target.value)}
                 rows={4}
-                className="w-full p-3 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                className="w-full p-3 text-xs rounded-xl border border-slate-200 dark:border-border bg-slate-50 dark:bg-background focus:outline-none focus:ring-2 focus:ring-cyan-500"
               />
             </div>
 
@@ -298,7 +298,7 @@ export default function MemoryVaultView({ companyId, userId, spaceId }) {
               <button
                 type="button"
                 onClick={() => setCorrectingMemory(null)}
-                className="px-4 py-2 rounded-lg text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100"
+                className="px-4 py-2 rounded-lg text-xs font-medium text-slate-600 dark:text-muted-foreground hover:bg-slate-100"
               >
                 Cancel
               </button>

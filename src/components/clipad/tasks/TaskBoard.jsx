@@ -225,11 +225,11 @@ export default function TaskBoard({ spaceId }) {
                     className="bg-white dark:bg-[#1A232C] p-4 sm:p-5 rounded-2xl border border-black/5 dark:border-white/5 hover:border-primary/30 shadow-sm cursor-grab active:cursor-grabbing active:scale-[0.98] group transition-all"
                   >
                     <div className="flex items-start justify-between gap-2 mb-3">
-                      <p className={`text-base font-semibold leading-snug ${task.status === 'done' ? 'line-through text-slate-400 dark:text-muted-foreground' : 'text-slate-900 dark:text-white'}`}>
+                      <p className={`text-base font-semibold leading-snug ${task.status === 'done' ? 'line-through text-slate-400 dark:text-muted-foreground' : 'text-slate-900 dark:text-foreground'}`}>
                         {task.title}
                       </p>
                       <DropdownMenu>
-                        <DropdownMenuTrigger className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all shrink-0">
+                        <DropdownMenuTrigger className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1.5 hover:bg-slate-100 dark:hover:bg-accent rounded-lg transition-all shrink-0">
                           <MoreVertical className="w-4 h-4 text-slate-400" />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-40 rounded-xl">
@@ -256,7 +256,7 @@ export default function TaskBoard({ spaceId }) {
                         {task.due_date && <span className="flex items-center gap-1 bg-slate-100 dark:bg-white/5 px-2 py-1 rounded-md"><CalendarIcon className="w-3 h-3 text-indigo-400" /> {new Date(task.due_date).toLocaleDateString()}</span>}
                       </div>
                       {task.assignee && (
-                        <div className="w-7 h-7 rounded-full bg-slate-100 dark:bg-secondary flex items-center justify-center overflow-hidden border border-white dark:border-slate-800 shadow-sm" title={task.assignee.full_name}>
+                        <div className="w-7 h-7 rounded-full bg-slate-100 dark:bg-secondary flex items-center justify-center overflow-hidden border border-white dark:border-border shadow-sm" title={task.assignee.full_name}>
                           {task.assignee.avatar_url ? (
                             <img src={task.assignee.avatar_url} className="w-full h-full object-cover" />
                           ) : (

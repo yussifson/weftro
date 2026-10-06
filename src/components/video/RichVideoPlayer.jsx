@@ -459,21 +459,21 @@ Do not wrap in markdown or backticks.`
         <div className="flex items-center gap-2 mb-4 bg-slate-200/50 dark:bg-secondary/50 p-1 rounded-xl">
           <button 
             onClick={() => setActiveTab('comments')}
-            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${activeTab === 'comments' ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${activeTab === 'comments' ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-foreground' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
           >
             Comments
           </button>
           {recordType === 'meeting' && hasFeature(user, 'hasAdvancedAI') && (
             <button 
               onClick={() => setActiveTab('transcript')}
-              className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${activeTab === 'transcript' ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+              className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${activeTab === 'transcript' ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-foreground' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
             >
               Transcript
             </button>
           )}
           <button 
             onClick={() => setActiveTab('chapters')}
-            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${activeTab === 'chapters' ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${activeTab === 'chapters' ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-foreground' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
           >
             Chapters
           </button>
@@ -522,7 +522,7 @@ Do not wrap in markdown or backticks.`
                 comments.map(c => (
                   <div key={c.id} className="bg-white dark:bg-secondary p-3 rounded-xl shadow-sm border border-slate-200 dark:border-border">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs font-bold text-slate-900 dark:text-white">
+                      <span className="text-xs font-bold text-slate-900 dark:text-foreground">
                         {c.author?.full_name || 'User'}
                       </span>
                       <button
@@ -583,7 +583,7 @@ Do not wrap in markdown or backticks.`
             {transcripts.length > 0 && (
               <button 
                 onClick={handleExportTranscript}
-                className="w-full flex justify-center items-center gap-2 py-2.5 rounded-xl border border-slate-200 dark:border-border bg-white dark:bg-secondary hover:bg-slate-50 dark:hover:bg-slate-700 text-sm font-bold text-slate-700 dark:text-foreground transition-colors shadow-sm"
+                className="w-full flex justify-center items-center gap-2 py-2.5 rounded-xl border border-slate-200 dark:border-border bg-white dark:bg-secondary hover:bg-slate-50 dark:hover:bg-accent text-sm font-bold text-slate-700 dark:text-foreground transition-colors shadow-sm"
               >
                 <Download className="w-4 h-4" /> Export Transcript
               </button>

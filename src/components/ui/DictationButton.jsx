@@ -72,7 +72,7 @@ export default function DictationButton({ onResult, isRecording, setIsRecording 
     <button
       type="button"
       onClick={toggleDictation}
-      className={`p-2 rounded-full transition-all flex items-center justify-center ${isRecording ? 'bg-rose-500/10 text-rose-500 hover:bg-rose-500/20' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
+      className={`p-2 rounded-full transition-all flex items-center justify-center ${isRecording ? 'bg-rose-500/10 text-rose-500 hover:bg-rose-500/20' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-accent'}`}
       title={isRecording ? "Stop Dictation" : "Start AI Dictation"}
     >
       {isRecording ? <Mic className="w-4 h-4 animate-pulse" /> : <Mic className="w-4 h-4" />}

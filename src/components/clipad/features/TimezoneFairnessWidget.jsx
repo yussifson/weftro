@@ -166,7 +166,7 @@ Distribution: Early morning (00-06 UTC): ${earlyMorning}, Business hours (08-18 
       <div className="bg-white dark:bg-card rounded-xl shadow-sm border border-slate-200 dark:border-border p-5">
         <div className="flex items-center gap-2 mb-4">
           <Globe className="w-5 h-5 text-teal-500" />
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Timezone Fairness</h2>
+          <h2 className="text-lg font-bold text-slate-900 dark:text-foreground">Timezone Fairness</h2>
         </div>
         <div className="flex items-center gap-3 py-6 justify-center text-slate-400 dark:text-slate-500">
           <Loader2 className="w-5 h-5 animate-spin" />
@@ -187,7 +187,7 @@ Distribution: Early morning (00-06 UTC): ${earlyMorning}, Business hours (08-18 
     <div className="bg-white dark:bg-card rounded-xl shadow-sm border border-slate-200 dark:border-border p-5">
       <div className="flex items-start justify-between mb-4">
         <div>
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <h2 className="text-lg font-bold text-slate-900 dark:text-foreground flex items-center gap-2">
             <Globe className="w-5 h-5 text-teal-500" />
             Timezone Fairness
           </h2>

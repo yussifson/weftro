@@ -111,7 +111,7 @@ export default function CommitmentTracker({ spaceId }) {
       <div className="bg-white dark:bg-card rounded-xl shadow-sm border border-slate-200 dark:border-border p-5">
         <div className="flex items-center gap-2 mb-4">
           <CheckCircle2 className="w-5 h-5 text-indigo-500" />
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white">AI Commitment Tracker</h2>
+          <h2 className="text-lg font-bold text-slate-900 dark:text-foreground">AI Commitment Tracker</h2>
         </div>
         <div className="flex items-center justify-center py-8 text-slate-400">
           <Loader2 className="w-5 h-5 animate-spin" />
@@ -123,7 +123,7 @@ export default function CommitmentTracker({ spaceId }) {
   return (
     <div className="bg-white dark:bg-card rounded-xl shadow-sm border border-slate-200 dark:border-border p-5 h-full flex flex-col">
       <div className="flex flex-wrap items-center justify-between mb-4 gap-3">
-        <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+        <h2 className="text-base font-bold text-slate-900 dark:text-foreground flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 text-[#006065] shrink-0" />
           <span className="leading-tight">Commitment Tracker</span>
         </h2>

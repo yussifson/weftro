@@ -25,7 +25,7 @@ const TYPE_META = {
   decision:    { icon: ShieldAlert,   label: 'Decision',  color: 'text-rose-700 dark:text-rose-400',       bg: 'bg-rose-100 dark:bg-rose-900/30 border border-rose-200 dark:border-rose-700/50',     route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=decisions` : null },
   blocker:     { icon: AlertTriangle, label: 'Blocker',   color: 'text-orange-700 dark:text-orange-400',   bg: 'bg-orange-100 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-700/50', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=overview` : null },
   standup:     { icon: Zap,           label: 'Standup',   color: 'text-teal-700 dark:text-teal-400',       bg: 'bg-teal-100 dark:bg-teal-900/30 border border-teal-200 dark:border-teal-700/50',     route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=standup` : null },
-  integration: { icon: ExternalLink,  label: 'Imported',  color: 'text-slate-700 dark:text-slate-400',     bg: 'bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700',   route: () => `/integrations` },
+  integration: { icon: ExternalLink,  label: 'Imported',  color: 'text-slate-700 dark:text-muted-foreground',     bg: 'bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-border',   route: () => `/integrations` },
   person:      { icon: User,          label: 'Person',    color: 'text-violet-700 dark:text-violet-400',   bg: 'bg-violet-100 dark:bg-violet-900/30 border border-violet-200 dark:border-violet-700/50', route: () => null },
 };
 
@@ -173,7 +173,7 @@ function PersonCard({ person, navigate, setIsOpen }) {
           {person.label?.charAt(0).toUpperCase() || '?'}
         </div>
         <div>
-          <div className="font-bold text-sm text-slate-900 dark:text-white">{person.label}</div>
+          <div className="font-bold text-sm text-slate-900 dark:text-foreground">{person.label}</div>
           <div className="text-[11px] text-slate-500">{person.snippet}</div>
         </div>
         <span className="ml-auto text-[10px] font-bold text-violet-600 dark:text-violet-400 bg-violet-100 dark:bg-violet-900/50 px-2 py-0.5 rounded-full border border-violet-200 dark:border-violet-700">Person</span>
@@ -183,15 +183,15 @@ function PersonCard({ person, navigate, setIsOpen }) {
         <div className="grid grid-cols-3 gap-2 text-[11px]">
           <div>
             <div className="font-bold text-slate-500 uppercase tracking-wider mb-1 flex items-center gap-1"><Calendar className="w-3 h-3" /> Meetings</div>
-            {activity.meetings.length === 0 ? <div className="text-slate-400">None found</div> : activity.meetings.map(m => <div key={m.id} className="text-slate-700 dark:text-slate-300 truncate">{m.title}</div>)}
+            {activity.meetings.length === 0 ? <div className="text-slate-400">None found</div> : activity.meetings.map(m => <div key={m.id} className="text-slate-700 dark:text-muted-foreground truncate">{m.title}</div>)}
           </div>
           <div>
             <div className="font-bold text-slate-500 uppercase tracking-wider mb-1 flex items-center gap-1"><CheckCircle className="w-3 h-3" /> Tasks</div>
-            {activity.tasks.length === 0 ? <div className="text-slate-400">None found</div> : activity.tasks.map(t => <div key={t.id} className="text-slate-700 dark:text-slate-300 truncate">{t.title}</div>)}
+            {activity.tasks.length === 0 ? <div className="text-slate-400">None found</div> : activity.tasks.map(t => <div key={t.id} className="text-slate-700 dark:text-muted-foreground truncate">{t.title}</div>)}
           </div>
           <div>
             <div className="font-bold text-slate-500 uppercase tracking-wider mb-1 flex items-center gap-1"><Zap className="w-3 h-3" /> Standups</div>
-            {activity.standups.length === 0 ? <div className="text-slate-400">None found</div> : activity.standups.map(s => <div key={s.id} className="text-slate-700 dark:text-slate-300 truncate">{s.today?.substring(0, 60)}</div>)}
+            {activity.standups.length === 0 ? <div className="text-slate-400">None found</div> : activity.standups.map(s => <div key={s.id} className="text-slate-700 dark:text-muted-foreground truncate">{s.today?.substring(0, 60)}</div>)}
           </div>
         </div>
       )}
@@ -600,14 +600,14 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
     <div className="fixed inset-0 z-[9999] flex items-start justify-center pt-[10vh] px-4 font-sans text-slate-900 dark:text-slate-100">
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-slate-900/40 dark:bg-slate-950/60 backdrop-blur-sm transition-opacity" 
+        className="absolute inset-0 bg-slate-900/40 dark:bg-background/60 backdrop-blur-sm transition-opacity" 
         onClick={() => setIsOpen(false)}
       />
 
       <div className="relative w-full max-w-3xl flex flex-col shadow-2xl animate-in fade-in zoom-in-95 duration-200">
         
         {/* Search Input Box */}
-        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 relative z-20 flex flex-col overflow-hidden">
+        <div className="bg-white dark:bg-card rounded-xl shadow-xl border border-slate-200 dark:border-border relative z-20 flex flex-col overflow-hidden">
           <div className="flex items-center px-4 py-3 h-[60px] gap-3">
             {isSearching
               ? <Loader2 className="w-5 h-5 text-indigo-500 shrink-0 animate-spin" />
@@ -619,7 +619,7 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Search people, docs, tasks, meetings... (Enter for AI)"
-              className="flex-1 bg-transparent text-slate-900 dark:text-white text-base font-medium placeholder:text-slate-400 min-w-0 border-0 outline-none ring-0 shadow-none focus:border-0 focus:outline-none focus:ring-0 focus:shadow-none p-0"
+              className="flex-1 bg-transparent text-slate-900 dark:text-foreground text-base font-medium placeholder:text-slate-400 min-w-0 border-0 outline-none ring-0 shadow-none focus:border-0 focus:outline-none focus:ring-0 focus:shadow-none p-0"
             />
             {/* AI-only trigger hint */}
             {query && !isSynthesizing && (
@@ -634,7 +634,7 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
             <button
               onClick={() => { setIsOpen(false); navigate(`/search?q=${encodeURIComponent(query)}`); }}
               title="Expand to Full-Page Search Hub"
-              className="shrink-0 p-1.5 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              className="shrink-0 p-1.5 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-accent transition-colors"
             >
               <ExternalLink className="w-4 h-4" />
             </button>
@@ -655,7 +655,7 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
           </div>
 
           {/* Filters Row + Scope Badge */}
-          <div className="px-4 py-2 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3 flex-wrap">
+          <div className="px-4 py-2 bg-slate-50 dark:bg-card/50 border-t border-slate-100 dark:border-border flex items-center justify-between gap-3 flex-wrap">
             <div className="flex items-center gap-1.5 overflow-x-auto hide-scrollbar">
               {FILTER_TABS.map(tab => (
                 <button
@@ -664,7 +664,7 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors ${
                     selectedFilter === tab.id
                       ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400'
-                      : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
+                      : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-border text-slate-600 dark:text-muted-foreground hover:bg-slate-100 dark:hover:bg-accent'
                   }`}
                 >
                   <tab.icon className="w-3.5 h-3.5" />
@@ -684,7 +684,7 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
             </div>
           </div>
           
-          <div className="flex-1 max-h-[50vh] overflow-y-auto bg-slate-50 dark:bg-slate-950/50">
+          <div className="flex-1 max-h-[50vh] overflow-y-auto bg-slate-50 dark:bg-background/50">
             {/* Zero State */}
             {!hasSearched && query.length === 0 && (
               <div className="p-4">
@@ -698,7 +698,7 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
                           <div className="w-7 h-7 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0">
                             <Clock className="w-3.5 h-3.5 text-slate-500" />
                           </div>
-                          <span className="text-sm font-semibold text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white">{search}</span>
+                          <span className="text-sm font-semibold text-slate-700 dark:text-muted-foreground group-hover:text-slate-900 dark:group-hover:text-white">{search}</span>
                         </button>
                       ))}
                     </div>
@@ -715,7 +715,7 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
                       const Icon = item.icon;
                       return (
                         <button key={item.key} onClick={() => { setQuery(item.text); handleSearch(item.text); }}
-                          className="w-full text-left flex items-start gap-3 p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-700 hover:shadow-sm transition-all group">
+                          className="w-full text-left flex items-start gap-3 p-3 rounded-xl bg-white dark:bg-card border border-slate-200 dark:border-border hover:border-indigo-300 dark:hover:border-indigo-700 hover:shadow-sm transition-all group">
                           <div className={`w-8 h-8 rounded-lg ${item.bg} flex items-center justify-center shrink-0`}>
                             <Icon className={`w-4 h-4 ${item.color}`} />
                           </div>
@@ -743,10 +743,10 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
                       <div className="w-6 h-6 rounded-md bg-indigo-600 flex items-center justify-center shadow-sm">
                         <Sparkles className="w-3.5 h-3.5 text-white" />
                       </div>
-                      <h3 className="text-sm font-bold text-slate-900 dark:text-white">Orbit AI</h3>
+                      <h3 className="text-sm font-bold text-slate-900 dark:text-foreground">Orbit AI</h3>
                     </div>
                     
-                    <div className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed space-y-3 prose prose-sm dark:prose-invert max-w-none prose-p:leading-relaxed prose-a:text-indigo-600">
+                    <div className="text-sm text-slate-700 dark:text-muted-foreground leading-relaxed space-y-3 prose prose-sm dark:prose-invert max-w-none prose-p:leading-relaxed prose-a:text-indigo-600">
                       {isSynthesizing && !aiAnswer ? (
                         <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
                           <Loader2 className="w-4 h-4 animate-spin" />
@@ -766,7 +766,7 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
                             const Icon = meta.icon;
                             return (
                               <button key={i} onClick={() => { if(meta.route) navigate(meta.route(src.id, src.space_id)); setIsOpen(false); }}
-                                className="flex items-center gap-1.5 px-2 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md text-[11px] font-medium text-slate-600 dark:text-slate-300 hover:border-indigo-300 transition-colors">
+                                className="flex items-center gap-1.5 px-2 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-border rounded-md text-[11px] font-medium text-slate-600 dark:text-muted-foreground hover:border-indigo-300 transition-colors">
                                 <Icon className="w-3 h-3" />
                                 <span className="max-w-[120px] truncate">{src.label}</span>
                               </button>
@@ -793,7 +793,7 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
                           {peopleResults.map((p, idx) => {
                             const isSelected = selectedIndex === idx;
                             return (
-                              <button key={p.id} onMouseEnter={() => setSelectedIndex(idx)} className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all ${isSelected ? 'bg-indigo-50 border-indigo-200 dark:bg-indigo-900/20 dark:border-indigo-800 shadow-sm' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-slate-300'}`}>
+                              <button key={p.id} onMouseEnter={() => setSelectedIndex(idx)} className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all ${isSelected ? 'bg-indigo-50 border-indigo-200 dark:bg-indigo-900/20 dark:border-indigo-800 shadow-sm' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-border hover:border-slate-300'}`}>
                                 <img src={p.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${p.label}`} className="w-5 h-5 rounded-full" alt="" />
                                 <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">{p.label}</span>
                               </button>
@@ -819,7 +819,7 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
                               if (r) { navigate(r); setIsOpen(false); }
                             }
                           }}
-                          className={`mx-2 p-3 rounded-xl border transition-all cursor-pointer flex gap-3 ${isSelected ? 'bg-indigo-50/50 dark:bg-indigo-900/10 border-indigo-200 dark:border-indigo-800/50 shadow-sm' : 'bg-transparent border-transparent hover:bg-slate-50 dark:hover:bg-slate-800/50'}`}
+                          className={`mx-2 p-3 rounded-xl border transition-all cursor-pointer flex gap-3 ${isSelected ? 'bg-indigo-50/50 dark:bg-indigo-900/10 border-indigo-200 dark:border-indigo-800/50 shadow-sm' : 'bg-transparent border-transparent hover:bg-slate-50 dark:hover:bg-accent/50'}`}
                         >
                           <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${meta.bg}`}>
                             <Icon className={`w-4 h-4 ${meta.color}`} />
@@ -827,7 +827,7 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between gap-2 mb-1">
                               <div className="flex items-center gap-2 overflow-hidden">
-                                <span className="font-bold text-sm text-slate-900 dark:text-white truncate">{item.label}</span>
+                                <span className="font-bold text-sm text-slate-900 dark:text-foreground truncate">{item.label}</span>
                                 {item.provider && (
                                   <span className="shrink-0 text-[10px] font-mono text-slate-500 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">
                                     {item.provider}
@@ -844,7 +844,7 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
                               </div>
                             </div>
                             {item.snippet && (
-                              <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1">
+                              <p className="text-xs text-slate-500 dark:text-muted-foreground line-clamp-1">
                                 {item.snippet}
                               </p>
                             )}
@@ -865,15 +865,15 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
           </div>
           
           {/* Footer Footer */}
-          <div className="px-4 py-2 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex items-center justify-between shrink-0">
+          <div className="px-4 py-2 border-t border-slate-100 dark:border-border bg-slate-50 dark:bg-card flex items-center justify-between shrink-0">
              <div className="flex items-center gap-4">
                 <div className="flex items-center gap-1.5 text-[10px] text-slate-400 font-medium">
-                  <kbd className="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-300 font-mono">â†‘</kbd>
-                  <kbd className="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-300 font-mono">â†“</kbd>
+                  <kbd className="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-muted-foreground font-mono">â†‘</kbd>
+                  <kbd className="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-muted-foreground font-mono">â†“</kbd>
                   <span>to navigate</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-[10px] text-slate-400 font-medium">
-                  <kbd className="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-300 font-mono">Enter</kbd>
+                  <kbd className="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-muted-foreground font-mono">Enter</kbd>
                   <span>to select/ask AI</span>
                 </div>
              </div>
@@ -882,7 +882,7 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
                <div className="w-4 h-4 bg-indigo-600 rounded-sm flex items-center justify-center">
                  <Sparkles className="w-2.5 h-2.5 text-white" />
                </div>
-               <span className="text-[10px] font-bold text-slate-900 dark:text-white">Orbit AI</span>
+               <span className="text-[10px] font-bold text-slate-900 dark:text-foreground">Orbit AI</span>
              </div>
           </div>
 

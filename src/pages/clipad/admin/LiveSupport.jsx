@@ -95,7 +95,7 @@ export default function LiveSupport() {
               onClick={() => setFilter(f)}
               className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all whitespace-nowrap flex-1 sm:flex-none ${
                 filter === f 
-                  ? 'bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-[#006065] dark:bg-[#131A2C] text-white dark:text-white shadow-sm' 
+                  ? 'bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-[#006065] dark:bg-[#131A2C] text-white dark:text-foreground shadow-sm' 
                   : 'text-white/70 dark:text-muted-foreground hover:text-white/90 dark:hover:text-slate-200'
               }`}
             >
@@ -126,7 +126,7 @@ export default function LiveSupport() {
                       </div>
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          <h3 className="font-semibold text-lg text-white dark:text-white">
+                          <h3 className="font-semibold text-lg text-white dark:text-foreground">
                             User Escalation
                           </h3>
                           <span className={`text-xs px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider ${
@@ -156,7 +156,7 @@ export default function LiveSupport() {
                       </button>
                       <button 
                         onClick={() => resolveSupportChat(chat.id)}
-                        className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-secondary border border-white/15 dark:border-white/15 hover:bg-transparent dark:hover:bg-slate-700 text-white/90 dark:text-foreground rounded-xl text-sm font-semibold transition-colors"
+                        className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-secondary border border-white/15 dark:border-white/15 hover:bg-transparent dark:hover:bg-accent text-white/90 dark:text-foreground rounded-xl text-sm font-semibold transition-colors"
                       >
                         <CheckCircle2 className="w-4 h-4" /> Mark Resolved
                       </button>

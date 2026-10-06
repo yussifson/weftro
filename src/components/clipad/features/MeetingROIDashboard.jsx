@@ -87,7 +87,7 @@ export default function MeetingROIDashboard({ workspaceId, spaceId }) {
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-foreground flex items-center gap-2">
               <TrendingDown className="w-5 h-5 text-[#006065]" />
               Meeting ROI & Savings
             </h3>
@@ -95,7 +95,7 @@ export default function MeetingROIDashboard({ workspaceId, spaceId }) {
               Estimated savings by replacing low-ROI meetings with async video.
             </p>
           </div>
-          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/10 text-[#004e52] dark:text-[#00beac] rounded-full text-xs font-semibold border border-emerald-200 dark:border-[#006065]/20">
+          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-[#006065] dark:bg-[#131A2C]/10 text-[#004e52] dark:text-[#00beac] rounded-full text-xs font-semibold border border-emerald-200 dark:border-[#006065] dark:border-border/20">
             <Sparkles className="w-3.5 h-3.5" /> AI Analyzed
           </div>
         </div>
@@ -115,7 +115,7 @@ export default function MeetingROIDashboard({ workspaceId, spaceId }) {
                 <span className="text-xs font-semibold uppercase tracking-wider">Preventable</span>
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-black text-slate-900 dark:text-white">{metrics.lowRoiMeetings}</span>
+                <span className="text-3xl font-black text-slate-900 dark:text-foreground">{metrics.lowRoiMeetings}</span>
                 <span className="text-sm text-slate-500">meetings</span>
               </div>
               <p className="text-xs text-slate-500 mt-2">Flagged as reducible to async</p>

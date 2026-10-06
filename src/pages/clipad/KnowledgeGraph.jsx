@@ -273,7 +273,7 @@ export default function KnowledgeGraph() {
   });
 
   return (
-    <div className="flex flex-col h-full min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans page-enter">
+    <div className="flex flex-col h-full min-h-screen bg-slate-50 dark:bg-background text-slate-900 dark:text-slate-100 font-sans page-enter">
       {/* Header */}
       <div className="relative border-b border-white/15 bg-[#006065] dark:bg-[#131A2C] px-6 py-6 shrink-0">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">

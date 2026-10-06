@@ -37,20 +37,20 @@ export default function ExportTaskModal({ isOpen, onClose, task, meetingTitle, m
 
   return (
     <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-5">
+      <div className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-[#006065] dark:bg-[#131A2C]/10 border border-[#006065]/20 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-[#006065] dark:bg-[#131A2C]/10 border border-[#006065] dark:border-border/20 flex items-center justify-center">
               <Share2 className="w-4 h-4 text-[#006065]" />
             </div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white">Export to PM Tool</h3>
+            <h3 className="text-base font-bold text-slate-900 dark:text-foreground">Export to PM Tool</h3>
           </div>
-          <button onClick={onClose} className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400">
+          <button onClick={onClose} className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-accent text-slate-400">
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-800 text-xs space-y-1.5">
+        <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-border text-xs space-y-1.5">
           <span className="font-semibold text-slate-500 uppercase tracking-wider text-[10px]">Action Item</span>
           <p className="font-medium text-slate-800 dark:text-slate-200 text-sm">{task.title || task.name}</p>
           {meetingTitle && (
@@ -69,8 +69,8 @@ export default function ExportTaskModal({ isOpen, onClose, task, meetingTitle, m
                 onClick={() => setSelectedTool(tool.id)}
                 className={`p-2.5 rounded-xl border flex flex-col items-center gap-1 transition-all ${
                   selectedTool === tool.id
-                    ? 'border-[#006065] bg-[#006065] dark:bg-[#131A2C]/10 text-[#006065] dark:text-[#00beac] font-bold scale-105'
-                    : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400'
+                    ? 'border-[#006065] dark:border-border bg-[#006065] dark:bg-[#131A2C]/10 text-[#006065] dark:text-[#00beac] font-bold scale-105'
+                    : 'border-slate-200 dark:border-border hover:bg-slate-50 dark:hover:bg-accent text-slate-600 dark:text-muted-foreground'
                 }`}
               >
                 <span className="text-base">{tool.icon}</span>
@@ -83,7 +83,7 @@ export default function ExportTaskModal({ isOpen, onClose, task, meetingTitle, m
         <div className="pt-2 flex items-center gap-3">
           <button
             onClick={onClose}
-            className="flex-1 py-2.5 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300"
+            className="flex-1 py-2.5 rounded-xl text-xs font-semibold border border-slate-200 dark:border-border hover:bg-slate-100 dark:hover:bg-accent text-slate-600 dark:text-muted-foreground"
           >
             Cancel
           </button>

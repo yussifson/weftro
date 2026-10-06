@@ -321,7 +321,7 @@ export default function PricingTags() {
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="font-bold text-lg text-primary">{tag.name}</h3>
                   <div className="flex gap-2">
-                    <button onClick={() => { setEditingTag(tag); setFormData(tag); setIsDialogOpen(true); }} className="p-1.5 bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/10 hover:bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/15 dark:bg-secondary dark:hover:bg-slate-700 rounded text-white/80 dark:text-muted-foreground"><Pencil className="w-3.5 h-3.5"/></button>
+                    <button onClick={() => { setEditingTag(tag); setFormData(tag); setIsDialogOpen(true); }} className="p-1.5 bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/10 hover:bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/15 dark:bg-secondary dark:hover:bg-accent rounded text-white/80 dark:text-muted-foreground"><Pencil className="w-3.5 h-3.5"/></button>
                     <button onClick={() => handleDeleteTag(tag.id)} className="p-1.5 bg-red-100 hover:bg-red-200 text-red-600 rounded"><Trash2 className="w-3.5 h-3.5"/></button>
                   </div>
                 </div>

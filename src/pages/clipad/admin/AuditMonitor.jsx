@@ -202,7 +202,7 @@ export default function AuditMonitor() {
               </TableRow>
             ) : filteredLogs.length > 0 ? (
               filteredLogs.map((log) => (
-                <TableRow key={log.id} className="hover:bg-transparent dark:hover:bg-slate-800/50 transition-colors">
+                <TableRow key={log.id} className="hover:bg-transparent dark:hover:bg-accent/50 transition-colors">
                   <TableCell className="text-xs text-white/70 whitespace-nowrap align-top pt-4">
                     <div className="font-medium text-white/90 dark:text-foreground">
                       {format(new Date(log.created_at), 'MMM d, yyyy')}
@@ -210,7 +210,7 @@ export default function AuditMonitor() {
                     <div className="text-white/60 text-[11px]">
                       {format(new Date(log.created_at), 'HH:mm:ss')}
                     </div>
-                    <div className="text-white/50 dark:text-white/80 text-[10px] mt-0.5">
+                    <div className="text-white/50 dark:text-foreground/80 text-[10px] mt-0.5">
                       {formatDistanceToNow(new Date(log.created_at), { addSuffix: true })}
                     </div>
                   </TableCell>
@@ -225,7 +225,7 @@ export default function AuditMonitor() {
                   <TableCell className="align-top pt-4 text-sm text-white/70 font-mono text-xs">
                     {log.company_id
                       ? <span title={log.company_id}>{log.company_id.substring(0, 8)}â€¦</span>
-                      : <span className="text-white/50 dark:text-white/80">â€”</span>
+                      : <span className="text-white/50 dark:text-foreground/80">â€”</span>
                     }
                   </TableCell>
                   <TableCell className="align-top pt-4">
@@ -238,7 +238,7 @@ export default function AuditMonitor() {
                   </TableCell>
                   <TableCell className="align-top pt-4">
                     <div className="text-xs font-mono text-white/80 dark:text-muted-foreground">
-                      {log.ip_address || <span className="text-white/50 dark:text-white/80">â€”</span>}
+                      {log.ip_address || <span className="text-white/50 dark:text-foreground/80">â€”</span>}
                     </div>
                     {log.location && (
                       <div className="text-[11px] text-muted-foreground mt-0.5">{log.location}</div>
@@ -249,7 +249,7 @@ export default function AuditMonitor() {
             ) : (
               <TableRow>
                 <TableCell colSpan={6} className="text-center py-16">
-                  <ShieldAlert className="w-10 h-10 text-white/50 dark:text-white/90 mx-auto mb-3" />
+                  <ShieldAlert className="w-10 h-10 text-white/50 dark:text-foreground/90 mx-auto mb-3" />
                   <p className="text-muted-foreground font-medium">No audit logs found</p>
                   <p className="text-xs text-white/60 mt-1">
                     New events will appear here automatically as users take actions.

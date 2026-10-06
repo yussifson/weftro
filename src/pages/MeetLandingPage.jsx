@@ -712,10 +712,10 @@ export default function MeetLandingPage() {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="text-xs text-slate-600 dark:text-slate-300">
+                <tbody className="text-xs text-slate-600 dark:text-muted-foreground">
                   {/* Category 1: Live Video Meetings */}
                   <tr className="bg-slate-100/60 dark:bg-white/5 font-bold text-foreground border-y border-border">
-                    <td colSpan={5} className="py-2.5 px-5 text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">
+                    <td colSpan={5} className="py-2.5 px-5 text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-muted-foreground">
                       Live Video Meetings
                     </td>
                   </tr>
@@ -750,7 +750,7 @@ export default function MeetLandingPage() {
 
                   {/* Category 2: Async Video & Recording */}
                   <tr className="bg-slate-100/60 dark:bg-white/5 font-bold text-foreground border-y border-border">
-                    <td colSpan={5} className="py-2.5 px-5 text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">
+                    <td colSpan={5} className="py-2.5 px-5 text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-muted-foreground">
                       Async Video & Screen Recording
                     </td>
                   </tr>
@@ -785,7 +785,7 @@ export default function MeetLandingPage() {
 
                   {/* Category 3: Team Spaces */}
                   <tr className="bg-slate-100/60 dark:bg-white/5 font-bold text-foreground border-y border-border">
-                    <td colSpan={5} className="py-2.5 px-5 text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">
+                    <td colSpan={5} className="py-2.5 px-5 text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-muted-foreground">
                       Team Spaces & Collaboration
                     </td>
                   </tr>
@@ -813,7 +813,7 @@ export default function MeetLandingPage() {
 
                   {/* Category 4: Meeting Intelligence */}
                   <tr className="bg-slate-100/60 dark:bg-white/5 font-bold text-foreground border-y border-border">
-                    <td colSpan={5} className="py-2.5 px-5 text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">
+                    <td colSpan={5} className="py-2.5 px-5 text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-muted-foreground">
                       Meeting Intelligence & Automation
                     </td>
                   </tr>
@@ -848,7 +848,7 @@ export default function MeetLandingPage() {
 
                   {/* Category 5: Storage & Governance */}
                   <tr className="bg-slate-100/60 dark:bg-white/5 font-bold text-foreground border-y border-border">
-                    <td colSpan={5} className="py-2.5 px-5 text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">
+                    <td colSpan={5} className="py-2.5 px-5 text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-muted-foreground">
                       Storage, Governance & Support
                     </td>
                   </tr>
@@ -1026,8 +1026,8 @@ export default function MeetLandingPage() {
             </div>
 
             {/* Text */}
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2 tracking-tight">Your meeting is ready</h2>
-            <p className="text-slate-500 dark:text-slate-400 mb-8 max-w-sm text-sm leading-relaxed">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-foreground mb-2 tracking-tight">Your meeting is ready</h2>
+            <p className="text-slate-500 dark:text-muted-foreground mb-8 max-w-sm text-sm leading-relaxed">
               Share this link with anyone you'd like to invite. They can join from any browser.
             </p>
 
@@ -1056,7 +1056,7 @@ export default function MeetLandingPage() {
             <Button
               onClick={() => setIsDialogOpen(false)}
               variant="ghost"
-              className="mt-6 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white text-sm font-medium"
+              className="mt-6 text-slate-500 dark:text-muted-foreground hover:text-slate-700 dark:hover:text-white text-sm font-medium"
             >
               Done
             </Button>

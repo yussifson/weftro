@@ -277,7 +277,7 @@ export default function CliPadBilling() {
 
       {/* Billing Cycle Progress */}
       {currentPlan !== 'free' && subscriptionData && (
-        <div className="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:shadow-md transition-shadow">
+        <div className="p-6 rounded-2xl border border-slate-200 dark:border-border bg-white dark:bg-card shadow-sm hover:shadow-md transition-shadow">
           <div className="flex justify-between items-center mb-2">
             <h3 className="font-semibold text-foreground">Current Billing Cycle</h3>
             <span className="text-sm font-medium text-muted-foreground">
@@ -326,7 +326,7 @@ export default function CliPadBilling() {
       )}
 
       {/* Storage Progress */}
-      <div className="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:shadow-md transition-shadow">
+      <div className="p-6 rounded-2xl border border-slate-200 dark:border-border bg-white dark:bg-card shadow-sm hover:shadow-md transition-shadow">
         <div className="flex justify-between items-center mb-2">
           <h3 className="font-semibold text-foreground">This Month's Storage Usage</h3>
           <span className="text-sm text-muted-foreground">
@@ -346,7 +346,7 @@ export default function CliPadBilling() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 w-full items-stretch max-w-7xl mx-auto">
         {/* FREE PLAN */}
-        <div className={`p-6 flex flex-col rounded-2xl border ${currentPlan === 'free' ? 'border-[#006065] bg-[#006065] dark:bg-[#131A2C]/5 dark:bg-[#006065] dark:bg-[#131A2C]/20 shadow-md ring-1 ring-[#006065]' : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:shadow-md transition-shadow'}`}>
+        <div className={`p-6 flex flex-col rounded-2xl border ${currentPlan === 'free' ? 'border-[#006065] dark:border-border bg-[#006065] dark:bg-[#131A2C]/5 dark:bg-[#006065] dark:bg-[#131A2C]/20 shadow-md ring-1 ring-[#006065]' : 'border-slate-200 dark:border-border bg-white dark:bg-card shadow-sm hover:shadow-md transition-shadow'}`}>
           <h3 className="text-xl font-bold">Free</h3>
           <p className="text-2xl font-bold mt-2">$0<span className="text-sm font-normal text-muted-foreground">/mo</span></p>
           <ul className="mt-4 mb-6 space-y-2.5">
@@ -357,13 +357,13 @@ export default function CliPadBilling() {
           <button 
             onClick={() => handlePlanClick('free')}
             disabled={currentPlan === 'free' || loading}
-            className={`w-full mt-auto py-2.5 rounded-lg text-sm font-semibold transition-all shadow-sm ${currentPlan === 'free' ? 'bg-slate-100 dark:bg-slate-800 text-slate-500 cursor-default' : 'bg-white dark:bg-slate-900 border border-[#006065]/30 hover:border-[#006065] dark:border-slate-700 dark:hover:border-[#fad503] text-slate-900 dark:text-white shadow-sm'}`}>
+            className={`w-full mt-auto py-2.5 rounded-lg text-sm font-semibold transition-all shadow-sm ${currentPlan === 'free' ? 'bg-slate-100 dark:bg-slate-800 text-slate-500 cursor-default' : 'bg-white dark:bg-card border border-[#006065] dark:border-border/30 hover:border-[#006065] dark:border-border dark:hover:border-[#fad503] text-slate-900 dark:text-foreground shadow-sm'}`}>
             {getButtonText('free')}
           </button>
         </div>
 
         {/* PRO PLAN */}
-        <div className={`relative p-6 flex flex-col rounded-2xl border ${currentPlan === 'pro' ? 'border-[#006065] bg-[#006065] dark:bg-[#131A2C]/5 dark:bg-[#006065] dark:bg-[#131A2C]/20 shadow-md ring-1 ring-[#006065]' : 'border-[#006065]/30 dark:border-[#fad503]/30 bg-white dark:bg-slate-900 shadow-md hover:shadow-lg transition-all'}`}>
+        <div className={`relative p-6 flex flex-col rounded-2xl border ${currentPlan === 'pro' ? 'border-[#006065] dark:border-border bg-[#006065] dark:bg-[#131A2C]/5 dark:bg-[#006065] dark:bg-[#131A2C]/20 shadow-md ring-1 ring-[#006065]' : 'border-[#006065] dark:border-border/30 dark:border-[#fad503]/30 bg-white dark:bg-card shadow-md hover:shadow-lg transition-all'}`}>
           {currentPlan !== 'pro' && (
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-[#006065] dark:bg-[#131A2C] text-white text-xs font-bold rounded-full flex items-center gap-1">
               <Sparkles className="w-3 h-3" /> Recommended
@@ -388,7 +388,7 @@ export default function CliPadBilling() {
         </div>
 
         {/* ENTERPRISE PLAN */}
-        <div className={`p-6 flex flex-col rounded-2xl border ${currentPlan === 'enterprise' ? 'border-[#006065] bg-[#006065] dark:bg-[#131A2C]/5 dark:bg-[#006065] dark:bg-[#131A2C]/20 shadow-md ring-1 ring-[#006065]' : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:shadow-md transition-shadow'}`}>
+        <div className={`p-6 flex flex-col rounded-2xl border ${currentPlan === 'enterprise' ? 'border-[#006065] dark:border-border bg-[#006065] dark:bg-[#131A2C]/5 dark:bg-[#006065] dark:bg-[#131A2C]/20 shadow-md ring-1 ring-[#006065]' : 'border-slate-200 dark:border-border bg-white dark:bg-card shadow-sm hover:shadow-md transition-shadow'}`}>
           <h3 className="text-xl font-bold">Enterprise</h3>
           <p className="text-2xl font-bold mt-2">$39<span className="text-sm font-normal text-muted-foreground">/mo</span></p>
           <p className="text-xs text-muted-foreground mt-1">
@@ -403,13 +403,13 @@ export default function CliPadBilling() {
           <button 
             onClick={() => handlePlanClick('enterprise')}
             disabled={currentPlan === 'enterprise' || loading}
-            className={`w-full mt-auto py-2.5 rounded-lg text-sm font-semibold transition-all shadow-sm ${currentPlan === 'enterprise' ? 'bg-slate-100 dark:bg-slate-800 text-slate-500 cursor-default' : 'bg-white dark:bg-slate-900 border border-[#006065]/30 hover:border-[#006065] dark:border-slate-700 dark:hover:border-[#fad503] text-slate-900 dark:text-white shadow-sm'}`}>
+            className={`w-full mt-auto py-2.5 rounded-lg text-sm font-semibold transition-all shadow-sm ${currentPlan === 'enterprise' ? 'bg-slate-100 dark:bg-slate-800 text-slate-500 cursor-default' : 'bg-white dark:bg-card border border-[#006065] dark:border-border/30 hover:border-[#006065] dark:border-border dark:hover:border-[#fad503] text-slate-900 dark:text-foreground shadow-sm'}`}>
             {getButtonText('enterprise')}
           </button>
         </div>
 
         {/* CUSTOM PLAN */}
-        <div className={`p-6 flex flex-col rounded-2xl border ${currentPlan === 'custom' ? 'border-[#006065] bg-[#006065] dark:bg-[#131A2C]/5 dark:bg-[#006065] dark:bg-[#131A2C]/20 shadow-md ring-1 ring-[#006065]' : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:shadow-md transition-shadow'}`}>
+        <div className={`p-6 flex flex-col rounded-2xl border ${currentPlan === 'custom' ? 'border-[#006065] dark:border-border bg-[#006065] dark:bg-[#131A2C]/5 dark:bg-[#006065] dark:bg-[#131A2C]/20 shadow-md ring-1 ring-[#006065]' : 'border-slate-200 dark:border-border bg-white dark:bg-card shadow-sm hover:shadow-md transition-shadow'}`}>
           <h3 className="text-xl font-bold">Custom</h3>
           <p className="text-2xl font-bold mt-2">Contact Us</p>
           <p className="text-xs text-muted-foreground mt-1">

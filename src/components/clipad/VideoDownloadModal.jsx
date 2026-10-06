@@ -119,7 +119,7 @@ export default function VideoDownloadModal({ open, onOpenChange, videoUrl, video
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                 <Download className="w-6 h-6 text-primary" />
               </div>
-              <span className="text-xl font-bold text-slate-900 dark:text-white">Download Video</span>
+              <span className="text-xl font-bold text-slate-900 dark:text-foreground">Download Video</span>
             </DialogTitle>
           </DialogHeader>
 
@@ -129,7 +129,7 @@ export default function VideoDownloadModal({ open, onOpenChange, videoUrl, video
                 <Lock className="w-7 h-7" />
               </div>
               <div>
-                <h3 className="font-bold text-slate-900 dark:text-white text-lg">Pro Feature</h3>
+                <h3 className="font-bold text-slate-900 dark:text-foreground text-lg">Pro Feature</h3>
                 <p className="text-sm text-slate-500 mt-1.5 leading-relaxed px-2">Video downloads are exclusively available on Pro and Enterprise plans.</p>
               </div>
               <Button className="w-full rounded-xl py-6 font-semibold" onClick={() => onOpenChange(false)}>
@@ -193,7 +193,7 @@ export default function VideoDownloadModal({ open, onOpenChange, videoUrl, video
                     </div>
                   </div>
                   <div>
-                    <div className="text-sm font-bold text-slate-900 dark:text-white">{statusText}</div>
+                    <div className="text-sm font-bold text-slate-900 dark:text-foreground">{statusText}</div>
                     {progress > 0 && (
                       <div className="text-3xl font-black text-primary mt-2">{progress}%</div>
                     )}

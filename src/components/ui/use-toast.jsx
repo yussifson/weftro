@@ -5,7 +5,7 @@ function toast({ title, description, variant, ...props }) {
   const message = description ? (title ? `${title}: ${description}` : description) : (title || "Notification");
   
   const options = {
-    className: "dark:bg-secondary dark:text-white border dark:border-border shadow-lg font-medium",
+    className: "dark:bg-secondary dark:text-foreground border dark:border-border shadow-lg font-medium",
     duration: props.duration || 3000
   };
 

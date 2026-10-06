@@ -170,7 +170,7 @@ export default function ClipadMobileNav({ isMarketing = false, forceMobile = fal
                   <div className="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center group-hover:scale-105 transition-transform shadow-sm border border-blue-100/50 dark:border-transparent">
                     <Settings className="w-4 h-4" />
                   </div>
-                  <span className="text-[13px] font-medium text-slate-700 dark:text-slate-300">Settings</span>
+                  <span className="text-[13px] font-medium text-slate-700 dark:text-muted-foreground">Settings</span>
                 </button>
 
                 {/* Analytics / Enterprise */}
@@ -182,7 +182,7 @@ export default function ClipadMobileNav({ isMarketing = false, forceMobile = fal
                     <div className="w-8 h-8 rounded-full bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center group-hover:scale-105 transition-transform shadow-sm border border-purple-100/50 dark:border-transparent">
                       <Bot className="w-4 h-4" />
                     </div>
-                    <span className="text-[13px] font-medium text-slate-700 dark:text-slate-300">Analytics</span>
+                    <span className="text-[13px] font-medium text-slate-700 dark:text-muted-foreground">Analytics</span>
                   </button>
                 ) : (
                   <button
@@ -192,7 +192,7 @@ export default function ClipadMobileNav({ isMarketing = false, forceMobile = fal
                     <div className="w-8 h-8 rounded-full bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center group-hover:scale-105 transition-transform shadow-sm border border-indigo-100/50 dark:border-transparent">
                       <Layers className="w-4 h-4" />
                     </div>
-                    <span className="text-[13px] font-medium text-slate-700 dark:text-slate-300">Enterprise</span>
+                    <span className="text-[13px] font-medium text-slate-700 dark:text-muted-foreground">Enterprise</span>
                   </button>
                 )}
 
@@ -201,10 +201,10 @@ export default function ClipadMobileNav({ isMarketing = false, forceMobile = fal
                   onClick={() => window.location.href = 'https://account.optavel.com'}
                   className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[14px] hover:bg-slate-100/80 dark:hover:bg-white/[0.06] transition-colors group"
                 >
-                  <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center group-hover:scale-105 transition-transform shadow-sm border border-slate-200/50 dark:border-transparent">
+                  <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-muted-foreground flex items-center justify-center group-hover:scale-105 transition-transform shadow-sm border border-slate-200/50 dark:border-transparent">
                     <User className="w-4 h-4" />
                   </div>
-                  <span className="text-[13px] font-medium text-slate-700 dark:text-slate-300">Account</span>
+                  <span className="text-[13px] font-medium text-slate-700 dark:text-muted-foreground">Account</span>
                 </button>
 
                 {/* Super Admin */}

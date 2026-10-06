@@ -213,7 +213,7 @@ export default function AddClipadChatDialog({ open, mode = 'chat', onOpenChange,
                       "flex flex-col items-center justify-center p-3 rounded-xl border transition-all text-sm gap-1",
                       groupPrivacy === 'public' 
                         ? "border-primary bg-primary/5 text-primary shadow-sm" 
-                        : "border-border hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-500"
+                        : "border-border hover:bg-slate-50 dark:hover:bg-accent text-slate-500"
                     )}
                   >
                     <Globe className="w-5 h-5 mb-1" />
@@ -226,7 +226,7 @@ export default function AddClipadChatDialog({ open, mode = 'chat', onOpenChange,
                       "flex flex-col items-center justify-center p-3 rounded-xl border transition-all text-sm gap-1",
                       groupPrivacy === 'private' 
                         ? "border-primary bg-primary/5 text-primary shadow-sm" 
-                        : "border-border hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-500"
+                        : "border-border hover:bg-slate-50 dark:hover:bg-accent text-slate-500"
                     )}
                   >
                     <Lock className="w-5 h-5 mb-1" />

@@ -61,7 +61,7 @@ function TaskRow({ item, onToggle }) {
   };
   return (
     <div className="flex items-start gap-3 p-4 rounded-xl hover:bg-secondary transition-colors group">
-      <button onClick={handle} className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${done ? 'bg-[#006065] dark:bg-[#131A2C] border-[#006065]' : 'border-gray-600 hover:border-primary'}`}>
+      <button onClick={handle} className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${done ? 'bg-[#006065] dark:bg-[#131A2C] border-[#006065] dark:border-border' : 'border-gray-600 hover:border-primary'}`}>
         {done && <CheckCircle className="w-3.5 h-3.5 text-foreground" />}
       </button>
       <div className="flex-1 min-w-0">
@@ -121,7 +121,7 @@ function VideoCard({ video, onClick }) {
         )}
       </div>
       <div className="p-4 bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-[#006065] dark:bg-[#131A2C]">
-        <p className="text-sm font-semibold text-white dark:text-white line-clamp-1">{video.title || 'Untitled'}</p>
+        <p className="text-sm font-semibold text-white dark:text-foreground line-clamp-1">{video.title || 'Untitled'}</p>
         <p className="text-xs text-white/70 dark:text-muted-foreground mt-1">{new Date(video.created_at).toLocaleDateString()}</p>
       </div>
     </div>
@@ -457,7 +457,7 @@ export default function SpaceDashboard() {
   const isMember = spaceMembers.some(m => m.user_id === user?.id);
 
   return (
-    <div style={{ fontFamily: "'Inter', sans-serif" }} className="flex h-screen bg-slate-50 dark:bg-slate-950 overflow-hidden text-slate-900 dark:text-slate-100">
+    <div style={{ fontFamily: "'Inter', sans-serif" }} className="flex h-screen bg-slate-50 dark:bg-background overflow-hidden text-slate-900 dark:text-slate-100">
       {/* Privacy Modal */}
       <Dialog open={showPrivacyModal} onOpenChange={setShowPrivacyModal}>
         <DialogContent className="sm:max-w-md">
@@ -467,7 +467,7 @@ export default function SpaceDashboard() {
               Choose the privacy setting for this meeting.
             </DialogDescription>
           </DialogHeader>
-          <div className="flex items-center justify-between p-4 mt-2 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800">
+          <div className="flex items-center justify-between p-4 mt-2 bg-slate-50 dark:bg-card rounded-lg border border-slate-200 dark:border-border">
             <div>
               <p className="text-sm font-semibold">Meeting Privacy</p>
               <p className="text-xs text-slate-500">{privacyType === 'private' ? 'Only org members can join.' : 'External guests can knock to join.'}</p>
@@ -503,17 +503,17 @@ export default function SpaceDashboard() {
           <form onSubmit={handleEditSpace} className="space-y-4 py-2">
             <div>
               <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1 block">Name</label>
-              <input type="text" value={editName} onChange={e => setEditName(e.target.value)} className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900" required />
+              <input type="text" value={editName} onChange={e => setEditName(e.target.value)} className="w-full bg-white dark:bg-card border border-slate-200 dark:border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900" required />
             </div>
             <div>
               <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1 block">Description</label>
-              <textarea value={editDesc} onChange={e => setEditDesc(e.target.value)} className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 resize-none h-20" />
+              <textarea value={editDesc} onChange={e => setEditDesc(e.target.value)} className="w-full bg-white dark:bg-card border border-slate-200 dark:border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 resize-none h-20" />
             </div>
             <div className="flex items-center gap-2 mt-4">
               <input type="checkbox" id="private-space" checked={editIsPrivate} onChange={e => setEditIsPrivate(e.target.checked)} className="rounded border-slate-300 text-slate-900 focus:ring-slate-900" />
               <label htmlFor="private-space" className="text-sm font-medium">Private Space</label>
             </div>
-            <div className="flex justify-between items-center pt-4 border-t border-slate-100 dark:border-slate-800 mt-4">
+            <div className="flex justify-between items-center pt-4 border-t border-slate-100 dark:border-border mt-4">
               <Button type="button" variant="destructive" size="sm" onClick={handleDeleteSpace} className="gap-2">
                 <Trash2 className="w-4 h-4" /> Delete
               </Button>
@@ -527,17 +527,17 @@ export default function SpaceDashboard() {
       </Dialog>
 
       {/* SIDEBAR */}
-      <aside className={`bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex-col hidden md:flex shrink-0 transition-all duration-300 ${sidebarOpen ? 'w-64' : 'w-20'}`}>
-        <div className="h-16 flex items-center px-4 border-b border-slate-200 dark:border-slate-800 gap-3 shrink-0 justify-between">
+      <aside className={`bg-white dark:bg-card border-r border-slate-200 dark:border-border flex-col hidden md:flex shrink-0 transition-all duration-300 ${sidebarOpen ? 'w-64' : 'w-20'}`}>
+        <div className="h-16 flex items-center px-4 border-b border-slate-200 dark:border-border gap-3 shrink-0 justify-between">
           <div className="flex items-center gap-3 overflow-hidden">
              {sidebarOpen && (
-                <button onClick={() => navigate('/spaces')} className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-md transition-all shadow-sm">
+                <button onClick={() => navigate('/spaces')} className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-muted-foreground dark:hover:text-white bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-accent rounded-md transition-all shadow-sm">
                   <ArrowLeft className="w-3.5 h-3.5" /> Back
                 </button>
              )}
              <span className={`font-bold text-sm truncate transition-opacity duration-300 ${sidebarOpen ? 'opacity-100' : 'opacity-0 hidden'}`}>{space.name}</span>
           </div>
-          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-colors shrink-0" title={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}>
+          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-accent rounded-md transition-colors shrink-0" title={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}>
               {sidebarOpen ? <PanelLeftClose className="w-5 h-5 transition-transform duration-300" /> : <PanelLeft className="w-5 h-5 transition-transform duration-300" />}
             </button>
         </div>
@@ -556,9 +556,9 @@ export default function SpaceDashboard() {
                 key={tab.id}
                 onClick={() => handleTabChange(tab.id)}
                 title={!sidebarOpen ? tab.label : ''}
-                className={`flex items-center py-2 rounded-md transition-all ${sidebarOpen ? 'w-full gap-3 px-3 text-sm' : 'justify-center w-12 h-12 mx-auto'} ${isActive ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-medium' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'}`}
+                className={`flex items-center py-2 rounded-md transition-all ${sidebarOpen ? 'w-full gap-3 px-3 text-sm' : 'justify-center w-12 h-12 mx-auto'} ${isActive ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-foreground font-medium' : 'text-slate-600 dark:text-muted-foreground hover:bg-slate-50 dark:hover:bg-accent/50 hover:text-slate-900 dark:hover:text-slate-200'}`}
               >
-                <Icon className={`shrink-0 ${sidebarOpen ? 'w-4 h-4' : 'w-5 h-5'} ${isActive ? 'text-slate-900 dark:text-white' : 'text-slate-400'}`} />
+                <Icon className={`shrink-0 ${sidebarOpen ? 'w-4 h-4' : 'w-5 h-5'} ${isActive ? 'text-slate-900 dark:text-foreground' : 'text-slate-400'}`} />
                 {sidebarOpen && <span className="truncate">{tab.label}</span>}
               </button>
             );
@@ -566,15 +566,15 @@ export default function SpaceDashboard() {
         </div>
         
         {/* Sidebar Footer Actions */}
-        <div className="p-4 border-t border-slate-200 dark:border-slate-800 space-y-2 shrink-0">
-          <button onClick={() => navigate('/chat')} title={!sidebarOpen ? "Global Chat" : ""} className={`flex items-center justify-center font-medium border border-slate-200 dark:border-slate-700 rounded-md hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors ${sidebarOpen ? 'w-full gap-2 px-3 py-2 text-sm' : 'w-12 h-12 mx-auto'}`}>
+        <div className="p-4 border-t border-slate-200 dark:border-border space-y-2 shrink-0">
+          <button onClick={() => navigate('/chat')} title={!sidebarOpen ? "Global Chat" : ""} className={`flex items-center justify-center font-medium border border-slate-200 dark:border-border rounded-md hover:bg-slate-50 dark:hover:bg-accent transition-colors ${sidebarOpen ? 'w-full gap-2 px-3 py-2 text-sm' : 'w-12 h-12 mx-auto'}`}>
             <MessageSquare className="w-4 h-4 shrink-0" /> {sidebarOpen && <span>Global Chat</span>}
           </button>
         </div>
       </aside>
 
       {/* MOBILE HEADER (only visible on small screens) */}
-      <div className="md:hidden fixed top-0 left-0 right-0 h-14 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center px-4 z-40 justify-between shadow-sm">
+      <div className="md:hidden fixed top-0 left-0 right-0 h-14 bg-white dark:bg-card border-b border-slate-200 dark:border-border flex items-center px-4 z-40 justify-between shadow-sm">
          <div className="flex items-center gap-2">
            <button onClick={() => navigate('/spaces')} className="flex items-center gap-1.5 px-2 py-1 text-xs font-semibold text-slate-600 bg-slate-100 rounded-md">
              <ArrowLeft className="w-3.5 h-3.5" /> Back
@@ -587,7 +587,7 @@ export default function SpaceDashboard() {
       </div>
 
       {/* MOBILE TABS (horizontal scroll) */}
-      <div className="md:hidden fixed top-14 left-0 right-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 z-30 flex overflow-x-auto px-2 py-2 hide-scrollbar">
+      <div className="md:hidden fixed top-14 left-0 right-0 bg-white dark:bg-card border-b border-slate-200 dark:border-border z-30 flex overflow-x-auto px-2 py-2 hide-scrollbar">
           {TABS.filter(t => {
             if (t.id === 'automations') return user?.role === 'super_admin';
             if (['memory', 'decisions'].includes(t.id)) return isAdmin(user) || isSpacemanHere;
@@ -599,7 +599,7 @@ export default function SpaceDashboard() {
               <button
                 key={tab.id}
                 onClick={() => handleTabChange(tab.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 mx-1 text-xs whitespace-nowrap rounded-full transition-all ${isActive ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-medium' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
+                className={`flex items-center gap-1.5 px-3 py-1.5 mx-1 text-xs whitespace-nowrap rounded-full transition-all ${isActive ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-foreground font-medium' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-accent'}`}
               >
                 <Icon className="w-3.5 h-3.5" /> {tab.label}
               </button>
@@ -610,21 +610,21 @@ export default function SpaceDashboard() {
       {/* MAIN CONTENT AREA */}
       <div className="flex-1 flex flex-col h-screen overflow-hidden pt-24 md:pt-0 relative">
         {/* Top Action Header */}
-        <header className="hidden md:flex h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 items-center justify-between px-8 shrink-0 z-10">
+        <header className="hidden md:flex h-16 bg-white/80 dark:bg-card/80 backdrop-blur-md border-b border-slate-200 dark:border-border items-center justify-between px-8 shrink-0 z-10">
           <div className="flex items-center gap-4">
-            <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+            <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-foreground flex items-center gap-2">
               {TABS.find(t => t.id === activeTab)?.label}
               {space.is_private && <Lock className="w-4 h-4 text-slate-400 ml-2" />}
             </h1>
           </div>
           <div className="flex items-center gap-3">
              {canEdit && (
-               <button onClick={() => setShowEdit(true)} className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-colors shadow-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700" title="Settings">
+               <button onClick={() => setShowEdit(true)} className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-accent rounded-md transition-colors shadow-sm bg-white dark:bg-card border border-slate-200 dark:border-border" title="Settings">
                  <Settings className="w-4 h-4" />
                </button>
              )}
-             <button onClick={() => setShowMembers(true)} className="flex items-center gap-2 px-3 py-1.5 border border-slate-200 dark:border-slate-700 text-sm font-medium rounded-md hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm bg-white dark:bg-slate-900">
-                <Users className="w-4 h-4 text-slate-400" /> <span className="text-slate-600 dark:text-slate-300">{spaceMembers.length}</span>
+             <button onClick={() => setShowMembers(true)} className="flex items-center gap-2 px-3 py-1.5 border border-slate-200 dark:border-border text-sm font-medium rounded-md hover:bg-slate-50 dark:hover:bg-accent transition-colors shadow-sm bg-white dark:bg-card">
+                <Users className="w-4 h-4 text-slate-400" /> <span className="text-slate-600 dark:text-muted-foreground">{spaceMembers.length}</span>
              </button>
              <button
               onClick={handleJoinMeeting}
@@ -666,15 +666,15 @@ export default function SpaceDashboard() {
                 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-4">
                   {/* Recent Videos */}
-                  <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-6">
+                  <div className="bg-white dark:bg-card rounded-xl border border-slate-200 dark:border-border shadow-sm p-6">
                     <div className="flex items-center justify-between mb-6">
-                      <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                      <h3 className="text-base font-bold text-slate-900 dark:text-foreground flex items-center gap-2">
                         <Camera className="w-4 h-4 text-indigo-500" /> Recent Videos
                       </h3>
                       <button onClick={() => setActiveTab('videos')} className="text-xs font-semibold text-slate-500 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-md transition-colors">View all</button>
                     </div>
                     {videos.length === 0 ? (
-                      <div className="py-10 text-center border border-dashed border-slate-200 dark:border-slate-800 rounded-lg bg-slate-50 dark:bg-slate-900/50">
+                      <div className="py-10 text-center border border-dashed border-slate-200 dark:border-border rounded-lg bg-slate-50 dark:bg-card/50">
                         <p className="text-sm text-slate-500 font-medium">No videos yet.</p>
                       </div>
                     ) : (
@@ -683,22 +683,22 @@ export default function SpaceDashboard() {
                   </div>
 
                   {/* Recent Meetings */}
-                  <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-6">
+                  <div className="bg-white dark:bg-card rounded-xl border border-slate-200 dark:border-border shadow-sm p-6">
                     <div className="flex items-center justify-between mb-6">
-                      <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                      <h3 className="text-base font-bold text-slate-900 dark:text-foreground flex items-center gap-2">
                         <Calendar className="w-4 h-4 text-[#006065]" /> Recent Meetings
                       </h3>
                       <button onClick={() => setActiveTab('meetings')} className="text-xs font-semibold text-slate-500 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-md transition-colors">View all</button>
                     </div>
                     {meetings.length === 0 ? (
-                      <div className="py-10 text-center border border-dashed border-slate-200 dark:border-slate-800 rounded-lg bg-slate-50 dark:bg-slate-900/50">
+                      <div className="py-10 text-center border border-dashed border-slate-200 dark:border-border rounded-lg bg-slate-50 dark:bg-card/50">
                         <p className="text-sm text-slate-500 font-medium">No meetings yet.</p>
                       </div>
                     ) : (
-                      <div className="divide-y divide-slate-100 dark:divide-slate-800 border border-slate-100 dark:border-slate-800 rounded-lg overflow-hidden">
+                      <div className="divide-y divide-slate-100 dark:divide-slate-800 border border-slate-100 dark:border-border rounded-lg overflow-hidden">
                         {meetings.slice(0,5).map(m => (
-                          <div key={m.id} onClick={() => navigate(`/meetings/${m.id}`)} className="px-5 py-4 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors">
-                            <p className="text-sm font-semibold text-slate-900 dark:text-white">{m.title || 'Team Meeting'}</p>
+                          <div key={m.id} onClick={() => navigate(`/meetings/${m.id}`)} className="px-5 py-4 hover:bg-slate-50 dark:hover:bg-accent cursor-pointer transition-colors">
+                            <p className="text-sm font-semibold text-slate-900 dark:text-foreground">{m.title || 'Team Meeting'}</p>
                             <p className="text-xs text-slate-500 mt-1">{new Date(m.created_at).toLocaleString()}</p>
                           </div>
                         ))}
@@ -719,11 +719,11 @@ export default function SpaceDashboard() {
             {activeTab === 'meetings' && (
               <div className="space-y-4">
                 {meetings.length === 0 ? <p className="text-slate-500 text-sm">No meetings found.</p> : meetings.map(m => (
-                   <div key={m.id} onClick={() => navigate(`/meetings/${m.id}`)} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-xl hover:shadow-sm cursor-pointer flex justify-between items-center transition-all hover:border-slate-300">
+                   <div key={m.id} onClick={() => navigate(`/meetings/${m.id}`)} className="bg-white dark:bg-card border border-slate-200 dark:border-border p-5 rounded-xl hover:shadow-sm cursor-pointer flex justify-between items-center transition-all hover:border-slate-300">
                      <div>
-                       <h3 className="font-semibold text-slate-900 dark:text-white">{m.title || 'Team Meeting'}</h3>
+                       <h3 className="font-semibold text-slate-900 dark:text-foreground">{m.title || 'Team Meeting'}</h3>
                        <p className="text-xs text-slate-500 mt-1">{new Date(m.created_at).toLocaleString()}</p>
-                       {m.ai_summary && <p className="text-sm text-slate-600 dark:text-slate-400 mt-2 line-clamp-1">{m.ai_summary}</p>}
+                       {m.ai_summary && <p className="text-sm text-slate-600 dark:text-muted-foreground mt-2 line-clamp-1">{m.ai_summary}</p>}
                      </div>
                      <ArrowRight className="w-5 h-5 text-slate-300" />
                    </div>
@@ -736,13 +736,13 @@ export default function SpaceDashboard() {
             )}
 
             {activeTab === 'decisions' && (
-              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm">
+              <div className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl p-6 shadow-sm">
                 <DecisionLedger workspaceId={space.company_id} spaceId={spaceId} hasFullIntelligence={user?.clipad_plan === 'pro' || user?.clipad_plan === 'enterprise'} teamColor={color} />
               </div>
             )}
 
             {activeTab === 'docs' && (
-              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden h-[75vh]">
+              <div className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl shadow-sm overflow-hidden h-[75vh]">
                 <SpaceDocs spaceId={spaceId} user={user} />
               </div>
             )}
@@ -750,36 +750,36 @@ export default function SpaceDashboard() {
             
 
             {activeTab === 'standup' && (
-              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden">
+              <div className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl shadow-sm overflow-hidden">
                 <StandupPanel spaceId={spaceId} workspaceId={space.company_id} />
               </div>
             )}
 
             {activeTab === 'automations' && (
-              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm p-6">
+              <div className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl shadow-sm p-6">
                 <SpaceAutomations spaceId={spaceId} />
               </div>
             )}
 
             {activeTab === 'calendar' && (
-              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm p-6 overflow-hidden min-h-[75vh]">
+              <div className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl shadow-sm p-6 overflow-hidden min-h-[75vh]">
                 <SpaceCalendar spaceId={spaceId} />
               </div>
             )}
 
             {activeTab === 'canvas' && (
-              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden h-[75vh]">
+              <div className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl shadow-sm overflow-hidden h-[75vh]">
                 <CanvasWhiteboard spaceId={spaceId} />
               </div>
             )}
 
             {activeTab === 'memory' && (
               <div className="space-y-6">
-                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm">
-                  <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Organizational Memory</h2>
+                <div className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl p-6 shadow-sm">
+                  <h2 className="text-lg font-bold text-slate-900 dark:text-foreground mb-4">Organizational Memory</h2>
                   <MemoryTimeline spaceId={spaceId} workspaceId={space.company_id} />
                 </div>
-                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden min-h-[500px]">
+                <div className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl shadow-sm overflow-hidden min-h-[500px]">
                   <ContextCapsule spaceId={spaceId} />
                 </div>
               </div>
@@ -797,31 +797,31 @@ export default function SpaceDashboard() {
       {showMembers && createPortal(
         <div className="fixed inset-0 z-[100] flex justify-end">
           {/* Backdrop */}
-          <div className="absolute inset-0 bg-slate-900/30 dark:bg-slate-950/60 backdrop-blur-sm transition-opacity" onClick={() => setShowMembers(false)} />
+          <div className="absolute inset-0 bg-slate-900/30 dark:bg-background/60 backdrop-blur-sm transition-opacity" onClick={() => setShowMembers(false)} />
           
           {/* Drawer Panel */}
-          <div className="relative w-full max-w-[400px] h-full bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-2xl flex flex-col transform transition-transform animate-in slide-in-from-right duration-300">
+          <div className="relative w-full max-w-[400px] h-full bg-white dark:bg-card border-l border-slate-200 dark:border-border shadow-2xl flex flex-col transform transition-transform animate-in slide-in-from-right duration-300">
             
             {/* Header */}
-            <div className="px-6 py-5 flex items-center justify-between shrink-0 bg-slate-50/50 dark:bg-slate-900/50">
+            <div className="px-6 py-5 flex items-center justify-between shrink-0 bg-slate-50/50 dark:bg-card/50">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center shrink-0">
                   <Users className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                 </div>
                 <div>
-                  <h2 className="text-base font-bold text-slate-900 dark:text-white leading-none mb-1">
+                  <h2 className="text-base font-bold text-slate-900 dark:text-foreground leading-none mb-1">
                     {isAdmin(user) ? 'Manage Access' : 'Space Members'}
                   </h2>
                   <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{spaceMembers.length} Members</p>
                 </div>
               </div>
-              <button onClick={() => setShowMembers(false)} className="w-8 h-8 flex items-center justify-center bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-colors">
-                <X className="w-4 h-4 text-slate-600 dark:text-slate-300" />
+              <button onClick={() => setShowMembers(false)} className="w-8 h-8 flex items-center justify-center bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-accent rounded-full transition-colors">
+                <X className="w-4 h-4 text-slate-600 dark:text-muted-foreground" />
               </button>
             </div>
             
             {/* Search Bar */}
-            <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 shrink-0 bg-white dark:bg-slate-900">
+            <div className="px-6 py-4 border-b border-slate-100 dark:border-border shrink-0 bg-white dark:bg-card">
               <div className="relative group">
                 <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
                 <input
@@ -829,7 +829,7 @@ export default function SpaceDashboard() {
                   placeholder="Search directory..."
                   value={searchMember}
                   onChange={e => setSearchMember(e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-lg pl-10 pr-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all placeholder:text-slate-400"
+                  className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-border text-slate-900 dark:text-foreground rounded-lg pl-10 pr-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all placeholder:text-slate-400"
                 />
               </div>
             </div>
@@ -861,11 +861,11 @@ export default function SpaceDashboard() {
                   const isSpacemanMember = p.role === 'spaceman';
 
                   return (
-                    <div key={p.id} className="group flex items-center justify-between p-3 mx-2 mb-1 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                    <div key={p.id} className="group flex items-center justify-between p-3 mx-2 mb-1 rounded-xl hover:bg-slate-50 dark:hover:bg-accent/50 transition-colors">
                       <div className="flex items-center gap-3 overflow-hidden">
                         <img src={p.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${p.full_name}`} alt={p.full_name} className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 object-cover ring-2 ring-white dark:ring-slate-900 shadow-sm shrink-0" />
                         <div className="min-w-0">
-                          <p className="text-sm font-bold text-slate-900 dark:text-white truncate flex items-center gap-2">
+                          <p className="text-sm font-bold text-slate-900 dark:text-foreground truncate flex items-center gap-2">
                             {p.full_name}
                             {isSpacemanMember && <span className="shrink-0 w-1.5 h-1.5 rounded-full bg-[#006065] dark:bg-[#131A2C]" title="Spaceman" />}
                           </p>
@@ -878,7 +878,7 @@ export default function SpaceDashboard() {
                       ) : (isAdmin(user) && canEdit) ? (
                         <button
                           onClick={() => toggleMember(p.id)}
-                          className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all shadow-sm ${isMem ? 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-rose-600 hover:border-rose-200 dark:hover:border-rose-900/50 dark:hover:text-rose-400' : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm border border-transparent'}`}
+                          className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all shadow-sm ${isMem ? 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-border text-slate-600 dark:text-muted-foreground hover:text-rose-600 hover:border-rose-200 dark:hover:border-rose-900/50 dark:hover:text-rose-400' : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm border border-transparent'}`}
                         >
                           {isMem ? 'Remove' : 'Add'}
                         </button>

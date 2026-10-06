@@ -48,7 +48,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode}) {
  const { theme, changeTheme } = useTheme();
  const [showEmojis, setShowEmojis] = useState(false);
  const [floatingEmojis, setFloatingEmojis] = useState([]);
-  const EMOJIS = ['=ƒæì', 'G¥ñn+Å', '=ƒæÅ', '=ƒÿé', '=ƒÄë', '=ƒöÑ'];
+  const EMOJIS = ['=ï¿½ï¿½ï¿½', 'Gï¿½ï¿½n+ï¿½', '=ï¿½ï¿½ï¿½', '=ï¿½ï¿½ï¿½', '=ï¿½ï¿½ï¿½', '=ï¿½ï¿½ï¿½'];
   const [activeBg, setActiveBg] = useState('none');
   const [isApplyingBg, setIsApplyingBg] = useState(false);
 
@@ -433,7 +433,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode}) {
  <div className="w-80 border-l border-primary/40 bg-white/80 dark:bg-black/60 backdrop-blur-md flex flex-col shrink-0 animate-in slide-in-from-right hover:shadow-[0_2px_8px_rgba(0,0,0,0.07)] transition-shadow duration-200 z-40">
  <div className="h-14 border-b border-primary/40 flex items-center justify-between px-4">
  <h3 className="font-semibold flex items-center gap-2"><MessageSquare className="w-4 h-4" /> Meeting Chat</h3>
- <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full" onClick={() => setShowChat(false)}>
+ <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-accent rounded-full" onClick={() => setShowChat(false)}>
  <PanelRightClose className="w-4 h-4" />
  </Button>
  </div>
@@ -475,7 +475,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode}) {
         <h3 className="font-semibold flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-primary" /> Orbit AI
         </h3>
-        <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full" onClick={() => { setAiResponse(null); setIsAiLoading(false); }}>
+        <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-accent rounded-full" onClick={() => { setAiResponse(null); setIsAiLoading(false); }}>
           <PanelRightClose className="w-4 h-4" />
         </Button>
       </div>
@@ -854,7 +854,7 @@ function ParticipantTile({ id, isLocal, className }) {
  };
 
  return (
- <div className={`relative bg-white dark:bg-slate-900 rounded-2xl overflow-hidden group flex items-center justify-center aspect-video shadow-md border border-slate-200 dark:border-white/10 ${className || 'w-full max-w-3xl min-w-[320px] m-2'}`}>
+ <div className={`relative bg-white dark:bg-card rounded-2xl overflow-hidden group flex items-center justify-center aspect-video shadow-md border border-slate-200 dark:border-white/10 ${className || 'w-full max-w-3xl min-w-[320px] m-2'}`}>
  {videoState?.state === 'playable' ? (
  <video 
  ref={videoRef}

@@ -260,7 +260,7 @@ Generate a sharp, executive-quality pre-meeting brief. Respond in valid JSON onl
             )}
 
             {brief.quick_wins && (
-              <div className="p-2.5 rounded-xl bg-[#006065] dark:bg-[#131A2C]/5 border border-[#006065]/20">
+              <div className="p-2.5 rounded-xl bg-[#006065] dark:bg-[#131A2C]/5 border border-[#006065] dark:border-border/20">
                 <p className="text-[9px] font-bold text-[#00beac] uppercase tracking-wider mb-0.5">Quick Wins</p>
                 <p className="text-xs text-foreground/80">{brief.quick_wins}</p>
               </div>

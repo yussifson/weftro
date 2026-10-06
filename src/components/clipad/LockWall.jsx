@@ -86,7 +86,7 @@ export default function LockWall({ type = 'manual', unlockAt = null, title = 'th
 
           {/* Headline */}
           <div className="mb-8">
-            <h1 className="text-3xl font-black text-slate-900 dark:text-white mb-3 tracking-tight">
+            <h1 className="text-3xl font-black text-slate-900 dark:text-foreground mb-3 tracking-tight">
               {isNotFound ? 'Content Not Found' : isPrivate ? 'Private Space' : isScheduled ? 'Scheduled Release' : 'Content Locked'}
             </h1>
             <p className="text-slate-600 dark:text-muted-foreground text-sm leading-relaxed max-w-sm mx-auto">
@@ -113,7 +113,7 @@ export default function LockWall({ type = 'manual', unlockAt = null, title = 'th
 
           {/* Private space note */}
           {isPrivate && (
-            <div className="w-full bg-[#006065] dark:bg-[#131A2C]/10/50 dark:bg-[#006065] dark:bg-[#131A2C]/10 border border-emerald-100 dark:border-[#006065]/20 rounded-2xl p-5 mb-8 text-left">
+            <div className="w-full bg-[#006065] dark:bg-[#131A2C]/10/50 dark:bg-[#006065] dark:bg-[#131A2C]/10 border border-emerald-100 dark:border-[#006065] dark:border-border/20 rounded-2xl p-5 mb-8 text-left">
               <p className="text-[10px] text-[#006065] dark:text-[#00beac] uppercase tracking-[0.2em] font-bold mb-3">How to get access</p>
               <ul className="text-sm text-emerald-900/80 dark:text-emerald-200 space-y-2.5 font-medium">
                 <li className="flex items-start gap-2.5">
@@ -130,7 +130,7 @@ export default function LockWall({ type = 'manual', unlockAt = null, title = 'th
 
           {/* Passcode Unlock Form for Locked/Scheduled content */}
           {(!isNotFound && !isPrivate) && (
-            <div className="w-full bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 rounded-2xl p-5 mb-6 text-left space-y-3">
+            <div className="w-full bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-border/50 rounded-2xl p-5 mb-6 text-left space-y-3">
               <label className="text-[10px] text-slate-500 uppercase tracking-widest font-bold block">Creator Access Key</label>
               <div className="flex gap-2">
                 <input
@@ -138,7 +138,7 @@ export default function LockWall({ type = 'manual', unlockAt = null, title = 'th
                   value={passcode}
                   onChange={e => { setPasscode(e.target.value); setPasscodeError(''); }}
                   placeholder="Enter access key..."
-                  className="flex-1 px-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm outline-none focus:border-[#006065]"
+                  className="flex-1 px-4 py-2 rounded-xl bg-white dark:bg-card border border-slate-200 dark:border-border text-sm outline-none focus:border-[#006065] dark:border-border"
                 />
                 <button
                   onClick={handleUnlockWithKey}
