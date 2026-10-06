@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Globe, Folder, Shield, BarChart2, Network, Clock, Scale, CheckSquare, Map, Plug, Search, Settings, HelpCircle, PanelLeftClose, PanelLeft, ChevronUp, ChevronDown, Activity, LogOut, Target, TrendingUp, GitMerge, HeartPulse, Sparkles, Home } from 'lucide-react';
+import { Folder, Shield, BarChart2, Network, Clock, Scale, CheckSquare, Map, Plug, Search, Settings, HelpCircle, PanelLeftClose, PanelLeft, ChevronUp, ChevronDown, Activity, LogOut, Target, TrendingUp, GitMerge, HeartPulse, Sparkles, Home } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CliPadLogo } from '@/components/ui/CliPadLogo';
 import { useAuth } from '@/lib/AuthContext';
@@ -71,7 +71,6 @@ export default function ClipadSidebar({ forceMobile }) {
   const mainItems = [
     { label: 'Home', path: '/dashboard', icon: Home },
     { label: 'Search', path: '/search', icon: Search },
-      { label: 'Landing Page', path: '/landing', icon: Globe },
     { label: 'Spaces', path: '/spaces', icon: Folder },
   ];
 
