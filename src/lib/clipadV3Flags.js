@@ -15,6 +15,8 @@ export const V3_FLAGS = {
   BROWSER_CAPTURE_ENABLED: 'browser_capture_enabled',
   DESKTOP_CAPTURE_ENABLED: 'desktop_capture_enabled',
   CONNECT_ENABLED: 'connect_enabled',
+  API_CONNECT_ENABLED: 'api_connect_enabled',
+  WEBHOOKS_ENABLED: 'webhooks_enabled',
   MCP_ENABLED: 'mcp_enabled',
   ADVANCED_SEARCH_ENABLED: 'advanced_search_enabled',
   KNOWLEDGE_GRAPH_ENABLED: 'knowledge_graph_enabled',
@@ -34,6 +36,8 @@ const DEFAULT_V3_FLAG_DEFAULTS = {
   [V3_FLAGS.BROWSER_CAPTURE_ENABLED]: true,
   [V3_FLAGS.DESKTOP_CAPTURE_ENABLED]: false,
   [V3_FLAGS.CONNECT_ENABLED]: true,
+  [V3_FLAGS.API_CONNECT_ENABLED]: true,
+  [V3_FLAGS.WEBHOOKS_ENABLED]: true,
   [V3_FLAGS.MCP_ENABLED]: false, // Staged
   [V3_FLAGS.ADVANCED_SEARCH_ENABLED]: true,
   [V3_FLAGS.KNOWLEDGE_GRAPH_ENABLED]: true,
