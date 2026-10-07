@@ -22,6 +22,7 @@ import {
 
 import { INTEGRATIONS, CATEGORIES } from '@/config/integrationsList';
 import CaptureInbox from '@/components/clipad/features/CaptureInbox';
+import ConnectSettings from '@/components/clipad/features/ConnectSettings';
 
 const isSuperAdmin = (user) => user?.role === 'super_admin' || user?.user_metadata?.role === 'super_admin';
 
@@ -472,7 +473,16 @@ export default function IntegrationsHub() {
                 className={`pb-3 px-1 text-sm font-bold border-b-2 transition-colors ${activeTab === 'inbox' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
               >
                 Capture Inbox
-              </button>
+                </button>
+
+                {isConnectEnabled && (
+                  <button 
+                    onClick={() => setActiveTab('connect')}
+                    className={`pb-3 px-1 text-sm font-bold border-b-2 transition-colors ${activeTab === 'connect' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
+                  >
+                    Developer API
+                  </button>
+                )}
             </div>
           </div>
 
