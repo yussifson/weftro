@@ -29,6 +29,7 @@ Extract key entities, topics, potential decisions, action items, and determine i
 Respond ONLY in valid JSON format matching this schema:
 {
   "entities": [{"name": "Name", "type": "person|organization|project|topic"}],
+  "relationships": [{"source": "Entity1Name", "target": "Entity2Name", "type": "relates_to"}],
   "topics": ["topic1"],
   "possible_decisions": ["decision1"],
   "possible_actions": ["action1"],
@@ -52,7 +53,7 @@ ${capture.content || ''}
       aiResultText = await generateText(aiMessages);
     } catch (e) {
       console.warn('AI generation failed, proceeding with basic metadata.', e);
-      aiResultText = JSON.stringify({ entities: [], topics: [], possible_decisions: [], possible_actions: [], importance: 0.5, memory_candidate: false });
+      aiResultText = JSON.stringify({ entities: [], relationships: [], topics: [], possible_decisions: [], possible_actions: [], importance: 0.5, memory_candidate: false });
     }
 
     // Attempt to parse JSON response (handle markdown wrapping if present)
@@ -62,10 +63,12 @@ ${capture.content || ''}
       extraction = JSON.parse(cleanJson);
     } catch (e) {
       console.warn('Failed to parse AI output, proceeding with defaults.', e);
-      extraction = { entities: [], topics: [], possible_decisions: [], possible_actions: [], importance: 0.5, memory_candidate: false };
+      extraction = { entities: [], relationships: [], topics: [], possible_decisions: [], possible_actions: [], importance: 0.5, memory_candidate: false };
     }
 
-    // 3. Entity integration
+    
+    // 3. Entity & Relationship integration
+    const entityMap = new Map();
     if (extraction.entities && extraction.entities.length > 0) {
       for (const ent of extraction.entities) {
         let entityType = ENTITY_TYPES.KNOWLEDGE;
@@ -73,14 +76,42 @@ ${capture.content || ''}
         if (ent.type === 'organization') entityType = ENTITY_TYPES.ORGANIZATION;
         if (ent.type === 'project') entityType = ENTITY_TYPES.PROJECT;
 
-        await upsertEntity({
+        const savedEntity = await upsertEntity({
           companyId: capture.company_id,
           entityType,
           name: ent.name,
-          sourceId: `capture_entity_${ent.name}`,
+          sourceId: `capture_entity_${ent.name.replace(/\s+/g, '_').toLowerCase()}`,
           visibility: capture.visibility === 'ORGANIZATIONAL' ? 'organization' : 'personal'
         });
-        // We could create relationships here if we had more context
+        if (savedEntity && savedEntity.id) {
+          entityMap.set(ent.name.toLowerCase(), savedEntity.id);
+        }
+      }
+    }
+
+    if (extraction.relationships && extraction.relationships.length > 0) {
+      for (const rel of extraction.relationships) {
+        const sourceId = entityMap.get((rel.source || '').toLowerCase());
+        const targetId = entityMap.get((rel.target || '').toLowerCase());
+        
+        if (sourceId && targetId && sourceId !== targetId) {
+          let rType = RELATIONSHIP_TYPES.RELATES_TO;
+          const validTypes = Object.values(RELATIONSHIP_TYPES);
+          if (validTypes.includes(rel.type)) {
+            rType = rel.type;
+          } else if (rel.type && rel.type.toUpperCase() in RELATIONSHIP_TYPES) {
+            rType = RELATIONSHIP_TYPES[rel.type.toUpperCase()];
+          }
+          
+          await createRelationship({
+            companyId: capture.company_id,
+            sourceEntityId: sourceId,
+            targetEntityId: targetId,
+            relationshipType: rType,
+            confidence: 0.8,
+            metadata: { source_capture_id: captureId }
+          }).catch(err => console.warn('Failed to create relationship:', err.message));
+        }
       }
     }
 
