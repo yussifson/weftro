@@ -7,6 +7,8 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/api/supabaseClient';
+import { createCapture } from '@/lib/clipadCaptureService';
+import { contextualizeCapture } from '@/lib/clipadContextualizationService';
 import { generateText } from '@/lib/cloudflareAI';
 import { detectDecisions, detectCommitments, writeOrgEvent } from '@/lib/clipadIntelligence';
 import { useAuth } from '@/lib/AuthContext';
@@ -1279,7 +1281,26 @@ export default function RecordVideo() {
                 if (parsed.summary) {
                   await supabase.from('clipad_videos').update({ ai_summary: parsed.summary }).eq('id', activeVideoId);
                 }
-                if (parsed.action_items && Array.isArray(parsed.action_items) && parsed.action_items.length > 0) {
+                
+            try {
+              const capture = await createCapture({
+                companyId: user.user_metadata?.company_id || user.company_id,
+                userId: user.id,
+                sourceType: 'clipad_videos',
+                sourceId: videoRecord?.id || activeVideoId,
+                captureType: 'VIDEO',
+                title: title.trim() || 'Video Recording',
+                content: parsed.summary || 'Video Recording',
+                visibility: 'PERSONAL'
+              });
+              
+              // Non-blocking contextualization
+              contextualizeCapture(capture.id).catch(console.error);
+            } catch (captureErr) {
+              console.error('Failed to create v3 capture:', captureErr);
+            }
+
+              if (parsed.action_items && Array.isArray(parsed.action_items) && parsed.action_items.length > 0) {
                   const inserts = parsed.action_items.map(ai => ({
                     space_id: selectedSpace || null,
                     title: ai.title,
@@ -1436,6 +1457,25 @@ export default function RecordVideo() {
               if (parsed.summary) {
                 await supabase.from('clipad_videos').update({ ai_summary: parsed.summary }).eq('id', videoRecord.id);
               }
+              
+            try {
+              const capture = await createCapture({
+                companyId: user.user_metadata?.company_id || user.company_id,
+                userId: user.id,
+                sourceType: 'clipad_videos',
+                sourceId: videoRecord.id,
+                captureType: 'VIDEO',
+                title: videoRecord.title || 'Video Recording',
+                content: parsed.summary || 'Video Recording',
+                visibility: 'PERSONAL'
+              });
+              
+              // Non-blocking contextualization
+              contextualizeCapture(capture.id).catch(console.error);
+            } catch (captureErr) {
+              console.error('Failed to create v3 capture:', captureErr);
+            }
+
               if (parsed.action_items && Array.isArray(parsed.action_items) && parsed.action_items.length > 0) {
                 const inserts = parsed.action_items.map(ai => ({
                   space_id: selectedSpace || null,

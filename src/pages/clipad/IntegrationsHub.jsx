@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { INTEGRATIONS, CATEGORIES } from '@/config/integrationsList';
+import CaptureInbox from '@/components/clipad/features/CaptureInbox';
 
 const isSuperAdmin = (user) => user?.role === 'super_admin' || user?.user_metadata?.role === 'super_admin';
 
@@ -41,7 +42,8 @@ export default function IntegrationsHub() {
   const [disconnecting, setDisconnecting] = useState({});
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeView, setActiveView] = useState('hub'); // 'hub' or 'analytics'
+  const [activeView, setActiveView] = useState('hub');
+  const [activeTab, setActiveTab] = useState('connections'); // 'hub' or 'analytics'
   const [apiKeyModal, setApiKeyModal] = useState(null); // { provider, integration, fields }
   const [configModal, setConfigModal] = useState(null); // { integration, conn }
   const [customFreqInput, setCustomFreqInput] = useState({}); // { [connId]: hoursString }
@@ -455,13 +457,33 @@ export default function IntegrationsHub() {
                 <span className="text-muted-foreground text-sm">{stat.label}</span>
               </div>
             ))}
+          
+            </div>
+            
+            <div className="flex gap-4 mt-8 border-b border-white/10">
+              <button 
+                onClick={() => setActiveTab('connections')}
+                className={`pb-3 px-1 text-sm font-bold border-b-2 transition-colors ${activeTab === 'connections' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
+              >
+                Connections & Sources
+              </button>
+              <button 
+                onClick={() => setActiveTab('inbox')}
+                className={`pb-3 px-1 text-sm font-bold border-b-2 transition-colors ${activeTab === 'inbox' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
+              >
+                Capture Inbox
+              </button>
+            </div>
           </div>
-        </div>
-      </div>
 
+      </div>
       <div className="max-w-5xl mx-auto px-4 md:px-6 mt-8 space-y-8">
 
-        {/* Modern Tab Filters */}
+        {activeTab === 'inbox' ? (
+          <CaptureInbox />
+        ) : (
+          <>
+            {/* Modern Tab Filters */}
         <div className="flex items-center overflow-x-auto hide-scrollbar bg-slate-100 dark:bg-slate-800/50 p-1.5 rounded-xl mb-8 w-full">
           {CATEGORIES.map(cat => {
             const isActive = activeCategory === cat;
