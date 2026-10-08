@@ -124,8 +124,8 @@ export default function ConnectSettings() {
         
         <div className="flex gap-4 mt-4 text-xs font-bold">
           <span className="px-2 py-1 bg-background rounded border border-border text-foreground">API: Active</span>
-          <span className={\`px-2 py-1 rounded border \${isMcpEnabled ? 'bg-green-100 text-green-700 border-green-200' : 'bg-slate-100 text-slate-500 border-slate-200'}\`}>MCP: {isMcpEnabled ? 'Active' : 'Disabled'}</span>
-          <span className={\`px-2 py-1 rounded border \${isWebhooksEnabled ? 'bg-green-100 text-green-700 border-green-200' : 'bg-slate-100 text-slate-500 border-slate-200'}\`}>Webhooks: {isWebhooksEnabled ? 'Active' : 'Disabled'}</span>
+          <span className={`px-2 py-1 rounded border ${isMcpEnabled ? 'bg-green-100 text-green-700 border-green-200' : 'bg-slate-100 text-slate-500 border-slate-200'}`}>MCP: {isMcpEnabled ? 'Active' : 'Disabled'}</span>
+          <span className={`px-2 py-1 rounded border ${isWebhooksEnabled ? 'bg-green-100 text-green-700 border-green-200' : 'bg-slate-100 text-slate-500 border-slate-200'}`}>Webhooks: {isWebhooksEnabled ? 'Active' : 'Disabled'}</span>
         </div>
       </div>
 

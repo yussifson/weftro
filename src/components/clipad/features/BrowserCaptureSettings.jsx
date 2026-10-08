@@ -47,7 +47,7 @@ export default function BrowserCaptureSettings() {
   const addExcludedDomain = async (e) => {
     e.preventDefault();
     if (!newDomain.trim() || !settings) return;
-    const cleanDomain = newDomain.trim().toLowerCase().replace(/^https?:\\/\\//, '').split('/')[0];
+    const cleanDomain = newDomain.trim().toLowerCase().replace(/^https?:\/\//, '').split('/')[0];
     
     if (settings.excluded_domains.includes(cleanDomain)) {
       setNewDomain('');
@@ -95,11 +95,11 @@ export default function BrowserCaptureSettings() {
         </div>
         <button
           onClick={toggleCapture}
-          className={\`flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-sm transition-colors \${
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-sm transition-colors ${
             settings.is_capture_enabled 
               ? 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50' 
               : 'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50'
-          }\`}
+          }`}
         >
           <Power className="w-4 h-4" />
           {settings.is_capture_enabled ? 'Capture Active' : 'Capture Paused'}

@@ -14,7 +14,7 @@ const VALID_SCOPES = ['memory:read', 'knowledge:read', 'search:read', 'moments:r
  */
 function requireScope(grantedScopes, requiredScope) {
   if (!grantedScopes.includes(requiredScope)) {
-    throw new Error(\`Unauthorized: missing required scope '\${requiredScope}'\`);
+    throw new Error(`Unauthorized: missing required scope '${requiredScope}'`);
   }
 }
 
@@ -59,7 +59,7 @@ export async function getAuthorizedContext({ rawToken, query, resourceType = 'me
       requireScope(scopes, 'knowledge:read');
       return await getAuthorizedEntity(user, query.entityId);
     default:
-      throw new Error(\`Unsupported resource type: \${resourceType}\`);
+      throw new Error(`Unsupported resource type: ${resourceType}`);
   }
 }
 

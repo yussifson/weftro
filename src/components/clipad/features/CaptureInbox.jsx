@@ -130,9 +130,9 @@ export default function CaptureInbox() {
       else if (action === 'archive') updated = await archiveContextSession(id);
       
       setSessions(prev => prev.map(s => s.id === id ? updated : s));
-      toast({ title: \`Session \${action}d\` });
+      toast({ title: `Session ${action}d` });
     } catch (e) {
-      toast({ title: 'Error', description: \`Failed to \${action} session.\`, variant: 'destructive' });
+      toast({ title: 'Error', description: `Failed to ${action} session.`, variant: 'destructive' });
     }
   };
 
@@ -156,13 +156,13 @@ export default function CaptureInbox() {
             <div className="flex bg-secondary rounded-lg p-1">
               <button 
                 onClick={() => setActiveTab('captures')}
-                className={\`px-3 py-1 text-xs font-bold rounded-md transition-colors \${activeTab === 'captures' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}\`}
+                className={`px-3 py-1 text-xs font-bold rounded-md transition-colors ${activeTab === 'captures' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
               >
                 Captures
               </button>
               <button 
                 onClick={() => setActiveTab('sessions')}
-                className={\`px-3 py-1 text-xs font-bold rounded-md transition-colors \${activeTab === 'sessions' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}\`}
+                className={`px-3 py-1 text-xs font-bold rounded-md transition-colors ${activeTab === 'sessions' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
               >
                 Sessions
               </button>
@@ -296,11 +296,11 @@ export default function CaptureInbox() {
                   <div>
                     <div className="flex items-center gap-2 mb-1">
                       <h3 className="font-bold text-foreground text-sm">{session.title}</h3>
-                      <span className={\`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider \${
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                         session.status === 'ACTIVE' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
                         session.status === 'PAUSED' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' :
                         'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400'
-                      }\`}>
+                      }`}>
                         {session.status}
                       </span>
                     </div>

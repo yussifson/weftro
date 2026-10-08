@@ -99,7 +99,7 @@ export async function dispatchWebhookEvent(user, eventName, payload) {
         })
       }).catch(err => {
         // Record failure to delivery tracking table (clipad_v3_webhook_deliveries)
-        console.warn(\`[Webhook Delivery Failed] \${wh.endpoint_url}: \`, err);
+        console.warn(`[Webhook Delivery Failed] ${wh.endpoint_url}: `, err);
       });
       return true;
     } catch (e) {
