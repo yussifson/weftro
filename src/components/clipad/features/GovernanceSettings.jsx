@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/AuthContext';
-import { getGovernanceContext } from '@/lib/clipadIntelligenceGovernanceService';
+import { resolveIntelligenceContext } from '@/lib/clipadIntelligenceGovernanceService';
 import { isV3FeatureEnabled, V3_FLAGS } from '@/lib/clipadV3Flags';
 import { ShieldCheck, Lock, Users, FolderLock, AlertTriangle, EyeOff, Loader2, Key, Info } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -20,7 +20,7 @@ export default function GovernanceSettings() {
     async function load() {
       if (!user || !isEnabled) return;
       try {
-        const ctx = await getGovernanceContext(user);
+        const ctx = await resolveIntelligenceContext(user);
         setGovCtx(ctx);
       } catch (e) {
         console.error(e);
