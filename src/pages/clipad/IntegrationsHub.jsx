@@ -871,7 +871,8 @@ export default function IntegrationsHub() {
 
             </>
           )}
-{/* Ã¢â€â‚¬Ã¢â€â‚¬ Scope Selector Modal — shown BEFORE connecting any integration Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */}
+      </div>
+{/* Scope Selector Modal — shown BEFORE connecting any integration Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */}
       {scopeModal && createPortal(
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="bg-white dark:bg-card text-slate-900 dark:text-foreground border border-slate-200 dark:border-border rounded-2xl shadow-2xl w-full max-w-md p-5 animate-in fade-in zoom-in-95 duration-200">
@@ -961,8 +962,6 @@ export default function IntegrationsHub() {
                 {selectedScope === 'company' && 'All members of the company can query this integration via Orbit and Spotlight.'}
               </p>
             </div>
-            </>
-          )}
       {/* Actions */}
             <div className="flex gap-2">
               <button
