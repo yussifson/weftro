@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { CheckCircle2, Clock, XCircle, FileText, Loader2, Sparkles } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
@@ -29,7 +29,7 @@ export default function CommitmentTracker({ spaceId }) {
 
   const fetchCommitments = async () => {
     setLoading(true);
-    // Removed the clipad_meeting_records join — that FK doesn't exist yet.
+    // Removed the clipad_meeting_records join â€” that FK doesn't exist yet.
     // Pull commitment data flat and display meeting_id info where available.
     const { data, error } = await supabase
       .from('clipad_commitments')
@@ -111,7 +111,7 @@ export default function CommitmentTracker({ spaceId }) {
       <div className="bg-white dark:bg-card rounded-xl shadow-sm border border-slate-200 dark:border-border p-5">
         <div className="flex items-center gap-2 mb-4">
           <CheckCircle2 className="w-5 h-5 text-indigo-500" />
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white">AI Commitment Tracker</h2>
+          <h2 className="text-lg font-bold text-slate-900 dark:text-foreground">AI Commitment Tracker</h2>
         </div>
         <div className="flex items-center justify-center py-8 text-slate-400">
           <Loader2 className="w-5 h-5 animate-spin" />
@@ -123,7 +123,7 @@ export default function CommitmentTracker({ spaceId }) {
   return (
     <div className="bg-white dark:bg-card rounded-xl shadow-sm border border-slate-200 dark:border-border p-5 h-full flex flex-col">
       <div className="flex flex-wrap items-center justify-between mb-4 gap-3">
-        <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+        <h2 className="text-base font-bold text-slate-900 dark:text-foreground flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 text-[#006065] shrink-0" />
           <span className="leading-tight">Commitment Tracker</span>
         </h2>
@@ -148,10 +148,10 @@ export default function CommitmentTracker({ spaceId }) {
               key={c.id}
               className={`p-3 rounded-lg border ${
                 c.status === 'met'
-                  ? 'bg-[#006065]/10/50 border-emerald-100 dark:bg-emerald-900/10 dark:border-emerald-900/30'
+                  ? 'bg-[#006065] dark:bg-[#131A2C]/10/50 border-emerald-100 dark:bg-emerald-900/10 dark:border-emerald-900/30'
                   : c.status === 'missed'
                   ? 'bg-red-50/50 border-red-100 dark:bg-red-900/10 dark:border-red-900/30'
-                  : 'bg-slate-50 border-slate-100 dark:bg-secondary/50 dark:border-border/50'
+                  : 'bg-slate-50 dark:bg-background border-slate-100 dark:bg-secondary/50 dark:border-border/50'
               }`}
             >
               <div className="flex items-start justify-between">
@@ -175,7 +175,7 @@ export default function CommitmentTracker({ spaceId }) {
                     <>
                       <button
                         onClick={() => updateStatus(c.id, 'met')}
-                        className="p-1 text-slate-400 hover:text-[#006065] hover:bg-[#006065]/10 dark:hover:bg-[#004e52]/30 rounded transition-colors"
+                        className="p-1 text-slate-400 hover:text-[#006065] hover:bg-[#006065] dark:bg-[#131A2C]/10 dark:hover:bg-[#004e52]/30 rounded transition-colors"
                         title="Mark Met"
                       >
                         <CheckCircle2 className="w-4 h-4" />
@@ -192,7 +192,7 @@ export default function CommitmentTracker({ spaceId }) {
                   {c.status !== 'pending' && (
                     <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
                       c.status === 'met'
-                        ? 'bg-[#006065]/20 text-[#004e52] dark:bg-[#004e52]/30 dark:text-[#00beac]'
+                        ? 'bg-[#006065] dark:bg-[#131A2C]/20 text-[#004e52] dark:bg-[#004e52]/30 dark:text-[#00beac]'
                         : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
                     }`}>
                       {c.status}
@@ -208,7 +208,7 @@ export default function CommitmentTracker({ spaceId }) {
 
               {c.due_date && (
                 <div className="mt-2 pl-8">
-                  <span className="text-xs text-slate-500 flex items-center gap-1">
+                  <span className="text-xs text-slate-500 dark:text-muted-foreground flex items-center gap-1">
                     <Clock className="w-3 h-3" /> Due: {new Date(c.due_date).toLocaleDateString()}
                   </span>
                 </div>
@@ -220,3 +220,4 @@ export default function CommitmentTracker({ spaceId }) {
     </div>
   );
 }
+

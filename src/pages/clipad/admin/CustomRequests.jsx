@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import {
   Sparkles,
@@ -35,7 +35,7 @@ const STATUS_CONFIG = {
   pending: { label: 'Pending Review', color: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20' },
   contacted: { label: 'Contacted', color: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20' },
   in_progress: { label: 'In Negotiation', color: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20' },
-  closed: { label: 'Closed / Won', color: 'bg-[#006065]/10 text-[#006065] dark:text-[#00beac] border-[#006065]/20' },
+  closed: { label: 'Closed / Won', color: 'bg-[#006065] dark:bg-[#131A2C]/10 text-[#006065] dark:text-[#00beac] border-[#006065] dark:border-border/20' },
 };
 
 export default function CustomRequests() {
@@ -438,7 +438,7 @@ export default function CustomRequests() {
           />
         </div>
 
-        <div className="flex items-center gap-1.5 p-1 bg-[#006065] text-white border border-white/15/10 dark:bg-[#006065] border border-border rounded-xl overflow-x-auto">
+        <div className="flex items-center gap-1.5 p-1 bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/10 dark:bg-card border border-border rounded-xl overflow-x-auto">
           {['all', 'pending', 'contacted', 'in_progress', 'closed'].map((st) => (
             <button
               key={st}
@@ -477,7 +477,7 @@ export default function CustomRequests() {
         ) : (
           <div className="overflow-x-auto">
             <Table>
-              <TableHeader className="bg-transparent/50 dark:bg-[#006065] text-white border border-white/15/5">
+              <TableHeader className="bg-transparent/50 dark:bg-card text-white border border-white/15/5">
                 <TableRow className="border-b border-border">
                   <TableHead className="w-[180px] font-bold text-xs uppercase tracking-wider text-muted-foreground">Prospect & Company</TableHead>
                   <TableHead className="font-bold text-xs uppercase tracking-wider text-muted-foreground">Seats / Scale</TableHead>
@@ -492,7 +492,7 @@ export default function CustomRequests() {
                 {filteredRequests.map((req) => {
                   const statusInfo = STATUS_CONFIG[req.status] || STATUS_CONFIG.pending;
                   return (
-                    <TableRow key={req.id || req.request_code} className="hover:bg-transparent/60 dark:hover:bg-[#006065]/40 transition-colors">
+                    <TableRow key={req.id || req.request_code} className="hover:bg-transparent/60 dark:hover:bg-[#006065] dark:bg-[#131A2C]/40 transition-colors">
                       <TableCell className="py-4">
                         <div className="space-y-1">
                           <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
@@ -518,7 +518,7 @@ export default function CustomRequests() {
                       </TableCell>
 
                       <TableCell className="py-4">
-                        <div className="text-xs font-medium capitalize text-white/90 dark:text-white/50 flex items-center gap-1.5">
+                        <div className="text-xs font-medium capitalize text-white/90 dark:text-foreground/50 flex items-center gap-1.5">
                           <Server className="w-3.5 h-3.5 text-indigo-500" />
                           {(req.deployment || 'cloud').replace('_', ' ')}
                         </div>
@@ -547,7 +547,7 @@ export default function CustomRequests() {
                                 onClick={() => handleUpdateStatus(req.id, stKey)}
                                 className="text-xs font-semibold gap-2"
                               >
-                                <span className={`w-2 h-2 rounded-full ${stKey === 'closed' ? 'bg-[#006065]' : stKey === 'in_progress' ? 'bg-purple-500' : stKey === 'contacted' ? 'bg-blue-500' : 'bg-amber-500'}`} />
+                                <span className={`w-2 h-2 rounded-full ${stKey === 'closed' ? 'bg-[#006065] dark:bg-[#131A2C]' : stKey === 'in_progress' ? 'bg-purple-500' : stKey === 'contacted' ? 'bg-blue-500' : 'bg-amber-500'}`} />
                                 {stVal.label}
                               </DropdownMenuItem>
                             ))}
@@ -572,7 +572,7 @@ export default function CustomRequests() {
                             <Eye className="w-4 h-4" />
                           </button>
                           <a
-                            href={`mailto:${req.email}?subject=CliPad%20Enterprise%20Plan%20Arrangement%20-%20${encodeURIComponent(req.company || 'Inquiry')}&body=Hi%20${encodeURIComponent(req.name || 'there')},%0A%0AThank%20you%20for%20reaching%20out%20regarding%20a%20custom%20CliPad%20plan%20for%20${encodeURIComponent(req.company || 'your team')}.`}
+                            href={`mailto:${req.email}?subject=KERINT%20Enterprise%20Plan%20Arrangement%20-%20${encodeURIComponent(req.company || 'Inquiry')}&body=Hi%20${encodeURIComponent(req.name || 'there')},%0A%0AThank%20you%20for%20reaching%20out%20regarding%20a%20custom%20KERINT%20plan%20for%20${encodeURIComponent(req.company || 'your team')}.`}
                             className="p-2 rounded-lg text-white/70 hover:text-blue-500 hover:bg-blue-500/10 transition-colors"
                             title="Send Email"
                           >
@@ -684,7 +684,7 @@ export default function CustomRequests() {
               {selectedRequest.requirements && (
                 <div>
                   <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Custom Requirements & Notes</h4>
-                  <div className="p-4 rounded-xl bg-transparent dark:bg-[#006065] text-white border border-white/15/5 border border-border text-xs text-foreground leading-relaxed whitespace-pre-wrap">
+                  <div className="p-4 rounded-xl bg-transparent dark:bg-card text-white border border-white/15/5 border border-border text-xs text-foreground leading-relaxed whitespace-pre-wrap">
                     {selectedRequest.requirements}
                   </div>
                 </div>
@@ -730,7 +730,7 @@ export default function CustomRequests() {
 
                 <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
                   <a
-                    href={`mailto:${selectedRequest.email}?subject=CliPad%20Enterprise%20Arrangement%20-%20${encodeURIComponent(selectedRequest.company || '')}`}
+                    href={`mailto:${selectedRequest.email}?subject=KERINT%20Enterprise%20Arrangement%20-%20${encodeURIComponent(selectedRequest.company || '')}`}
                     className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary hover:bg-primary/90 text-white font-semibold text-xs transition-all shadow-sm"
                   >
                     <Send className="w-3.5 h-3.5" /> Email Prospect
@@ -744,3 +744,4 @@ export default function CustomRequests() {
     </div>
   );
 }
+

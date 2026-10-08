@@ -11,7 +11,7 @@ const TOOLS = [
   { id: 'arrow',   label: 'Arrow',        icon: <ArrowRight size={16} />,  shortcut: 'A' },
   { id: 'rect',    label: 'Rectangle',    icon: <Square size={16} />,  shortcut: 'R' },
   { id: 'circle',  label: 'Circle',       icon: <Circle size={16} />,  shortcut: 'C' },
-  { id: 'sticky',  label: 'Sticky Note',  icon: <StickyNote size={16} />, shortcut: 'N' },
+  { id: 'sticky',  label: 'sticky Note',  icon: <StickyNote size={16} />, shortcut: 'N' },
   { id: 'text',    label: 'Text',         icon: <Type size={16} />,  shortcut: 'T' },
   { id: 'image',   label: 'Image',        icon: <ImageIcon size={16} />, shortcut: 'I' },
 ];
@@ -23,7 +23,7 @@ const PALETTE = [
   '#8b5cf6','#ec4899','#10b981',
 ];
 
-const STICKY_COLORS = ['#fef08a','#bbf7d0','#bfdbfe','#fecaca','#e9d5ff','#fed7aa'];
+const stICKY_COLORS = ['#fef08a','#bbf7d0','#bfdbfe','#fecaca','#e9d5ff','#fed7aa'];
 const SIZES = [2, 4, 8, 16];
 
 // â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -48,7 +48,7 @@ function drawArrow(ctx, x1, y1, x2, y2, size) {
 }
 
 function drawShape(ctx, start, end, tool, color, size) {
-  ctx.strokeStyle = color;
+  ctx.strokestyle = color;
   ctx.lineWidth = size;
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
@@ -75,7 +75,7 @@ export default function CanvasWhiteboard({ onClose }) {
   const startPos   = useRef({ x: 0, y: 0 });
   const snapshot   = useRef(null);
   const history    = useRef([]);
-  const redoStack  = useRef([]);
+  const redostack  = useRef([]);
   const isPanning  = useRef(false);
   const lastPan    = useRef({ x: 0, y: 0 });
 
@@ -86,9 +86,9 @@ export default function CanvasWhiteboard({ onClose }) {
   const [zoom,         setZoom]         = useState(1);
   const [pan,          setPan]          = useState({ x: 0, y: 0 });
   const [textInput,    setTextInput]    = useState(null);   // { x, y, val }
-  const [stickies,     setStickies]     = useState([]);     // [{id,x,y,text,bg}]
-  const [editSticky,   setEditSticky]   = useState(null);
-  const [stickyColor,  setStickyColor]  = useState(STICKY_COLORS[0]);
+  const [stickies,     setstickies]     = useState([]);     // [{id,x,y,text,bg}]
+  const [editsticky,   setEditsticky]   = useState(null);
+  const [stickyColor,  setstickyColor]  = useState(stICKY_COLORS[0]);
   const [showPalette,  setShowPalette]  = useState(false);
   const [showMobileTools, setShowMobileTools] = useState(false);
 
@@ -124,10 +124,10 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
           id: `ai-sticky-${Date.now()}-${idx}`,
           x: s.x || (100 + (idx % 3) * 220),
           y: s.y || (100 + Math.floor(idx / 3) * 160),
-          text: s.text || 'Step',
-          bg: s.bg || STICKY_COLORS[idx % STICKY_COLORS.length]
+          text: s.text || 'step',
+          bg: s.bg || stICKY_COLORS[idx % stICKY_COLORS.length]
         }));
-        setStickies(prev => [...prev, ...newNotes]);
+        setstickies(prev => [...prev, ...newNotes]);
       }
       setShowAiModal(false);
       setAiPrompt('');
@@ -170,7 +170,7 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
       canvas.height = rect.height;
       const ctx = canvas.getContext('2d');
       ctxRef.current = ctx;
-      ctx.fillStyle = '#ffffff';
+      ctx.fillstyle = '#ffffff';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       const img = new Image();
       img.onload = () => ctx.drawImage(img, 0, 0);
@@ -204,12 +204,12 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
     if (!canvas) return;
     history.current.push(canvas.toDataURL());
     if (history.current.length > 60) history.current.shift();
-    redoStack.current = [];
+    redostack.current = [];
   }, []);
 
-  const applyCtxStyle = useCallback((ctx) => {
-    ctx.strokeStyle = color;
-    ctx.fillStyle   = color;
+  const applyCtxstyle = useCallback((ctx) => {
+    ctx.strokestyle = color;
+    ctx.fillstyle   = color;
     ctx.lineWidth   = size;
     ctx.lineCap     = 'round';
     ctx.lineJoin    = 'round';
@@ -219,7 +219,7 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
   const undo = useCallback(() => {
     const canvas = canvasRef.current, ctx = ctxRef.current;
     if (!canvas || !ctx || !history.current.length) return;
-    redoStack.current.push(canvas.toDataURL());
+    redostack.current.push(canvas.toDataURL());
     const prev = history.current.pop();
     const img  = new Image();
     img.onload = () => { ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(img,0,0); };
@@ -228,9 +228,9 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
 
   const redo = useCallback(() => {
     const canvas = canvasRef.current, ctx = ctxRef.current;
-    if (!canvas || !ctx || !redoStack.current.length) return;
+    if (!canvas || !ctx || !redostack.current.length) return;
     history.current.push(canvas.toDataURL());
-    const next = redoStack.current.pop();
+    const next = redostack.current.pop();
     const img  = new Image();
     img.onload = () => { ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(img,0,0); };
     img.src = next;
@@ -240,9 +240,9 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
     const canvas = canvasRef.current, ctx = ctxRef.current;
     if (!canvas || !ctx) return;
     saveHistory();
-    ctx.fillStyle = '#ffffff';
+    ctx.fillstyle = '#ffffff';
     ctx.fillRect(0,0,canvas.width,canvas.height);
-    setStickies([]);
+    setstickies([]);
   }, [saveHistory]);
 
   const download = useCallback(() => {
@@ -293,8 +293,8 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
 
     if (tool === 'sticky') {
       const pos = toCanvas(cx, cy);
-      setStickies(prev => [...prev, { id: Date.now(), x: pos.x, y: pos.y, text: '', bg: stickyColor }]);
-      setEditSticky(Date.now()); // will not match yet â€” set after state update
+      setstickies(prev => [...prev, { id: Date.now(), x: pos.x, y: pos.y, text: '', bg: stickyColor }]);
+      setEditsticky(Date.now()); // will not match yet â€” set after State update
       return;
     }
 
@@ -317,13 +317,13 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
     ctx.save();
     ctx.translate(pan.x, pan.y);
     ctx.scale(zoom, zoom);
-    applyCtxStyle(ctx);
+    applyCtxstyle(ctx);
 
     if (tool === 'pen') {
       ctx.beginPath();
       ctx.moveTo(pos.x, pos.y);
     } else if (tool === 'eraser') {
-      ctx.strokeStyle = '#ffffff';
+      ctx.strokestyle = '#ffffff';
       ctx.lineWidth   = size * 5;
       ctx.lineCap     = 'round';
       ctx.beginPath();
@@ -332,7 +332,7 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
       snapshot.current = canvas.toDataURL();
     }
     ctx.restore();
-  }, [tool, toCanvas, saveHistory, applyCtxStyle, pan, zoom, size, stickyColor]);
+  }, [tool, toCanvas, saveHistory, applyCtxstyle, pan, zoom, size, stickyColor]);
 
   const onPointerMove = useCallback((e) => {
     e.preventDefault();
@@ -355,12 +355,12 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
     ctx.save();
     ctx.translate(pan.x, pan.y);
     ctx.scale(zoom, zoom);
-    applyCtxStyle(ctx);
+    applyCtxstyle(ctx);
 
     if (tool === 'pen') {
       ctx.lineTo(pos.x, pos.y); ctx.stroke();
     } else if (tool === 'eraser') {
-      ctx.strokeStyle = '#ffffff';
+      ctx.strokestyle = '#ffffff';
       ctx.lineWidth   = size * 5;
       ctx.lineCap     = 'round';
       ctx.lineTo(pos.x, pos.y); ctx.stroke();
@@ -374,7 +374,7 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
       img.src = snapshot.current;
     }
     ctx.restore();
-  }, [tool, toCanvas, applyCtxStyle, pan, zoom, color, size]);
+  }, [tool, toCanvas, applyCtxstyle, pan, zoom, color, size]);
 
   const onPointerUp = useCallback((e) => {
     e.preventDefault();
@@ -391,13 +391,13 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
       ctx.save();
       ctx.translate(pan.x, pan.y);
       ctx.scale(zoom, zoom);
-      applyCtxStyle(ctx);
+      applyCtxstyle(ctx);
       drawShape(ctx, startPos.current, pos, tool, color, size);
       ctx.restore();
     }
     ctx.beginPath();
     snapshot.current = null;
-  }, [tool, toCanvas, applyCtxStyle, pan, zoom, color, size]);
+  }, [tool, toCanvas, applyCtxstyle, pan, zoom, color, size]);
 
   // â”€â”€ Text submit â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const submitText = useCallback(() => {
@@ -407,7 +407,7 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
     ctx.translate(pan.x, pan.y);
     ctx.scale(zoom, zoom);
     ctx.font = `${Math.max(14, size * 5)}px Inter, sans-serif`;
-    ctx.fillStyle = color;
+    ctx.fillstyle = color;
     ctx.fillText(textInput.val, textInput.x, textInput.y);
     ctx.restore();
     setTextInput(null);
@@ -426,7 +426,7 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
       if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); undo(); }
       if ((e.ctrlKey || e.metaKey) && e.key === 'y') { e.preventDefault(); redo(); }
-      if (e.key === 'Escape') { setTextInput(null); setEditSticky(null); }
+      if (e.key === 'Escape') { setTextInput(null); setEditsticky(null); }
       if (e.key === '+' || e.key === '=') setZoom(z => Math.min(5, z + 0.1));
       if (e.key === '-') setZoom(z => Math.max(0.2, z - 0.1));
       if (e.key === '0') { setZoom(1); setPan({ x: 0, y: 0 }); }
@@ -441,31 +441,31 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
   const cursor = cursorMap[tool] || 'crosshair';
 
   return (
-    <div className="absolute inset-0 z-[9999] flex flex-col bg-white select-none" style={{ touchAction: 'none', fontFamily: "'Inter', sans-serif" }}>
+    <div className="absolute inset-0 z-[9999] flex flex-col bg-white dark:bg-card select-none" style={{ touchAction: 'none', fontFamily: "'Inter', sans-serif" }}>
       {/* â”€â”€ Mobile Toolbar Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <div className="flex md:hidden items-center justify-between px-3 py-2 bg-slate-50 border-b border-slate-200 flex-shrink-0 shadow-sm relative z-[10000]">
-        <button onClick={() => setShowMobileTools(!showMobileTools)} className="px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold flex items-center gap-2 shadow-sm text-slate-700">
+      <div className="flex md:hidden items-center justify-between px-3 py-2 bg-slate-50 dark:bg-background border-b border-slate-200 dark:border-border flex-shrink-0 shadow-sm relative z-[10000]">
+        <button onClick={() => setShowMobileTools(!showMobileTools)} className="px-3 py-1.5 bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl text-sm font-semibold flex items-center gap-2 shadow-sm text-slate-700 dark:text-foreground">
           Tools {showMobileTools ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
         </button>
-        <button onClick={onClose} className="px-4 py-1.5 rounded-xl bg-[#006065] hover:bg-[#004e52] text-white text-xs font-bold shadow-sm flex items-center gap-1.5">
+        <button onClick={onClose} className="px-4 py-1.5 rounded-xl bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004e52] text-white text-xs font-bold shadow-sm flex items-center gap-1.5">
           âœ• Close
         </button>
       </div>
 
       {/* â”€â”€ Toolbar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <div className={`${showMobileTools ? 'flex absolute top-[53px] left-0 right-0 bg-slate-50 border-b p-3 z-[9999] shadow-xl flex-wrap' : 'hidden'} md:flex items-center gap-1.5 md:px-3 md:py-1.5 md:bg-slate-50 md:border-b border-slate-200 flex-shrink-0 flex-wrap md:shadow-sm md:static`}>
+      <div className={`${showMobileTools ? 'flex absolute top-[53px] left-0 right-0 bg-slate-50 dark:bg-background border-b p-3 z-[9999] shadow-xl flex-wrap' : 'hidden'} md:flex items-center gap-1.5 md:px-3 md:py-1.5 md:bg-slate-50 dark:bg-background md:border-b border-slate-200 dark:border-border flex-shrink-0 flex-wrap md:shadow-sm md:static`}>
 
         {/* Tool group */}
-        <div className="flex items-center gap-0.5 bg-white border border-slate-200 rounded-xl p-1 shadow-sm">
+        <div className="flex items-center gap-0.5 bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl p-1 shadow-sm">
           {TOOLS.map(t => (
             <button key={t.id} onClick={() => setTool(t.id)} title={`${t.label} (${t.shortcut})`}
-              className={`w-8 h-8 rounded-lg text-sm font-medium flex items-center justify-center transition-all ${tool === t.id ? 'bg-[#006065] text-white shadow-sm' : 'hover:bg-slate-100 text-slate-600'}`}>
+              className={`w-8 h-8 rounded-lg text-sm font-medium flex items-center justify-center transition-all ${tool === t.id ? 'bg-[#006065] dark:bg-[#131A2C] text-white shadow-sm' : 'hover:bg-slate-100 dark:bg-secondary text-slate-600 dark:text-muted-foreground'}`}>
               {t.icon}
             </button>
           ))}
         </div>
 
-        <div className="w-px h-7 bg-slate-200 mx-1" />
+        <div className="w-px h-7 bg-slate-200 dark:bg-accent mx-1" />
 
         {/* Color palette */}
         <div className="relative">
@@ -473,11 +473,11 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
             className="w-8 h-8 rounded-xl border-2 border-white shadow-md ring-2 ring-slate-200 transition-transform hover:scale-110"
             style={{ background: color }} title="Color" />
           {showPalette && (
-            <div className="absolute top-10 left-0 z-50 bg-white border border-slate-200 rounded-2xl p-2 shadow-xl grid grid-cols-6 gap-1.5 w-44">
+            <div className="absolute top-10 left-0 z-50 bg-white dark:bg-card border border-slate-200 dark:border-border rounded-2xl p-2 shadow-xl grid grid-cols-6 gap-1.5 w-44">
               {PALETTE.map(c => (
                 <button key={c} onClick={() => { setColor(c); setShowPalette(false); }}
-                  className="w-6 h-6 rounded-full border border-slate-200 hover:scale-125 transition-transform shadow-sm"
-                  style={{ background: c, outline: color === c ? '2px solid #059669' : 'none', outlineOffset: 2 }} />
+                  className="w-6 h-6 rounded-full border border-slate-200 dark:border-border hover:scale-125 transition-transform shadow-sm"
+                  style={{ background: c, outline: color === c ? '2px solid #006065' : 'none', outlineOffset: 2 }} />
               ))}
               <input type="color" value={color} onChange={e => setColor(e.target.value)}
                 className="w-6 h-6 rounded-full cursor-pointer border-0 p-0 bg-transparent" title="Custom color" />
@@ -486,41 +486,41 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
         </div>
 
         {/* Size */}
-        <div className="flex items-center gap-0.5 bg-white border border-slate-200 rounded-xl p-1 shadow-sm">
+        <div className="flex items-center gap-0.5 bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl p-1 shadow-sm">
           {SIZES.map(s => (
             <button key={s} onClick={() => setSize(s)}
-              className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all ${size === s ? 'bg-[#006065]' : 'hover:bg-slate-100'}`}>
+              className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all ${size === s ? 'bg-[#006065] dark:bg-[#131A2C]' : 'hover:bg-slate-100 dark:bg-secondary'}`}>
               <div className="rounded-full bg-current" style={{ width: Math.min(s + 2, 16), height: Math.min(s + 2, 16), color: size === s ? 'white' : '#334155' }} />
             </button>
           ))}
         </div>
 
         {tool === 'sticky' && (
-          <div className="flex items-center gap-1 bg-white border border-slate-200 rounded-xl p-1 shadow-sm">
-            {STICKY_COLORS.map(c => (
-              <button key={c} onClick={() => setStickyColor(c)}
+          <div className="flex items-center gap-1 bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl p-1 shadow-sm">
+            {stICKY_COLORS.map(c => (
+              <button key={c} onClick={() => setstickyColor(c)}
                 className="w-6 h-6 rounded-full border-2 hover:scale-110 transition-transform"
-                style={{ background: c, borderColor: stickyColor === c ? '#059669' : 'transparent' }} />
+                style={{ background: c, borderColor: stickyColor === c ? '#006065' : 'transparent' }} />
             ))}
           </div>
         )}
 
-        <div className="w-px h-7 bg-slate-200 mx-1" />
+        <div className="w-px h-7 bg-slate-200 dark:bg-accent mx-1" />
 
         {/* Actions */}
-        <div className="flex items-center gap-0.5 bg-white border border-slate-200 rounded-xl p-1 shadow-sm">
-          <button onClick={undo} title="Undo (Ctrl+Z)" className="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-sm">â†©</button>
-          <button onClick={redo} title="Redo (Ctrl+Y)" className="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-sm">â†ª</button>
+        <div className="flex items-center gap-0.5 bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl p-1 shadow-sm">
+          <button onClick={undo} title="Undo (Ctrl+Z)" className="w-8 h-8 rounded-lg hover:bg-slate-100 dark:bg-secondary flex items-center justify-center text-slate-600 dark:text-muted-foreground font-bold text-sm">â†©</button>
+          <button onClick={redo} title="Redo (Ctrl+Y)" className="w-8 h-8 rounded-lg hover:bg-slate-100 dark:bg-secondary flex items-center justify-center text-slate-600 dark:text-muted-foreground font-bold text-sm">â†ª</button>
           <button onClick={() => setShowGrid(g => !g)} title="Toggle grid"
-            className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold transition-all ${showGrid ? 'bg-[#006065] text-white' : 'hover:bg-slate-100 text-slate-600'}`}>âŠž</button>
-          <button onClick={download} title="Export PNG" className="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-600 text-sm">ðŸ’¾</button>
+            className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold transition-all ${showGrid ? 'bg-[#006065] dark:bg-[#131A2C] text-white' : 'hover:bg-slate-100 dark:bg-secondary text-slate-600 dark:text-muted-foreground'}`}>âŠž</button>
+          <button onClick={download} title="Export PNG" className="w-8 h-8 rounded-lg hover:bg-slate-100 dark:bg-secondary flex items-center justify-center text-slate-600 dark:text-muted-foreground text-sm">ðŸ’¾</button>
           <button onClick={clearBoard} title="Clear" className="w-8 h-8 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-500 text-sm">ðŸ—‘</button>
         </div>
 
-        <div className="flex items-center gap-1 bg-white border border-slate-200 rounded-xl px-2 py-1 shadow-sm text-xs font-semibold text-slate-600">
-          <button onClick={() => setZoom(z => Math.max(0.2, z - 0.1))} className="w-5 h-5 rounded hover:bg-slate-100 flex items-center justify-center font-bold">âˆ’</button>
+        <div className="flex items-center gap-1 bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl px-2 py-1 shadow-sm text-xs font-semibold text-slate-600 dark:text-muted-foreground">
+          <button onClick={() => setZoom(z => Math.max(0.2, z - 0.1))} className="w-5 h-5 rounded hover:bg-slate-100 dark:bg-secondary flex items-center justify-center font-bold">âˆ’</button>
           <span className="w-10 text-center">{zoomPct}%</span>
-          <button onClick={() => setZoom(z => Math.min(5, z + 0.1))} className="w-5 h-5 rounded hover:bg-slate-100 flex items-center justify-center font-bold">+</button>
+          <button onClick={() => setZoom(z => Math.min(5, z + 0.1))} className="w-5 h-5 rounded hover:bg-slate-100 dark:bg-secondary flex items-center justify-center font-bold">+</button>
           <button onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }} className="ml-1 text-[#006065] hover:text-[#004e52]" title="Reset view">âŠ™</button>
         </div>
 
@@ -541,7 +541,7 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
 
         {/* Close */}
         <button onClick={onClose}
-          className="ml-auto px-4 py-1.5 rounded-xl bg-[#006065] hover:bg-[#004e52] text-white text-xs font-bold shadow-sm transition-all hidden md:flex items-center gap-1.5">
+          className="ml-auto px-4 py-1.5 rounded-xl bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004e52] text-white text-xs font-bold shadow-sm transition-all hidden md:flex items-center gap-1.5">
           âœ• Close
         </button>
       </div>
@@ -561,12 +561,12 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
           onMouseMove={onPointerMove}
           onMouseUp={onPointerUp}
           onMouseLeave={onPointerUp}
-          onTouchStart={onPointerDown}
+          onTouchstart={onPointerDown}
           onTouchMove={onPointerMove}
           onTouchEnd={onPointerUp}
         />
 
-        {/* Sticky notes overlay */}
+        {/* sticky notes overlay */}
         {stickies.map(s => (
           <div key={s.id}
             style={{ position: 'absolute', left: s.x * zoom + pan.x, top: s.y * zoom + pan.y, background: s.bg, width: 180, minHeight: 100, zIndex: 10 }}
@@ -578,7 +578,7 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
               const move = (ev) => {
                 const dx = (ev.clientX - startX) / zoom;
                 const dy = (ev.clientY - startY) / zoom;
-                setStickies(prev => prev.map(n => n.id === s.id ? { ...n, x: origX + dx, y: origY + dy } : n));
+                setstickies(prev => prev.map(n => n.id === s.id ? { ...n, x: origX + dx, y: origY + dy } : n));
               };
               const up = () => { window.removeEventListener('mousemove', move); window.removeEventListener('mouseup', up); };
               window.addEventListener('mousemove', move);
@@ -587,12 +587,12 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
           >
             <div className="flex items-center justify-between mb-1">
               <span className="text-[10px] font-bold text-black/40 uppercase tracking-wide">Note</span>
-              <button onClick={() => setStickies(prev => prev.filter(n => n.id !== s.id))}
+              <button onClick={() => setstickies(prev => prev.filter(n => n.id !== s.id))}
                 className="opacity-0 group-hover:opacity-100 transition-opacity w-4 h-4 rounded flex items-center justify-center text-black/40 hover:text-red-500 text-xs">âœ•</button>
             </div>
             <textarea
               value={s.text}
-              onChange={e => setStickies(prev => prev.map(n => n.id === s.id ? { ...n, text: e.target.value } : n))}
+              onChange={e => setstickies(prev => prev.map(n => n.id === s.id ? { ...n, text: e.target.value } : n))}
               placeholder="Type your note..."
               className="flex-1 bg-transparent resize-none text-sm text-slate-800 placeholder-black/30 outline-none leading-relaxed"
               style={{ minHeight: 60, fontFamily: 'Inter, sans-serif' }}
@@ -625,22 +625,22 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
       {/* AI Generate Diagram Modal */}
       {showAiModal && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4 animate-in fade-in zoom-in-95">
+          <div className="bg-white dark:bg-card rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4 animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-lg text-slate-900 flex items-center gap-2">
+              <h3 className="font-bold text-lg text-slate-900 dark:text-foreground flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-purple-600" /> Generate AI Diagram
               </h3>
-              <button onClick={() => setShowAiModal(false)} className="text-slate-400 hover:text-slate-600"><X className="w-5 h-5" /></button>
+              <button onClick={() => setShowAiModal(false)} className="text-slate-400 hover:text-slate-600 dark:text-muted-foreground"><X className="w-5 h-5" /></button>
             </div>
-            <p className="text-xs text-slate-500">Describe the architecture diagram, flowchart, sequence map, or mind map you want Orbit AI to render onto your canvas.</p>
+            <p className="text-xs text-slate-500 dark:text-muted-foreground">Describe the architecture diagram, flowchart, sequence map, or mind map you want Orbit AI to render onto your canvas.</p>
             <textarea
               value={aiPrompt}
               onChange={e => setAiPrompt(e.target.value)}
               placeholder="e.g., Create a 4-step user authentication & token refresh architecture diagram"
-              className="w-full h-24 p-3 rounded-xl border border-slate-200 text-sm outline-none focus:border-purple-600 resize-none"
+              className="w-full h-24 p-3 rounded-xl border border-slate-200 dark:border-border text-sm outline-none focus:border-purple-600 resize-none"
             />
             <div className="flex justify-end gap-2">
-              <button onClick={() => setShowAiModal(false)} className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">Cancel</button>
+              <button onClick={() => setShowAiModal(false)} className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-muted-foreground hover:bg-slate-100 dark:bg-secondary">Cancel</button>
               <button onClick={handleAiGenerateDiagram} disabled={isAiGenerating || !aiPrompt.trim()}
                 className="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white text-xs font-bold flex items-center gap-2">
                 {isAiGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Generate Diagram'}
@@ -667,4 +667,5 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
     </div>
   );
 }
+
 

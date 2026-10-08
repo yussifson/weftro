@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { Users, Building2, Layers, Activity, Clock, LogIn, TrendingUp, Video, RefreshCw } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 
 const ACTION_ICONS = {
   login:           { icon: LogIn,      color: 'text-blue-500',    bg: 'bg-blue-50 dark:bg-blue-900/20' },
-  plan_upgrade:    { icon: TrendingUp, color: 'text-[#006065]', bg: 'bg-[#006065]/10 dark:bg-[#004e52]/20' },
+  plan_upgrade:    { icon: TrendingUp, color: 'text-[#006065]', bg: 'bg-[#006065] dark:bg-card' },
   meeting_created: { icon: Activity,   color: 'text-violet-500',  bg: 'bg-violet-50 dark:bg-violet-900/20' },
   video_recorded:  { icon: Video,      color: 'text-orange-500',  bg: 'bg-orange-50 dark:bg-orange-900/20' },
 };
@@ -75,17 +75,17 @@ export default function Overview() {
       <div className="flex flex-col h-full bg-transparent  p-4 sm:p-6 md:p-8 animate-pulse">
         <div className="flex justify-between items-start mb-8">
           <div>
-            <div className="h-8 bg-[#006065] text-white border border-white/15/15 dark:bg-slate-800 rounded w-48 mb-2"></div>
-            <div className="h-4 bg-[#006065] text-white border border-white/15/15 dark:bg-slate-800 rounded w-32"></div>
+            <div className="h-8 bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/15 dark:bg-slate-800 rounded w-48 mb-2"></div>
+            <div className="h-4 bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/15 dark:bg-slate-800 rounded w-32"></div>
           </div>
-          <div className="h-10 bg-[#006065] text-white border border-white/15/15 dark:bg-slate-800 rounded w-32"></div>
+          <div className="h-10 bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/15 dark:bg-slate-800 rounded w-32"></div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="bg-[#006065] text-white dark:bg-[#006065] p-6 rounded-2xl h-32"></div>
+            <div key={i} className="bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-card p-6 rounded-2xl h-32"></div>
           ))}
         </div>
-        <div className="bg-[#006065] text-white dark:bg-[#006065] p-6 rounded-2xl h-64 mb-8"></div>
+        <div className="bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-card p-6 rounded-2xl h-64 mb-8"></div>
       </div>
     );
   }
@@ -94,7 +94,7 @@ export default function Overview() {
     { title: "Total Companies", value: stats.companies, icon: Building2, color: "text-blue-500", bg: "bg-blue-50 dark:bg-blue-900/20" },
     { title: "Total Spaces", value: stats.spaces, icon: Layers, color: "text-indigo-500", bg: "bg-indigo-50 dark:bg-indigo-900/20" },
     { title: "Registered Users", value: stats.users, icon: Users, color: "text-purple-500", bg: "bg-purple-50 dark:bg-purple-900/20" },
-    { title: "Total Logins Audited", value: stats.logins, icon: Activity, color: "text-[#006065]", bg: "bg-[#006065]/10 dark:bg-[#004e52]/20" },
+    { title: "Total Logins Audited", value: stats.logins, icon: Activity, color: "text-[#006065]", bg: "bg-[#006065] dark:bg-card" },
   ];
 
   return (
@@ -134,21 +134,21 @@ export default function Overview() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        {/* Recent System Activity — real data from audit_logs */}
+        {/* Recent System Activity â€” real data from audit_logs */}
         <Card className="flex flex-col">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="flex items-center gap-2 text-base">
               <Activity className="w-4 h-4 text-indigo-500" /> Recent System Activity
             </CardTitle>
             <div className="flex items-center gap-1 text-[11px] text-[#006065] font-semibold">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#006065] animate-pulse" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#006065] dark:bg-[#131A2C] animate-pulse" />
               Live
             </div>
           </CardHeader>
           <CardContent className="flex-1 overflow-y-auto max-h-[380px] space-y-1">
             {recentActivities.length > 0 ? (
               recentActivities.map((log) => {
-                const meta = ACTION_ICONS[log.action] || { icon: Activity, color: 'text-white/70', bg: 'bg-[#006065] text-white border border-white/15/10 dark:bg-secondary' };
+                const meta = ACTION_ICONS[log.action] || { icon: Activity, color: 'text-white/70', bg: 'bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/10 dark:bg-secondary' };
                 const Icon = meta.icon;
                 return (
                   <div key={log.id} className="flex items-start gap-3 py-2.5 border-b border-border last:border-0">
@@ -159,10 +159,10 @@ export default function Overview() {
                       <p className="text-sm font-semibold text-foreground capitalize truncate">
                         {log.action?.replace(/_/g, ' ')}
                         {log.user_name && log.user_name !== 'Unknown' && (
-                          <span className="font-normal text-muted-foreground"> · {log.user_name}</span>
+                          <span className="font-normal text-muted-foreground"> Â· {log.user_name}</span>
                         )}
                       </p>
-                      <p className="text-xs text-muted-foreground truncate">{log.details || log.user_email || '—'}</p>
+                      <p className="text-xs text-muted-foreground truncate">{log.details || log.user_email || 'â€”'}</p>
                       <p className="text-[10px] text-white/60 mt-0.5 flex items-center gap-1">
                         <Clock className="w-3 h-3" />
                         {formatDistanceToNow(new Date(log.created_at), { addSuffix: true })}
@@ -174,7 +174,7 @@ export default function Overview() {
               })
             ) : (
               <div className="h-full flex flex-col items-center justify-center text-muted-foreground py-12">
-                <Activity className="w-10 h-10 text-white/50 dark:text-white/90 mb-3" />
+                <Activity className="w-10 h-10 text-white/50 dark:text-foreground/90 mb-3" />
                 <p className="text-sm">No recent activity yet</p>
                 <p className="text-xs text-white/60 mt-1">Events appear here as users take actions.</p>
               </div>
@@ -208,7 +208,7 @@ export default function Overview() {
                       'px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider shrink-0 ml-3',
                       clipadPlan.toLowerCase().includes('enterprise') ? 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400' :
                       clipadPlan.toLowerCase().includes('pro') ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
-                      'bg-[#006065] text-white border border-white/15/10 text-white/80 dark:bg-secondary dark:text-muted-foreground'
+                      'bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/10 text-white/80 dark:bg-secondary dark:text-muted-foreground'
                     )}>
                       {clipadPlan}
                     </span>
@@ -226,3 +226,4 @@ export default function Overview() {
     </div>
   );
 }
+

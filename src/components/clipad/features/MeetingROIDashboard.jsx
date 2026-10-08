@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { TrendingDown, Clock, DollarSign, Loader2, Sparkles, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
@@ -82,12 +82,12 @@ export default function MeetingROIDashboard({ workspaceId, spaceId }) {
   return (
     <div className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-2xl p-6 shadow-sm relative overflow-hidden group">
       {/* Subtle background glow */}
-      <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#006065]/10 rounded-full blur-3xl group-hover:bg-[#006065]/20 transition-colors"></div>
+      <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#006065] dark:bg-[#131A2C]/10 rounded-full blur-3xl group-hover:bg-[#006065] dark:bg-[#131A2C]/20 transition-colors"></div>
       
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-foreground flex items-center gap-2">
               <TrendingDown className="w-5 h-5 text-[#006065]" />
               Meeting ROI & Savings
             </h3>
@@ -95,7 +95,7 @@ export default function MeetingROIDashboard({ workspaceId, spaceId }) {
               Estimated savings by replacing low-ROI meetings with async video.
             </p>
           </div>
-          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 bg-[#006065]/10 dark:bg-[#006065]/10 text-[#004e52] dark:text-[#00beac] rounded-full text-xs font-semibold border border-emerald-200 dark:border-[#006065]/20">
+          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 bg-[#006065] dark:bg-card text-[#004e52] dark:text-[#00beac] rounded-full text-xs font-semibold border border-emerald-200 dark:border-border/20">
             <Sparkles className="w-3.5 h-3.5" /> AI Analyzed
           </div>
         </div>
@@ -104,7 +104,7 @@ export default function MeetingROIDashboard({ workspaceId, spaceId }) {
           <div className="bg-slate-50 dark:bg-secondary/50 rounded-xl p-6 text-center border border-slate-100 dark:border-border/50">
             <AlertCircle className="w-8 h-8 text-slate-400 mx-auto mb-2" />
             <p className="text-sm font-medium text-slate-600 dark:text-foreground">No meeting data analyzed yet.</p>
-            <p className="text-xs text-slate-500 mt-1">Run your first meeting to start calculating ROI.</p>
+            <p className="text-xs text-slate-500 dark:text-muted-foreground mt-1">Run your first meeting to start calculating ROI.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -115,14 +115,14 @@ export default function MeetingROIDashboard({ workspaceId, spaceId }) {
                 <span className="text-xs font-semibold uppercase tracking-wider">Preventable</span>
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-black text-slate-900 dark:text-white">{metrics.lowRoiMeetings}</span>
-                <span className="text-sm text-slate-500">meetings</span>
+                <span className="text-3xl font-black text-slate-900 dark:text-foreground">{metrics.lowRoiMeetings}</span>
+                <span className="text-sm text-slate-500 dark:text-muted-foreground">meetings</span>
               </div>
-              <p className="text-xs text-slate-500 mt-2">Flagged as reducible to async</p>
+              <p className="text-xs text-slate-500 dark:text-muted-foreground mt-2">Flagged as reducible to async</p>
             </div>
 
             {/* Metric 2: Hours Saved */}
-            <div className="bg-[#006065]/10 dark:bg-emerald-900/10 rounded-xl p-4 border border-emerald-100 dark:border-emerald-800/30">
+            <div className="bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-emerald-900/10 rounded-xl p-4 border border-emerald-100 dark:border-emerald-800/30">
               <div className="flex items-center gap-2 mb-2 text-[#004e52] dark:text-[#00beac]">
                 <Clock className="w-4 h-4" />
                 <span className="text-xs font-semibold uppercase tracking-wider">Time Saved</span>
@@ -135,7 +135,7 @@ export default function MeetingROIDashboard({ workspaceId, spaceId }) {
             </div>
 
             {/* Metric 3: Money Saved */}
-            <div className="bg-[#006065]/10 dark:bg-emerald-900/10 rounded-xl p-4 border border-emerald-100 dark:border-emerald-800/30">
+            <div className="bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-emerald-900/10 rounded-xl p-4 border border-emerald-100 dark:border-emerald-800/30">
               <div className="flex items-center gap-2 mb-2 text-[#004e52] dark:text-[#00beac]">
                 <DollarSign className="w-4 h-4" />
                 <span className="text-xs font-semibold uppercase tracking-wider">Cost Saved</span>
@@ -152,3 +152,4 @@ export default function MeetingROIDashboard({ workspaceId, spaceId }) {
     </div>
   );
 }
+

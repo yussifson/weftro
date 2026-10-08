@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { BarChart3, Clock, CheckCircle, HelpCircle, Sparkles, Loader2 } from 'lucide-react';
@@ -234,3 +234,4 @@ export default function MeetingInsights({ spaceId }) {
     </div>
   );
 }
+

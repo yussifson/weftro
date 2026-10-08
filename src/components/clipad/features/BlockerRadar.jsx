@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { ShieldAlert, AlertTriangle, CheckCircle, Network, Plus, Loader2, Sparkles, Bot } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
@@ -174,7 +174,7 @@ export default function BlockerRadar({ workspaceId, spaceId, isWorkspaceView = f
     return (
       <div className="bg-white dark:bg-card rounded-xl shadow-sm border border-slate-200 dark:border-border p-5 h-full flex flex-col">
         <div className="flex flex-wrap items-center justify-between mb-4 gap-3">
-          <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <h2 className="text-base font-bold text-slate-900 dark:text-foreground flex items-center gap-2">
             <ShieldAlert className="w-4 h-4 text-orange-500 shrink-0" />
             <span className="leading-tight truncate">Blocker Radar</span>
           </h2>
@@ -245,7 +245,7 @@ export default function BlockerRadar({ workspaceId, spaceId, isWorkspaceView = f
             value={newBlocker}
             onChange={e => setNewBlocker(e.target.value)}
             placeholder="Describe what's blocking you..."
-            className="flex-1 bg-white dark:bg-card border border-slate-200 dark:border-border rounded-lg px-3 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500"
+            className="flex-1 bg-white dark:bg-card border border-slate-200 dark:border-border rounded-lg px-3 py-2 text-sm text-slate-900 dark:text-foreground focus:outline-none focus:border-indigo-500"
             required
           />
           <button type="submit" disabled={adding} className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 disabled:opacity-50">
@@ -261,7 +261,7 @@ export default function BlockerRadar({ workspaceId, spaceId, isWorkspaceView = f
       ) : blockers.length === 0 ? (
         <div className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl p-10 shadow-sm flex flex-col items-center text-center">
           <CheckCircle className="w-10 h-10 text-[#00beac] mb-3" />
-          <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">All Clear!</h3>
+          <h3 className="text-base font-bold text-slate-900 dark:text-foreground mb-1">All Clear!</h3>
           <p className="text-sm text-slate-500 dark:text-muted-foreground">No blockers detected. Team is moving freely.</p>
         </div>
       ) : (
@@ -315,7 +315,7 @@ export default function BlockerRadar({ workspaceId, spaceId, isWorkspaceView = f
                   {isOpen && canResolve && (
                     <button
                       onClick={() => handleResolve(blocker.id)}
-                      className="text-xs bg-[#006065]/10 hover:bg-[#006065]/20 text-[#006065] dark:text-[#00beac] border border-[#006065]/30 px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap flex items-center gap-1"
+                      className="text-xs bg-[#006065] dark:bg-[#131A2C]/10 hover:bg-[#006065] dark:bg-[#131A2C]/20 text-[#006065] dark:text-[#00beac] border border-[#006065] dark:border-border/30 px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap flex items-center gap-1"
                     >
                       <CheckCircle className="w-3 h-3" /> Resolve
                     </button>
@@ -332,3 +332,4 @@ export default function BlockerRadar({ workspaceId, spaceId, isWorkspaceView = f
     </div>
   );
 }
+

@@ -24,7 +24,7 @@ function CopyButton({ text }) {
     setTimeout(() => setCopied(false), 2000);
   };
   return (
-    <button onClick={copy} className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg transition-all ${copied ? 'text-[#006065] bg-[#006065]/10' : 'text-muted-foreground hover:text-slate-600 dark:text-slate-300 bg-secondary hover:bg-secondary'}`}>
+    <button onClick={copy} className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg transition-all ${copied ? 'text-[#006065] bg-[#006065] dark:bg-[#131A2C]/10' : 'text-muted-foreground hover:text-slate-600 dark:text-muted-foreground bg-secondary hover:bg-secondary'}`}>
       {copied ? <><Check className="w-3 h-3" /> Copied</> : <><Copy className="w-3 h-3" /> Copy</>}
     </button>
   );
@@ -33,16 +33,16 @@ function CopyButton({ text }) {
 function SectionCard({ icon: Icon, iconColor, title, badge, defaultOpen = true, children }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+    <div className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-2xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-6 py-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+        className="w-full flex items-center justify-between px-6 py-4 hover:bg-slate-50 dark:hover:bg-accent/50 transition-colors"
       >
         <div className="flex items-center gap-3">
           <div className={`w-8 h-8 rounded-xl bg-gradient-to-br ${iconColor} flex items-center justify-center`}>
             <Icon className="w-4 h-4 text-foreground" />
           </div>
-          <span className="font-bold text-slate-900 dark:text-white">{title}</span>
+          <span className="font-bold text-slate-900 dark:text-foreground">{title}</span>
           {badge && <span className="px-2 py-0.5 rounded-full bg-secondary text-muted-foreground text-xs">{badge}</span>}
         </div>
         {open ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
@@ -68,7 +68,7 @@ function ActionItemRow({ item, onUpdate }) {
     <div className="flex items-start gap-3 py-3">
       <button
         onClick={toggle}
-        className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${done ? 'bg-[#006065] border-[#006065]' : 'border-gray-600 hover:border-primary'}`}
+        className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${done ? 'bg-[#006065] dark:bg-[#131A2C] border-[#006065] dark:border-border' : 'border-gray-600 hover:border-primary'}`}
       >
         {done && <Check className="w-3 h-3 text-foreground" strokeWidth={3} />}
       </button>
@@ -336,10 +336,10 @@ export default function MeetingRecord() {
 
   if (loading || isLoadingAuth) {
     return (
-      <div className="min-h-full bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100  page-enter overflow-x-hidden pt-6 pb-24 md:pb-8 animate-pulse">
+      <div className="min-h-full bg-slate-50 dark:bg-background text-slate-900 dark:text-slate-100  page-enter overflow-x-hidden pt-6 pb-24 md:pb-8 animate-pulse">
         <div className="max-w-4xl mx-auto px-4 w-full">
           {/* Header Skeleton */}
-          <div className="flex flex-col gap-4 mb-8 pb-6 border-b border-slate-200 dark:border-slate-800">
+          <div className="flex flex-col gap-4 mb-8 pb-6 border-b border-slate-200 dark:border-border">
             <div className="flex items-center gap-3">
               <div className="h-8 w-16 bg-slate-200 dark:bg-slate-800 rounded-full" />
               <div className="h-6 w-32 bg-slate-200 dark:bg-slate-800 rounded" />
@@ -423,11 +423,11 @@ export default function MeetingRecord() {
   const canEdit = meeting?.created_by === user?.id || meeting?.host_id === user?.id || isAdmin;
 
   return (
-    <div style={{ fontFamily: "'Inter', sans-serif" }} className="min-h-full bg-slate-50 dark:bg-slate-950 page-enter text-slate-900 dark:text-slate-100 overflow-x-hidden pb-24 md:pb-8">
+    <div style={{ fontFamily: "'Inter', sans-serif" }} className="min-h-full bg-slate-50 dark:bg-background page-enter text-slate-900 dark:text-slate-100 overflow-x-hidden pb-24 md:pb-8">
       {/* Contextual Action Bar */}
-      <div className="flex items-center justify-between px-6 py-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-sm mb-4">
-          <button onClick={() => navigate('/meetings')} className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/95 dark:bg-[#202c33]/95 backdrop-blur-md border border-black/5 dark:border-white/5 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] text-sm font-semibold text-slate-900 dark:text-white transition-all hover:-translate-y-0.5">
-            <ArrowLeft className="w-4 h-4 text-slate-500" /> Meetings
+      <div className="flex items-center justify-between px-6 py-4 bg-white dark:bg-card border-b border-slate-200 dark:border-border shadow-sm mb-4">
+          <button onClick={() => navigate('/meetings')} className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/95 dark:bg-[#202c33]/95 backdrop-blur-md border border-black/5 dark:border-white/5 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] text-sm font-semibold text-slate-900 dark:text-foreground transition-all hover:-translate-y-0.5">
+            <ArrowLeft className="w-4 h-4 text-slate-500 dark:text-muted-foreground" /> Meetings
           </button>
         <div className="flex items-center gap-2">
           {!meeting.ai_summary && (
@@ -466,7 +466,7 @@ export default function MeetingRecord() {
                 onClick={() => {
                   toast({ title: 'Recording Loading', description: 'Your recording is being processed by the cloud provider and will be available shortly.' });
                 }}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white text-slate-900 dark:text-white font-bold transition-all hover:-translate-y-0.5 mt-4 mb-8 mx-4 sm:mx-0"
+                className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-accent text-slate-900 dark:text-foreground text-slate-900 dark:text-foreground font-bold transition-all hover:-translate-y-0.5 mt-4 mb-8 mx-4 sm:mx-0"
               >
                 <Video className="w-4 h-4" /> Recording Pending...
               </button>
@@ -482,14 +482,14 @@ export default function MeetingRecord() {
             <div className="mb-6 px-4 sm:px-0">
               <div className="flex items-center gap-3 mb-2">
                 {meeting.ai_summary && (
-                  <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#006065]/10 dark:bg-[#006065]/30 border border-[#006065]/20 text-[#006065] dark:text-[#fad503] text-[10px] font-bold uppercase tracking-wider">
+                  <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#006065] dark:bg-card border border-[#006065] dark:border-border/20 text-[#006065] dark:text-[#fad503] text-[10px] font-bold uppercase tracking-wider">
                     <Sparkles className="w-3 h-3" /> AI Summary Ready
                   </span>
                 )}
               </div>
-              <h1 className="text-xl md:text-3xl font-bold text-slate-900 dark:text-white mb-3 leading-tight">{meeting.title || 'Team Meeting'}</h1>
+              <h1 className="text-xl md:text-3xl font-bold text-slate-900 dark:text-foreground mb-3 leading-tight">{meeting.title || 'Team Meeting'}</h1>
               
-              <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400 mb-4">
+              <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-muted-foreground mb-4">
                 <span className="flex items-center gap-1.5"><Calendar className="w-4 h-4" />{new Date(meeting.created_at).toLocaleDateString()}</span>
                 {getMeetingDuration() && <span className="flex items-center gap-1.5"><Clock className="w-4 h-4" />{getMeetingDuration()}</span>}
                 {meeting.participant_count && <span className="flex items-center gap-1.5"><Users className="w-4 h-4" />{meeting.participant_count} participants</span>}
@@ -507,7 +507,7 @@ export default function MeetingRecord() {
                     return (
                       <button key={e} onClick={() => handleAddReaction(e)} className="flex items-center gap-1.5 px-3 py-1.5 hover:bg-black/5 dark:hover:bg-slate-100 dark:bg-slate-800 rounded-full transition-colors text-sm font-semibold">
                         <span className="text-lg leading-none">{e}</span>
-                        {count > 0 && <span className="text-white/90 dark:text-white/50">{count}</span>}
+                        {count > 0 && <span className="text-white/90 dark:text-foreground/50">{count}</span>}
                       </button>
                     );
                   })}
@@ -517,13 +517,13 @@ export default function MeetingRecord() {
                 <button onClick={() => {
                   navigator.clipboard.writeText(window.location.href);
                   toast({ title: 'Link copied!' });
-                }} className="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 dark:bg-white/5 hover:bg-white/15 dark:hover:bg-slate-100 dark:bg-slate-800 transition-colors text-sm font-semibold text-white dark:text-white shrink-0 border border-black/5 dark:border-white/5">
+                }} className="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 dark:bg-white/5 hover:bg-white/15 dark:hover:bg-slate-100 dark:bg-slate-800 transition-colors text-sm font-semibold text-white dark:text-foreground shrink-0 border border-black/5 dark:border-white/5">
                   <Share2 className="w-4 h-4" /> Share
                 </button>
                 
                 {/* Download */}
                 {meeting.video_url && (
-                  <button onClick={() => setShowDownloadModal(true)} className="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 dark:bg-white/5 hover:bg-white/15 dark:hover:bg-slate-100 dark:bg-slate-800 transition-colors text-sm font-semibold text-white dark:text-white shrink-0 border border-black/5 dark:border-white/5">
+                  <button onClick={() => setShowDownloadModal(true)} className="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 dark:bg-white/5 hover:bg-white/15 dark:hover:bg-slate-100 dark:bg-slate-800 transition-colors text-sm font-semibold text-white dark:text-foreground shrink-0 border border-black/5 dark:border-white/5">
                     <Download className="w-4 h-4" /> Download
                   </button>
                 )}
@@ -532,7 +532,7 @@ export default function MeetingRecord() {
                 {canEdit && (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 dark:bg-white/5 hover:bg-white/15 dark:hover:bg-slate-100 dark:bg-slate-800 transition-colors text-sm font-semibold text-white dark:text-white shrink-0 border border-black/5 dark:border-white/5">
+                      <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 dark:bg-white/5 hover:bg-white/15 dark:hover:bg-slate-100 dark:bg-slate-800 transition-colors text-sm font-semibold text-white dark:text-foreground shrink-0 border border-black/5 dark:border-white/5">
                         <MoreHorizontal className="w-4 h-4" /> More
                       </button>
                     </DropdownMenuTrigger>
@@ -556,7 +556,7 @@ export default function MeetingRecord() {
               <div className="flex justify-end mb-3">
                 <CopyButton text={meeting.ai_summary === '00' ? 'No summary generated.' : meeting.ai_summary} />
               </div>
-              <p className="text-sm text-slate-900 dark:text-white leading-relaxed whitespace-pre-line">
+              <p className="text-sm text-slate-900 dark:text-foreground leading-relaxed whitespace-pre-line">
                 {meeting.ai_summary === '00' ? 'No meaningful transcript recorded to generate a summary.' : meeting.ai_summary}
               </p>
               
@@ -597,16 +597,16 @@ export default function MeetingRecord() {
           </div>
         ) : meeting.ai_summary && !hasFeature(plan, 'hasAdvancedAI') ? (
           <SectionCard icon={Brain} iconColor="from-emerald-500 to-emerald-600" title="AI Intelligence Locked" defaultOpen>
-            <div className="relative overflow-hidden rounded-xl bg-transparent dark:bg-[#006065] border border-slate-200 dark:border-slate-800 p-8 text-center">
+            <div className="relative overflow-hidden rounded-xl bg-transparent dark:bg-card border border-slate-200 dark:border-border p-8 text-center">
               <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white dark:to-slate-950/90 pointer-events-none" />
               <Lock className="w-8 h-8 text-[#006065] mx-auto mb-4" />
               <h3 className="text-lg font-bold text-white dark:text-slate-100 relative z-10 mb-2">Advanced AI & Smart Follow-ups</h3>
-              <p className="text-sm text-slate-500 max-w-sm mx-auto relative z-10 mb-6">
+              <p className="text-sm text-slate-500 dark:text-muted-foreground max-w-sm mx-auto relative z-10 mb-6">
                 Upgrade to Pro to unlock the full AI Intelligence layer, sentiment analysis, and automated smart follow-ups.
               </p>
               <button 
                 onClick={() => navigate('/clipad/billing')}
-                className="relative z-10 px-6 py-2.5 rounded-full bg-[#006065] hover:bg-[#004e52] text-white font-bold text-sm shadow-xl transition-colors"
+                className="relative z-10 px-6 py-2.5 rounded-full bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004e52] text-white font-bold text-sm shadow-xl transition-colors"
               >
                 Upgrade to Pro
               </button>
@@ -648,12 +648,12 @@ export default function MeetingRecord() {
                     </div>
                     <div>
                       {seg.speaker && <p className="text-xs font-bold text-primary mb-0.5">{seg.speaker}</p>}
-                      <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{seg.text}</p>
+                      <p className="text-sm text-slate-600 dark:text-muted-foreground leading-relaxed">{seg.text}</p>
                     </div>
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">{meeting.raw_transcript}</p>
+                <p className="text-sm text-slate-600 dark:text-muted-foreground leading-relaxed whitespace-pre-line">{meeting.raw_transcript}</p>
               )}
             </div>
             {(transcript.length > 5 || (meeting.raw_transcript && meeting.raw_transcript.length > 400)) && (
@@ -679,7 +679,7 @@ export default function MeetingRecord() {
               {meeting.key_decisions.map((d, i) => (
                 <li key={i} className="flex items-start gap-3">
                   <span className="w-6 h-6 rounded-lg bg-amber-500/15 text-amber-500 dark:text-amber-400 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">{i+1}</span>
-                  <p className="text-sm text-slate-900 dark:text-white leading-snug">{d}</p>
+                  <p className="text-sm text-slate-900 dark:text-foreground leading-snug">{d}</p>
                 </li>
               ))}
             </ul>
@@ -696,7 +696,7 @@ export default function MeetingRecord() {
         >
           {actionItems.length === 0 ? (
             <div className="py-8 text-center">
-              <Target className="w-10 h-10 text-white/50 dark:text-white/80 mx-auto mb-3" />
+              <Target className="w-10 h-10 text-white/50 dark:text-foreground/80 mx-auto mb-3" />
               <p className="text-sm text-muted-foreground">No action items yet.</p>
               {!meeting.ai_summary && (
                 <button onClick={generateAISummary} disabled={generatingAI} className="mt-3 text-xs text-primary hover:text-primary/80 transition-colors">
@@ -725,7 +725,7 @@ export default function MeetingRecord() {
               {meeting.open_questions.map((q, i) => (
                 <li key={i} className="flex items-start gap-3">
                   <MessageSquare className="w-4 h-4 text-primary mt-0.5 shrink-0" />
-                  <p className="text-sm text-slate-900 dark:text-white leading-snug">{q}</p>
+                  <p className="text-sm text-slate-900 dark:text-foreground leading-snug">{q}</p>
                 </li>
               ))}
             </ul>
@@ -745,7 +745,7 @@ export default function MeetingRecord() {
                 if (!count) return null;
                 return (
                   <button key={e} onClick={() => handleAddReaction(e)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/50 dark:bg-black/20 hover:bg-black/5 dark:hover:bg-white/5 text-sm font-medium transition-all shadow-sm border border-black/5 dark:border-white/5">
-                    {e} <span className="text-xs text-slate-500 dark:text-slate-400">{count}</span>
+                    {e} <span className="text-xs text-slate-500 dark:text-muted-foreground">{count}</span>
                   </button>
                 );
               })}
@@ -754,7 +754,7 @@ export default function MeetingRecord() {
 
           <div className="flex flex-wrap gap-2 mb-4">
             {EMOJIS.map(e => (
-              <button key={e} onClick={() => handleAddReaction(e)} className="p-2 text-xl rounded-full hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-800 transition-colors">
+              <button key={e} onClick={() => handleAddReaction(e)} className="p-2 text-xl rounded-full hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-accent transition-colors">
                 {e}
               </button>
             ))}
@@ -774,7 +774,7 @@ export default function MeetingRecord() {
                       {isAnon ? '?' : authorName.charAt(0).toUpperCase()}
                     </div>
                     <div className="flex-1">
-                      <p className="text-xs font-semibold text-slate-900 dark:text-white">{authorName}</p>
+                      <p className="text-xs font-semibold text-slate-900 dark:text-foreground">{authorName}</p>
                       <p className="text-sm text-white/80 dark:text-muted-foreground leading-relaxed mt-0.5">{displayContent}</p>
                     </div>
                   </div>
@@ -788,7 +788,7 @@ export default function MeetingRecord() {
               onChange={e => setCommentText(e.target.value)}
               placeholder="Write a comment..."
               rows={2}
-              className="w-full px-3 py-2 rounded-xl bg-white/95 dark:bg-[#202c33]/95 border border-black/5 dark:border-white/5 text-white dark:text-white text-sm resize-none focus:outline-none focus:border-indigo-500/50 transition-all shadow-[0_2px_10px_rgba(0,0,0,0.04)]"
+              className="w-full px-3 py-2 rounded-xl bg-white/95 dark:bg-[#202c33]/95 border border-black/5 dark:border-white/5 text-white dark:text-foreground text-sm resize-none focus:outline-none focus:border-indigo-500/50 transition-all shadow-[0_2px_10px_rgba(0,0,0,0.04)]"
             />
             <div className="flex items-center justify-between gap-2">
               <label className="flex items-center gap-1.5 cursor-pointer">
@@ -816,35 +816,35 @@ export default function MeetingRecord() {
       {showEdit && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
           <div className="bg-white/95 dark:bg-[#202c33]/95 backdrop-blur-3xl border border-black/5 dark:border-white/5 rounded-3xl p-8 max-w-md w-full shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
-            <h2 className="text-xl font-bold text-white dark:text-white mb-6">Edit Meeting</h2>
+            <h2 className="text-xl font-bold text-white dark:text-foreground mb-6">Edit Meeting</h2>
             <form onSubmit={handleEditMeeting} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Meeting Title *</label>
+                <label className="block text-xs font-semibold text-slate-500 dark:text-muted-foreground mb-2 uppercase tracking-wider">Meeting Title *</label>
                 <input
                   value={editTitle}
                   onChange={e => setEditTitle(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-white/50 dark:bg-black/20 border border-black/5 dark:border-white/5 text-white dark:text-white text-sm focus:outline-none focus:border-primary/50 transition-all shadow-[0_2px_10px_rgba(0,0,0,0.04)]"
+                  className="w-full px-4 py-3 rounded-xl bg-white/50 dark:bg-black/20 border border-black/5 dark:border-white/5 text-white dark:text-foreground text-sm focus:outline-none focus:border-primary/50 transition-all shadow-[0_2px_10px_rgba(0,0,0,0.04)]"
                   required
                 />
               </div>
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="flex-1">
-                  <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Visibility</label>
+                  <label className="block text-xs font-semibold text-slate-500 dark:text-muted-foreground mb-2 uppercase tracking-wider">Visibility</label>
                   <select
                     value={editVisibility}
                     onChange={e => setEditVisibility(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-white/50 dark:bg-black/20 border border-black/5 dark:border-white/5 text-white dark:text-white text-sm focus:outline-none focus:border-primary/50 transition-all shadow-sm"
+                    className="w-full px-4 py-3 rounded-xl bg-white/50 dark:bg-black/20 border border-black/5 dark:border-white/5 text-white dark:text-foreground text-sm focus:outline-none focus:border-primary/50 transition-all shadow-sm"
                   >
                     <option value="internal">Internal (Company Only)</option>
                     <option value="external">External (Anyone with link)</option>
                   </select>
                 </div>
                 <div className="flex-1">
-                  <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Access Lock</label>
+                  <label className="block text-xs font-semibold text-slate-500 dark:text-muted-foreground mb-2 uppercase tracking-wider">Access Lock</label>
                   <select
                     value={editLockType}
                     onChange={e => setEditLockType(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-white/50 dark:bg-black/20 border border-black/5 dark:border-white/5 text-white dark:text-white text-sm focus:outline-none focus:border-primary/50 transition-all shadow-sm"
+                    className="w-full px-4 py-3 rounded-xl bg-white/50 dark:bg-black/20 border border-black/5 dark:border-white/5 text-white dark:text-foreground text-sm focus:outline-none focus:border-primary/50 transition-all shadow-sm"
                   >
                     <option value="none">Unlocked</option>
                     <option value="manual">Locked (Only Me)</option>
@@ -856,16 +856,16 @@ export default function MeetingRecord() {
                 <div className="flex gap-4 p-3 bg-amber-50 dark:bg-amber-500/10 rounded-xl border border-amber-200 dark:border-amber-500/20">
                   <div className="flex-1">
                     <label className="block text-xs font-semibold text-amber-800 dark:text-amber-500 mb-1">Unlock Date</label>
-                    <input type="date" value={editUnlockDate} onChange={e => setEditUnlockDate(e.target.value)} className="w-full px-3 py-2 rounded-lg text-sm bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-800" />
+                    <input type="date" value={editUnlockDate} onChange={e => setEditUnlockDate(e.target.value)} className="w-full px-3 py-2 rounded-lg text-sm bg-white dark:bg-card text-slate-900 dark:text-foreground border border-slate-200 dark:border-border" />
                   </div>
                   <div className="flex-1">
                     <label className="block text-xs font-semibold text-amber-800 dark:text-amber-500 mb-1">Unlock Time</label>
-                    <input type="time" value={editUnlockTime} onChange={e => setEditUnlockTime(e.target.value)} className="w-full px-3 py-2 rounded-lg text-sm bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-800" />
+                    <input type="time" value={editUnlockTime} onChange={e => setEditUnlockTime(e.target.value)} className="w-full px-3 py-2 rounded-lg text-sm bg-white dark:bg-card text-slate-900 dark:text-foreground border border-slate-200 dark:border-border" />
                   </div>
                 </div>
               )}
               <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => setShowEdit(false)} className="flex-1 py-3 rounded-xl bg-white/50 dark:bg-black/20 hover:bg-black/5 dark:hover:bg-white/5 text-slate-900 dark:text-white font-semibold text-sm transition-all border border-black/5 dark:border-white/5 shadow-sm">Cancel</button>
+                <button type="button" onClick={() => setShowEdit(false)} className="flex-1 py-3 rounded-xl bg-white/50 dark:bg-black/20 hover:bg-black/5 dark:hover:bg-white/5 text-slate-900 dark:text-foreground font-semibold text-sm transition-all border border-black/5 dark:border-white/5 shadow-sm">Cancel</button>
                 <button type="submit" disabled={savingEdit} className="flex-1 py-3 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold text-sm transition-all shadow-md disabled:opacity-60">
                   {savingEdit ? 'Saving...' : 'Save Changes'}
                 </button>
@@ -878,4 +878,5 @@ export default function MeetingRecord() {
           </div>
   );
 }
+
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
 import { generateText } from '@/lib/cloudflareAI';
@@ -12,10 +12,10 @@ import {
 /**
  * MeetingPreBrief
  * Props:
- *   spaceId: string — the team space to brief on
- *   meetingTitle?: string — optional meeting title for context
- *   onClose?: () => void — close handler
- *   compact?: boolean — small/embedded mode
+ *   spaceId: string â€” the team space to brief on
+ *   meetingTitle?: string â€” optional meeting title for context
+ *   onClose?: () => void â€” close handler
+ *   compact?: boolean â€” small/embedded mode
  */
 export default function MeetingPreBrief({ spaceId, meetingTitle, onClose, compact = false }) {
   const { user } = useAuth();
@@ -110,7 +110,7 @@ Generate a sharp, executive-quality pre-meeting brief. Respond in valid JSON onl
         <Sparkles className="w-4 h-4 text-violet-400 shrink-0" />
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-foreground">Orbit Pre-Brief</p>
-          <p className="text-xs text-muted-foreground">{totalSignals} signals loaded — tap to expand</p>
+          <p className="text-xs text-muted-foreground">{totalSignals} signals loaded â€” tap to expand</p>
         </div>
         <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
       </button>
@@ -260,7 +260,7 @@ Generate a sharp, executive-quality pre-meeting brief. Respond in valid JSON onl
             )}
 
             {brief.quick_wins && (
-              <div className="p-2.5 rounded-xl bg-[#006065]/5 border border-[#006065]/20">
+              <div className="p-2.5 rounded-xl bg-[#006065] dark:bg-[#131A2C]/5 border border-[#006065] dark:border-border/20">
                 <p className="text-[9px] font-bold text-[#00beac] uppercase tracking-wider mb-0.5">Quick Wins</p>
                 <p className="text-xs text-foreground/80">{brief.quick_wins}</p>
               </div>
@@ -292,3 +292,4 @@ Generate a sharp, executive-quality pre-meeting brief. Respond in valid JSON onl
     </div>
   );
 }
+

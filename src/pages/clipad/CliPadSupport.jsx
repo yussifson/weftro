@@ -43,15 +43,15 @@ export default function CliPadSupport() {
 
   if (submitted) {
     return (
-      <div style={{ fontFamily: "'Inter', sans-serif" }} className="min-h-full bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col items-center justify-center p-6">
+      <div style={{ fontFamily: "'Inter', sans-serif" }} className="min-h-full bg-slate-50 dark:bg-background text-slate-900 dark:text-slate-100 flex flex-col items-center justify-center p-6">
         <CheckCircle className="w-16 h-16 text-[#006065] dark:text-[#fad503] mb-6" />
         <h1 className="text-2xl font-black mb-2">Message Sent!</h1>
-        <p className="text-slate-500 dark:text-slate-400 dark:text-muted-foreground text-center max-w-sm mb-8">
+        <p className="text-slate-500 dark:text-muted-foreground dark:text-muted-foreground text-center max-w-sm mb-8">
           Thank you for reaching out. Our support team will review your request and get back to you shortly.
         </p>
         <button 
           onClick={() => navigate('/dashboard')} 
-          className="px-6 py-3 rounded-full bg-[#006065] hover:bg-[#004e52] text-[#fad503] font-bold transition-all hover:-translate-y-0.5 shadow-md hover:shadow-lg"
+          className="px-6 py-3 rounded-full bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004e52] text-[#fad503] font-bold transition-all hover:-translate-y-0.5 shadow-md hover:shadow-lg"
         >
           Return to Dashboard
         </button>
@@ -60,17 +60,17 @@ export default function CliPadSupport() {
   }
 
   return (
-    <div style={{ fontFamily: "'Inter', sans-serif" }} className="min-h-full bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-16">
+    <div style={{ fontFamily: "'Inter', sans-serif" }} className="min-h-full bg-slate-50 dark:bg-background text-slate-900 dark:text-slate-100 pb-16">
       {/* Internal Navbar removed per user request */}
 
       {/* Form Container */}
       <div className="max-w-2xl mx-auto px-6 mt-12">
         <div className="text-center mb-10">
           <h1 className="text-3xl font-black mb-3">How can we help?</h1>
-          <p className="text-slate-500 dark:text-slate-400 dark:text-muted-foreground">Send us a message and our team will assist you as soon as possible.</p>
+          <p className="text-slate-500 dark:text-muted-foreground dark:text-muted-foreground">Send us a message and our team will assist you as soon as possible.</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white shadow-sm">
+        <form onSubmit={handleSubmit} className="bg-white dark:bg-card rounded-3xl p-8 border border-slate-200 dark:border-border text-slate-900 dark:text-foreground shadow-sm">
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-bold text-slate-900 dark:text-slate-100 mb-2">Subject</label>
@@ -80,7 +80,7 @@ export default function CliPadSupport() {
                 onChange={(e) => setSubject(e.target.value)}
                 placeholder="e.g. Issue with video recording"
                 required
-                className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-[#006065] dark:focus:border-[#fad503] text-slate-900 dark:text-white placeholder:text-slate-400"
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-border focus:outline-none focus:border-[#006065] dark:focus:border-[#fad503] text-slate-900 dark:text-foreground placeholder:text-slate-400"
               />
             </div>
             
@@ -92,14 +92,14 @@ export default function CliPadSupport() {
                 placeholder="Describe your issue or question in detail..."
                 required
                 rows={6}
-                className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-[#006065] dark:focus:border-[#fad503] text-slate-900 dark:text-white placeholder:text-slate-400 resize-none"
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-border focus:outline-none focus:border-[#006065] dark:focus:border-[#fad503] text-slate-900 dark:text-foreground placeholder:text-slate-400 resize-none"
               />
             </div>
 
             <button 
               type="submit" 
               disabled={loading || !subject.trim() || !message.trim()}
-              className="w-full py-4 rounded-xl bg-[#006065] hover:bg-[#004e52] text-[#fad503] font-bold transition-all shadow-md hover:shadow-lg disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full py-4 rounded-xl bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004e52] text-[#fad503] font-bold transition-all shadow-md hover:shadow-lg disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

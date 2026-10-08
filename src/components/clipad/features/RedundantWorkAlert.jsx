@@ -81,7 +81,7 @@ Do NOT wrap in markdown blocks.`
   return (
     <div className="bg-white dark:bg-card rounded-xl shadow-sm border border-slate-200 dark:border-border p-5 h-full flex flex-col">
       <div className="flex flex-wrap items-center justify-between mb-4 gap-3">
-        <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+        <h2 className="text-base font-bold text-slate-900 dark:text-foreground flex items-center gap-2">
           <Activity className="w-4 h-4 text-blue-500 shrink-0" />
           <span className="leading-tight truncate">Redundant Work</span>
         </h2>
@@ -98,7 +98,7 @@ Do NOT wrap in markdown blocks.`
         </div>
       ) : !alerts || alerts.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center text-center py-4">
-          <CheckCircle className="w-8 h-8 text-slate-300 dark:text-slate-600 mb-2" />
+          <CheckCircle className="w-8 h-8 text-slate-300 dark:text-slate-600 dark:text-muted-foreground mb-2" />
           <p className="text-xs text-slate-500 dark:text-muted-foreground">No overlapping work detected across teams.</p>
         </div>
       ) : (
@@ -114,14 +114,14 @@ Do NOT wrap in markdown blocks.`
               return (
                 <div key={alert.id} className="p-3 bg-slate-50 dark:bg-secondary/20 border border-slate-100 dark:border-border/50 rounded-lg flex flex-col gap-1.5">
                   <div className="flex justify-between items-start">
-                    <p className="text-sm font-semibold text-slate-900 dark:text-white">{alert.topic_name}</p>
+                    <p className="text-sm font-semibold text-slate-900 dark:text-foreground">{alert.topic_name}</p>
                     {linkUrl !== '#' && (
                       <a href={linkUrl} className="text-xs font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 flex items-center gap-1 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-0.5 rounded transition-colors">
                         View <ExternalLink className="w-3 h-3" />
                       </a>
                     )}
                   </div>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-slate-500 dark:text-muted-foreground">
                     Also in <strong className="text-slate-700 dark:text-foreground">{alert.space_name || 'Another Space'}</strong>
                   </p>
                   {alert.reason && <p className="text-[10px] text-slate-400 italic line-clamp-2">"{alert.reason}"</p>}

@@ -37,7 +37,7 @@ export default function ClipadMobileNav({ isMarketing = false, forceMobile = fal
     <>
       {/* Native Fixed Bottom Nav Bar */}
       <nav className={cn(
-        "fixed bottom-0 left-0 right-0 z-40 bg-[#006065] border-t border-white/10",
+        "fixed bottom-0 left-0 right-0 z-40 bg-[#006065] dark:bg-[#0D1626] border-t border-white/10",
         "pb-[env(safe-area-inset-bottom,0px)]",
         forceMobile ? "flex" : "md:hidden"
       )}>
@@ -113,13 +113,13 @@ export default function ClipadMobileNav({ isMarketing = false, forceMobile = fal
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 10 }}
               transition={{ type: "spring", damping: 25, stiffness: 400 }}
-              className="lg:hidden fixed bottom-[72px] right-4 z-[60] w-[260px] overflow-hidden rounded-[20px] bg-[#006065] shadow-[0_16px_40px_-8px_rgba(0,0,0,0.4)] border border-white/10"
+              className="lg:hidden fixed bottom-[72px] right-4 z-[60] w-[260px] overflow-hidden rounded-[20px] bg-[#006065] dark:bg-[#0D1626] shadow-[0_16px_40px_-8px_rgba(0,0,0,0.4)] border border-white/10"
               onClick={(e) => e.stopPropagation()}
             >
               {/* User Info */}
               {user && (
                 <div className="flex items-center gap-3 px-4 py-4 border-b border-white/10 bg-white/5">
-                  <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center font-bold text-sm shrink-0 overflow-hidden shadow-md text-[#006065]">
+                  <div className="w-10 h-10 rounded-full bg-white dark:bg-card flex items-center justify-center font-bold text-sm shrink-0 overflow-hidden shadow-md text-[#006065]">
                     {user.avatar_url || user?.user_metadata?.avatar_url ? (
                       <img src={user.avatar_url || user.user_metadata.avatar_url} alt="" className="w-full h-full object-cover" />
                     ) : (
@@ -170,7 +170,7 @@ export default function ClipadMobileNav({ isMarketing = false, forceMobile = fal
                   <div className="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center group-hover:scale-105 transition-transform shadow-sm border border-blue-100/50 dark:border-transparent">
                     <Settings className="w-4 h-4" />
                   </div>
-                  <span className="text-[13px] font-medium text-slate-700 dark:text-slate-300">Settings</span>
+                  <span className="text-[13px] font-medium text-slate-700 dark:text-muted-foreground">Settings</span>
                 </button>
 
                 {/* Analytics / Enterprise */}
@@ -182,7 +182,7 @@ export default function ClipadMobileNav({ isMarketing = false, forceMobile = fal
                     <div className="w-8 h-8 rounded-full bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center group-hover:scale-105 transition-transform shadow-sm border border-purple-100/50 dark:border-transparent">
                       <Bot className="w-4 h-4" />
                     </div>
-                    <span className="text-[13px] font-medium text-slate-700 dark:text-slate-300">Analytics</span>
+                    <span className="text-[13px] font-medium text-slate-700 dark:text-muted-foreground">Analytics</span>
                   </button>
                 ) : (
                   <button
@@ -192,19 +192,19 @@ export default function ClipadMobileNav({ isMarketing = false, forceMobile = fal
                     <div className="w-8 h-8 rounded-full bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center group-hover:scale-105 transition-transform shadow-sm border border-indigo-100/50 dark:border-transparent">
                       <Layers className="w-4 h-4" />
                     </div>
-                    <span className="text-[13px] font-medium text-slate-700 dark:text-slate-300">Enterprise</span>
+                    <span className="text-[13px] font-medium text-slate-700 dark:text-muted-foreground">Enterprise</span>
                   </button>
                 )}
 
                 {/* Optavel Account */}
                 <button
                   onClick={() => window.location.href = 'https://account.optavel.com'}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[14px] hover:bg-slate-100/80 dark:hover:bg-white/[0.06] transition-colors group"
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[14px] hover:bg-slate-100 dark:bg-secondary/80 dark:hover:bg-white/[0.06] transition-colors group"
                 >
-                  <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center group-hover:scale-105 transition-transform shadow-sm border border-slate-200/50 dark:border-transparent">
+                  <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-muted-foreground flex items-center justify-center group-hover:scale-105 transition-transform shadow-sm border border-slate-200 dark:border-border/50 dark:border-transparent">
                     <User className="w-4 h-4" />
                   </div>
-                  <span className="text-[13px] font-medium text-slate-700 dark:text-slate-300">Account</span>
+                  <span className="text-[13px] font-medium text-slate-700 dark:text-muted-foreground">Account</span>
                 </button>
 
                 {/* Super Admin */}
@@ -222,7 +222,7 @@ export default function ClipadMobileNav({ isMarketing = false, forceMobile = fal
               </div>
 
               {/* Sign Out */}
-              <div className="border-t border-slate-200/50 dark:border-white/[0.06] mx-3 my-1" />
+              <div className="border-t border-slate-200 dark:border-border/50 dark:border-white/[0.06] mx-3 my-1" />
               <div className="p-2 pt-1">
                 <button
                   onClick={async () => { await logout(); navigate('/login'); }}

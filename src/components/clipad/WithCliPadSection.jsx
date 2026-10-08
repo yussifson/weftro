@@ -13,7 +13,7 @@ export default function WithCliPadSection() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
         
         {/* Visual Side: The Harmony */}
-        <div className="relative h-[500px] w-full bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden flex items-center justify-center order-2 lg:order-1">
+        <div className="relative h-[500px] w-full bg-white dark:bg-card rounded-3xl border border-slate-200 dark:border-border shadow-2xl overflow-hidden flex items-center justify-center order-2 lg:order-1">
           
           {/* Grid background */}
           <div className="absolute inset-0 opacity-[0.08] dark:opacity-20" style={{ backgroundImage: 'radial-gradient(#334155 1px, transparent 1px)', backgroundSize: '30px 30px' }}></div>
@@ -151,11 +151,11 @@ export default function WithCliPadSection() {
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
             <span className="text-xs font-bold text-primary uppercase tracking-widest">The CliPad Way</span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight mb-6 leading-tight">
+          <h2 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-foreground tracking-tight mb-6 leading-tight">
             The harmony of <br className="hidden md:block"/>
             <span className="text-primary">total organizational memory.</span>
           </h2>
-          <p className="text-slate-500 dark:text-slate-400 text-lg md:text-xl leading-relaxed mb-8">
+          <p className="text-slate-500 dark:text-muted-foreground text-lg md:text-xl leading-relaxed mb-8">
             When every meeting, video, and decision feeds automatically into one intelligent hub, your team moves faster than ever before.
           </p>
           
@@ -170,8 +170,8 @@ export default function WithCliPadSection() {
                   <item.icon className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h4 className="text-lg font-bold text-slate-900 dark:text-white">{item.title}</h4>
-                  <p className="text-slate-500 dark:text-slate-400">{item.desc}</p>
+                  <h4 className="text-lg font-bold text-slate-900 dark:text-foreground">{item.title}</h4>
+                  <p className="text-slate-500 dark:text-muted-foreground">{item.desc}</p>
                 </div>
               </div>
             ))}

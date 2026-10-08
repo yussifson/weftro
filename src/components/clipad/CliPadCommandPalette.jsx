@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+﻿import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, FileText, Video, Hash, Calendar, Settings, Activity } from "lucide-react";
 import { supabase } from "@/api/supabaseClient";
@@ -38,7 +38,7 @@ export default function CliPadCommandPalette() {
       try {
         const q = query.toLowerCase();
         
-        // Fetch all relevant clipad tables — scoped to company to prevent cross-tenant leaks
+        // Fetch all relevant clipad tables â€” scoped to company to prevent cross-tenant leaks
         const [spacesRes, docsRes, channelsRes, videosRes, meetingsRes] = await Promise.all([
           Promise.resolve(supabase.from('clipad_spaces').select('id, name').eq('company_id', companyId).ilike('name', `%${q}%`).limit(5)).catch(() => ({ data: [] })),
           Promise.resolve(supabase.from('clipad_docs').select('id, space_id, title').eq('company_id', companyId).ilike('title', `%${q}%`).limit(5)).catch(() => ({ data: [] })),
@@ -55,7 +55,7 @@ export default function CliPadCommandPalette() {
           meetings: meetingsRes.data || [],
         });
       } catch (err) {
-        console.error("CliPad search failed", err);
+        console.error("KERINT search failed", err);
       } finally {
         setLoading(false);
       }
@@ -154,3 +154,4 @@ export default function CliPadCommandPalette() {
     </CommandDialog>
   );
 }
+

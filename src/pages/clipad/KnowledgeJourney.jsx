@@ -187,9 +187,9 @@ export default function KnowledgeJourney() {
   );
 
   return (
-    <div className="min-h-full bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-12 font-sans page-enter">
+    <div className="min-h-full bg-slate-50 dark:bg-background text-slate-900 dark:text-slate-100 pb-12 font-sans page-enter">
       {/* Header */}
-      <div className="relative overflow-hidden border-b border-slate-200 dark:border-slate-800 bg-[#006065] text-white px-6 py-10">
+      <div className="relative overflow-hidden border-b border-slate-200 dark:border-border bg-[#006065] dark:bg-[#131A2C] text-white px-6 py-10">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(59,130,246,0.07),transparent_60%)] pointer-events-none" />
         <div className="max-w-5xl mx-auto relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
@@ -208,7 +208,7 @@ export default function KnowledgeJourney() {
           </div>
           <div className="flex items-center gap-3">
             <div className="relative">
-              <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400" />
+              <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 dark:text-muted-foreground" />
               <input
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
@@ -227,20 +227,20 @@ export default function KnowledgeJourney() {
         {loading ? (
           <div className="space-y-6 animate-pulse">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 h-64"></div>
+              <div key={i} className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-3xl p-6 h-64"></div>
             ))}
           </div>
         ) : filtered.length === 0 ? (
-          <div className="text-center p-12 border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900 max-w-2xl mx-auto">
-            <GitBranch className="w-8 h-8 text-slate-500 dark:text-slate-400 mx-auto mb-3 opacity-50" />
-            <h3 className="font-semibold text-slate-900 dark:text-white mb-1">No knowledge journeys yet</h3>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
+          <div className="text-center p-12 border border-dashed border-slate-200 dark:border-border rounded-2xl bg-white dark:bg-card max-w-2xl mx-auto">
+            <GitBranch className="w-8 h-8 text-slate-500 dark:text-muted-foreground mx-auto mb-3 opacity-50" />
+            <h3 className="font-semibold text-slate-900 dark:text-foreground mb-1">No knowledge journeys yet</h3>
+            <p className="text-sm text-slate-500 dark:text-muted-foreground">
               As the AI detects relationships between your synced knowledge items, cross-system knowledge journeys will appear here â€” showing how ideas flow from a Slack message to a decision to a code commit.
             </p>
           </div>
         ) : (
           <div className="space-y-4">
-            <p className="text-sm text-slate-500 dark:text-slate-400">{filtered.length} knowledge journey{filtered.length !== 1 ? 's' : ''} detected</p>
+            <p className="text-sm text-slate-500 dark:text-muted-foreground">{filtered.length} knowledge journey{filtered.length !== 1 ? 's' : ''} detected</p>
             {filtered.map((journey, idx) => (
               <JourneyCard
                 key={journey.item.id}
@@ -260,8 +260,8 @@ export default function KnowledgeJourney() {
 function JourneyCard({ journey, onSelect, isSelected }) {
   return (
     <div
-      className={`bg-white dark:bg-slate-900 border rounded-2xl overflow-hidden transition-all cursor-pointer ${
-        isSelected ? 'border-[#006065]/50 dark:border-[#fad503]/50 shadow-md' : 'border-slate-200 dark:border-slate-800 hover:border-[#006065]/50 hover:shadow-sm'
+      className={`bg-white dark:bg-card border rounded-2xl overflow-hidden transition-all cursor-pointer ${
+        isSelected ? 'border-[#006065] dark:border-border/50 dark:border-[#fad503]/50 shadow-md' : 'border-slate-200 dark:border-border hover:border-[#006065] dark:border-border/50 hover:shadow-sm'
       }`}
       onClick={onSelect}
     >
@@ -279,8 +279,8 @@ function JourneyCard({ journey, onSelect, isSelected }) {
             transition={{ duration: 0.25 }}
             className="overflow-hidden"
           >
-            <div className="border-t border-slate-200 dark:border-slate-800 bg-white/10/20 p-5">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">Full Knowledge Chain</h4>
+            <div className="border-t border-slate-200 dark:border-border bg-white/10/20 p-5">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-muted-foreground mb-3">Full Knowledge Chain</h4>
               <DetailChain node={journey} depth={0} />
             </div>
           </motion.div>
@@ -295,7 +295,7 @@ function ChainPreview({ node, depth }) {
   const intg = INTEGRATIONS.find(i => i.id === node.item.provider || i.provider === node.item.provider);
   const color = getColor(node.item.provider);
 
-  if (depth > 3) return <span className="text-slate-500 dark:text-slate-400 text-xs">â€¦</span>;
+  if (depth > 3) return <span className="text-slate-500 dark:text-muted-foreground text-xs">â€¦</span>;
 
   return (
     <div className="flex items-center gap-2 flex-wrap">
@@ -309,11 +309,11 @@ function ChainPreview({ node, depth }) {
       <p className="text-xs text-white font-medium max-w-xs truncate">{node.item.title}</p>
       {node.children.length > 0 && (
         <>
-          <ChevronRight className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 shrink-0" />
-          <span className="text-[10px] italic text-slate-500 dark:text-slate-400">
+          <ChevronRight className="w-3.5 h-3.5 text-slate-500 dark:text-muted-foreground shrink-0" />
+          <span className="text-[10px] italic text-slate-500 dark:text-muted-foreground">
             {RELATION_VERBS[node.children[0].rel] || node.children[0].rel}
           </span>
-          <ChevronRight className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 shrink-0" />
+          <ChevronRight className="w-3.5 h-3.5 text-slate-500 dark:text-muted-foreground shrink-0" />
           <ChainPreview node={node.children[0].node} depth={depth + 1} />
         </>
       )}
@@ -342,13 +342,13 @@ function DetailChain({ node, depth }) {
           <div className="flex items-center gap-2 mb-1">
             <span className="text-base">{intg?.icon || 'ðŸ“„'}</span>
             <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color }}>{node.item.provider?.replace('_', ' ')}</span>
-            <span className="text-[10px] text-slate-500 dark:text-slate-400 ml-auto">
+            <span className="text-[10px] text-slate-500 dark:text-muted-foreground ml-auto">
               {node.item.imported_at ? format(new Date(node.item.imported_at), 'MMM d, yyyy') : ''}
             </span>
           </div>
-          <p className="text-sm font-semibold text-slate-900 dark:text-white">{node.item.title || 'Untitled'}</p>
+          <p className="text-sm font-semibold text-slate-900 dark:text-foreground">{node.item.title || 'Untitled'}</p>
           {node.item.ai_summary && (
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">{node.item.ai_summary}</p>
+            <p className="text-xs text-slate-500 dark:text-muted-foreground mt-1 line-clamp-2">{node.item.ai_summary}</p>
           )}
           {node.item.url && (
             <a href={node.item.url} target="_blank" rel="noopener noreferrer"
@@ -370,7 +370,7 @@ function DetailChain({ node, depth }) {
             style={{ marginLeft: (depth + 1) * 16 }}
           >
             <div className="w-px h-4 bg-border" />
-            <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 italic">
+            <span className="text-[10px] font-bold text-slate-500 dark:text-muted-foreground italic">
               {RELATION_VERBS[child.rel] || child.rel} ({Math.round(child.confidence * 100)}% confidence)
             </span>
           </div>

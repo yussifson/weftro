@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
 import { generateStandupSummary } from '@/lib/clipadIntelligence';
@@ -19,15 +19,15 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 const MOOD_OPTIONS = [
-  { value: 'great',      label: 'Great',      emoji: '🚀', color: 'text-[#006065] bg-[#006065]/10 dark:bg-[#006065]/10 border-emerald-200 dark:border-[#006065]/20' },
-  { value: 'good',       label: 'Good',       emoji: '😊', color: 'text-blue-500 bg-blue-50 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20' },
-  { value: 'neutral',    label: 'Neutral',    emoji: '😐', color: 'text-slate-500 bg-slate-100 dark:bg-secondary border-slate-200 dark:border-border' },
-  { value: 'struggling', label: 'Struggling', emoji: '😓', color: 'text-amber-500 bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20' },
-  { value: 'blocked',    label: 'Blocked',    emoji: '🔴', color: 'text-rose-500 bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/20' },
+  { value: 'great',      label: 'Great',      emoji: 'ðŸš€', color: 'text-[#006065] bg-[#006065] dark:bg-card border-emerald-200 dark:border-border/20' },
+  { value: 'good',       label: 'Good',       emoji: 'ðŸ˜Š', color: 'text-blue-500 bg-blue-50 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20' },
+  { value: 'neutral',    label: 'Neutral',    emoji: 'ðŸ˜', color: 'text-slate-500 dark:text-muted-foreground bg-slate-100 dark:bg-secondary border-slate-200 dark:border-border' },
+  { value: 'struggling', label: 'Struggling', emoji: 'ðŸ˜“', color: 'text-amber-500 bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20' },
+  { value: 'blocked',    label: 'Blocked',    emoji: 'ðŸ”´', color: 'text-rose-500 bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/20' },
 ];
 
 const PRIORITY_OPTIONS = [
-  { value: 'low',    label: 'Low',    color: 'text-slate-500' },
+  { value: 'low',    label: 'Low',    color: 'text-slate-500 dark:text-muted-foreground' },
   { value: 'normal', label: 'Normal', color: 'text-blue-500' },
   { value: 'high',   label: 'High',   color: 'text-amber-500' },
   { value: 'urgent', label: 'Urgent', color: 'text-rose-500' },
@@ -61,7 +61,7 @@ function StandupCard({ update, isCurrentUser }) {
 
       <div className={`mt-3 space-y-2 overflow-hidden transition-all ${expanded ? 'block' : 'hidden'}`}>
         {update.today && (
-          <div className="bg-[#006065]/10 dark:bg-[#006065]/10 rounded-xl p-3 border border-emerald-100 dark:border-[#006065]/20">
+          <div className="bg-[#006065] dark:bg-card rounded-xl p-3 border border-emerald-100 dark:border-border/20">
             <p className="text-[10px] font-bold uppercase tracking-wider text-[#006065] dark:text-[#00beac] mb-1">Today</p>
             <p className="text-sm text-foreground whitespace-pre-wrap">{update.today.replace(/\[\[TAG:.*?\]\]/g, '')}</p>
           </div>
@@ -103,7 +103,7 @@ function StandupCard({ update, isCurrentUser }) {
               const route = isLink ? atob(id) : isVideo ? `/watch/${id}` : `/meetings/${id}`;
               
               const colorClass = isVideo 
-                ? 'bg-[#006065]/10 text-[#004e52] border-emerald-200 dark:bg-[#006065]/10 dark:text-[#00beac] dark:border-[#006065]/20' 
+                ? 'bg-[#006065] dark:bg-[#131A2C]/10 text-[#004e52] border-emerald-200 dark:bg-card dark:text-[#00beac] dark:border-border/20' 
                 : isLink 
                 ? 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-500/10 dark:text-indigo-400 dark:border-indigo-500/20'
                 : 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20';
@@ -396,7 +396,7 @@ export default function StandupPanel({ spaceId }) {
 
           <div>
             <label className="block text-xs font-semibold text-muted-foreground mb-1.5 uppercase tracking-wider">
-              ✅ What are you working on today? *
+              âœ… What are you working on today? *
             </label>
             <textarea
               value={form.today}
@@ -409,7 +409,7 @@ export default function StandupPanel({ spaceId }) {
 
           <div>
             <label className="block text-xs font-semibold text-muted-foreground mb-1.5 uppercase tracking-wider">
-              📅 What did you complete yesterday?
+              ðŸ“… What did you complete yesterday?
             </label>
             <textarea
               value={form.yesterday}
@@ -462,7 +462,7 @@ export default function StandupPanel({ spaceId }) {
             </div>
             
             {taggedResource ? (
-              <div className={`flex items-center gap-2 p-2.5 rounded-xl border ${taggedResource.type === 'video' ? 'bg-[#006065]/10 border-emerald-200 text-[#004e52] dark:bg-[#006065]/10 dark:border-[#006065]/20 dark:text-[#00beac]' : taggedResource.type === 'link' ? 'bg-indigo-50 border-indigo-200 text-indigo-700 dark:bg-indigo-500/10 dark:border-indigo-500/20 dark:text-indigo-400' : 'bg-blue-50 border-blue-200 text-blue-700 dark:bg-blue-500/10 dark:border-blue-500/20 dark:text-blue-400'}`}>
+              <div className={`flex items-center gap-2 p-2.5 rounded-xl border ${taggedResource.type === 'video' ? 'bg-[#006065] dark:bg-[#131A2C]/10 border-emerald-200 text-[#004e52] dark:bg-card dark:border-border/20 dark:text-[#00beac]' : taggedResource.type === 'link' ? 'bg-indigo-50 border-indigo-200 text-indigo-700 dark:bg-indigo-500/10 dark:border-indigo-500/20 dark:text-indigo-400' : 'bg-blue-50 border-blue-200 text-blue-700 dark:bg-blue-500/10 dark:border-blue-500/20 dark:text-blue-400'}`}>
                 {taggedResource.type === 'video' ? <Video className="w-4 h-4 shrink-0" /> : taggedResource.type === 'link' ? <ExternalLink className="w-4 h-4 shrink-0" /> : <Calendar className="w-4 h-4 shrink-0" />}
                 <span className="text-sm font-semibold truncate flex-1">{taggedResource.title}</span>
               </div>
@@ -474,7 +474,7 @@ export default function StandupPanel({ spaceId }) {
                     setShowTagMenu(!showTagMenu);
                     if (!showTagMenu) fetchMyResources();
                   }}
-                  className="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-border bg-white dark:bg-card text-sm text-slate-500 hover:border-primary/40 transition-colors text-left"
+                  className="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-border bg-white dark:bg-card text-sm text-slate-500 dark:text-muted-foreground hover:border-primary/40 transition-colors text-left"
                 >
                   <span className="flex items-center gap-2"><Tag className="w-4 h-4" /> Tag a resource or external link...</span>
                   <ChevronDown className="w-4 h-4 opacity-50" />
@@ -490,11 +490,11 @@ export default function StandupPanel({ spaceId }) {
                       {tagMenuTab === 'external' ? (
                         <div className="p-3 space-y-3">
                           <div>
-                            <label className="text-[10px] font-bold text-slate-500 uppercase mb-1 block">URL</label>
+                            <label className="text-[10px] font-bold text-slate-500 dark:text-muted-foreground uppercase mb-1 block">URL</label>
                             <input value={extUrl} onChange={e => setExtUrl(e.target.value)} placeholder="https://..." className="w-full text-xs px-2 py-1.5 border border-slate-200 dark:border-border rounded focus:outline-none focus:border-primary bg-white dark:bg-secondary text-foreground" />
                           </div>
                           <div>
-                            <label className="text-[10px] font-bold text-slate-500 uppercase mb-1 block">Title</label>
+                            <label className="text-[10px] font-bold text-slate-500 dark:text-muted-foreground uppercase mb-1 block">Title</label>
                             <input value={extTitle} onChange={e => setExtTitle(e.target.value)} placeholder="Resource Title" className="w-full text-xs px-2 py-1.5 border border-slate-200 dark:border-border rounded focus:outline-none focus:border-primary bg-white dark:bg-secondary text-foreground" />
                           </div>
                           <button
@@ -582,7 +582,7 @@ export default function StandupPanel({ spaceId }) {
 
       {/* Already posted */}
       {todayUpdate && (
-        <div className="flex items-center gap-2 p-3 rounded-xl bg-[#006065]/10 dark:bg-[#006065]/10 border border-emerald-200 dark:border-[#006065]/20 text-[#004e52] dark:text-[#00beac] text-sm font-semibold">
+        <div className="flex items-center gap-2 p-3 rounded-xl bg-[#006065] dark:bg-card border border-emerald-200 dark:border-border/20 text-[#004e52] dark:text-[#00beac] text-sm font-semibold">
           <CheckCircle className="w-4 h-4" /> You've already posted your standup today.
         </div>
       )}
@@ -659,3 +659,4 @@ export default function StandupPanel({ spaceId }) {
     </div>
   );
 }
+

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
@@ -64,7 +64,7 @@ function CollisionCard({ type, items, spaceNames, onViewSpace }) {
   );
 }
 
-// Simple keyword-based similarity â€” no external ML needed
+// Simple keyword-based similarity Ã¢â‚¬â€ no external ML needed
 function computeSimilarity(a, b) {
   const tokenize = (str) =>
     (str || '').toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(w => w.length > 3);
@@ -227,7 +227,7 @@ Respond in valid JSON only:
   const totalCollisions = blockerCollisions.length + decisionCollisions.length + commitmentCollisions.length;
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-white">
+    <div className="min-h-screen bg-[#f8fafc] dark:bg-background text-white">
       <div className="max-w-5xl mx-auto px-4 md:px-6 py-6 md:py-8 space-y-6">
 
         {/* Header */}
@@ -270,7 +270,7 @@ Respond in valid JSON only:
             { label: 'Siloed Spaces', value: siloedSpaces.length, color: siloedSpaces.length > 3 ? 'text-rose-300' : 'text-[#fad503]' },
             { label: 'Duplicate Blockers', value: blockerCollisions.length, color: blockerCollisions.length > 2 ? 'text-rose-300' : 'text-[#fad503]' },
           ].map(s => (
-            <div key={s.label} className="rounded-2xl border border-white/15 bg-[#006065] text-white p-4 text-center shadow-md">
+            <div key={s.label} className="rounded-2xl border border-white/15 bg-[#006065] dark:bg-[#131A2C] text-white p-4 text-center shadow-md">
               <p className={`text-2xl font-black ${s.color}`}>{s.value}</p>
               <p className="text-[10px] font-semibold uppercase tracking-wide text-white/70 mt-1">{s.label}</p>
             </div>
@@ -288,7 +288,7 @@ Respond in valid JSON only:
                   aiSummary.org_silos_risk === 'critical' ? 'bg-red-500/10 text-red-400' :
                   aiSummary.org_silos_risk === 'high' ? 'bg-orange-500/10 text-orange-400' :
                   aiSummary.org_silos_risk === 'medium' ? 'bg-amber-500/10 text-amber-400' :
-                  'bg-[#006065]/10 text-[#00beac]'
+                  'bg-[#006065] dark:bg-[#131A2C]/10 text-[#00beac]'
                 }`}>
                   {aiSummary.org_silos_risk} silo risk
                 </span>
@@ -336,7 +336,7 @@ Respond in valid JSON only:
                   <h2 className="font-semibold text-foreground text-sm">Duplicate Blockers Across Teams</h2>
                   <span className="text-xs text-red-400 font-bold ml-1">{blockerCollisions.length} collision{blockerCollisions.length > 1 ? 's' : ''}</span>
                 </div>
-                <p className="text-xs text-muted-foreground mb-3">Multiple teams are blocked on the same issue â€” solving it once saves everyone.</p>
+                <p className="text-xs text-muted-foreground mb-3">Multiple teams are blocked on the same issue Ã¢â‚¬â€ solving it once saves everyone.</p>
                 <div className="space-y-3">
                   {blockerCollisions.map((group, i) => (
                     <CollisionCard key={i} type="blocker" items={group} spaceNames={spaceNames} onViewSpace={id => navigate(`${basePath}/spaces/${id}`)} />
@@ -418,3 +418,4 @@ Respond in valid JSON only:
     </div>
   );
 }
+

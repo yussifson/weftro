@@ -68,7 +68,7 @@ function KnowledgeNode({ data, selected }) {
 
   return (
     <div
-      className="relative rounded-2xl border-2 transition-all cursor-pointer bg-[#006065] text-white shadow-md p-3"
+      className="relative rounded-2xl border-2 transition-all cursor-pointer bg-[#006065] dark:bg-[#131A2C] text-white shadow-md p-3"
       style={{
         borderColor: selected ? '#fad503' : color,
         boxShadow: selected ? '0 0 0 3px #00beac, 0 4px 24px rgba(0,0,0,0.3)' : '0 4px 12px rgba(0,0,0,0.15)',
@@ -273,9 +273,9 @@ export default function KnowledgeGraph() {
   });
 
   return (
-    <div className="flex flex-col h-full min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans page-enter">
+    <div className="flex flex-col h-full min-h-screen bg-slate-50 dark:bg-background text-slate-900 dark:text-slate-100 font-sans page-enter">
       {/* Header */}
-      <div className="relative border-b border-white/15 bg-[#006065] px-6 py-6 shrink-0">
+      <div className="relative border-b border-white/15 bg-[#006065] dark:bg-[#131A2C] px-6 py-6 shrink-0">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <button onClick={() => navigate('/capture')} className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors shrink-0">
@@ -407,7 +407,7 @@ export default function KnowledgeGraph() {
 
         {/* AI Insights Panel */}
         {aiInsightsOpen && (
-          <div className="absolute top-4 left-4 w-80 bg-[#006065] text-white border border-white/15 rounded-2xl shadow-2xl p-5 z-20 animate-in fade-in slide-in-from-left-4 max-h-[80vh] overflow-y-auto">
+          <div className="absolute top-4 left-4 w-80 bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15 rounded-2xl shadow-2xl p-5 z-20 animate-in fade-in slide-in-from-left-4 max-h-[80vh] overflow-y-auto">
             <div className="flex items-start justify-between gap-2 mb-3">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-black/20 flex items-center justify-center">
@@ -437,7 +437,7 @@ export default function KnowledgeGraph() {
 
         {/* Node detail panel */}
         {selectedNode && (
-          <div className="absolute top-4 right-4 w-72 bg-[#006065] text-white border border-white/15 rounded-2xl shadow-2xl p-5 z-10 animate-in fade-in slide-in-from-right-4">
+          <div className="absolute top-4 right-4 w-72 bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15 rounded-2xl shadow-2xl p-5 z-10 animate-in fade-in slide-in-from-right-4">
             <div className="flex items-start justify-between gap-2 mb-3">
               <div className="flex items-center gap-2">
                 <div

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { Globe, Clock, AlertCircle, Loader2, RefreshCw, CheckCircle } from 'lucide-react';
 import { generateText } from '@/lib/cloudflareAI';
@@ -44,7 +44,7 @@ export default function TimezoneFairnessWidget({ workspaceId }) {
       return;
     }
 
-    // No cache — analyze from real meeting data
+    // No cache â€” analyze from real meeting data
     await analyzeFromMeetings();
   };
 
@@ -73,9 +73,9 @@ export default function TimezoneFairnessWidget({ workspaceId }) {
         hourCounts[hour]++;
       });
 
-      const earlyMorning = hourCounts.slice(0, 6).reduce((a, b) => a + b, 0);   // 00:00–05:59 UTC
-      const businessHours = hourCounts.slice(8, 18).reduce((a, b) => a + b, 0); // 08:00–17:59 UTC
-      const evening = hourCounts.slice(18, 24).reduce((a, b) => a + b, 0);       // 18:00–23:59 UTC
+      const earlyMorning = hourCounts.slice(0, 6).reduce((a, b) => a + b, 0);   // 00:00â€“05:59 UTC
+      const businessHours = hourCounts.slice(8, 18).reduce((a, b) => a + b, 0); // 08:00â€“17:59 UTC
+      const evening = hourCounts.slice(18, 24).reduce((a, b) => a + b, 0);       // 18:00â€“23:59 UTC
       const lateNight = earlyMorning; // same bucket for clarity
 
       const meetingHoursSummary = meetings.map(m => {
@@ -166,11 +166,11 @@ Distribution: Early morning (00-06 UTC): ${earlyMorning}, Business hours (08-18 
       <div className="bg-white dark:bg-card rounded-xl shadow-sm border border-slate-200 dark:border-border p-5">
         <div className="flex items-center gap-2 mb-4">
           <Globe className="w-5 h-5 text-teal-500" />
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Timezone Fairness</h2>
+          <h2 className="text-lg font-bold text-slate-900 dark:text-foreground">Timezone Fairness</h2>
         </div>
-        <div className="flex items-center gap-3 py-6 justify-center text-slate-400 dark:text-slate-500">
+        <div className="flex items-center gap-3 py-6 justify-center text-slate-400 dark:text-slate-500 dark:text-muted-foreground">
           <Loader2 className="w-5 h-5 animate-spin" />
-          <span className="text-sm">{analyzing ? 'AI is analyzing meeting patterns…' : 'Loading…'}</span>
+          <span className="text-sm">{analyzing ? 'AI is analyzing meeting patternsâ€¦' : 'Loadingâ€¦'}</span>
         </div>
       </div>
     );
@@ -181,13 +181,13 @@ Distribution: Early morning (00-06 UTC): ${earlyMorning}, Business hours (08-18 
   const scoreColor = score >= 75 ? 'text-[#006065] dark:text-[#00beac]'
     : score >= 50 ? 'text-amber-600 dark:text-amber-400'
     : 'text-red-600 dark:text-red-400';
-  const barColor = score >= 75 ? 'bg-[#006065]' : score >= 50 ? 'bg-amber-500' : 'bg-red-500';
+  const barColor = score >= 75 ? 'bg-[#006065] dark:bg-[#131A2C]' : score >= 50 ? 'bg-amber-500' : 'bg-red-500';
 
   return (
     <div className="bg-white dark:bg-card rounded-xl shadow-sm border border-slate-200 dark:border-border p-5">
       <div className="flex items-start justify-between mb-4">
         <div>
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <h2 className="text-lg font-bold text-slate-900 dark:text-foreground flex items-center gap-2">
             <Globe className="w-5 h-5 text-teal-500" />
             Timezone Fairness
           </h2>
@@ -236,3 +236,4 @@ Distribution: Early morning (00-06 UTC): ${earlyMorning}, Business hours (08-18 
     </div>
   );
 }
+

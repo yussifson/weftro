@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { ShieldAlert, CheckCircle, Clock, Archive, BrainCircuit, Sparkles, Loader2, Star, Bot } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
@@ -130,7 +130,7 @@ export default function DecisionLedger({ workspaceId, spaceId, hasFullIntelligen
   // Use teamColor for the active badge, defaulting to emerald if none provided
   const badgeColorClass = teamColor 
     ? `bg-gradient-to-br ${teamColor} text-white border-transparent` 
-    : 'bg-[#006065]/20 dark:bg-emerald-400/10 text-[#004e52] dark:text-[#00beac] border-emerald-200 dark:border-transparent';
+    : 'bg-[#006065] dark:bg-[#131A2C]/20 dark:bg-emerald-400/10 text-[#004e52] dark:text-[#00beac] border-emerald-200 dark:border-transparent';
 
   return (
     <div className="space-y-6">
@@ -159,7 +159,7 @@ export default function DecisionLedger({ workspaceId, spaceId, hasFullIntelligen
         </div>
       ) : decisions.length === 0 ? (
         <div className="p-10 text-center text-slate-500 dark:text-muted-foreground border border-slate-200 dark:border-border/50 rounded-xl bg-slate-50 dark:bg-secondary/30 flex flex-col items-center gap-3">
-          <BrainCircuit className="w-10 h-10 text-slate-300 dark:text-slate-600" />
+          <BrainCircuit className="w-10 h-10 text-slate-300 dark:text-slate-600 dark:text-muted-foreground" />
           <p>No decisions logged yet. Decisions are automatically extracted from meetings and chats via AI.</p>
         </div>
       ) : (
@@ -174,7 +174,7 @@ export default function DecisionLedger({ workspaceId, spaceId, hasFullIntelligen
                         <CheckCircle className="w-3.5 h-3.5" /> Active
                       </span>
                     ) : (
-                      <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-500 bg-slate-100 dark:bg-slate-400/10 px-2.5 py-1 rounded-full border border-slate-200 dark:border-transparent">
+                      <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-muted-foreground bg-slate-100 dark:bg-slate-400/10 px-2.5 py-1 rounded-full border border-slate-200 dark:border-transparent">
                         <Archive className="w-3.5 h-3.5" /> Superseded
                       </span>
                     )}
@@ -192,7 +192,7 @@ export default function DecisionLedger({ workspaceId, spaceId, hasFullIntelligen
                       <Clock className="w-3 h-3" /> {new Date(decision.created_at).toLocaleDateString()}
                     </span>
                     {decision.reversal_cost && (
-                      <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${decision.reversal_cost === 'high' ? 'border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-400' : decision.reversal_cost === 'medium' ? 'border-amber-200 bg-amber-50 text-amber-600 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-400' : 'border-slate-200 bg-slate-50 text-slate-600 dark:border-slate-500/30 dark:bg-slate-500/10 dark:text-muted-foreground'}`}>
+                      <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${decision.reversal_cost === 'high' ? 'border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-400' : decision.reversal_cost === 'medium' ? 'border-amber-200 bg-amber-50 text-amber-600 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-400' : 'border-slate-200 dark:border-border bg-slate-50 dark:bg-background text-slate-600 dark:border-slate-500/30 dark:bg-slate-50 dark:bg-background0/10 dark:text-muted-foreground'}`}>
                         {decision.reversal_cost} Reversal Cost
                       </span>
                     )}
@@ -222,3 +222,4 @@ export default function DecisionLedger({ workspaceId, spaceId, hasFullIntelligen
     </div>
   );
 }
+

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { supabase } from '@/api/supabaseClient';
 import { useToast } from '@/components/ui/use-toast';
@@ -55,10 +55,10 @@ export default function ContactSalesModal({ isOpen, onClose }) {
       <DialogContent className="sm:max-w-md p-0 overflow-hidden bg-white dark:bg-background border-slate-200 dark:border-border rounded-3xl">
         {success ? (
           <div className="p-10 text-center flex flex-col items-center justify-center space-y-4">
-            <div className="w-16 h-16 bg-[#006065]/20 dark:bg-[#006065]/20 text-[#006065] dark:text-[#00beac] rounded-full flex items-center justify-center mb-2">
+            <div className="w-16 h-16 bg-[#006065] dark:bg-card text-[#006065] dark:text-[#00beac] rounded-full flex items-center justify-center mb-2">
               <CheckCircle className="w-8 h-8" />
             </div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Message Sent!</h2>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-foreground">Message Sent!</h2>
             <p className="text-slate-500 dark:text-muted-foreground text-sm max-w-[250px]">
               Our sales team will get back to you shortly to discuss a custom plan.
             </p>
@@ -67,7 +67,7 @@ export default function ContactSalesModal({ isOpen, onClose }) {
           <>
             <div className="px-8 pt-8 pb-4">
               <DialogHeader>
-                <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Contact Sales</DialogTitle>
+                <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-foreground mb-2">Contact Sales</DialogTitle>
                 <DialogDescription className="text-slate-500 dark:text-muted-foreground">
                   Fill out the form below and we'll be in touch to build a custom enterprise plan for your team.
                 </DialogDescription>
@@ -76,7 +76,7 @@ export default function ContactSalesModal({ isOpen, onClose }) {
             
             <form onSubmit={handleSubmit} className="px-8 pb-8 space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wider">Name</label>
+                <label className="block text-xs font-semibold text-slate-500 dark:text-muted-foreground mb-1.5 uppercase tracking-wider">Name</label>
                 <input
                   required
                   value={form.name}
@@ -86,7 +86,7 @@ export default function ContactSalesModal({ isOpen, onClose }) {
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wider">Email</label>
+                <label className="block text-xs font-semibold text-slate-500 dark:text-muted-foreground mb-1.5 uppercase tracking-wider">Email</label>
                 <input
                   required
                   type="email"
@@ -97,7 +97,7 @@ export default function ContactSalesModal({ isOpen, onClose }) {
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wider">Company</label>
+                <label className="block text-xs font-semibold text-slate-500 dark:text-muted-foreground mb-1.5 uppercase tracking-wider">Company</label>
                 <input
                   required
                   value={form.company}
@@ -107,7 +107,7 @@ export default function ContactSalesModal({ isOpen, onClose }) {
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wider">How can we help?</label>
+                <label className="block text-xs font-semibold text-slate-500 dark:text-muted-foreground mb-1.5 uppercase tracking-wider">How can we help?</label>
                 <textarea
                   required
                   value={form.message}
@@ -138,3 +138,4 @@ export default function ContactSalesModal({ isOpen, onClose }) {
     </Dialog>
   );
 }
+
