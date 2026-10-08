@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/AuthContext';
-import { getApps, createConnectApp, getWebhooks, createWebhook } from '@/lib/clipadConnectService';
+import { supabase } from '@/api/supabaseClient';
+import { createConnectApp, revokeToken } from '@/lib/clipadOAuthService';
+import { registerWebhook, getWebhooks, deleteWebhook } from '@/lib/clipadWebhookService';
 import { isV3FeatureEnabled, V3_FLAGS } from '@/lib/clipadV3Flags';
-import { TerminalSquare, KeyRound, Webhook, Fingerprint, Loader2, Plus, ArrowRight, ShieldCheck, Cpu, Code2, Copy, CheckCircle2 } from 'lucide-react';
+import { Loader2, Webhook, KeyRound, Globe, Trash2, Plus, TerminalSquare, AlertCircle, ShieldCheck, Cpu, Code2, Copy, CheckCircle2 } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -11,46 +14,67 @@ import { Label } from '@/components/ui/label';
 
 export default function ConnectSettings() {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [apps, setApps] = useState([]);
   const [webhooks, setWebhooks] = useState([]);
   const [loading, setLoading] = useState(true);
   
+  // Forms
   const [newAppName, setNewAppName] = useState('');
   const [newWebhookUrl, setNewWebhookUrl] = useState('');
+  const [createdSecret, setCreatedSecret] = useState(null);
 
-  const isEnabled = isV3FeatureEnabled(V3_FLAGS.CONNECT_ENABLED, user);
-  const isMcpEnabled = isV3FeatureEnabled(V3_FLAGS.MCP_SERVER_ENABLED, user);
+  const companyId = user?.user_metadata?.company_id || user?.company_id;
+  const isConnectEnabled = isV3FeatureEnabled(V3_FLAGS.CONNECT_ENABLED, user);
   const isWebhooksEnabled = isV3FeatureEnabled(V3_FLAGS.WEBHOOKS_ENABLED, user);
+  const isMcpEnabled = isV3FeatureEnabled(V3_FLAGS.MCP_ENABLED, user);
 
   useEffect(() => {
-    async function load() {
-      if (!user || !isEnabled) return;
-      try {
-        const [a, w] = await Promise.all([
-          getApps(user),
-          getWebhooks(user)
-        ]);
-        setApps(a || []);
-        setWebhooks(w || []);
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setLoading(false);
-      }
+    if (user && isConnectEnabled) {
+      loadData();
+    } else {
+      setLoading(false);
     }
-    load();
-  }, [user, isEnabled]);
+  }, [user, isConnectEnabled]);
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      // Load Developer Apps
+      const { data: appsData } = await supabase
+        .from('clipad_v3_connect_apps')
+        .select('*')
+        .eq('company_id', companyId);
+      setApps(appsData || []);
+
+      // Load Webhooks
+      if (isWebhooksEnabled) {
+        const whs = await getWebhooks(companyId);
+        setWebhooks(whs || []);
+      }
+    } catch (e) {
+      console.error(e);
+      toast({ title: "Error", description: "Failed to load connect settings.", variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleCreateApp = async (e) => {
     e.preventDefault();
     if (!newAppName.trim()) return;
     try {
-      await createConnectApp(user, newAppName);
+      const result = await createConnectApp(user.id, companyId, {
+        name: newAppName,
+        description: 'Created via Integrations Hub',
+        redirectUris: []
+      });
+      setCreatedSecret({ id: result.id, client_id: result.client_id, secret: result.plain_secret });
+      toast({ title: "App Created", description: "Save your client secret now." });
       setNewAppName('');
-      const a = await getApps(user);
-      setApps(a);
+      await loadData();
     } catch (e) {
-      console.error(e);
+      toast({ title: "Error", description: e.message, variant: "destructive" });
     }
   };
 
@@ -58,20 +82,30 @@ export default function ConnectSettings() {
     e.preventDefault();
     if (!newWebhookUrl.trim()) return;
     try {
-      await createWebhook(user, newWebhookUrl);
+      await registerWebhook(user.id, companyId, newWebhookUrl, ['capture.created', 'smart_moment.detected']);
+      toast({ title: "Webhook Registered", description: "Events will now be pushed to " + newWebhookUrl });
       setNewWebhookUrl('');
-      const w = await getWebhooks(user);
-      setWebhooks(w);
+      await loadData();
     } catch (e) {
-      console.error(e);
+      toast({ title: "Error", description: e.message, variant: "destructive" });
     }
   };
 
-  if (!isEnabled) {
+  const handleDeleteWebhook = async (id) => {
+    try {
+      await deleteWebhook(id);
+      toast({ title: "Deleted", description: "Webhook removed successfully." });
+      await loadData();
+    } catch (e) {
+      toast({ title: "Error", description: e.message, variant: "destructive" });
+    }
+  };
+
+  if (!isConnectEnabled) {
     return (
-      <Card className="border-dashed bg-secondary/20">
+      <Card className="border-dashed bg-secondary/20 max-w-3xl mx-auto mt-6">
         <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-          <TerminalSquare className="w-12 h-12 text-muted-foreground mb-4 opacity-50" />
+          <KeyRound className="w-12 h-12 text-muted-foreground mb-4 opacity-50" />
           <h3 className="text-xl font-bold mb-2">Connect API is Disabled</h3>
           <p className="text-sm text-muted-foreground max-w-sm">
             Your organization has disabled API access and developer applications.
@@ -92,7 +126,7 @@ export default function ConnectSettings() {
     <div className="space-y-8 animate-in fade-in duration-500">
       <div className="flex flex-col gap-2">
         <h2 className="text-3xl font-bold tracking-tight">Developer Connect</h2>
-        <p className="text-muted-foreground text-lg">Securely integrate Clipad's Intelligence Graph into your custom applications and workflows.</p>
+        <p className="text-muted-foreground text-lg">Securely integrate Clipad\'s Intelligence Graph into your custom applications and workflows.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -134,7 +168,6 @@ export default function ConnectSettings() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Apps Section */}
         <Card className="shadow-sm">
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
@@ -158,6 +191,17 @@ export default function ConnectSettings() {
               </div>
             </form>
 
+            {createdSecret && (
+              <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                <p className="text-sm font-bold text-green-800 dark:text-green-400 mb-2">App Created Successfully!</p>
+                <p className="text-xs text-green-700 dark:text-green-500 mb-2">Copy this secret now. It will not be shown again.</p>
+                <div className="font-mono text-xs p-2 bg-black/5 dark:bg-white/5 rounded break-all select-all">
+                  {createdSecret.secret}
+                </div>
+                <Button variant="outline" size="sm" className="mt-2" onClick={() => setCreatedSecret(null)}>I have saved it</Button>
+              </div>
+            )}
+
             <div className="space-y-3">
               {apps.length === 0 ? (
                 <div className="p-6 rounded-lg bg-secondary/20 border border-dashed flex flex-col items-center justify-center text-center">
@@ -176,12 +220,7 @@ export default function ConnectSettings() {
                         <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">Client ID</span>
                         <code className="text-xs font-mono bg-secondary px-2 py-1.5 rounded text-foreground flex items-center justify-between group">
                           {app.client_id}
-                          <Copy className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity" />
                         </code>
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">Client Secret</span>
-                        <code className="text-xs font-mono bg-secondary px-2 py-1.5 rounded text-foreground">••••••••••••••••••••••••</code>
                       </div>
                     </div>
                   </div>
@@ -191,7 +230,6 @@ export default function ConnectSettings() {
           </CardContent>
         </Card>
 
-        {/* Webhooks Section */}
         <Card className="shadow-sm">
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
@@ -237,13 +275,12 @@ export default function ConnectSettings() {
                           <div className="min-w-0">
                             <h4 className="font-medium text-sm text-foreground truncate">{wh.endpoint_url}</h4>
                             <div className="flex gap-2 mt-2">
-                              <Badge variant="secondary" className="text-[10px]">capture.created</Badge>
-                              <Badge variant="secondary" className="text-[10px]">smart_moment.detected</Badge>
+                              {wh.events.map(e => <Badge key={e} variant="secondary" className="text-[10px]">{e}</Badge>)}
                             </div>
                           </div>
-                          <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 shrink-0 flex items-center gap-1">
-                            <CheckCircle2 className="w-3 h-3" /> Active
-                          </Badge>
+                          <button onClick={() => handleDeleteWebhook(wh.id)} className="text-red-500 hover:text-red-600 p-1">
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         </div>
                       </div>
                     ))

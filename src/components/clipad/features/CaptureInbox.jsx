@@ -1,18 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
 import { 
-  getInboxCaptures, 
-  processCaptureToMemory,
-  getContextSessions,
-  createContextSession,
-  updateContextSessionStatus,
-  associateCaptureWithSession
-} from '@/lib/clipadCaptureService';
-import { isV3FeatureEnabled, V3_FLAGS } from '@/lib/clipadV3Flags';
-import BrowserCaptureSettings from './BrowserCaptureSettings';
-import { 
-  Loader2, Sparkles, BrainCircuit, Mic, Type, FileText, Link2, Monitor, 
-  PlaySquare, Users, MessageSquare, Plus, CheckCircle2, AlertCircle, 
+  Loader2, Sparkles, BrainCircuit, Mic, Type, FileText, Link2 as LinkIcon, Monitor, 
+  PlaySquare as Video, Users, MessageSquare as File, Plus, CheckCircle2, AlertCircle, 
   Clock, ArrowRight, Play, Pause, Archive, Settings2, FolderOpen
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -21,49 +12,68 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useToast } from '@/components/ui/use-toast';
+import { contextualizeCapture } from '@/lib/clipadContextualizationService';
+import { isV3FeatureEnabled, V3_FLAGS } from '@/lib/clipadV3Flags';
+import BrowserCaptureSettings from './BrowserCaptureSettings';
+import { updateCapture } from '@/lib/clipadCaptureService';
+import { getUserContextSessions, createContextSession, updateContextSession, completeContextSession, archiveContextSession } from '@/lib/clipadContextSessionService';
 
 export default function CaptureInbox() {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('captures');
   const [captures, setCaptures] = useState([]);
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState(null);
+  
+  // Forms
   const [newSessionTitle, setNewSessionTitle] = useState('');
 
+  const companyId = user?.user_metadata?.company_id || user?.company_id;
   const contextSessionsEnabled = isV3FeatureEnabled(V3_FLAGS.CONTEXT_SESSIONS_ENABLED, user);
   const browserCaptureEnabled = isV3FeatureEnabled(V3_FLAGS.BROWSER_CAPTURE_ENABLED, user);
 
   useEffect(() => {
-    loadData();
+    if (user) {
+      loadData();
+    }
   }, [user]);
 
-  async function loadData() {
-    if (!user) return;
+  const loadData = async () => {
     setLoading(true);
     try {
-      const inbox = await getInboxCaptures(user, 50);
-      setCaptures(inbox || []);
+      const { data: capturesData } = await supabase
+        .from('clipad_v3_captures')
+        .select('*')
+        .eq('company_id', companyId)
+        .order('captured_at', { ascending: false })
+        .limit(50);
       
+      setCaptures(capturesData || []);
+
       if (contextSessionsEnabled) {
-        const sess = await getContextSessions(user);
-        setSessions(sess || []);
+        const sessData = await getUserContextSessions(user.id, companyId);
+        setSessions(sessData || []);
       }
     } catch (e) {
       console.error(e);
+      toast({ title: "Error", description: "Failed to load inbox data.", variant: "destructive" });
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   const handleProcess = async (capture) => {
     setProcessingId(capture.id);
     try {
-      await processCaptureToMemory(user, capture.id);
+      await contextualizeCapture(capture.id);
+      toast({ title: "Success", description: "Capture processed into organizational memory." });
       await loadData();
     } catch (e) {
-      console.error("Failed to process", e);
-      alert("Failed to process capture into organizational memory");
+      console.error(e);
+      toast({ title: "Processing Failed", description: e.message, variant: "destructive" });
     } finally {
       setProcessingId(null);
     }
@@ -73,36 +83,33 @@ export default function CaptureInbox() {
     e.preventDefault();
     if (!newSessionTitle.trim()) return;
     try {
-      await createContextSession(user, newSessionTitle);
+      await createContextSession(user.id, companyId, newSessionTitle);
       setNewSessionTitle('');
       await loadData();
+      toast({ title: "Session Started", description: "Captures can now be routed to this session." });
     } catch (e) {
-      console.error(e);
-      alert("Failed to start session");
+      toast({ title: "Error", description: e.message, variant: "destructive" });
     }
   };
 
   const handleSessionAction = async (sessionId, action) => {
-    let newStatus = 'ACTIVE';
-    if (action === 'pause') newStatus = 'PAUSED';
-    if (action === 'complete') newStatus = 'COMPLETED';
-    if (action === 'archive') newStatus = 'ARCHIVED';
-    
     try {
-      await updateContextSessionStatus(user, sessionId, newStatus);
+      if (action === 'pause') await updateContextSession(sessionId, { status: 'PAUSED' });
+      else if (action === 'resume') await updateContextSession(sessionId, { status: 'ACTIVE' });
+      else if (action === 'complete') await completeContextSession(sessionId);
+      else if (action === 'archive') await archiveContextSession(sessionId);
       await loadData();
     } catch (e) {
-      console.error(e);
-      alert("Failed to update session");
+      toast({ title: "Action Failed", description: e.message, variant: "destructive" });
     }
   };
 
   const handleAssociateSession = async (captureId, sessionId) => {
     try {
-      await associateCaptureWithSession(user, captureId, sessionId || null);
+      await updateCapture(captureId, { context_session_id: sessionId || null });
       await loadData();
     } catch (e) {
-      console.error(e);
+      toast({ title: "Failed to link session", description: e.message, variant: "destructive" });
     }
   };
 
@@ -111,11 +118,10 @@ export default function CaptureInbox() {
       case 'VOICE': return <Mic className="w-4 h-4 text-rose-500" />;
       case 'NOTE': return <Type className="w-4 h-4 text-amber-500" />;
       case 'DOCUMENT': return <FileText className="w-4 h-4 text-blue-500" />;
-      case 'LINK': return <Link2 className="w-4 h-4 text-emerald-500" />;
+      case 'LINK': return <LinkIcon className="w-4 h-4 text-emerald-500" />;
       case 'SCREEN': return <Monitor className="w-4 h-4 text-indigo-500" />;
-      case 'VIDEO': return <PlaySquare className="w-4 h-4 text-purple-500" />;
+      case 'VIDEO': return <Video className="w-4 h-4 text-purple-500" />;
       case 'MEETING_CONTEXT': return <Users className="w-4 h-4 text-sky-500" />;
-      case 'CONVERSATION_CONTEXT': return <MessageSquare className="w-4 h-4 text-teal-500" />;
       default: return <Sparkles className="w-4 h-4 text-slate-500" />;
     }
   };
@@ -180,7 +186,7 @@ export default function CaptureInbox() {
                             {getStatusBadge(capture.status)}
                           </div>
                           <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                            <span className="flex items-center"><Clock className="w-3 h-3 mr-1"/> {new Date(capture.captured_at).toLocaleDateString()} {new Date(capture.captured_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                            <span className="flex items-center"><Clock className="w-3 h-3 mr-1"/> {new Date(capture.captured_at).toLocaleDateString()}</span>
                             <span>•</span>
                             <span className="font-medium tracking-wide">{capture.source_type}</span>
                             {capture.visibility !== 'PERSONAL' && (

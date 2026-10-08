@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/AuthContext';
-import { getCaptureSettings, updateCaptureSettings } from '@/lib/clipadCaptureService';
-import { Shield, Power, Globe, X, Plus, AlertCircle, Chrome, Settings2 } from 'lucide-react';
+import { getUserCaptureSettings, updateUserCaptureSettings } from '@/lib/clipadBrowserCaptureService';
+import { isV3FeatureEnabled, V3_FLAGS } from '@/lib/clipadV3Flags';
+import { Shield, Power, Globe, X, Plus, AlertCircle, Chrome, Settings2, Loader2 } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,22 +13,40 @@ import { Label } from '@/components/ui/label';
 
 export default function BrowserCaptureSettings() {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [settings, setSettings] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [newDomain, setNewDomain] = useState('');
 
-  useEffect(() => {
-    async function load() {
-      if (!user) return;
-      const s = await getCaptureSettings(user);
-      if (s) setSettings(s);
-    }
-    load();
-  }, [user]);
+  const companyId = user?.user_metadata?.company_id || user?.company_id;
+  const isEnabledGlobal = isV3FeatureEnabled(V3_FLAGS.BROWSER_CAPTURE_ENABLED, user);
 
-  const toggleCapture = async () => {
+  useEffect(() => {
+    async function loadSettings() {
+      if (user && isEnabledGlobal) {
+        try {
+          const s = await getUserCaptureSettings(user.id, companyId);
+          setSettings(s);
+        } catch (e) {
+          console.error(e);
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setLoading(false);
+      }
+    }
+    loadSettings();
+  }, [user, companyId, isEnabledGlobal]);
+
+  const toggleCapture = async (checked) => {
     if (!settings) return;
-    const s = await updateCaptureSettings(user, { is_capture_enabled: !settings.is_capture_enabled });
-    setSettings(s);
+    try {
+      const s = await updateUserCaptureSettings(user.id, { is_capture_enabled: checked });
+      setSettings(s);
+    } catch (e) {
+      toast({ title: "Update failed", description: e.message, variant: "destructive" });
+    }
   };
 
   const handleAddDomain = async (e) => {
@@ -41,21 +61,27 @@ export default function BrowserCaptureSettings() {
       }
       
       const newDomains = [...settings.excluded_domains, clean];
-      const s = await updateCaptureSettings(user, { excluded_domains: newDomains });
+      const s = await updateUserCaptureSettings(user.id, { excluded_domains: newDomains });
       setSettings(s);
       setNewDomain('');
     } catch (e) {
-      console.error(e);
+      toast({ title: "Update failed", description: e.message, variant: "destructive" });
     }
   };
 
   const handleRemoveDomain = async (domain) => {
     if (!settings) return;
-    const newDomains = settings.excluded_domains.filter(d => d !== domain);
-    const s = await updateCaptureSettings(user, { excluded_domains: newDomains });
-    setSettings(s);
+    try {
+      const newDomains = settings.excluded_domains.filter(d => d !== domain);
+      const s = await updateUserCaptureSettings(user.id, { excluded_domains: newDomains });
+      setSettings(s);
+    } catch (e) {
+      toast({ title: "Update failed", description: e.message, variant: "destructive" });
+    }
   };
 
+  if (!isEnabledGlobal) return null;
+  if (loading) return <div className="p-10 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>;
   if (!settings) return null;
 
   return (
@@ -123,6 +149,7 @@ export default function BrowserCaptureSettings() {
                   <Globe className="w-3.5 h-3.5 opacity-70" />
                   {domain}
                   <button 
+                    type="button"
                     onClick={() => handleRemoveDomain(domain)}
                     className="ml-1 hover:bg-red-500/20 rounded-full p-0.5 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1"
                     title="Remove domain"
