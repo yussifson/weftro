@@ -325,7 +325,7 @@ export default function SpaceDashboard() {
           status: 'active',
           meeting_type: 'instant'
         });
-      } catch (_) { /* db insert failed Ã¢â‚¬â€ meeting still works */ }
+      } catch (_) { /* db insert failed — meeting still works */ }
 
       try {
         await supabase.from('clipad_spaces').update({ meeting_url: roomData?.url || `https://optavel.daily.co/${targetRoomName}` }).eq('id', spaceId);

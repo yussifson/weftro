@@ -183,7 +183,7 @@ export default function EnterpriseDashboard() {
                       </p>
                       <p className="text-xs text-white/70 flex items-center gap-2 mt-1">
                         <span className="capitalize text-[10px] px-1.5 py-0.5 rounded bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/15 dark:bg-slate-700 text-white/90 dark:text-foreground">{asset.type}</span>
-                        Created by {asset.host_name} Ã¢â‚¬Â¢ {new Date(asset.created_at).toLocaleDateString()}
+                        Created by {asset.host_name} • {new Date(asset.created_at).toLocaleDateString()}
                       </p>
                     </div>
                   </div>

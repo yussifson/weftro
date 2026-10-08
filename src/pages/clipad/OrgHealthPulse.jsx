@@ -58,7 +58,7 @@ function PulseGauge({ score }) {
         </div>
       </div>
       <div className={`mt-2 px-3 py-1 rounded-full text-xs font-black border bg-${cfg.color}-500/10 border-${cfg.color}-500/30 text-${cfg.color}-400`}>
-        {cfg.emoji} Grade {grade} Ã¢â‚¬â€ {cfg.label}
+        {cfg.emoji} Grade {grade} — {cfg.label}
       </div>
     </div>
   );
@@ -199,7 +199,7 @@ Respond in valid JSON only:
           <div className="flex items-start justify-between flex-wrap gap-3">
             <div>
               <h1 className="text-2xl font-black text-foreground">CliPad Pulse</h1>
-              <p className="text-sm text-muted-foreground mt-1">Your organization's vital signs Ã¢â‚¬â€ real-time health score built from every signal Orbit tracks.</p>
+              <p className="text-sm text-muted-foreground mt-1">Your organization's vital signs — real-time health score built from every signal Orbit tracks.</p>
               {lastUpdated && <p className="text-xs text-muted-foreground/60 mt-0.5">Last updated: {format(lastUpdated, 'h:mm a')}</p>}
             </div>
             <div className="flex items-center gap-2">

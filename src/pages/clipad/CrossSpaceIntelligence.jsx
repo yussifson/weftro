@@ -64,7 +64,7 @@ function CollisionCard({ type, items, spaceNames, onViewSpace }) {
   );
 }
 
-// Simple keyword-based similarity Ã¢â‚¬â€ no external ML needed
+// Simple keyword-based similarity — no external ML needed
 function computeSimilarity(a, b) {
   const tokenize = (str) =>
     (str || '').toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(w => w.length > 3);
@@ -336,7 +336,7 @@ Respond in valid JSON only:
                   <h2 className="font-semibold text-foreground text-sm">Duplicate Blockers Across Teams</h2>
                   <span className="text-xs text-red-400 font-bold ml-1">{blockerCollisions.length} collision{blockerCollisions.length > 1 ? 's' : ''}</span>
                 </div>
-                <p className="text-xs text-muted-foreground mb-3">Multiple teams are blocked on the same issue Ã¢â‚¬â€ solving it once saves everyone.</p>
+                <p className="text-xs text-muted-foreground mb-3">Multiple teams are blocked on the same issue — solving it once saves everyone.</p>
                 <div className="space-y-3">
                   {blockerCollisions.map((group, i) => (
                     <CollisionCard key={i} type="blocker" items={group} spaceNames={spaceNames} onViewSpace={id => navigate(`${basePath}/spaces/${id}`)} />
