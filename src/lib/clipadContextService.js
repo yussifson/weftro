@@ -6,6 +6,7 @@ import { supabase } from '@/api/supabaseClient';
 import { getMemories, MEMORY_STATUS, MEMORY_TIERS } from '@/lib/clipadMemoryService';
 import { getEntityGraph } from '@/lib/clipadEntityService';
 import { findConnectedKnowledge } from '@/lib/clipadGraphService';
+import { resolveIntelligenceContext, filterAuthorizedMemories, filterAuthorizedMoments, filterAuthorizedGraph } from './clipadIntelligenceGovernanceService';
 
 /**
  * Score and rank memories based on relevance, freshness, confidence, and importance.

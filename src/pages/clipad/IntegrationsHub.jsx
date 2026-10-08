@@ -23,6 +23,7 @@ import {
 import { INTEGRATIONS, CATEGORIES } from '@/config/integrationsList';
 import CaptureInbox from '@/components/clipad/features/CaptureInbox';
 import ConnectSettings from '@/components/clipad/features/ConnectSettings';
+import GovernanceSettings from '@/components/clipad/features/GovernanceSettings';
 
 const isSuperAdmin = (user) => user?.role === 'super_admin' || user?.user_metadata?.role === 'super_admin';
 
@@ -491,6 +492,8 @@ export default function IntegrationsHub() {
 
         {activeTab === 'inbox' ? (
             <CaptureInbox />
+          ) : activeTab === 'governance' ? (
+            <GovernanceSettings />
           ) : activeTab === 'connect' && isConnectEnabled ? (
             <ConnectSettings />
           ) : (
@@ -548,6 +551,13 @@ export default function IntegrationsHub() {
                     </div>
                   );
                 })}
+
+                  <button 
+                    onClick={() => setActiveTab('governance')}
+                    className={`pb-3 px-1 text-sm font-bold border-b-2 transition-colors ${activeTab === 'governance' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
+                  >
+                    Governance
+                  </button>
               </div>
             </div>
           );
