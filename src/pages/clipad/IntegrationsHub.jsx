@@ -490,9 +490,11 @@ export default function IntegrationsHub() {
       <div className="max-w-5xl mx-auto px-4 md:px-6 mt-8 space-y-8">
 
         {activeTab === 'inbox' ? (
-          <CaptureInbox />
-        ) : (
-          <>
+            <CaptureInbox />
+          ) : activeTab === 'connect' && isConnectEnabled ? (
+            <ConnectSettings />
+          ) : (
+            <>
             {/* Modern Tab Filters */}
         <div className="flex items-center overflow-x-auto hide-scrollbar bg-slate-100 dark:bg-slate-800/50 p-1.5 rounded-xl mb-8 w-full">
           {CATEGORIES.map(cat => {
@@ -855,10 +857,11 @@ export default function IntegrationsHub() {
               Contact your administrator or check the <strong>KERINT Integration Setup Guide</strong> for step-by-step instructions.
             </p>
           </div>
-          </div>
         </div>
 
-      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Scope Selector Modal Ã¢â‚¬â€ shown BEFORE connecting any integration Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */}
+            </>
+          )}
+{/* Ã¢â€â‚¬Ã¢â€â‚¬ Scope Selector Modal Ã¢â‚¬â€ shown BEFORE connecting any integration Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */}
       {scopeModal && createPortal(
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="bg-white dark:bg-card text-slate-900 dark:text-foreground border border-slate-200 dark:border-border rounded-2xl shadow-2xl w-full max-w-md p-5 animate-in fade-in zoom-in-95 duration-200">
@@ -948,8 +951,9 @@ export default function IntegrationsHub() {
                 {selectedScope === 'company' && 'All members of the company can query this integration via Orbit and Spotlight.'}
               </p>
             </div>
-
-            {/* Actions */}
+            </>
+          )}
+      {/* Actions */}
             <div className="flex gap-2">
               <button
                 onClick={() => setScopeModal(null)}
