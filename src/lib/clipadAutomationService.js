@@ -36,7 +36,7 @@ export async function evaluateEvent(eventPayload, user) {
         await executeControlledAction(rule, eventPayload, user);
       }
     } catch (err) {
-      console.error(\`Automation Rule \${rule.id} failed:\`, err);
+      console.error(`Automation Rule ${rule.id} failed:`, err);
     }
   }
 }
@@ -46,7 +46,7 @@ async function executeControlledAction(rule, eventPayload, user) {
   const allowedActions = ['create_recommendation', 'notify_manager'];
   
   if (!allowedActions.includes(rule.action_type)) {
-    throw new Error(\`Unauthorized automation action type: \${rule.action_type}\`);
+    throw new Error(`Unauthorized automation action type: ${rule.action_type}`);
   }
 
   if (rule.action_type === 'create_recommendation') {
@@ -55,7 +55,7 @@ async function executeControlledAction(rule, eventPayload, user) {
       company_id: user.company_id,
       insight_type: 'RECOMMENDATION',
       title: rule.action_payload.title || 'Automated Recommendation',
-      summary: \`Triggered by rule: \${rule.name}\`,
+      summary: `Triggered by rule: ${rule.name}`,
       confidence: 1.0,
       evidence_count: 1,
       source_ids: eventPayload.data?.id ? [eventPayload.data.id] : []

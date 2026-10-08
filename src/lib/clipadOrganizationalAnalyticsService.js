@@ -63,13 +63,13 @@ export async function getOrganizationalMetrics(user, timeRangeDays = 30) {
     const unresolvedActions = authorizedMoments.filter(m => m.moment_type === 'ACTION' && m.status !== 'resolved').length;
     if (unresolvedActions > 0) {
       executionHealth -= (unresolvedActions * 5);
-      executionReasons.push(\`\${unresolvedActions} unresolved actions\`);
+      executionReasons.push(`${unresolvedActions} unresolved actions`);
     }
   }
 
   if (metrics.activity.blockers > 0) {
     executionHealth -= (metrics.activity.blockers * 10);
-    executionReasons.push(\`\${metrics.activity.blockers} active blockers\`);
+    executionReasons.push(`${metrics.activity.blockers} active blockers`);
   }
 
   if (executionReasons.length === 0 && metrics.activity.actionsDetected === 0 && metrics.activity.blockers === 0) {

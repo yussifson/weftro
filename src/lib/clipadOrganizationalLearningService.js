@@ -48,8 +48,8 @@ export async function detectOrganizationalPatterns(user, timeRangeDays = 30) {
       detectedInsights.push({
         company_id: user.company_id,
         insight_type: 'RECURRING_PROBLEM',
-        title: \`Recurring blocker involving "\${key}"\`,
-        summary: \`This issue has appeared \${items.length} times in the last \${timeRangeDays} days.\`,
+        title: `Recurring blocker involving "${key}"`,
+        summary: `This issue has appeared ${items.length} times in the last ${timeRangeDays} days.`,
         confidence: 0.85,
         evidence_count: items.length,
         source_ids: items.map(i => i.id)
