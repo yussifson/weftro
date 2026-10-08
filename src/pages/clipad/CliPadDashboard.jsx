@@ -15,6 +15,7 @@ import { generateShortId } from '@/utils/idGenerator';
 
 
 import BlockerRadar from '@/components/clipad/features/BlockerRadar';
+import OrganizationalInsights from '@/components/clipad/features/OrganizationalInsights';
 import MeetingNecessityWidget from '@/components/clipad/features/MeetingNecessityWidget';
 import TimezoneFairnessWidget from '@/components/clipad/features/TimezoneFairnessWidget';
 import InstitutionalMemoryVault from '@/components/clipad/features/InstitutionalMemoryVault';

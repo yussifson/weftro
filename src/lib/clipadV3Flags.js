@@ -23,6 +23,8 @@ export const V3_FLAGS = {
   ROLE_AWARE_INTELLIGENCE_ENABLED: 'role_aware_intelligence_enabled',
   ACTION_CENTER_ENABLED: 'action_center_enabled',
   AUTOMATION_V3_ENABLED: 'automation_v3_enabled',
+  ORGANIZATIONAL_ANALYTICS_ENABLED: 'organizational_analytics_enabled',
+  ORGANIZATIONAL_LEARNING_ENABLED: 'organizational_learning_enabled',
 };
 
 // Default flag states for safe V3 staged rollout
@@ -43,7 +45,9 @@ const DEFAULT_V3_FLAG_DEFAULTS = {
   [V3_FLAGS.KNOWLEDGE_GRAPH_ENABLED]: true,
   [V3_FLAGS.ROLE_AWARE_INTELLIGENCE_ENABLED]: true,
   [V3_FLAGS.ACTION_CENTER_ENABLED]: true,
-  [V3_FLAGS.AUTOMATION_V3_ENABLED]: false, // Staged
+  [V3_FLAGS.AUTOMATION_V3_ENABLED]: true, // Phase 9
+  [V3_FLAGS.ORGANIZATIONAL_ANALYTICS_ENABLED]: true,
+  [V3_FLAGS.ORGANIZATIONAL_LEARNING_ENABLED]: true,
 };
 
 /**
