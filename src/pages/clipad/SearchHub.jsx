@@ -16,16 +16,16 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 const TYPE_META = {
-  person:      { icon: Users,         label: 'Person',    color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065] dark:bg-card border border-[#006065] dark:border-border/20' },
-  meeting:     { icon: Calendar,      label: 'Meeting',   color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065] dark:bg-card border border-[#006065] dark:border-border/20', route: (id) => `/meetings/${id}` },
-  video:       { icon: Video,         label: 'Video',     color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065] dark:bg-card border border-[#006065] dark:border-border/20', route: (id) => `/watch/${id}` },
-  doc:         { icon: FileText,      label: 'Doc',       color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065] dark:bg-card border border-[#006065] dark:border-border/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=docs&docId=${id}` : null },
-  task:        { icon: CheckCircle,   label: 'Task',      color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065] dark:bg-card border border-[#006065] dark:border-border/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=tasks&taskId=${id}` : null },
-  message:     { icon: MessageSquare, label: 'Chat',      color: 'text-[#006065] dark:text-indigo-400', bg: 'bg-[#006065] dark:bg-[#131A2C]/10 border border-[#006065] dark:border-border/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=chat` : null },
-  decision:    { icon: ShieldAlert,   label: 'Decision',  color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065] dark:bg-card border border-[#006065] dark:border-border/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=decisions` : null },
-  blocker:     { icon: AlertTriangle, label: 'Blocker',   color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065] dark:bg-card border border-[#006065] dark:border-border/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=overview` : null },
-  standup:     { icon: Zap,           label: 'Standup',   color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065] dark:bg-card border border-[#006065] dark:border-border/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=standup` : null },
-  integration: { icon: ExternalLink,  label: 'Imported',  color: 'text-[#006065] dark:text-[#fad503]', bg: 'bg-[#006065] dark:bg-card border border-[#006065] dark:border-border/20', route: () => `/integrations` },
+  person:      { icon: Users,         label: 'Person',    color: 'text-primary', bg: 'bg-primary/10 border border-primary/20' },
+  meeting:     { icon: Calendar,      label: 'Meeting',   color: 'text-primary', bg: 'bg-primary/10 border border-primary/20', route: (id) => `/meetings/${id}` },
+  video:       { icon: Video,         label: 'Video',     color: 'text-primary', bg: 'bg-primary/10 border border-primary/20', route: (id) => `/watch/${id}` },
+  doc:         { icon: FileText,      label: 'Doc',       color: 'text-primary', bg: 'bg-primary/10 border border-primary/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=docs&docId=${id}` : null },
+  task:        { icon: CheckCircle,   label: 'Task',      color: 'text-primary', bg: 'bg-primary/10 border border-primary/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=tasks&taskId=${id}` : null },
+  message:     { icon: MessageSquare, label: 'Chat',      color: 'text-primary', bg: 'bg-primary/10 border border-primary/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=chat` : null },
+  decision:    { icon: ShieldAlert,   label: 'Decision',  color: 'text-primary', bg: 'bg-primary/10 border border-primary/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=decisions` : null },
+  blocker:     { icon: AlertTriangle, label: 'Blocker',   color: 'text-primary', bg: 'bg-primary/10 border border-primary/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=overview` : null },
+  standup:     { icon: Zap,           label: 'Standup',   color: 'text-primary', bg: 'bg-primary/10 border border-primary/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=standup` : null },
+  integration: { icon: ExternalLink,  label: 'Imported',  color: 'text-primary', bg: 'bg-primary/10 border border-primary/20', route: () => `/integrations` },
 };
 
 const FILTER_TABS = [
@@ -547,7 +547,7 @@ export default function SearchHub() {
                 <button
                   type="submit"
                   disabled={!query.trim()}
-                  className="px-6 py-3 sm:py-2.5 bg-[#006065] dark:bg-[#131A2C] hover:bg-[#006065] dark:bg-[#131A2C]/90 disabled:opacity-40 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 shrink-0 shadow-md text-sm"
+                  className="px-6 py-3 sm:py-2.5 bg-primary hover:bg-primary/90 disabled:opacity-40 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 shrink-0 shadow-md text-sm"
                 >
                   {isSearching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                   <span className="hidden sm:inline">Search</span>
@@ -565,7 +565,7 @@ export default function SearchHub() {
                     onClick={() => { setQuery(item.desc); setSearchParams({ q: item.desc }); runSearch(item.desc); }}
                     className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white dark:bg-card border border-slate-200 dark:border-border hover:bg-slate-100 dark:hover:bg-accent text-slate-700 dark:text-slate-200 text-xs font-semibold transition-all group shadow-sm active:scale-95"
                   >
-                    <Icon className="w-3.5 h-3.5 text-[#006065] shrink-0" />
+                    <Icon className="w-3.5 h-3.5 text-primary shrink-0" />
                     {item.title}
                   </button>
                 );
@@ -584,14 +584,14 @@ export default function SearchHub() {
             <div className="shrink-0 bg-white dark:bg-card border-b border-slate-200 dark:border-border px-4 md:px-8 py-2 overflow-x-auto hide-scrollbar flex items-center gap-3">
               <button
                 onClick={() => { setHasPerformedSearch(false); setQuery(''); setResults([]); setAiAnswer(''); setSearchParams({}); }}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors bg-[#fad503] text-[#006065] shadow-sm border border-[#fad503] hover:brightness-105"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors bg-primary-foreground text-primary shadow-sm border border-[#fad503] hover:brightness-105"
               >
                 <ArrowLeft className="w-3.5 h-3.5" /> New Search
               </button>
 
               <form onSubmit={(e) => { e.preventDefault(); setSearchParams({ q: query }); runSearch(); }} className="relative group shrink-0 w-64 md:w-80">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Search className="h-3.5 w-3.5 text-slate-400 group-focus-within:text-[#006065] transition-colors" />
+                  <Search className="h-3.5 w-3.5 text-slate-400 group-focus-within:text-primary transition-colors" />
                 </div>
                 <input
                   type="text"
@@ -619,7 +619,7 @@ export default function SearchHub() {
                  <button
                    key={tab.id}
                    onClick={() => setActiveFilter(tab.id)}
-                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors ${isActive ? 'bg-[#006065] dark:bg-[#131A2C] text-[#fad503] font-bold shadow-sm border border-[#006065] dark:border-border' : 'bg-slate-100 dark:bg-secondary text-slate-600 dark:text-muted-foreground hover:bg-slate-200 dark:bg-slate-800 dark:text-muted-foreground dark:hover:bg-accent'}`}
+                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors ${isActive ? 'bg-primary text-primary-foreground font-bold shadow-sm border border-[#006065] dark:border-border' : 'bg-slate-100 dark:bg-secondary text-slate-600 dark:text-muted-foreground hover:bg-slate-200 dark:bg-slate-800 dark:text-muted-foreground dark:hover:bg-accent'}`}
                  >
                    <Icon className="w-3.5 h-3.5" /> {tab.label}
                  </button>
@@ -640,7 +640,7 @@ export default function SearchHub() {
                 <div className="flex-1 overflow-y-auto space-y-3 pr-2 pb-6 scrollbar-hide">
                    {isSearching ? (
                       <div className="flex flex-col items-center justify-center h-40">
-                         <Loader2 className="w-6 h-6 text-[#006065] animate-spin mb-2" />
+                         <Loader2 className="w-6 h-6 text-primary animate-spin mb-2" />
                          <span className="text-xs text-slate-500 dark:text-muted-foreground">Searching workspace...</span>
                       </div>
                    ) : filteredResults.length === 0 ? (
@@ -658,7 +658,7 @@ export default function SearchHub() {
                           <div
                             key={`${item.type}-${item.id}`}
                             onClick={() => setSelectedResult(item)}
-                            className={`p-4 rounded-xl border transition-all cursor-pointer ${isSelected ? 'bg-[#006065] dark:bg-[#131A2C]/5 dark:bg-indigo-900/10 border-indigo-200 dark:border-indigo-800 shadow-sm ring-1 ring-indigo-500/20' : 'bg-white dark:bg-card border-slate-200 dark:border-border hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-sm'}`}
+                            className={`p-4 rounded-xl border transition-all cursor-pointer ${isSelected ? 'bg-primary/5 dark:bg-indigo-900/10 border-indigo-200 dark:border-indigo-800 shadow-sm ring-1 ring-indigo-500/20' : 'bg-white dark:bg-card border-slate-200 dark:border-border hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-sm'}`}
                           >
                             <div className="flex items-start justify-between gap-3 mb-2">
                                <div className="flex items-center gap-2">
@@ -702,7 +702,7 @@ export default function SearchHub() {
                                 const route = TYPE_META[selectedResult.type].route(selectedResult.id, selectedResult.space_id);
                                 if (route) navigate(route);
                               }}
-                              className="flex items-center gap-1 text-[11px] font-bold text-[#006065] dark:text-indigo-400 hover:bg-[#006065] dark:bg-[#131A2C]/5 dark:hover:bg-indigo-900/30 px-2 py-1 rounded transition-colors"
+                              className="flex items-center gap-1 text-[11px] font-bold text-primary hover:bg-primary/5 dark:hover:bg-indigo-900/30 px-2 py-1 rounded transition-colors"
                             >
                               Open <ArrowUpRight className="w-3 h-3" />
                             </button>
@@ -750,7 +750,7 @@ export default function SearchHub() {
                                     <span className="text-xs font-bold text-slate-600 dark:text-muted-foreground">{firstName.charAt(0)}</span>
                                   </div>
                                ) : (
-                                  <div className="w-8 h-8 rounded-xl bg-[#006065] dark:bg-[#131A2C] flex items-center justify-center shadow-md">
+                                  <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center shadow-md">
        <CliPadLogo size={18} color="#ffffff" />
      </div>
                                )}
@@ -765,7 +765,7 @@ export default function SearchHub() {
                                   {msg.role === 'assistant' ? (
                                      <ReactMarkdown 
                                        remarkPlugins={[remarkGfm]}
-                                       className="prose prose-sm dark:prose-invert max-w-none prose-p:leading-relaxed prose-pre:bg-slate-900 prose-pre:border prose-pre:border-slate-700 prose-code:text-slate-900 dark:prose-code:text-slate-200 prose-code:bg-slate-100 dark:prose-code:bg-slate-800 prose-code:px-1 prose-code:rounded prose-code:before:content-none prose-code:after:content-none prose-a:text-[#006065]"
+                                       className="prose prose-sm dark:prose-invert max-w-none prose-p:leading-relaxed prose-pre:bg-slate-900 prose-pre:border prose-pre:border-slate-700 prose-code:text-slate-900 dark:prose-code:text-slate-200 prose-code:bg-slate-100 dark:prose-code:bg-slate-800 prose-code:px-1 prose-code:rounded prose-code:before:content-none prose-code:after:content-none prose-a:text-primary"
                                      >
                                         {msg.content}
                                      </ReactMarkdown>
@@ -777,13 +777,13 @@ export default function SearchHub() {
                                {msg.role === 'assistant' && (
                                   <div className="flex items-center gap-1 mt-1">
                                      <button onClick={() => handleCopy(msg.content, idx)} className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded hover:bg-slate-100 dark:hover:bg-accent transition-colors" title="Copy text">
-                                        {copiedMsgIndex === idx ? <CheckCheck className="w-3.5 h-3.5 text-[#006065]" /> : <Copy className="w-3.5 h-3.5" />}
+                                        {copiedMsgIndex === idx ? <CheckCheck className="w-3.5 h-3.5 text-primary" /> : <Copy className="w-3.5 h-3.5" />}
                                      </button>
-                                     <button onClick={() => handleSpeak(msg.content, idx)} className={`p-1.5 rounded hover:bg-slate-100 dark:hover:bg-accent transition-colors ${isSpeakingMsgIndex === idx ? 'text-[#006065] bg-[#006065] dark:bg-[#131A2C]/5 dark:bg-indigo-900/30' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`} title={isSpeakingMsgIndex === idx ? "Stop speaking" : "Read aloud"}>
+                                     <button onClick={() => handleSpeak(msg.content, idx)} className={`p-1.5 rounded hover:bg-slate-100 dark:hover:bg-accent transition-colors ${isSpeakingMsgIndex === idx ? 'text-primary bg-primary/5 dark:bg-indigo-900/30' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`} title={isSpeakingMsgIndex === idx ? "Stop speaking" : "Read aloud"}>
                                         {isSpeakingMsgIndex === idx ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
                                      </button>
                                      <div className="w-px h-3 bg-slate-200 dark:bg-slate-700 mx-1" />
-                                     <button onClick={() => setVotedMsgState(p => ({...p, [idx]: 'up'}))} className={`p-1.5 rounded hover:bg-slate-100 dark:hover:bg-accent transition-colors ${votedMsgState[idx] === 'up' ? 'text-[#006065]' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}>
+                                     <button onClick={() => setVotedMsgState(p => ({...p, [idx]: 'up'}))} className={`p-1.5 rounded hover:bg-slate-100 dark:hover:bg-accent transition-colors ${votedMsgState[idx] === 'up' ? 'text-primary' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}>
                                         <ThumbsUp className="w-3.5 h-3.5" />
                                      </button>
                                      <button onClick={() => setVotedMsgState(p => ({...p, [idx]: 'down'}))} className={`p-1.5 rounded hover:bg-slate-100 dark:hover:bg-accent transition-colors ${votedMsgState[idx] === 'down' ? 'text-rose-500' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}>
@@ -799,14 +799,14 @@ export default function SearchHub() {
                    {isSynthesizing && (
                       <div className="flex gap-4 max-w-3xl mr-auto">
                          <div className="shrink-0 mt-1">
-                            <div className="w-8 h-8 rounded-xl bg-[#006065] dark:bg-[#131A2C] flex items-center justify-center shadow-md animate-pulse">
+                            <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center shadow-md animate-pulse">
        <CliPadLogo size={18} color="#ffffff" />
      </div>
                          </div>
                          <div className="flex flex-col gap-1.5 items-start">
                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-1">Orbit AI</span>
                             <div className="py-2 flex items-center gap-2">
-                               <Loader2 className="w-4 h-4 text-[#006065] animate-spin" />
+                               <Loader2 className="w-4 h-4 text-primary animate-spin" />
                                <span className="text-sm font-medium text-slate-600 dark:text-muted-foreground">Synthesizing insights...</span>
                             </div>
                          </div>
@@ -827,7 +827,7 @@ export default function SearchHub() {
                       <button
                         type="submit"
                         disabled={!followUpInput.trim() || isSynthesizing}
-                        className="p-2 rounded-lg bg-indigo-600 hover:bg-[#006065] dark:bg-[#131A2C] text-white disabled:opacity-50 transition-colors shrink-0"
+                        className="p-2 rounded-lg bg-indigo-600 hover:bg-primary text-white disabled:opacity-50 transition-colors shrink-0"
                       >
                          {isSynthesizing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4 ml-0.5" />}
                       </button>
