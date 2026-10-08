@@ -22,7 +22,7 @@ export const ThemeProvider = ({ children }) => {
 
     // Force light mode on marketing pages regardless of user setting
     const path = window.location.pathname;
-    const isMarketingPage = path === '/features' || path === '/solutions' || path === '/pricing';
+    const isMarketingPage = ['/', '/features', '/solutions', '/pricing', '/login', '/signup', '/custom-pricing', '/landing', '/home', '/marketing', '/about', '/meet'].includes(path);
 
     if (isMarketingPage) {
       root.classList.add('light');
