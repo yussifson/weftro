@@ -4,7 +4,7 @@
 -- 1. OAuth Apps / Connect Clients
 CREATE TABLE IF NOT EXISTS clipad_v3_connect_apps (
     id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-    company_id text NOT NULL,
+    company_id UUID NOT NULL REFERENCES public.companies(id) ON DELETE CASCADE,
     created_by uuid REFERENCES auth.users(id),
     name text NOT NULL,
     description text,
@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS clipad_v3_connect_tokens (
     id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
     app_id uuid REFERENCES clipad_v3_connect_apps(id) ON DELETE CASCADE,
     user_id uuid REFERENCES auth.users(id),
-    company_id text NOT NULL,
+    company_id UUID NOT NULL REFERENCES public.companies(id) ON DELETE CASCADE,
     token_hash text UNIQUE NOT NULL,
     scopes text[] NOT NULL DEFAULT '{}'::text[],
     expires_at timestamptz,
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS clipad_v3_connect_tokens (
 -- 3. Webhooks
 CREATE TABLE IF NOT EXISTS clipad_v3_webhooks (
     id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-    company_id text NOT NULL,
+    company_id UUID NOT NULL REFERENCES public.companies(id) ON DELETE CASCADE,
     created_by uuid REFERENCES auth.users(id),
     endpoint_url text NOT NULL,
     secret text NOT NULL,

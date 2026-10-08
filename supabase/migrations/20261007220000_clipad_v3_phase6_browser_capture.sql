@@ -3,7 +3,7 @@
 
 CREATE TABLE IF NOT EXISTS clipad_v3_capture_settings (
     user_id uuid REFERENCES auth.users(id) PRIMARY KEY,
-    company_id text NOT NULL,
+    company_id UUID NOT NULL REFERENCES public.companies(id) ON DELETE CASCADE,
     is_capture_enabled boolean DEFAULT true,
     excluded_domains text[] DEFAULT '{}'::text[],
     created_at timestamptz DEFAULT now(),
