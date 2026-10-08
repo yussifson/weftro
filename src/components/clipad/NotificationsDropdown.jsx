@@ -142,7 +142,7 @@ export default function NotificationsDropdown() {
   return (
     <Popover onOpenChange={(open) => { if (open) markAllAsRead(); }}>
       <PopoverTrigger asChild>
-        <button className="relative w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 dark:text-muted-foreground hover:text-slate-900 dark:text-muted-foreground dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-accent transition-colors">
+        <button className="relative w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-muted-foreground dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
           <Bell className="w-5 h-5" />
           {unreadCount > 0 && (
             <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-rose-500 rounded-full animate-pulse border-2 border-white dark:border-slate-900 shadow-sm" />
@@ -159,9 +159,9 @@ export default function NotificationsDropdown() {
         <ScrollArea className="h-80">
           {notifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-40 text-center px-4">
-              <Bell className="w-8 h-8 text-slate-300 dark:text-slate-700 dark:text-foreground mb-2" />
+              <Bell className="w-8 h-8 text-slate-300 dark:text-slate-700 mb-2" />
               <p className="text-sm font-medium text-slate-500 dark:text-muted-foreground">All caught up!</p>
-              <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-muted-foreground mt-1">No new notifications.</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">No new notifications.</p>
             </div>
           ) : (
             <div className="flex flex-col divide-y divide-slate-100 dark:divide-slate-800/50">
@@ -169,7 +169,7 @@ export default function NotificationsDropdown() {
                 <div 
                   key={notification.id} 
                   onClick={() => markAsRead(notification.id)}
-                  className={`relative p-4 flex gap-3 hover:bg-slate-50 dark:hover:bg-accent/50 transition-colors cursor-pointer group ${!notification.is_read ? 'bg-primary/5' : ''}`}
+                  className={`relative p-4 flex gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group ${!notification.is_read ? 'bg-primary/5' : ''}`}
                 >
                   <div className={`mt-1 w-2 h-2 rounded-full shrink-0 ${!notification.is_read ? 'bg-primary' : 'bg-transparent'}`} />
                   <div className="flex-1 min-w-0">
@@ -181,7 +181,7 @@ export default function NotificationsDropdown() {
                         <Button 
                           size="sm" 
                           onClick={(e) => handleGroupRequest(notification, 'accept', e)} 
-                          className="h-7 text-[10px] px-2.5 rounded bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004e52] text-white"
+                          className="h-7 text-[10px] px-2.5 rounded bg-[#006065] hover:bg-[#004e52] text-white"
                         >
                           <Check className="w-3 h-3 mr-1"/> Accept
                         </Button>
@@ -189,21 +189,21 @@ export default function NotificationsDropdown() {
                           size="sm" 
                           variant="outline" 
                           onClick={(e) => handleGroupRequest(notification, 'reject', e)} 
-                          className="h-7 text-[10px] px-2.5 rounded text-slate-500 dark:text-muted-foreground"
+                          className="h-7 text-[10px] px-2.5 rounded text-slate-500"
                         >
                           <X className="w-3 h-3 mr-1"/> Reject
                         </Button>
                       </div>
                     )}
 
-                    <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-muted-foreground mt-2 font-medium uppercase tracking-wider">
+                    <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-2 font-medium uppercase tracking-wider">
                       {notification.created_at ? formatDistanceToNow(new Date(notification.created_at), { addSuffix: true }) : 'Just now'}
                     </p>
                   </div>
                   {notification.type !== 'group_join_request' && (
                     <button 
                       onClick={(e) => deleteNotification(notification.id, e)}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-md hover:bg-slate-200 dark:hover:bg-accent text-slate-400 hover:text-rose-500 shrink-0 self-start"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 hover:text-rose-500 shrink-0 self-start"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>

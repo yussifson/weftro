@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
@@ -58,7 +58,7 @@ export default function DecisionLedger() {
         _type: 'native',
         id: d.id,
         nativeId: d.id,
-        provider: 'KERINT',
+        provider: 'clipad',
         title: d.decision_text,
         imported_at: d.created_at,
         ai_entities: { decisions: [d.decision_text] },
@@ -148,9 +148,9 @@ export default function DecisionLedger() {
   });
 
   return (
-    <div className="min-h-full bg-slate-50 dark:bg-background text-slate-900 dark:text-slate-100 font-sans page-enter pb-12">
+    <div className="min-h-full bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans page-enter pb-12">
       {/* Header */}
-      <div className="relative overflow-hidden border-b border-slate-200 dark:border-border bg-[#006065] dark:bg-[#131A2C] text-white px-6 py-10">
+      <div className="relative overflow-hidden border-b border-slate-200 dark:border-slate-800 bg-[#006065] text-white px-6 py-10">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(245,158,11,0.08),transparent_60%)] pointer-events-none" />
         <div className="max-w-5xl mx-auto relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
@@ -170,13 +170,13 @@ export default function DecisionLedger() {
 
           <div className="flex items-center gap-3">
             <div className="relative w-full md:w-64">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-muted-foreground" />
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400" />
               <input
                 type="text"
                 placeholder="Search decisions..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl pl-9 pr-4 py-2 text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all shadow-sm"
+                className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-4 py-2 text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all shadow-sm"
               />
             </div>
             <button
@@ -229,14 +229,14 @@ export default function DecisionLedger() {
         {loading && decisions.length === 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-2xl h-48"></div>
+              <div key={i} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl h-48"></div>
             ))}
           </div>
         ) : filteredDecisions.length === 0 ? (
-          <div className="text-center p-12 border border-dashed border-slate-200 dark:border-border rounded-2xl bg-white dark:bg-card max-w-2xl mx-auto mt-10">
-            <AlertCircle className="w-8 h-8 text-slate-500 dark:text-muted-foreground mx-auto mb-3 opacity-50" />
-            <h3 className="font-semibold text-slate-900 dark:text-foreground mb-1">No decisions found</h3>
-            <p className="text-sm text-slate-500 dark:text-muted-foreground">
+          <div className="text-center p-12 border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900 max-w-2xl mx-auto mt-10">
+            <AlertCircle className="w-8 h-8 text-slate-500 dark:text-slate-400 mx-auto mb-3 opacity-50" />
+            <h3 className="font-semibold text-slate-900 dark:text-white mb-1">No decisions found</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               {searchQuery || filterProvider !== 'all' 
                 ? "No decisions match your current filters. Try adjusting your search or source."
                 : "As your connected integrations sync and the AI processes your data, detected decisions will appear here."}
@@ -244,47 +244,47 @@ export default function DecisionLedger() {
           </div>
         ) : (
           <div className="space-y-4">
-            <p className="text-sm text-slate-500 dark:text-muted-foreground">{filteredDecisions.length} decision record{filteredDecisions.length !== 1 ? 's' : ''} found.</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">{filteredDecisions.length} decision record{filteredDecisions.length !== 1 ? 's' : ''} found.</p>
             {filteredDecisions.map((item) => {
               const intg = INTEGRATIONS.find(i => i.id === item.provider || i.provider === item.provider);
               const aiDecisions = getDecisionText(item);
 
               return (
-                <div key={item.id} className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-2xl p-5 hover:border-[#006065] dark:border-border/50 transition-all hover:shadow-sm">
+                <div key={item.id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 hover:border-[#006065]/50 transition-all hover:shadow-sm">
                   <div className="flex flex-col md:flex-row md:items-start gap-4">
-                    <div className="w-12 h-12 rounded-full bg-[#006065] dark:bg-card flex items-center justify-center shrink-0 border border-[#006065] dark:border-border">
+                    <div className="w-12 h-12 rounded-full bg-[#006065]/10 dark:bg-[#006065]/30 flex items-center justify-center shrink-0 border border-[#006065]/20 dark:border-[#006065]/50">
                       <CheckCircle2 className="w-6 h-6 text-[#006065] dark:text-[#fad503]" />
                     </div>
 
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-2 mb-2">
-                        <span className="text-xs font-bold text-[#006065] dark:text-[#fad503] uppercase tracking-wider bg-[#006065] dark:bg-card px-2 py-0.5 rounded-md">
-                          {item._type === 'native' ? 'Ã°Å¸Â¤â€“ AI-Detected' : 'Ã°Å¸â€œâ€ž Knowledge Source'}
+                        <span className="text-xs font-bold text-[#006065] dark:text-[#fad503] uppercase tracking-wider bg-[#006065]/10 dark:bg-[#006065]/30 px-2 py-0.5 rounded-md">
+                          {item._type === 'native' ? 'ðŸ¤– AI-Detected' : 'ðŸ“„ Knowledge Source'}
                         </span>
-                        <span className="text-xs text-slate-500 dark:text-muted-foreground flex items-center gap-1">
+                        <span className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
                           <Calendar className="w-3 h-3" /> {format(new Date(item.imported_at), 'MMM d, yyyy')}
                         </span>
                         {item.outcome_status && (
                           <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${
-                            item.outcome_status === 'successful' ? 'bg-[#006065] dark:bg-card border-[#006065] dark:border-border/30 dark:border-[#fad503]/30 text-[#00beac]' :
+                            item.outcome_status === 'successful' ? 'bg-[#006065]/10 dark:bg-[#006065]/30 border-[#006065]/30 dark:border-[#fad503]/30 text-[#00beac]' :
                             item.outcome_status === 'unsuccessful' ? 'bg-red-500/10 border-red-500/30 text-red-400' :
-                            item.outcome_status === 'partial' ? 'bg-[#006065] dark:bg-card border-amber-500/30 text-amber-400' :
-                            'bg-[#006065] dark:bg-card border-blue-500/30 text-blue-400'
+                            item.outcome_status === 'partial' ? 'bg-[#006065]/10 dark:bg-[#006065]/30 border-amber-500/30 text-amber-400' :
+                            'bg-[#006065]/10 dark:bg-[#006065]/30 border-blue-500/30 text-blue-400'
                           }`}>
                             {item.outcome_status}
                           </span>
                         )}
                         {item.importance_score && (
-                          <span className="text-xs text-slate-500 dark:text-muted-foreground">Impact: <span className="font-bold text-slate-900 dark:text-foreground">{item.importance_score}/10</span></span>
+                          <span className="text-xs text-slate-500 dark:text-slate-400">Impact: <span className="font-bold text-slate-900 dark:text-white">{item.importance_score}/10</span></span>
                         )}
                         {intg && (
-                          <span className="text-xs flex items-center gap-1.5 text-slate-500 dark:text-muted-foreground font-medium">
+                          <span className="text-xs flex items-center gap-1.5 text-slate-500 dark:text-slate-400 font-medium">
                             <span className="w-4 h-4 flex items-center justify-center shrink-0">{intg.icon}</span> {intg.name}
                           </span>
                         )}
                       </div>
 
-                      <h3 className="text-base font-bold text-slate-900 dark:text-foreground mb-3">
+                      <h3 className="text-base font-bold text-slate-900 dark:text-white mb-3">
                         {item.title || 'Decision Artifact'}
                       </h3>
 
@@ -293,16 +293,16 @@ export default function DecisionLedger() {
                           {aiDecisions.map((d, i) => (
                             <div key={i} className="flex items-start gap-2.5 bg-amber-500/5 border border-amber-500/15 rounded-xl px-4 py-2.5">
                               <Sparkles className="w-3.5 h-3.5 text-[#006065] dark:text-[#fad503] shrink-0 mt-0.5" />
-                              <p className="text-sm text-slate-900 dark:text-foreground leading-relaxed">{d}</p>
+                              <p className="text-sm text-slate-900 dark:text-white leading-relaxed">{d}</p>
                             </div>
                           ))}
                         </div>
                       )}
 
                       {item.ai_summary && (
-                        <div className="bg-white/10/30 rounded-xl px-4 py-3 border border-slate-200 dark:border-border/50 mb-3">
-                          <p className="text-xs font-semibold text-slate-500 dark:text-muted-foreground mb-1">Context</p>
-                          <p className="text-sm text-slate-500 dark:text-muted-foreground leading-relaxed line-clamp-2">
+                        <div className="bg-white/10/30 rounded-xl px-4 py-3 border border-slate-200 dark:border-slate-800/50 mb-3">
+                          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Context</p>
+                          <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-2">
                             {item.ai_summary}
                           </p>
                         </div>
@@ -310,22 +310,22 @@ export default function DecisionLedger() {
 
                       <div className="flex flex-wrap items-center gap-4 text-xs mt-2">
                         {item.author && (
-                          <div className="flex items-center gap-1.5 text-slate-500 dark:text-muted-foreground">
+                          <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
                             <Users className="w-3.5 h-3.5" />
-                            <span>Owner: <span className="font-medium text-slate-900 dark:text-foreground">{item.author}</span></span>
+                            <span>Owner: <span className="font-medium text-slate-900 dark:text-white">{item.author}</span></span>
                           </div>
                         )}
-                        <div className="flex items-center gap-1.5 text-slate-500 dark:text-muted-foreground">
+                        <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
                           <Target className="w-3.5 h-3.5" />
-                          <span>Source: <span className="font-medium text-slate-900 dark:text-foreground capitalize">{item.provider}</span></span>
+                          <span>Source: <span className="font-medium text-slate-900 dark:text-white capitalize">{item.provider}</span></span>
                         </div>
                         {item.content_type && (
-                          <span className="capitalize text-slate-500 dark:text-muted-foreground bg-white/10 px-2 py-0.5 rounded-md">{item.content_type}</span>
+                          <span className="capitalize text-slate-500 dark:text-slate-400 bg-white/10 px-2 py-0.5 rounded-md">{item.content_type}</span>
                         )}
                         {item._type === 'native' && (
                           <button
                             onClick={() => navigate(`${window.location.pathname.startsWith('/clipad') ? '/clipad' : ''}/decisions/${item.nativeId}/replay`)}
-                            className="ml-auto flex items-center gap-1.5 px-3 py-1.5 bg-[#006065] dark:bg-card border border-indigo-500/20 text-[#006065] dark:text-[#fad503] rounded-lg text-xs font-semibold hover:bg-indigo-500/20 transition-colors"
+                            className="ml-auto flex items-center gap-1.5 px-3 py-1.5 bg-[#006065]/10 dark:bg-[#006065]/30 border border-indigo-500/20 text-[#006065] dark:text-[#fad503] rounded-lg text-xs font-semibold hover:bg-indigo-500/20 transition-colors"
                           >
                             <Play className="w-3 h-3" fill="currentColor" />
                             Replay Decision
@@ -353,4 +353,3 @@ export default function DecisionLedger() {
     </div>
   );
 }
-

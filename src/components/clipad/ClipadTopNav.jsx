@@ -38,7 +38,7 @@ export default function ClipadTopNav({ forceMobile = false }) {
   };
 
   return (
-    <nav className="sticky top-0 z-40 shrink-0 flex items-center justify-between px-4 md:px-6 h-[64px] bg-[#006065] dark:bg-[#0A0F1C]/95 backdrop-blur-md text-white border-b border-white/10 gap-3 shadow-lg transition-all">
+    <nav className="sticky top-0 z-40 shrink-0 flex items-center justify-between px-4 md:px-6 h-[64px] bg-[#006065]/95 backdrop-blur-md text-white border-b border-white/10 gap-3 shadow-lg transition-all">
       <div className="flex items-center gap-3 shrink-0">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -50,7 +50,7 @@ export default function ClipadTopNav({ forceMobile = false }) {
               </div>
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-52 bg-[#006065] dark:bg-[#0A0F1C] border-white/15 text-white shadow-2xl rounded-2xl p-1.5 backdrop-blur-xl">
+          <DropdownMenuContent align="start" className="w-52 bg-[#006065] border-white/15 text-white shadow-2xl rounded-2xl p-1.5 backdrop-blur-xl">
             <DropdownMenuItem onClick={() => navigate('/videos')} className="cursor-pointer font-bold py-2.5 rounded-xl text-white hover:bg-white/10 focus:bg-white/10 transition-colors">
               <Video className="w-4 h-4 mr-2.5 text-[#fad503]" /> Record
             </DropdownMenuItem>
@@ -121,7 +121,7 @@ export default function ClipadTopNav({ forceMobile = false }) {
                 )}
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-64 font-sans max-h-[85vh] overflow-y-auto mt-2 p-2 border-white/15 bg-[#006065] dark:bg-[#0A0F1C] text-white backdrop-blur-xl rounded-2xl shadow-2xl">
+            <DropdownMenuContent align="end" className="w-64 font-sans max-h-[85vh] overflow-y-auto mt-2 p-2 border-white/15 bg-[#006065] text-white backdrop-blur-xl rounded-2xl shadow-2xl">
               <DropdownMenuLabel className="font-semibold px-3 py-2 flex flex-col">
                 <span className="text-white font-extrabold text-sm">{user?.full_name || 'User'}</span>
                 <span className="text-xs text-white/60 font-normal">{user?.email}</span>
@@ -136,7 +136,7 @@ export default function ClipadTopNav({ forceMobile = false }) {
                   <span>Switch Account</span>
                 </DropdownMenuSubTrigger>
                 <DropdownMenuPortal>
-                  <DropdownMenuSubContent className="w-56 font-sans p-2 border-white/15 bg-[#006065] dark:bg-[#0A0F1C] text-white rounded-2xl shadow-2xl">
+                  <DropdownMenuSubContent className="w-56 font-sans p-2 border-white/15 bg-[#006065] text-white rounded-2xl shadow-2xl">
                     {savedAccounts.filter(acc => acc.id !== user?.id).length > 0 && (
                       <>
                         <DropdownMenuLabel className="text-xs text-white/50 font-bold px-3 py-1.5 uppercase tracking-wider">

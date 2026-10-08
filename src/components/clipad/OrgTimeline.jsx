@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { 
   Activity, Clock, Calendar, CheckCircle, Video, ShieldAlert, 
@@ -18,10 +18,10 @@ const EVENT_ICONS = {
 const EVENT_COLORS = {
   meeting_saved: 'bg-indigo-100 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400',
   decision_created: 'bg-amber-100 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400',
-  task_completed: 'bg-[#006065] dark:bg-[#131A2C]/20 text-[#006065] dark:bg-card dark:text-[#00beac]',
+  task_completed: 'bg-[#006065]/20 text-[#006065] dark:bg-[#006065]/20 dark:text-[#00beac]',
   video_uploaded: 'bg-rose-100 text-rose-600 dark:bg-rose-500/20 dark:text-rose-400',
   blocker_raised: 'bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-400',
-  default: 'bg-slate-100 dark:bg-secondary text-slate-600 dark:bg-slate-50 dark:bg-background0/20 dark:text-muted-foreground'
+  default: 'bg-slate-100 text-slate-600 dark:bg-slate-500/20 dark:text-muted-foreground'
 };
 
 export default function OrgTimeline({ workspaceId, spaceId }) {
@@ -142,7 +142,7 @@ export default function OrgTimeline({ workspaceId, spaceId }) {
         <div className="p-4 rounded-2xl bg-gradient-to-r from-cyan-500/10 via-teal-500/10 to-emerald-500/10 border border-cyan-500/20 text-slate-800 dark:text-slate-200 text-xs leading-relaxed space-y-2 relative">
           <div className="flex items-center justify-between font-bold text-cyan-700 dark:text-cyan-400">
             <span className="flex items-center gap-1.5"><BrainCircuit className="w-4 h-4" /> AI Velocity & Health Synthesis</span>
-            <button onClick={() => setAiBriefing(null)} className="text-slate-400 hover:text-slate-600 dark:hover:text-white font-bold">âœ•</button>
+            <button onClick={() => setAiBriefing(null)} className="text-slate-400 hover:text-slate-600 dark:hover:text-white font-bold">✕</button>
           </div>
           <p className="whitespace-pre-wrap">{aiBriefing}</p>
         </div>
@@ -156,7 +156,7 @@ export default function OrgTimeline({ workspaceId, spaceId }) {
               className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-colors ${
                 filter === f 
                   ? 'bg-primary text-primary-foreground shadow-sm' 
-                  : 'bg-slate-100 dark:bg-secondary text-slate-600 dark:text-muted-foreground hover:bg-slate-200 dark:hover:bg-accent'
+                  : 'bg-slate-100 dark:bg-secondary text-slate-600 dark:text-muted-foreground hover:bg-slate-200 dark:hover:bg-slate-700'
               }`}
             >
               {f.replace('_', ' ')}
@@ -170,8 +170,8 @@ export default function OrgTimeline({ workspaceId, spaceId }) {
         </div>
       ) : events.length === 0 ? (
         <div className="text-center py-10 md:py-16 px-4 bg-slate-50 dark:bg-secondary/30 rounded-2xl md:rounded-3xl border border-slate-200 dark:border-border/50">
-          <Clock className="w-12 h-12 text-slate-300 dark:text-slate-600 dark:text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-lg font-bold text-slate-900 dark:text-foreground mb-2">No Events Found</h3>
+          <Clock className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">No Events Found</h3>
           <p className="text-sm text-slate-500 dark:text-muted-foreground max-w-sm mx-auto">
             {filter === 'all' 
               ? "Your organizational timeline is empty. Record meetings, make decisions, or complete tasks to see activity here."
@@ -199,7 +199,7 @@ export default function OrgTimeline({ workspaceId, spaceId }) {
                         <span className={`inline-block px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider mb-2 ${colorClass}`}>
                           {event.event_type.replace('_', ' ')}
                         </span>
-                        <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-foreground leading-snug">
+                        <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-snug">
                           {event.title}
                         </h4>
                       </div>
@@ -217,7 +217,7 @@ export default function OrgTimeline({ workspaceId, spaceId }) {
                     
                     {event.source_id && (
                       <div className="mt-4 flex items-center justify-between border-t border-slate-100 dark:border-border pt-3">
-                        <span className="text-xs font-medium text-slate-500 dark:text-muted-foreground hover:text-primary transition-colors flex items-center gap-1">
+                        <span className="text-xs font-medium text-slate-500 hover:text-primary transition-colors flex items-center gap-1">
                           View Source <ChevronRight className="w-3 h-3" />
                         </span>
                         {event.importance >= 7 && (
@@ -237,4 +237,3 @@ export default function OrgTimeline({ workspaceId, spaceId }) {
     </div>
   );
 }
-

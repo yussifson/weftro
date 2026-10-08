@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
@@ -13,7 +13,7 @@ import {
 import { OrbitLoader } from '@/components/ui/orbit-loader';
 
 const OUTCOME_OPTIONS = [
-  { value: 'successful', label: 'Successful', icon: TrendingUp, color: 'text-[#006065]', bg: 'bg-[#006065] dark:bg-[#131A2C]/10 border-[#006065] dark:border-border/30' },
+  { value: 'successful', label: 'Successful', icon: TrendingUp, color: 'text-[#006065]', bg: 'bg-[#006065]/10 border-[#006065]/30' },
   { value: 'partial', label: 'Partially', icon: Minus, color: 'text-amber-500', bg: 'bg-amber-500/10 border-amber-500/30' },
   { value: 'unsuccessful', label: 'Unsuccessful', icon: TrendingDown, color: 'text-red-500', bg: 'bg-red-500/10 border-red-500/30' },
   { value: 'pending', label: 'Still Pending', icon: Clock, color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/30' },
@@ -245,12 +245,12 @@ Respond in valid JSON only:
               </div>
               <div>
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Decision Replay</p>
-                <p className="text-xs text-muted-foreground">{format(new Date(decision.created_at), 'MMMM d, yyyy â€¢ h:mm a')}</p>
+                <p className="text-xs text-muted-foreground">{format(new Date(decision.created_at), 'MMMM d, yyyy • h:mm a')}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               {decision.status === 'active' && (
-                <span className="px-2.5 py-1 rounded-full bg-[#006065] dark:bg-[#131A2C]/10 border border-[#006065] dark:border-border/30 text-[#00beac] text-xs font-bold">Active</span>
+                <span className="px-2.5 py-1 rounded-full bg-[#006065]/10 border border-[#006065]/30 text-[#00beac] text-xs font-bold">Active</span>
               )}
               {decision.ai_detected && (
                 <span className="px-2.5 py-1 rounded-full bg-violet-500/10 border border-violet-500/30 text-violet-400 text-xs font-bold flex items-center gap-1">
@@ -261,7 +261,7 @@ Respond in valid JSON only:
           </div>
         </div>
 
-        {/* The Decision â€” Hero Card */}
+        {/* The Decision — Hero Card */}
         <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-sm">
           <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-indigo-500 via-violet-500 to-purple-500 rounded-t-2xl" />
           <h1 className="text-xl md:text-2xl font-bold text-foreground leading-snug mb-4">
@@ -415,7 +415,7 @@ Respond in valid JSON only:
             <div className="space-y-2">
               {contextChain.map((item, i) => {
                 const typeConfig = {
-                  commitment: { icon: CheckCircle2, color: 'text-[#00beac]', bg: 'bg-[#006065] dark:bg-[#131A2C]/10 border-[#006065] dark:border-border/20', label: 'Commitment' },
+                  commitment: { icon: CheckCircle2, color: 'text-[#00beac]', bg: 'bg-[#006065]/10 border-[#006065]/20', label: 'Commitment' },
                   blocker: { icon: AlertTriangle, color: 'text-red-400', bg: 'bg-red-500/10 border-red-500/20', label: 'Blocker' },
                   knowledge: { icon: FileText, color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20', label: 'Knowledge' },
                 }[item.type] || { icon: Link2, color: 'text-white/60', bg: 'bg-transparent0/10 border-slate-500/20', label: 'Related' };
@@ -515,7 +515,7 @@ Respond in valid JSON only:
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {aiAnalysis.what_went_well && (
-                  <div className="p-3 rounded-xl bg-[#006065] dark:bg-[#131A2C]/5 border border-[#006065] dark:border-border/20">
+                  <div className="p-3 rounded-xl bg-[#006065]/5 border border-[#006065]/20">
                     <p className="text-xs font-bold text-[#00beac] uppercase tracking-wider mb-1">What Went Well</p>
                     <p className="text-sm text-foreground/80">{aiAnalysis.what_went_well}</p>
                   </div>
@@ -577,4 +577,3 @@ Respond in valid JSON only:
     </div>
   );
 }
-

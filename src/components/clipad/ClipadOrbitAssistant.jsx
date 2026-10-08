@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import {
   Bot, Send, Sparkles, X, Brain, Loader2, ExternalLink,
   Calendar, Video, ShieldAlert, AlertTriangle, RefreshCw,
@@ -14,7 +14,7 @@ import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
 import ThinkingAccordion, { parseThinking } from '@/components/chat/ThinkingAccordion';
 
-/* â”€â”€â”€ Source type metadata â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── Source type metadata ────────────────────────────────────────────────── */
 const SOURCE_META = {
   meeting:     { icon: Calendar,      color: 'text-blue-500',   bg: 'bg-blue-500/10'   },
   decision:    { icon: ShieldAlert,   color: 'text-rose-500',   bg: 'bg-rose-500/10'   },
@@ -23,17 +23,17 @@ const SOURCE_META = {
   integration: { icon: Link,          color: 'text-sky-500',    bg: 'bg-sky-500/10'    },
 };
 
-/* â”€â”€â”€ Starter prompts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── Starter prompts ─────────────────────────────────────────────────────── */
 const STARTER_PROMPTS = [
   { icon: BarChart2,  color: 'text-blue-500',   label: 'Analyze data',      text: 'Analyze my workspace data and give me key insights' },
   { icon: ListTodo,   color: 'text-purple-500',  label: 'Make a plan',       text: 'Make a plan for my upcoming week based on my tasks' },
   { icon: FileText,   color: 'text-pink-500',    label: 'Summarize',         text: 'Summarize the recent meeting activity and decisions' },
   { icon: PenTool,    color: 'text-orange-500',  label: 'Help me write',     text: 'Help me draft an email update for the team' },
   { icon: ImageIcon,  color: 'text-[#006065]', label: 'Create image',      text: 'Create an image concept for our project presentation' },
-  { icon: MoreHorizontal, color: 'text-slate-500 dark:text-muted-foreground', label: 'More',            text: 'What else can you do? Show me all your capabilities.' },
+  { icon: MoreHorizontal, color: 'text-slate-500', label: 'More',            text: 'What else can you do? Show me all your capabilities.' },
 ];
 
-/* â”€â”€â”€ Markdown renderer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── Markdown renderer ───────────────────────────────────────────────────── */
 function renderMarkdownContent(text) {
   if (!text) return null;
   const lines = text.split('\n');
@@ -63,11 +63,11 @@ function renderMarkdownContent(text) {
 
     // Heading
     if (line.startsWith('### ')) {
-      elements.push(<h3 key={i} className="text-[14px] font-bold mt-4 mb-1 text-slate-900 dark:text-foreground">{line.slice(4)}</h3>);
+      elements.push(<h3 key={i} className="text-[14px] font-bold mt-4 mb-1 text-slate-900 dark:text-white">{line.slice(4)}</h3>);
     } else if (line.startsWith('## ')) {
-      elements.push(<h2 key={i} className="text-[15px] font-bold mt-4 mb-1 text-slate-900 dark:text-foreground">{line.slice(3)}</h2>);
+      elements.push(<h2 key={i} className="text-[15px] font-bold mt-4 mb-1 text-slate-900 dark:text-white">{line.slice(3)}</h2>);
     } else if (line.startsWith('# ')) {
-      elements.push(<h1 key={i} className="text-[16px] font-bold mt-4 mb-2 text-slate-900 dark:text-foreground">{line.slice(2)}</h1>);
+      elements.push(<h1 key={i} className="text-[16px] font-bold mt-4 mb-2 text-slate-900 dark:text-white">{line.slice(2)}</h1>);
     }
     // Bullet
     else if (/^[\-\*] /.test(line)) {
@@ -136,12 +136,12 @@ function inlineMarkdown(text) {
   return parts.length > 0 ? parts : text;
 }
 
-/* â”€â”€â”€ DB Helpers (with localStorage fallback) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── DB Helpers (with localStorage fallback) ─────────────────────────────── */
 const LS_KEY_SESSIONS = (uid) => `orbit_sessions_${uid}`;
 const LS_KEY_MSGS = (sid) => `orbit_msgs_${sid}`;
 
 async function dbLoadSessions(userId) {
-  // Always try Supabase first â€” localStorage is ONLY a write-through cache, never a primary source
+  // Always try Supabase first — localStorage is ONLY a write-through cache, never a primary source
   try {
     const { data, error } = await supabase
       .from('orbit_chat_sessions')
@@ -237,7 +237,7 @@ async function dbDeleteSession(sessionId, userId) {
 }
 
 async function dbLoadMessages(sessionId, userId) {
-  // Always prefer DB â€” this is the single source of truth for message history
+  // Always prefer DB — this is the single source of truth for message history
   try {
     const { data, error } = await supabase
       .from('orbit_chat_messages')
@@ -299,7 +299,7 @@ async function dbSaveMessage(sessionId, userId, role, content, sources, executed
   }
 }
 
-/* â”€â”€â”€ Grouping sessions by date â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── Grouping sessions by date ───────────────────────────────────────────── */
 function groupSessionsByDate(sessions) {
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -317,7 +317,7 @@ function groupSessionsByDate(sessions) {
   return groups;
 }
 
-/* â”€â”€â”€ Main Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── Main Component ──────────────────────────────────────────────────────── */
 export default function ClipadOrbitAssistant({ isOpen = true, onClose, spaceId = null }) {
   const { user } = useAuth();
   const userId = user?.id;
@@ -463,7 +463,7 @@ export default function ClipadOrbitAssistant({ isOpen = true, onClose, spaceId =
     setDeletingId(null);
   };
 
-  /* â”€â”€â”€ Source parsing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ─── Source parsing ──────────────────────────────────────────────────── */
   const parseSourcesFromResponse = (raw, sourceMap) => {
     if (!sourceMap) return { text: raw, sources: [] };
     const sourcesMatch = (raw || '').match(/SOURCES:\s*(\[.*?\])/s);
@@ -477,7 +477,7 @@ export default function ClipadOrbitAssistant({ isOpen = true, onClose, spaceId =
     return { text, sources: resolved };
   };
 
-  /* â”€â”€â”€ Auto-generate session title from first message â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ─── Auto-generate session title from first message ─────────────────── */
   const autoTitleSession = async (sessionId, userText) => {
     try {
       const short = await generateText([
@@ -490,10 +490,10 @@ export default function ClipadOrbitAssistant({ isOpen = true, onClose, spaceId =
     } catch { /* title stays 'New Chat' */ }
   };
 
-  /* â”€â”€â”€ Execute agentic actions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ─── Execute agentic actions ─────────────────────────────────────────── */
   const executeAction = async (parsed) => {
     try {
-      // â”€â”€ Task Management â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── Task Management ───────────────────────────────────────────────────
       if (parsed.action === 'create_task') {
         const { error } = await supabase.from('clipad_action_items').insert({
           title: parsed.title || 'Orbit Task',
@@ -519,7 +519,7 @@ export default function ClipadOrbitAssistant({ isOpen = true, onClose, spaceId =
         return { ...parsed, status: error ? 'error' : 'success', error: error?.message };
       }
 
-      // â”€â”€ Space Management â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── Space Management ──────────────────────────────────────────────────
       if (parsed.action === 'create_space') {
         const { error } = await supabase.from('clipad_spaces').insert({
           name: parsed.name || 'New Space',
@@ -532,7 +532,7 @@ export default function ClipadOrbitAssistant({ isOpen = true, onClose, spaceId =
         return { ...parsed, status: error ? 'error' : 'success', error: error?.message };
       }
 
-      // â”€â”€ Document Drafting â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── Document Drafting ─────────────────────────────────────────────────
       if (parsed.action === 'draft_document' || parsed.action === 'create_document') {
         const { error } = await supabase.from('clipad_docs').insert({
           title: parsed.title || 'Untitled Draft',
@@ -545,7 +545,7 @@ export default function ClipadOrbitAssistant({ isOpen = true, onClose, spaceId =
         return { ...parsed, status: error ? 'error' : 'success', error: error?.message };
       }
 
-      // â”€â”€ Messaging â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── Messaging ─────────────────────────────────────────────────────────
       if (parsed.action === 'send_message') {
         const { error } = await supabase.from('chat_messages').insert({
           channel_id: parsed.channel_id || 'general',
@@ -556,7 +556,7 @@ export default function ClipadOrbitAssistant({ isOpen = true, onClose, spaceId =
         return { ...parsed, status: error ? 'error' : 'success' };
       }
 
-      // â”€â”€ Meeting Scheduling â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── Meeting Scheduling ────────────────────────────────────────────────
       if (parsed.action === 'schedule_meeting') {
         const { error } = await supabase.from('clipad_meeting_records').insert({
           title: parsed.topic || 'Orbit Scheduled Sync',
@@ -568,7 +568,7 @@ export default function ClipadOrbitAssistant({ isOpen = true, onClose, spaceId =
         return { ...parsed, status: error ? 'error' : 'success' };
       }
 
-      // â”€â”€ Blocker Logging â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── Blocker Logging ───────────────────────────────────────────────────
       if (parsed.action === 'log_blocker') {
         const { error } = await supabase.from('clipad_blockers').insert({
           description: parsed.description || 'Blocker',
@@ -581,7 +581,7 @@ export default function ClipadOrbitAssistant({ isOpen = true, onClose, spaceId =
         return { ...parsed, status: error ? 'error' : 'success' };
       }
 
-      // â”€â”€ Decision Recording â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── Decision Recording ────────────────────────────────────────────────
       if (parsed.action === 'record_decision') {
         const { error } = await supabase.from('clipad_decisions').insert({
           decision_text: parsed.decision_text || 'Decision',
@@ -594,7 +594,7 @@ export default function ClipadOrbitAssistant({ isOpen = true, onClose, spaceId =
         return { ...parsed, status: error ? 'error' : 'success' };
       }
 
-      // â”€â”€ Commitment Tracking â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── Commitment Tracking ───────────────────────────────────────────────
       if (parsed.action === 'log_commitment') {
         const { error } = await supabase.from('clipad_commitments').insert({
           commitment_text: parsed.commitment_text || parsed.text,
@@ -612,7 +612,7 @@ export default function ClipadOrbitAssistant({ isOpen = true, onClose, spaceId =
     return parsed;
   };
 
-  /* â”€â”€â”€ Main send handler â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ─── Main send handler ───────────────────────────────────────────────── */
   const handleSend = useCallback(async (overrideText) => {
     const rawText = (overrideText || input).trim();
     const fileSnap = attachedFile;
@@ -655,26 +655,26 @@ export default function ClipadOrbitAssistant({ isOpen = true, onClose, spaceId =
       let fullText = '';
 
       if (fileSnap && fileSnap.type === 'image') {
-        // â”€â”€ Vision Analysis Path â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── Vision Analysis Path ──────────────────────────────────────────────
         const promptText = `Analyze this image in detail. User prompt: ${rawText || 'Describe this image and provide key insights.'}`;
         const { analyzeImage } = await import('@/lib/cloudflareAI');
         fullText = await analyzeImage(fileSnap.bytes, promptText);
       } else {
-        // â”€â”€ Standard Text Streaming Path â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── Standard Text Streaming Path ──────────────────────────────────────
         const history = messages.slice(-10).map(m => ({
           role: m.role === 'assistant' ? 'assistant' : 'user',
           content: m.text,
         }));
 
-        const systemPrompt = `You are Orbit â€” KERINT's autonomous AI agent and organizational co-pilot. You are NOT a search tool. Your unique purpose:
-â€¢ You REASON across the entire workspace to surface insights, patterns, and risks the user may not have noticed.
-â€¢ You EXECUTE actions directly: create tasks, spaces, documents, log blockers, record decisions, schedule meetings.
-â€¢ You MONITOR: if you see a pattern in the data (e.g., blocked tasks, missed commitments, overdue items), proactively flag it.
-â€¢ You REMEMBER context across a session and can refer back to earlier parts of the conversation.
+        const systemPrompt = `You are Orbit — CliPad's autonomous AI agent and organizational co-pilot. You are NOT a search tool. Your unique purpose:
+• You REASON across the entire workspace to surface insights, patterns, and risks the user may not have noticed.
+• You EXECUTE actions directly: create tasks, spaces, documents, log blockers, record decisions, schedule meetings.
+• You MONITOR: if you see a pattern in the data (e.g., blocked tasks, missed commitments, overdue items), proactively flag it.
+• You REMEMBER context across a session and can refer back to earlier parts of the conversation.
 
 DIFFERENCE FROM OTHER FEATURES:
 - Spotlight Search: used for quick record lookups ("find the Q3 meeting"). You are NOT that.
-- Knowledge Graph: stores organizational memory. You QUERY it, but you go further â€” you reason across it.
+- Knowledge Graph: stores organizational memory. You QUERY it, but you go further — you reason across it.
 - You are the ACTION layer: when something needs to be done, YOU do it.
 
 You have live access to the full workspace data below. You are on par with GPT-4, Claude, and Gemini.
@@ -688,7 +688,7 @@ KEY RULES:
 - If asked to do something, output ACTION:{...} at the end (before SOURCES).
 - For write actions (send email, create GitHub issue), describe what you will do and confirm with: CONFIRM_ACTION:{...}
 
-AGENTIC CAPABILITIES â€” output ACTION:{} to execute immediately:
+AGENTIC CAPABILITIES — output ACTION:{} to execute immediately:
 1. create_task:      {"action":"create_task","title":"...","assignee":"...","due_date":"YYYY-MM-DD","space_id":"..."}
 2. update_task:      {"action":"update_task","task_id":"...","status":"done","assignee":"..."}
 3. create_space:     {"action":"create_space","name":"...","description":"...","is_private":false}
@@ -757,7 +757,7 @@ ${orgContext?.contextText || 'Workspace data is loading. You can still answer ge
       
       const isSuperAdmin = user?.role === 'super_admin' || user?.user_metadata?.role === 'super_admin';
       const errText = isSuperAdmin
-        ? `âš ï¸ [Admin Debug] AI Request Failed: ${err.message || 'CORS / Edge Function error'}`
+        ? `⚠️ [Admin Debug] AI Request Failed: ${err.message || 'CORS / Edge Function error'}`
         : 'Our AI servers are currently busy or experiencing a brief connection delay. Please try sending your message again in a moment!';
 
       const savedErr = await dbSaveMessage(sessionId, userId, 'assistant', errText, [], null);
@@ -767,7 +767,7 @@ ${orgContext?.contextText || 'Workspace data is loading. You can still answer ge
     }
   }, [input, messages, orgContext, isTyping, activeSessionId, userId, companyId, spaceId]);
 
-  /* â”€â”€â”€ Regenerate last response â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ─── Regenerate last response ────────────────────────────────────────── */
   const handleRegenerate = useCallback(async () => {
     if (isTyping || messages.length < 2) return;
     const lastUserMsg = [...messages].reverse().find(m => m.role === 'user');
@@ -783,7 +783,7 @@ ${orgContext?.contextText || 'Workspace data is loading. You can still answer ge
     await handleSend(lastUserMsg.text);
   }, [messages, isTyping, handleSend]);
 
-  /* â”€â”€â”€ Copy message â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ─── Copy message ────────────────────────────────────────────────────── */
   const handleCopy = async (id, text) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -809,7 +809,7 @@ ${orgContext?.contextText || 'Workspace data is loading. You can still answer ge
   return (
     <div className="fixed inset-0 md:inset-auto md:bottom-6 md:right-6 w-full h-full md:w-[760px] md:h-[680px] md:max-h-[calc(100vh-6rem)] bg-white dark:bg-[#212121] md:border md:border-slate-200 dark:md:border-white/10 md:rounded-3xl flex overflow-hidden shadow-2xl z-[100] animate-in fade-in slide-in-from-bottom-8 duration-300">
 
-      {/* â”€â”€ SIDEBAR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── SIDEBAR ────────────────────────────────────────────────────────── */}
       <div className={`${sidebarOpen ? 'w-[240px]' : 'w-0'} transition-all duration-300 overflow-hidden shrink-0 bg-slate-50 dark:bg-[#181818] border-r border-slate-200 dark:border-white/5 flex flex-col`}>
         {/* Sidebar header */}
         <div className="flex items-center justify-between px-3 py-3 shrink-0">
@@ -831,7 +831,7 @@ ${orgContext?.contextText || 'Workspace data is loading. You can still answer ge
             </div>
           ) : sessions.length === 0 ? (
             <div className="text-center pt-8 px-3">
-              <MessageSquare className="w-5 h-5 text-slate-300 dark:text-slate-600 dark:text-muted-foreground mx-auto mb-2" />
+              <MessageSquare className="w-5 h-5 text-slate-300 dark:text-slate-600 mx-auto mb-2" />
               <p className="text-[11px] text-slate-400">No chats yet. Start a new conversation!</p>
             </div>
           ) : (
@@ -846,7 +846,7 @@ ${orgContext?.contextText || 'Workspace data is loading. You can still answer ge
                       className={`group relative flex items-center gap-2 px-2.5 py-2 rounded-xl cursor-pointer transition-all mb-0.5 ${
                         activeSessionId === session.id
                           ? 'bg-primary/10 text-primary'
-                          : 'hover:bg-slate-200 dark:bg-accent/60 dark:hover:bg-white/5 text-slate-700 dark:text-muted-foreground'
+                          : 'hover:bg-slate-200/60 dark:hover:bg-white/5 text-slate-700 dark:text-slate-300'
                       }`}
                     >
                       {editingTitleId === session.id ? (
@@ -885,7 +885,7 @@ ${orgContext?.contextText || 'Workspace data is loading. You can still answer ge
         </div>
       </div>
 
-      {/* â”€â”€ MAIN PANEL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── MAIN PANEL ─────────────────────────────────────────────────────── */}
       <div className="flex-1 flex flex-col min-w-0">
 
         {/* Header */}
@@ -914,11 +914,11 @@ ${orgContext?.contextText || 'Workspace data is loading. You can still answer ge
               <Brain className="w-3.5 h-3.5 text-white" />
             </div>
             <div className="min-w-0">
-              <p className="text-[13px] font-semibold text-slate-900 dark:text-foreground truncate">
+              <p className="text-[13px] font-semibold text-slate-900 dark:text-white truncate">
                 {activeSession?.title || 'Orbit AI'}
               </p>
               <p className="text-[10px] text-slate-400 truncate">
-                {isLoadingContext ? 'Loading workspace...' : orgContext ? 'Workspace context ready Â· Kimi K2.5' : 'Kimi K2.5'}
+                {isLoadingContext ? 'Loading workspace...' : orgContext ? 'Workspace context ready · Kimi K2.5' : 'Kimi K2.5'}
               </p>
             </div>
           </div>
@@ -949,17 +949,17 @@ ${orgContext?.contextText || 'Workspace data is loading. You can still answer ge
               <Loader2 className="w-5 h-5 animate-spin text-slate-400" />
             </div>
           ) : messages.length === 0 && !isTyping ? (
-            /* â”€â”€ Welcome screen â”€â”€ */
+            /* ── Welcome screen ── */
             <div className="flex flex-col items-center text-center mt-4">
               <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center mb-4 shadow-lg shadow-violet-500/30">
                 <Sparkles className="w-7 h-7 text-white" />
               </div>
-              <h2 className="text-[15px] text-slate-500 dark:text-muted-foreground font-medium">
-                Hi {user?.full_name?.split(' ')[0] || 'there'} ðŸ‘‹
+              <h2 className="text-[15px] text-slate-500 dark:text-slate-400 font-medium">
+                Hi {user?.full_name?.split(' ')[0] || 'there'} 👋
               </h2>
-              <h1 className="text-[22px] font-bold text-slate-900 dark:text-foreground mt-1 mb-2">How can Orbit help?</h1>
-              <p className="text-[13px] text-slate-500 dark:text-muted-foreground max-w-[280px] leading-relaxed mb-6">
-                I have full access to your workspace â€” meetings, tasks, decisions, and more. Ask me anything.
+              <h1 className="text-[22px] font-bold text-slate-900 dark:text-white mt-1 mb-2">How can Orbit help?</h1>
+              <p className="text-[13px] text-slate-500 dark:text-slate-400 max-w-[280px] leading-relaxed mb-6">
+                I have full access to your workspace — meetings, tasks, decisions, and more. Ask me anything.
               </p>
               <div className="grid grid-cols-2 gap-2.5 w-full max-w-[380px]">
                 {STARTER_PROMPTS.map((p, i) => (
@@ -975,7 +975,7 @@ ${orgContext?.contextText || 'Workspace data is loading. You can still answer ge
               </div>
             </div>
           ) : (
-            /* â”€â”€ Messages â”€â”€ */
+            /* ── Messages ── */
             messages.map((msg) => (
               <div key={msg.id} className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                 {msg.role === 'assistant' && (
@@ -1002,7 +1002,7 @@ ${orgContext?.contextText || 'Workspace data is loading. You can still answer ge
                         const meta = SOURCE_META[src.type] || {};
                         const Icon = meta.icon;
                         return (
-                          <span key={i} className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1.5 rounded-xl border border-black/5 dark:border-white/5 bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-muted-foreground shadow-sm">
+                          <span key={i} className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1.5 rounded-xl border border-black/5 dark:border-white/5 bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-300 shadow-sm">
                             {Icon && <Icon className={`w-3 h-3 ${meta.color}`} />}
                             {src.title?.substring(0, 28) || src.type}
                           </span>
@@ -1020,7 +1020,7 @@ ${orgContext?.contextText || 'Workspace data is loading. You can still answer ge
                       <div>
                         <p className="text-[11px] font-bold text-violet-700 dark:text-violet-300">Orbit Agent Action</p>
                         <p className="text-[11px] text-violet-600 dark:text-violet-400 mt-0.5 leading-relaxed">
-                          {msg.executedAction.status === 'success' ? 'âœ… ' : msg.executedAction.status === 'error' ? 'âŒ ' : ''}
+                          {msg.executedAction.status === 'success' ? '✅ ' : msg.executedAction.status === 'error' ? '❌ ' : ''}
                           {msg.executedAction.action === 'create_task' ? `Created task: "${msg.executedAction.title}"` :
                            msg.executedAction.action === 'send_message' ? `Sent message to ${msg.executedAction.recipient || 'channel'}` :
                            msg.executedAction.action === 'schedule_meeting' ? `Scheduled: "${msg.executedAction.topic}"` :
@@ -1028,7 +1028,7 @@ ${orgContext?.contextText || 'Workspace data is loading. You can still answer ge
                            msg.executedAction.action === 'record_decision' ? `Recorded decision: "${msg.executedAction.decision_text}"` :
                            msg.executedAction.action === 'draft_document' ? `Drafted: "${msg.executedAction.title}"` :
                            `Executed: ${msg.executedAction.action}`}
-                          {msg.executedAction.status === 'error' && ` â€” ${msg.executedAction.error}`}
+                          {msg.executedAction.status === 'error' && ` — ${msg.executedAction.error}`}
                         </p>
                       </div>
                     </div>
@@ -1079,7 +1079,7 @@ ${orgContext?.contextText || 'Workspace data is loading. You can still answer ge
             <div className="flex justify-center">
               <button
                 onClick={handleRegenerate}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[12px] font-medium text-slate-500 dark:text-muted-foreground hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 transition-all border border-transparent hover:border-slate-200 dark:hover:border-white/10"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[12px] font-medium text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 transition-all border border-transparent hover:border-slate-200 dark:hover:border-white/10"
               >
                 <RotateCcw className="w-3 h-3" />
                 Regenerate
@@ -1115,7 +1115,7 @@ ${orgContext?.contextText || 'Workspace data is loading. You can still answer ge
               onKeyDown={handleKeyDown}
               placeholder={attachedFile ? "Ask a question about this image..." : "Ask me anything..."}
               rows={1}
-              className="flex-1 bg-transparent resize-none border-none focus:outline-none text-[14px] text-slate-900 dark:text-foreground placeholder-slate-400 dark:placeholder-slate-500 max-h-[120px] py-1.5 px-2 leading-relaxed"
+              className="flex-1 bg-transparent resize-none border-none focus:outline-none text-[14px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 max-h-[120px] py-1.5 px-2 leading-relaxed"
               style={{ scrollbarWidth: 'none', minHeight: '36px' }}
             />
             <button
@@ -1145,7 +1145,7 @@ ${orgContext?.contextText || 'Workspace data is loading. You can still answer ge
             <div className="flex items-center gap-1 text-[11px] text-slate-400">
               <Zap className="w-3 h-3 text-violet-500" />
               <span className="font-medium">Kimi K2.5</span>
-              {orgContext && <span className="text-slate-300 dark:text-slate-600 dark:text-muted-foreground">Â· Workspace ready</span>}
+              {orgContext && <span className="text-slate-300 dark:text-slate-600">· Workspace ready</span>}
             </div>
             <div className="flex items-center gap-2">
               <button
@@ -1162,4 +1162,3 @@ ${orgContext?.contextText || 'Workspace data is loading. You can still answer ge
     </div>
   );
 }
-

@@ -206,16 +206,16 @@ export default function SaveMeetingPage() {
   }
 
   return (
-    <div className="min-h-full bg-slate-50 dark:bg-background text-slate-900 dark:text-slate-100 p-6 md:p-12 page-enter">
+    <div className="min-h-full bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-6 md:p-12 page-enter">
       <div className="max-w-2xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-foreground">Save Meeting Record</h1>
-          <p className="text-slate-500 dark:text-muted-foreground mt-2">
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Save Meeting Record</h1>
+          <p className="text-slate-500 dark:text-slate-400 mt-2">
             Your meeting has ended. Review the details and set access controls before publishing.
           </p>
         </div>
 
-        <div className="bg-white dark:bg-card rounded-2xl shadow-sm border border-slate-200 dark:border-border text-slate-900 dark:text-foreground p-8 space-y-8">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white p-8 space-y-8">
 
           {/* Title */}
           <div>
@@ -234,7 +234,7 @@ export default function SaveMeetingPage() {
             <select
               value={visibility}
               onChange={e => setVisibility(e.target.value)}
-              className="w-full pl-4 pr-10 py-3 rounded-xl bg-white dark:bg-card border border-slate-200 dark:border-border text-slate-900 dark:text-foreground text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-[#006065]/20 focus:border-[#006065] dark:border-border transition-all cursor-pointer shadow-sm"
+              className="w-full pl-4 pr-10 py-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-[#006065]/20 focus:border-[#006065] transition-all cursor-pointer shadow-sm"
             >
               <option value="internal">Internal (Company & Space Members Only)</option>
               <option value="external">External (Anyone with link)</option>
@@ -249,7 +249,7 @@ export default function SaveMeetingPage() {
                 <select
                   value={lockType}
                   onChange={e => setLockType(e.target.value)}
-                  className="w-full pl-10 pr-8 py-2.5 rounded-xl bg-white dark:bg-card border border-slate-200 dark:border-border text-slate-900 dark:text-foreground text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-[#006065]/20 focus:border-[#006065] dark:border-border transition-all cursor-pointer font-semibold shadow-sm"
+                  className="w-full pl-10 pr-8 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-[#006065]/20 focus:border-[#006065] transition-all cursor-pointer font-semibold shadow-sm"
                 >
                   <option value="none">Public (Space Members)</option>
                   <option value="manual">Locked (Only Me)</option>
@@ -270,11 +270,11 @@ export default function SaveMeetingPage() {
               <div className="mt-4 p-5 bg-amber-50 dark:bg-amber-950/10 rounded-xl border border-amber-100 dark:border-amber-900/30 flex gap-4 animate-in fade-in slide-in-from-top-2">
                 <div className="flex-1">
                   <label className="block text-xs font-semibold text-amber-800 dark:text-amber-500 mb-1.5">Unlock Date</label>
-                  <Input type="date" value={unlockDate} onChange={e => setUnlockDate(e.target.value)} className="bg-white dark:bg-card text-slate-900 dark:text-foreground border-slate-200 dark:border-border focus-visible:ring-[#006065]" min={new Date().toISOString().split('T')[0]} />
+                  <Input type="date" value={unlockDate} onChange={e => setUnlockDate(e.target.value)} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white border-slate-200 dark:border-slate-800 focus-visible:ring-[#006065]" min={new Date().toISOString().split('T')[0]} />
                 </div>
                 <div className="flex-1">
                   <label className="block text-xs font-semibold text-amber-800 dark:text-amber-500 mb-1.5">Unlock Time</label>
-                  <Input type="time" value={unlockTime} onChange={e => setUnlockTime(e.target.value)} className="bg-white dark:bg-card text-slate-900 dark:text-foreground border-slate-200 dark:border-border focus-visible:ring-[#006065]" />
+                  <Input type="time" value={unlockTime} onChange={e => setUnlockTime(e.target.value)} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white border-slate-200 dark:border-slate-800 focus-visible:ring-[#006065]" />
                 </div>
               </div>
             )}

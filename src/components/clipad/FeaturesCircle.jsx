@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Layers, Video, Camera, Brain, Target, Zap } from 'lucide-react';
 
@@ -15,7 +15,7 @@ const pillars = [
     icon: Camera,
     color: 'from-green-500 to-emerald-500',
     glow: 'shadow-green-500/20',
-    bg: 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-emerald-900/10',
+    bg: 'bg-[#006065]/10 dark:bg-emerald-900/10',
     title: 'Async Video Messages',
     desc: 'Record camera, screen, or both in picture-in-picture. Share an instant link. Viewers leave timestamped comments and emoji reactions.'
   },
@@ -25,7 +25,7 @@ const pillars = [
     glow: 'shadow-yellow-500/20',
     bg: 'bg-amber-50 dark:bg-amber-900/10',
     title: 'AI Intelligence',
-    desc: 'Every meeting produces a full summary, key decisions, extracted action items with owners, open questions, and sentiment â€” instantly.'
+    desc: 'Every meeting produces a full summary, key decisions, extracted action items with owners, open questions, and sentiment — instantly.'
   },
   {
     icon: Layers,
@@ -113,7 +113,7 @@ export default function FeaturesCircle() {
                     setRotation(r => r - (diff * 60));
                     setActiveIndex(i);
                   }}
-                  className={`w-full h-full rounded-2xl flex items-center justify-center transition-all duration-500 shadow-xl border border-white/20 backdrop-blur-sm ${isActive ? `bg-gradient-to-br ${p.color} ${p.glow} scale-125 z-20` : 'bg-white/90 dark:bg-secondary/90 border-slate-200 dark:border-border/50 opacity-70 hover:opacity-100 hover:scale-110 z-10'}`}
+                  className={`w-full h-full rounded-2xl flex items-center justify-center transition-all duration-500 shadow-xl border border-white/20 backdrop-blur-sm ${isActive ? `bg-gradient-to-br ${p.color} ${p.glow} scale-125 z-20` : 'bg-white/90 dark:bg-secondary/90 border-slate-200/50 dark:border-border/50 opacity-70 hover:opacity-100 hover:scale-110 z-10'}`}
                 >
                   <Icon className={`w-6 h-6 drop-shadow-sm ${isActive ? 'text-white' : 'text-slate-600 dark:text-foreground'}`} />
                 </button>
@@ -140,7 +140,7 @@ export default function FeaturesCircle() {
               <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${pillars[activeIndex].color} ${pillars[activeIndex].glow} flex items-center justify-center mb-6 shadow-lg shadow-black/10 border border-white/20`}>
                 {React.createElement(pillars[activeIndex].icon, { className: "w-7 h-7 text-white drop-shadow-md" })}
               </div>
-              <h3 className="text-3xl font-black tracking-tight text-slate-900 dark:text-foreground mb-4 drop-shadow-sm">{pillars[activeIndex].title}</h3>
+              <h3 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white mb-4 drop-shadow-sm">{pillars[activeIndex].title}</h3>
               <p className="text-slate-600 dark:text-foreground leading-relaxed text-lg font-medium">{pillars[activeIndex].desc}</p>
             </div>
           </motion.div>
@@ -149,4 +149,3 @@ export default function FeaturesCircle() {
     </div>
   );
 }
-

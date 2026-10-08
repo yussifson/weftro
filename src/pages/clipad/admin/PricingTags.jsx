@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { Building2, CheckCircle2, ChevronDown, Tags, Plus, Pencil, Trash2 } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -93,12 +93,12 @@ export default function PricingTags() {
             supabase.functions.invoke('send-email', {
               body: {
                 to: adminEmails,
-                subject: `KERINT Plan Upgraded - ${receiptNumber}`,
+                subject: `CliPad Plan Upgraded - ${receiptNumber}`,
                 html: `
                   <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; background: #f8fafc; padding: 40px; color: #0f172a;">
                     <div style="background: white; border: 1px solid #e2e8f0; border-radius: 20px; overflow: hidden;">
                       <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; text-align: center; padding: 32px;">
-                        <div style="font-size: 22px; font-weight: 900; margin-bottom: 8px;">KERINT</div>
+                        <div style="font-size: 22px; font-weight: 900; margin-bottom: 8px;">CliPad</div>
                         <div style="font-size: 12px; font-weight: 500;">Plan Upgraded by Admin</div>
                         <div style="font-size: 10px; margin-top: 12px; font-family: monospace;">#${receiptNumber}</div>
                       </div>
@@ -107,7 +107,7 @@ export default function PricingTags() {
                         <hr style="border: 0; border-top: 1px dashed #e2e8f0; margin-bottom: 24px;" />
                         <p><strong>Date:</strong> ${new Date().toLocaleString()}</p>
                         <p><strong>Status:</strong> Complimentary Upgrade / Invoiced</p>
-                        <p style="margin-top: 24px; font-size: 12px; color: #64748b; text-align: center;">You can view and download this receipt in your KERINT Billing Settings at any time.</p>
+                        <p style="margin-top: 24px; font-size: 12px; color: #64748b; text-align: center;">You can view and download this receipt in your CliPad Billing Settings at any time.</p>
                       </div>
                     </div>
                   </div>
@@ -121,7 +121,7 @@ export default function PricingTags() {
           user_id: p.id,
           type: 'plan_upgrade',
           title: `Your plan has been upgraded to ${resolvedPlan.charAt(0).toUpperCase() + resolvedPlan.slice(1)}!`,
-          message: `An admin has upgraded your KERINT Workspace to the ${resolvedPlan.toUpperCase()} plan. Receipt: ${receiptNumber}`,
+          message: `An admin has upgraded your CliPad workspace to the ${resolvedPlan.toUpperCase()} plan. Receipt: ${receiptNumber}`,
           link: '/clipad/billing',
           is_read: false,
         }));
@@ -132,7 +132,7 @@ export default function PricingTags() {
 
       toast({
         title: "Plan Updated Successfully",
-        description: `The company's KERINT plan has been upgraded to ${tagName || 'Free Tier'}.`
+        description: `The company's CliPad plan has been upgraded to ${tagName || 'Free Tier'}.`
       });
       fetchData();
     } else {
@@ -182,12 +182,12 @@ export default function PricingTags() {
       <div className="flex flex-col h-full bg-transparent  p-4 sm:p-6 md:p-8 animate-pulse">
         <div className="flex justify-between items-start mb-8">
           <div>
-            <div className="h-8 bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/15 dark:bg-slate-800 rounded w-48 mb-2"></div>
-            <div className="h-4 bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/15 dark:bg-slate-800 rounded w-32"></div>
+            <div className="h-8 bg-[#006065] text-white border border-white/15/15 dark:bg-slate-800 rounded w-48 mb-2"></div>
+            <div className="h-4 bg-[#006065] text-white border border-white/15/15 dark:bg-slate-800 rounded w-32"></div>
           </div>
-          <div className="h-10 bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/15 dark:bg-slate-800 rounded w-32"></div>
+          <div className="h-10 bg-[#006065] text-white border border-white/15/15 dark:bg-slate-800 rounded w-32"></div>
         </div>
-        <div className="bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-card p-6 rounded-2xl h-64 mb-8"></div>
+        <div className="bg-[#006065] text-white dark:bg-[#006065] p-6 rounded-2xl h-64 mb-8"></div>
       </div>
     );
   }
@@ -197,7 +197,7 @@ export default function PricingTags() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Pricing & Plans</h1>
-          <p className="text-muted-foreground mt-2">Manage KERINT plans separately from global Slate plans.</p>
+          <p className="text-muted-foreground mt-2">Manage CliPad plans separately from global Slate plans.</p>
         </div>
       </div>
 
@@ -214,7 +214,7 @@ export default function PricingTags() {
                 <TableHead>Company Name</TableHead>
                 <TableHead>Source</TableHead>
                 <TableHead>Global Slate Plan</TableHead>
-                <TableHead>KERINT Plan</TableHead>
+                <TableHead>CliPad Plan</TableHead>
                 <TableHead className="text-right">Action</TableHead>
               </TableRow>
             </TableHeader>
@@ -231,16 +231,16 @@ export default function PricingTags() {
                     {company.subscription_plan ? (
                       <span className="px-2 py-1 bg-slate-800 text-slate-100 rounded-md text-[10px] font-bold uppercase tracking-wider">Slate Member</span>
                     ) : (
-                      <span className="px-2 py-1 bg-indigo-500/10 text-indigo-500 rounded-md text-[10px] font-bold uppercase tracking-wider">KERINT Only</span>
+                      <span className="px-2 py-1 bg-indigo-500/10 text-indigo-500 rounded-md text-[10px] font-bold uppercase tracking-wider">CliPad Only</span>
                     )}
                   </TableCell>
                   <TableCell>
-                    <span className="capitalize px-3 py-1 bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/10 dark:bg-secondary text-white/70 dark:text-muted-foreground rounded-md text-xs font-medium">
+                    <span className="capitalize px-3 py-1 bg-[#006065] text-white border border-white/15/10 dark:bg-secondary text-white/70 dark:text-muted-foreground rounded-md text-xs font-medium">
                       {company.subscription_plan || 'N/A'}
                     </span>
                   </TableCell>
                   <TableCell>
-                    <span className="capitalize px-3 py-1 bg-[#006065] dark:bg-[#131A2C]/10 text-[#006065] dark:text-[#00beac] rounded-md text-sm font-bold">
+                    <span className="capitalize px-3 py-1 bg-[#006065]/10 text-[#006065] dark:text-[#00beac] rounded-md text-sm font-bold">
                       {company.clipad_pricing_tags?.name || 'Free Tier'}
                     </span>
                   </TableCell>
@@ -248,7 +248,7 @@ export default function PricingTags() {
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="outline" size="sm" className="gap-2">
-                          Change KERINT Plan <ChevronDown className="w-4 h-4" />
+                          Change CliPad Plan <ChevronDown className="w-4 h-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
@@ -278,7 +278,7 @@ export default function PricingTags() {
 
         <TabsContent value="tags" className="border border-border rounded-xl bg-card p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold">KERINT Pricing Tiers</h2>
+            <h2 className="text-xl font-bold">CliPad Pricing Tiers</h2>
             <Dialog open={isDialogOpen} onOpenChange={(open) => {
               setIsDialogOpen(open);
               if(!open) { setEditingTag(null); setFormData({ name: '', description: '', price: 0, currency: 'USD' }); }
@@ -321,7 +321,7 @@ export default function PricingTags() {
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="font-bold text-lg text-primary">{tag.name}</h3>
                   <div className="flex gap-2">
-                    <button onClick={() => { setEditingTag(tag); setFormData(tag); setIsDialogOpen(true); }} className="p-1.5 bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/10 hover:bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/15 dark:bg-secondary dark:hover:bg-accent rounded text-white/80 dark:text-muted-foreground"><Pencil className="w-3.5 h-3.5"/></button>
+                    <button onClick={() => { setEditingTag(tag); setFormData(tag); setIsDialogOpen(true); }} className="p-1.5 bg-[#006065] text-white border border-white/15/10 hover:bg-[#006065] text-white border border-white/15/15 dark:bg-secondary dark:hover:bg-slate-700 rounded text-white/80 dark:text-muted-foreground"><Pencil className="w-3.5 h-3.5"/></button>
                     <button onClick={() => handleDeleteTag(tag.id)} className="p-1.5 bg-red-100 hover:bg-red-200 text-red-600 rounded"><Trash2 className="w-3.5 h-3.5"/></button>
                   </div>
                 </div>
@@ -332,7 +332,7 @@ export default function PricingTags() {
               </div>
             ))}
             {pricingTags.length === 0 && (
-              <div className="col-span-3 text-center py-12 text-muted-foreground bg-transparent dark:bg-card rounded-lg">
+              <div className="col-span-3 text-center py-12 text-muted-foreground bg-transparent dark:bg-[#006065] rounded-lg">
                 No custom pricing tiers created yet.
               </div>
             )}
@@ -342,4 +342,3 @@ export default function PricingTags() {
     </div>
   );
 }
-

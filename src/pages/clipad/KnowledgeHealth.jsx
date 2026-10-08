@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
 import { Activity, BrainCircuit, HeartPulse, ShieldAlert, Target, TrendingUp, Users, LogOut, Settings, Shield, Sparkles, Info, AlertTriangle } from 'lucide-react';
@@ -154,14 +154,14 @@ export default function KnowledgeHealth() {
 
   if (loading) {
     return (
-      <div className="max-w-6xl mx-auto px-4 md:px-6 py-8 animate-pulse space-y-6 w-full min-h-screen bg-slate-50 dark:bg-background">
+      <div className="max-w-6xl mx-auto px-4 md:px-6 py-8 animate-pulse space-y-6 w-full min-h-screen bg-slate-50 dark:bg-slate-950">
         <div className="h-8 bg-slate-200 dark:bg-slate-800 rounded-xl w-48 mb-4" />
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="h-28 bg-white dark:bg-card rounded-2xl border border-slate-200 dark:border-border shadow-sm" />
+            <div key={i} className="h-28 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm" />
           ))}
         </div>
-        <div className="h-64 bg-white dark:bg-card rounded-3xl border border-slate-200 dark:border-border shadow-sm" />
+        <div className="h-64 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm" />
       </div>
     );
   }
@@ -175,16 +175,16 @@ export default function KnowledgeHealth() {
   const firstName = user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'User';
 
   return (
-    <div className="min-h-full bg-slate-50 dark:bg-background text-slate-900 dark:text-slate-100 flex flex-col w-full page-enter">
+    <div className="min-h-full bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col w-full page-enter">
       <div className='flex-1'>
         <div className="max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-10">
           <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 dark:text-foreground flex items-center gap-3">
+          <h1 className="text-3xl font-black text-slate-900 dark:text-white flex items-center gap-3">
             <HeartPulse className="w-8 h-8 text-rose-500" />
             Knowledge Health
           </h1>
-          <p className="text-slate-500 dark:text-muted-foreground mt-2">Bird's-eye view of your organization's operational intelligence and efficiency.</p>
+          <p className="text-slate-500 dark:text-slate-400 mt-2">Bird's-eye view of your organization's operational intelligence and efficiency.</p>
         </div>
       </div>
 
@@ -192,20 +192,20 @@ export default function KnowledgeHealth() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
         {[
           { title: 'Total Meetings', value: rawCounts?.meetings || 0, desc: 'Recorded on platform', icon: Activity, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-500/10' },
-          { title: 'Key Decisions', value: rawCounts?.decisions || 0, desc: 'Extracted automatically', icon: BrainCircuit, color: 'text-[#006065]', bg: 'bg-[#006065] dark:bg-card' },
+          { title: 'Key Decisions', value: rawCounts?.decisions || 0, desc: 'Extracted automatically', icon: BrainCircuit, color: 'text-[#006065]', bg: 'bg-[#006065]/10 dark:bg-[#006065]/10' },
           { title: 'Blockers Raised', value: rawCounts?.blockers || 0, desc: 'Identified in syncs', icon: ShieldAlert, color: 'text-rose-500', bg: 'bg-rose-50 dark:bg-rose-500/10' },
           { title: 'Tasks Completed', value: rawCounts?.completed || 0, desc: 'Resolved action items', icon: Target, color: 'text-indigo-500', bg: 'bg-indigo-50 dark:bg-indigo-500/10' },
           { title: 'Imported Data', value: rawCounts?.imported || 0, desc: 'From external integrations', icon: Sparkles, color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-500/10' },
         ].map((stat, i) => (
-          <div key={i} className="p-6 rounded-2xl bg-white dark:bg-card text-slate-900 dark:text-foreground border border-slate-200 dark:border-border shadow-sm flex flex-col hover:border-primary/30 transition-colors">
+          <div key={i} className="p-6 rounded-2xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col hover:border-primary/30 transition-colors">
             <div className="flex justify-between items-start mb-4">
               <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${stat.bg} ${stat.color}`}>
                 <stat.icon className="w-6 h-6" />
               </div>
             </div>
-            <h4 className="text-slate-500 dark:text-muted-foreground text-sm font-bold uppercase tracking-wider mb-1">{stat.title}</h4>
-            <div className="text-3xl font-black text-slate-900 dark:text-foreground mb-2">{stat.value}</div>
-            <p className="text-xs text-slate-500 dark:text-muted-foreground mt-auto">{stat.desc}</p>
+            <h4 className="text-slate-500 dark:text-slate-400 text-sm font-bold uppercase tracking-wider mb-1">{stat.title}</h4>
+            <div className="text-3xl font-black text-slate-900 dark:text-white mb-2">{stat.value}</div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-auto">{stat.desc}</p>
           </div>
         ))}
       </div>
@@ -213,10 +213,10 @@ export default function KnowledgeHealth() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         
         {/* Radar Chart */}
-        <div className="lg:col-span-2 p-4 md:p-8 rounded-3xl bg-white dark:bg-card text-slate-900 dark:text-foreground border border-slate-200 dark:border-border shadow-sm flex flex-col relative overflow-hidden">
+        <div className="lg:col-span-2 p-4 md:p-8 rounded-3xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 dark:bg-indigo-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
-          <h3 className="text-xl font-bold text-slate-900 dark:text-foreground mb-1 relative z-10">Operational Vectors</h3>
-          <p className="text-sm text-slate-500 dark:text-muted-foreground mb-6 relative z-10">Calculated from your raw organizational data</p>
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-1 relative z-10">Operational Vectors</h3>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 relative z-10">Calculated from your raw organizational data</p>
           <div className="flex-1 min-h-[400px] w-full flex items-center justify-center relative z-10">
             {healthData ? (
               <ResponsiveContainer width="100%" height="100%">
@@ -292,7 +292,7 @@ export default function KnowledgeHealth() {
                   });
                   
                   if (error) throw error;
-                  toast.success("Detailed Health Report generated and sent to your email!", { duration: 5000, icon: 'ðŸ“Š' });
+                  toast.success("Detailed Health Report generated and sent to your email!", { duration: 5000, icon: '📊' });
                 } catch (err) {
                   console.error(err);
                   toast.error("Failed to send report. Please try again later.");
@@ -301,7 +301,7 @@ export default function KnowledgeHealth() {
                 }
               }}
               disabled={isGenerating || !healthData}
-              className="w-full py-3.5 bg-white dark:bg-card text-indigo-900 font-black rounded-xl hover:bg-indigo-50 hover:shadow-lg hover:-translate-y-0.5 transition-all focus:ring-4 focus:ring-indigo-300 active:scale-95 disabled:opacity-70 disabled:cursor-wait flex items-center justify-center gap-2"
+              className="w-full py-3.5 bg-white text-indigo-900 font-black rounded-xl hover:bg-indigo-50 hover:shadow-lg hover:-translate-y-0.5 transition-all focus:ring-4 focus:ring-indigo-300 active:scale-95 disabled:opacity-70 disabled:cursor-wait flex items-center justify-center gap-2"
             >
               {isGenerating ? (
                 <>
@@ -319,7 +319,7 @@ export default function KnowledgeHealth() {
       {/* Proactive Insights Feed */}
       {Array.isArray(insights) && insights.length > 0 && (
         <div className="mt-8 mb-8">
-          <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-slate-900 dark:text-foreground">
+          <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-slate-900 dark:text-white">
             <Sparkles className="w-5 h-5 text-amber-500" />
             Proactive Insights
           </h3>
@@ -331,7 +331,7 @@ export default function KnowledgeHealth() {
                const IconCmp = isWarning ? ShieldAlert : isSuggestion ? BrainCircuit : TrendingUp;
 
                return (
-                 <div key={idx} className="p-5 rounded-2xl bg-white dark:bg-card text-slate-900 dark:text-foreground border border-slate-200 dark:border-border shadow-sm flex flex-col gap-3 hover:border-primary/30 transition-colors relative overflow-hidden">
+                 <div key={idx} className="p-5 rounded-2xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col gap-3 hover:border-primary/30 transition-colors relative overflow-hidden">
                    {isWarning && <div className="absolute top-0 left-0 right-0 h-1 bg-red-500" />}
                    {isSuggestion && <div className="absolute top-0 left-0 right-0 h-1 bg-blue-500" />}
                    {!isWarning && !isSuggestion && <div className="absolute top-0 left-0 right-0 h-1 bg-amber-500" />}
@@ -340,9 +340,9 @@ export default function KnowledgeHealth() {
                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${iconClass}`}>
                        <IconCmp className="w-5 h-5" />
                      </div>
-                     <h4 className="font-bold text-slate-900 dark:text-foreground">{insight.title}</h4>
+                     <h4 className="font-bold text-slate-900 dark:text-white">{insight.title}</h4>
                    </div>
-                   <p className="text-sm text-slate-600 dark:text-muted-foreground leading-relaxed">
+                   <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                      {insight.description}
                    </p>
                  </div>
@@ -355,24 +355,24 @@ export default function KnowledgeHealth() {
       {/* Organizational Risks Feed */}
       {Array.isArray(risks) && risks.length > 0 && (
         <div className="mt-8 mb-8">
-          <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-slate-900 dark:text-foreground">
+          <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-slate-900 dark:text-white">
             <AlertTriangle className="w-5 h-5 text-rose-500" />
             Detected Risks
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {risks.map((risk, idx) => (
-              <div key={idx} className="p-5 rounded-2xl bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-card border border-rose-200 dark:border-rose-900/50 shadow-sm flex flex-col gap-3 hover:border-rose-300 transition-colors relative overflow-hidden">
+              <div key={idx} className="p-5 rounded-2xl bg-[#006065] text-white dark:bg-[#006065] border border-rose-200 dark:border-rose-900/50 shadow-sm flex flex-col gap-3 hover:border-rose-300 transition-colors relative overflow-hidden">
                 <div className={`absolute top-0 left-0 right-0 h-1 ${risk.severity === 'critical' ? 'bg-rose-600' : risk.severity === 'high' ? 'bg-rose-500' : 'bg-orange-400'}`} />
                 <div className="flex items-center gap-3">
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${risk.severity === 'critical' ? 'bg-rose-100 text-rose-700' : 'bg-orange-50 text-orange-600'}`}>
                     <AlertTriangle className="w-5 h-5" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-slate-900 dark:text-foreground leading-tight">{risk.title}</h4>
+                    <h4 className="font-bold text-slate-900 dark:text-white leading-tight">{risk.title}</h4>
                     <span className="text-[10px] font-bold uppercase tracking-wider text-white/60">{risk.type.replace('_', ' ')}</span>
                   </div>
                 </div>
-                <p className="text-sm text-slate-600 dark:text-muted-foreground leading-relaxed mt-1">
+                <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mt-1">
                   {risk.description}
                 </p>
               </div>
@@ -382,7 +382,7 @@ export default function KnowledgeHealth() {
       )}
 
       {/* Metrics Glossary */}
-      <div className="mt-4 p-6 rounded-3xl bg-white dark:bg-card text-slate-900 dark:text-foreground border border-slate-200 dark:border-border shadow-sm">
+      <div className="mt-4 p-6 rounded-3xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-800 shadow-sm">
         <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
           <Info className="w-5 h-5 text-indigo-500" />
           Metrics Glossary
@@ -391,28 +391,28 @@ export default function KnowledgeHealth() {
           <div className="flex gap-3">
             <div className="w-8 h-8 shrink-0 rounded-full bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-600 font-bold">1</div>
             <div>
-              <h4 className="font-bold text-slate-900 dark:text-foreground">Decision Velocity</h4>
+              <h4 className="font-bold text-slate-900 dark:text-white">Decision Velocity</h4>
               <p className="text-sm text-white/70 mt-1">Measures the ratio of key decisions made compared to the number of meetings held. High velocity means meetings are highly actionable.</p>
             </div>
           </div>
           <div className="flex gap-3">
-            <div className="w-8 h-8 shrink-0 rounded-full bg-[#006065] dark:bg-card flex items-center justify-center text-[#006065] font-bold">2</div>
+            <div className="w-8 h-8 shrink-0 rounded-full bg-[#006065]/10 dark:bg-[#006065]/10 flex items-center justify-center text-[#006065] font-bold">2</div>
             <div>
-              <h4 className="font-bold text-slate-900 dark:text-foreground">Resolution Speed</h4>
+              <h4 className="font-bold text-slate-900 dark:text-white">Resolution Speed</h4>
               <p className="text-sm text-white/70 mt-1">Evaluates how quickly blockers raised in standups or meetings are converted into completed tasks.</p>
             </div>
           </div>
           <div className="flex gap-3">
             <div className="w-8 h-8 shrink-0 rounded-full bg-rose-50 dark:bg-rose-500/10 flex items-center justify-center text-rose-600 font-bold">3</div>
             <div>
-              <h4 className="font-bold text-slate-900 dark:text-foreground">Cross-Functional (Silos)</h4>
+              <h4 className="font-bold text-slate-900 dark:text-white">Cross-Functional (Silos)</h4>
               <p className="text-sm text-white/70 mt-1">Indicates if teams are operating in isolation. A lower score suggests that knowledge is trapped within specific departments.</p>
             </div>
           </div>
           <div className="flex gap-3">
             <div className="w-8 h-8 shrink-0 rounded-full bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center text-blue-600 font-bold">4</div>
             <div>
-              <h4 className="font-bold text-slate-900 dark:text-foreground">Meeting Efficiency</h4>
+              <h4 className="font-bold text-slate-900 dark:text-white">Meeting Efficiency</h4>
               <p className="text-sm text-white/70 mt-1">Analyzes meeting volume against organizational output. A low score warns of meeting bloat and wasted synchronous time.</p>
             </div>
           </div>
@@ -423,4 +423,3 @@ export default function KnowledgeHealth() {
     </div>
   );
 }
-

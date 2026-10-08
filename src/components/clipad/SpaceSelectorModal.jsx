@@ -89,11 +89,11 @@ export default function SpaceSelectorModal({ open, onOpenChange, onConfirm, titl
           {loading ? (
             <div className="py-8 text-center">
               <div className="w-6 h-6 border-2 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-3" />
-              <p className="text-sm text-slate-500 dark:text-muted-foreground">Loading spaces...</p>
+              <p className="text-sm text-slate-500">Loading spaces...</p>
             </div>
           ) : filtered.length === 0 ? (
             <div className="py-10 text-center">
-              <Layers className="w-10 h-10 text-slate-300 dark:text-slate-600 dark:text-muted-foreground mx-auto mb-3" />
+              <Layers className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
               <p className="text-sm font-medium text-slate-500 dark:text-muted-foreground">
                 {search ? 'No spaces match your search.' : 'No spaces found. You can continue without one.'}
               </p>
@@ -125,7 +125,7 @@ export default function SpaceSelectorModal({ open, onOpenChange, onConfirm, titl
                     {s.type && <p className="text-[10px] uppercase text-slate-400 font-mono tracking-widest">{s.type}</p>}
                   </div>
                   {s.is_private && (
-                    <span className="text-[10px] bg-slate-100 dark:bg-secondary text-slate-500 dark:text-muted-foreground px-2 py-0.5 rounded-full font-medium shrink-0">Private</span>
+                    <span className="text-[10px] bg-slate-100 dark:bg-secondary text-slate-500 px-2 py-0.5 rounded-full font-medium shrink-0">Private</span>
                   )}
                 </button>
               ))}
@@ -135,19 +135,19 @@ export default function SpaceSelectorModal({ open, onOpenChange, onConfirm, titl
 
         <div className="flex items-center justify-between p-3 mt-2 bg-slate-50 dark:bg-secondary rounded-xl border border-slate-200 dark:border-border">
           <div>
-            <p className="text-sm font-semibold text-slate-900 dark:text-foreground">Meeting Privacy</p>
+            <p className="text-sm font-semibold text-slate-900 dark:text-white">Meeting Privacy</p>
             <p className="text-xs text-slate-500 dark:text-muted-foreground">{privacyType === 'private' ? 'Only org members can join.' : 'External guests can knock to join.'}</p>
           </div>
           <div className="flex bg-slate-200 dark:bg-slate-700 p-1 rounded-lg">
             <button
               onClick={() => setPrivacyType('private')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${privacyType === 'private' ? 'bg-white dark:bg-slate-600 text-slate-900 dark:text-foreground shadow-sm' : 'text-slate-500 dark:text-muted-foreground hover:text-slate-700 dark:text-muted-foreground dark:hover:text-white'}`}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${privacyType === 'private' ? 'bg-white dark:bg-slate-600 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white'}`}
             >
               Private
             </button>
             <button
               onClick={() => setPrivacyType('public')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${privacyType === 'public' ? 'bg-white dark:bg-slate-600 text-slate-900 dark:text-foreground shadow-sm' : 'text-slate-500 dark:text-muted-foreground hover:text-slate-700 dark:text-muted-foreground dark:hover:text-white'}`}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${privacyType === 'public' ? 'bg-white dark:bg-slate-600 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white'}`}
             >
               Public
             </button>

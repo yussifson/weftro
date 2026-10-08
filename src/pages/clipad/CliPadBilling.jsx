@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/lib/AuthContext';
 import { useCompanyId } from '@/hooks/useCompanyId';
@@ -187,12 +187,12 @@ export default function CliPadBilling() {
             supabase.functions.invoke('send-email', {
               body: {
                 to: [user?.email],
-                subject: `KERINT Plan Upgrade Receipt - ${receiptNum}`,
+                subject: `CliPad Plan Upgrade Receipt - ${receiptNum}`,
                 html: `
                   <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; background: #f8fafc; padding: 40px; color: #0f172a;">
                     <div style="background: white; border: 1px solid #e2e8f0; border-radius: 20px; overflow: hidden;">
                       <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; text-align: center; padding: 32px;">
-                        <div style="font-size: 22px; font-weight: 900; margin-bottom: 8px;">KERINT</div>
+                        <div style="font-size: 22px; font-weight: 900; margin-bottom: 8px;">CliPad</div>
                         <div style="font-size: 12px; font-weight: 500;">Payment Successful</div>
                         <div style="font-size: 10px; margin-top: 12px; font-family: monospace;">#${receiptNum}</div>
                       </div>
@@ -272,12 +272,12 @@ export default function CliPadBilling() {
     <div className="space-y-8">
       <div>
         <h2 className="text-2xl font-bold text-foreground">Billing & Plans</h2>
-        <p className="text-muted-foreground mt-2">Manage your KERINT subscription and features.</p>
+        <p className="text-muted-foreground mt-2">Manage your CliPad subscription and features.</p>
       </div>
 
       {/* Billing Cycle Progress */}
       {currentPlan !== 'free' && subscriptionData && (
-        <div className="p-6 rounded-2xl border border-slate-200 dark:border-border bg-white dark:bg-card shadow-sm hover:shadow-md transition-shadow">
+        <div className="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex justify-between items-center mb-2">
             <h3 className="font-semibold text-foreground">Current Billing Cycle</h3>
             <span className="text-sm font-medium text-muted-foreground">
@@ -303,7 +303,7 @@ export default function CliPadBilling() {
                 const percentage = Math.max(0, Math.min(100, (elapsed / total) * 100));
                 if (percentage > 90) return 'bg-red-500';
                 if (percentage > 70) return 'bg-amber-500';
-                return 'bg-[#006065] dark:bg-[#131A2C]';
+                return 'bg-[#006065]';
               })()}`}
               style={{ width: `${(() => {
                 const start = new Date(subscriptionData.updated_at || Date.now());
@@ -326,7 +326,7 @@ export default function CliPadBilling() {
       )}
 
       {/* Storage Progress */}
-      <div className="p-6 rounded-2xl border border-slate-200 dark:border-border bg-white dark:bg-card shadow-sm hover:shadow-md transition-shadow">
+      <div className="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:shadow-md transition-shadow">
         <div className="flex justify-between items-center mb-2">
           <h3 className="font-semibold text-foreground">This Month's Storage Usage</h3>
           <span className="text-sm text-muted-foreground">
@@ -335,7 +335,7 @@ export default function CliPadBilling() {
         </div>
         <div className="w-full bg-white/10 dark:bg-secondary rounded-full h-3 mb-1 overflow-hidden">
           <div 
-            className={`h-3 rounded-full transition-all duration-500 ${PLAN_LIMITS[currentPlan]?.maxStorageGB !== Infinity && (usedStorageGB / PLAN_LIMITS[currentPlan]?.maxStorageGB) > 0.9 ? 'bg-red-500' : 'bg-[#006065] dark:bg-[#131A2C]'}`}
+            className={`h-3 rounded-full transition-all duration-500 ${PLAN_LIMITS[currentPlan]?.maxStorageGB !== Infinity && (usedStorageGB / PLAN_LIMITS[currentPlan]?.maxStorageGB) > 0.9 ? 'bg-red-500' : 'bg-[#006065]'}`}
             style={{ width: `${PLAN_LIMITS[currentPlan]?.maxStorageGB === Infinity ? (usedStorageGB > 0 ? 5 : 0) : Math.min(100, (usedStorageGB / PLAN_LIMITS[currentPlan]?.maxStorageGB) * 100)}%` }}
           ></div>
         </div>
@@ -346,7 +346,7 @@ export default function CliPadBilling() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 w-full items-stretch max-w-7xl mx-auto">
         {/* FREE PLAN */}
-        <div className={`p-6 flex flex-col rounded-2xl border ${currentPlan === 'free' ? 'border-[#006065] dark:border-border bg-[#006065] dark:bg-card shadow-md ring-1 ring-[#006065]' : 'border-slate-200 dark:border-border bg-white dark:bg-card shadow-sm hover:shadow-md transition-shadow'}`}>
+        <div className={`p-6 flex flex-col rounded-2xl border ${currentPlan === 'free' ? 'border-[#006065] bg-[#006065]/5 dark:bg-[#006065]/20 shadow-md ring-1 ring-[#006065]' : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:shadow-md transition-shadow'}`}>
           <h3 className="text-xl font-bold">Free</h3>
           <p className="text-2xl font-bold mt-2">$0<span className="text-sm font-normal text-muted-foreground">/mo</span></p>
           <ul className="mt-4 mb-6 space-y-2.5">
@@ -357,15 +357,15 @@ export default function CliPadBilling() {
           <button 
             onClick={() => handlePlanClick('free')}
             disabled={currentPlan === 'free' || loading}
-            className={`w-full mt-auto py-2.5 rounded-lg text-sm font-semibold transition-all shadow-sm ${currentPlan === 'free' ? 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-muted-foreground cursor-default' : 'bg-white dark:bg-card border border-[#006065] dark:border-border/30 hover:border-[#006065] dark:border-border dark:hover:border-[#fad503] text-slate-900 dark:text-foreground shadow-sm'}`}>
+            className={`w-full mt-auto py-2.5 rounded-lg text-sm font-semibold transition-all shadow-sm ${currentPlan === 'free' ? 'bg-slate-100 dark:bg-slate-800 text-slate-500 cursor-default' : 'bg-white dark:bg-slate-900 border border-[#006065]/30 hover:border-[#006065] dark:border-slate-700 dark:hover:border-[#fad503] text-slate-900 dark:text-white shadow-sm'}`}>
             {getButtonText('free')}
           </button>
         </div>
 
         {/* PRO PLAN */}
-        <div className={`relative p-6 flex flex-col rounded-2xl border ${currentPlan === 'pro' ? 'border-[#006065] dark:border-border bg-[#006065] dark:bg-card shadow-md ring-1 ring-[#006065]' : 'border-[#006065] dark:border-border/30 dark:border-[#fad503]/30 bg-white dark:bg-card shadow-md hover:shadow-lg transition-all'}`}>
+        <div className={`relative p-6 flex flex-col rounded-2xl border ${currentPlan === 'pro' ? 'border-[#006065] bg-[#006065]/5 dark:bg-[#006065]/20 shadow-md ring-1 ring-[#006065]' : 'border-[#006065]/30 dark:border-[#fad503]/30 bg-white dark:bg-slate-900 shadow-md hover:shadow-lg transition-all'}`}>
           {currentPlan !== 'pro' && (
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-[#006065] dark:bg-[#131A2C] text-white text-xs font-bold rounded-full flex items-center gap-1">
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-[#006065] text-white text-xs font-bold rounded-full flex items-center gap-1">
               <Sparkles className="w-3 h-3" /> Recommended
             </div>
           )}
@@ -382,13 +382,13 @@ export default function CliPadBilling() {
           <button 
             onClick={() => handlePlanClick('pro')}
             disabled={currentPlan === 'pro' || loading}
-            className={`w-full mt-8 py-2 rounded-xl font-semibold transition-all ${currentPlan === 'pro' ? 'bg-secondary text-foreground border border-border' : 'bg-[#006065] dark:bg-[#131A2C] text-white hover:bg-[#006065] dark:bg-[#131A2C]/90'}`}>
+            className={`w-full mt-8 py-2 rounded-xl font-semibold transition-all ${currentPlan === 'pro' ? 'bg-secondary text-foreground border border-border' : 'bg-[#006065] text-white hover:bg-[#006065]/90'}`}>
             {getButtonText('pro')}
           </button>
         </div>
 
         {/* ENTERPRISE PLAN */}
-        <div className={`p-6 flex flex-col rounded-2xl border ${currentPlan === 'enterprise' ? 'border-[#006065] dark:border-border bg-[#006065] dark:bg-card shadow-md ring-1 ring-[#006065]' : 'border-slate-200 dark:border-border bg-white dark:bg-card shadow-sm hover:shadow-md transition-shadow'}`}>
+        <div className={`p-6 flex flex-col rounded-2xl border ${currentPlan === 'enterprise' ? 'border-[#006065] bg-[#006065]/5 dark:bg-[#006065]/20 shadow-md ring-1 ring-[#006065]' : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:shadow-md transition-shadow'}`}>
           <h3 className="text-xl font-bold">Enterprise</h3>
           <p className="text-2xl font-bold mt-2">$39<span className="text-sm font-normal text-muted-foreground">/mo</span></p>
           <p className="text-xs text-muted-foreground mt-1">
@@ -403,13 +403,13 @@ export default function CliPadBilling() {
           <button 
             onClick={() => handlePlanClick('enterprise')}
             disabled={currentPlan === 'enterprise' || loading}
-            className={`w-full mt-auto py-2.5 rounded-lg text-sm font-semibold transition-all shadow-sm ${currentPlan === 'enterprise' ? 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-muted-foreground cursor-default' : 'bg-white dark:bg-card border border-[#006065] dark:border-border/30 hover:border-[#006065] dark:border-border dark:hover:border-[#fad503] text-slate-900 dark:text-foreground shadow-sm'}`}>
+            className={`w-full mt-auto py-2.5 rounded-lg text-sm font-semibold transition-all shadow-sm ${currentPlan === 'enterprise' ? 'bg-slate-100 dark:bg-slate-800 text-slate-500 cursor-default' : 'bg-white dark:bg-slate-900 border border-[#006065]/30 hover:border-[#006065] dark:border-slate-700 dark:hover:border-[#fad503] text-slate-900 dark:text-white shadow-sm'}`}>
             {getButtonText('enterprise')}
           </button>
         </div>
 
         {/* CUSTOM PLAN */}
-        <div className={`p-6 flex flex-col rounded-2xl border ${currentPlan === 'custom' ? 'border-[#006065] dark:border-border bg-[#006065] dark:bg-card shadow-md ring-1 ring-[#006065]' : 'border-slate-200 dark:border-border bg-white dark:bg-card shadow-sm hover:shadow-md transition-shadow'}`}>
+        <div className={`p-6 flex flex-col rounded-2xl border ${currentPlan === 'custom' ? 'border-[#006065] bg-[#006065]/5 dark:bg-[#006065]/20 shadow-md ring-1 ring-[#006065]' : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:shadow-md transition-shadow'}`}>
           <h3 className="text-xl font-bold">Custom</h3>
           <p className="text-2xl font-bold mt-2">Contact Us</p>
           <p className="text-xs text-muted-foreground mt-1">
@@ -424,7 +424,7 @@ export default function CliPadBilling() {
           <button 
             onClick={() => handlePlanClick('custom')}
             disabled={currentPlan === 'custom' || loading}
-            className={`w-full mt-auto py-2.5 rounded-lg text-sm font-semibold border ${currentPlan === 'custom' ? 'bg-secondary text-foreground border-border' : 'bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004e52] text-white shadow-md'}`}>
+            className={`w-full mt-auto py-2.5 rounded-lg text-sm font-semibold border ${currentPlan === 'custom' ? 'bg-secondary text-foreground border-border' : 'bg-[#006065] hover:bg-[#004e52] text-white shadow-md'}`}>
             {getButtonText('custom')}
           </button>
         </div>
@@ -440,7 +440,7 @@ export default function CliPadBilling() {
         ) : (
           <div className="bg-card border border-border rounded-2xl overflow-hidden">
             <table className="w-full text-left text-sm whitespace-nowrap">
-              <thead className="bg-transparent dark:bg-card border-b border-border">
+              <thead className="bg-transparent dark:bg-[#006065] border-b border-border">
                 <tr>
                   <th className="px-6 py-4 font-semibold text-white/70">Date</th>
                   <th className="px-6 py-4 font-semibold text-white/70">Receipt #</th>
@@ -456,7 +456,7 @@ export default function CliPadBilling() {
                   try { rDetails = JSON.parse(tx.description); } catch(e){}
                   
                   return (
-                    <tr key={tx.id} className="hover:bg-transparent dark:hover:bg-[#006065] dark:bg-[#131A2C]/50 transition-colors">
+                    <tr key={tx.id} className="hover:bg-transparent dark:hover:bg-[#006065]/50 transition-colors">
                       <td className="px-6 py-4 text-white/80 dark:text-muted-foreground">
                         {new Date(tx.created_at).toLocaleDateString()}
                       </td>
@@ -495,4 +495,3 @@ export default function CliPadBilling() {
     </div>
   );
 }
-

@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { useNavigate } from 'react-router-dom';
 import { useImpersonation } from '@/lib/ImpersonationContext';
@@ -84,12 +84,12 @@ export default function CompanyManagement() {
       <div className="flex flex-col h-full bg-transparent  p-4 sm:p-6 md:p-8 animate-pulse">
         <div className="flex justify-between items-start mb-8">
           <div>
-            <div className="h-8 bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/15 dark:bg-slate-800 rounded w-48 mb-2"></div>
-            <div className="h-4 bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/15 dark:bg-slate-800 rounded w-32"></div>
+            <div className="h-8 bg-[#006065] text-white border border-white/15/15 dark:bg-slate-800 rounded w-48 mb-2"></div>
+            <div className="h-4 bg-[#006065] text-white border border-white/15/15 dark:bg-slate-800 rounded w-32"></div>
           </div>
-          <div className="h-10 bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/15 dark:bg-slate-800 rounded w-32"></div>
+          <div className="h-10 bg-[#006065] text-white border border-white/15/15 dark:bg-slate-800 rounded w-32"></div>
         </div>
-        <div className="bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-card p-6 rounded-2xl h-64 mb-8"></div>
+        <div className="bg-[#006065] text-white dark:bg-[#006065] p-6 rounded-2xl h-64 mb-8"></div>
       </div>
     );
   }
@@ -109,7 +109,7 @@ export default function CompanyManagement() {
               <TableHead>Subdomain</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Slate Plan</TableHead>
-              <TableHead>KERINT Plan</TableHead>
+              <TableHead>CliPad Plan</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -119,18 +119,18 @@ export default function CompanyManagement() {
                 <TableCell className="font-medium">{company.name}</TableCell>
                 <TableCell className="text-muted-foreground">{company.subdomain || 'N/A'}</TableCell>
                 <TableCell>
-                  <span className={`px-2 py-1 rounded-full text-xs font-semibold ${company.status === 'suspended' ? 'bg-red-500/10 text-red-500' : 'bg-[#006065] dark:bg-[#131A2C]/10 text-[#006065]'}`}>
+                  <span className={`px-2 py-1 rounded-full text-xs font-semibold ${company.status === 'suspended' ? 'bg-red-500/10 text-red-500' : 'bg-[#006065]/10 text-[#006065]'}`}>
                     {company.status || 'Active'}
                   </span>
                 </TableCell>
                 <TableCell>
-                  <span className="capitalize px-2 py-1 bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/10 dark:bg-secondary text-white/80 dark:text-foreground rounded-md text-xs font-medium">
+                  <span className="capitalize px-2 py-1 bg-[#006065] text-white border border-white/15/10 dark:bg-secondary text-white/80 dark:text-foreground rounded-md text-xs font-medium">
                     {company.subscription_plan || 'N/A'}
                   </span>
                 </TableCell>
                 <TableCell>
                   <DropdownMenu>
-                    <DropdownMenuTrigger className="capitalize px-3 py-1 bg-[#006065] dark:bg-[#131A2C]/10 text-[#006065] dark:text-[#00beac] rounded-md text-xs font-bold hover:bg-[#006065] dark:bg-[#131A2C]/20 transition-colors cursor-pointer border-none outline-none focus:ring-0">
+                    <DropdownMenuTrigger className="capitalize px-3 py-1 bg-[#006065]/10 text-[#006065] dark:text-[#00beac] rounded-md text-xs font-bold hover:bg-[#006065]/20 transition-colors cursor-pointer border-none outline-none focus:ring-0">
                       {company.clipad_pricing_tags?.name || 'Free Tier'}
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
@@ -179,4 +179,3 @@ export default function CompanyManagement() {
     </div>
   );
 }
-

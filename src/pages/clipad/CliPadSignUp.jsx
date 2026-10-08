@@ -65,27 +65,30 @@ export default function CliPadSignUp() {
   return (
     <>
       <Helmet>
-        <title>Sign Up — KERINT Collaborative Workspace</title>
+        <title>Sign Up — CliPad Collaborative Workspace</title>
         <meta name="description" content="Create your enterprise-grade collaborative productivity workspace." />
-        <link rel="icon" type="image/svg+xml" href="/clipad-logo.svg" />
+        <link rel="icon" type="image/svg+xml" href="/clipad-favicon-round.svg" />
       </Helmet>
-      <div className="min-h-screen w-full bg-white dark:bg-card flex flex-col lg:flex-row font-sans text-slate-900 dark:text-foreground overflow-hidden select-none">
+      <div className="min-h-screen w-full bg-white flex flex-col lg:flex-row font-sans text-slate-900 overflow-hidden select-none">
         
         {/* Left Panel: Form */}
-        <div className="w-full lg:w-1/2 bg-white dark:bg-card flex flex-col justify-between p-6 sm:p-10 lg:p-16 min-h-screen overflow-y-auto">
+        <div className="w-full lg:w-1/2 bg-white flex flex-col justify-between p-6 sm:p-10 lg:p-16 min-h-screen overflow-y-auto">
           <div className="max-w-md w-full mx-auto my-auto py-4">
             
             {/* Top Logo */}
-            <div className="flex justify-center mb-6 sm:mb-8">
-              <CliPadLogo height={48} iconOnly={true} />
+            <div className="flex items-center gap-2.5 mb-6 sm:mb-8">
+              <CliPadLogo size={32} color="#00beac" dotColor="#fad503" />
+              <span className="font-extrabold text-2xl tracking-tight text-slate-900">
+                CliPad
+              </span>
             </div>
 
             {/* Title & Subtitle */}
             <div className="mb-6">
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-foreground tracking-tight mb-1.5">
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-1.5">
                 Create your account
               </h1>
-              <p className="text-xs sm:text-sm text-slate-500 dark:text-muted-foreground font-medium">
+              <p className="text-xs sm:text-sm text-slate-500 font-medium">
                 Please enter your details to get started
               </p>
             </div>
@@ -93,7 +96,7 @@ export default function CliPadSignUp() {
             {/* Form Content */}
             <form onSubmit={handleEmailSignUp} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-foreground mb-1.5">Email</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">Email</label>
                 <div className="relative">
                   <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <input
@@ -101,14 +104,14 @@ export default function CliPadSignUp() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter your email"
-                    className="w-full pl-10 pr-4 h-11 text-sm bg-white dark:bg-card border border-slate-200 dark:border-border text-slate-900 dark:text-foreground rounded-xl focus:border-[#006065] dark:border-border focus:ring-2 focus:ring-[#006065]/15 transition-all outline-none shadow-sm placeholder:text-slate-400"
+                    className="w-full pl-10 pr-4 h-11 text-sm bg-white border border-slate-200 text-slate-900 rounded-xl focus:border-[#006065] focus:ring-2 focus:ring-[#006065]/15 transition-all outline-none shadow-sm placeholder:text-slate-400"
                     required
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-foreground mb-1.5">Password</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">Password</label>
                 <div className="relative">
                   <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <input
@@ -116,10 +119,10 @@ export default function CliPadSignUp() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Create a password"
-                    className="w-full pl-10 pr-10 h-11 text-sm bg-white dark:bg-card border border-slate-200 dark:border-border text-slate-900 dark:text-foreground rounded-xl focus:border-[#006065] dark:border-border focus:ring-2 focus:ring-[#006065]/15 transition-all outline-none shadow-sm placeholder:text-slate-400"
+                    className="w-full pl-10 pr-10 h-11 text-sm bg-white border border-slate-200 text-slate-900 rounded-xl focus:border-[#006065] focus:ring-2 focus:ring-[#006065]/15 transition-all outline-none shadow-sm placeholder:text-slate-400"
                     required
                   />
-                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-muted-foreground">
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
@@ -131,9 +134,9 @@ export default function CliPadSignUp() {
                   <input 
                     type="checkbox" 
                     required
-                    className="w-4 h-4 rounded border-slate-300 dark:border-border text-[#006065] focus:ring-[#006065] accent-[#006065]" 
+                    className="w-4 h-4 rounded border-slate-300 text-[#006065] focus:ring-[#006065] accent-[#006065]" 
                   />
-                  <span className="text-xs text-slate-600 dark:text-muted-foreground font-medium">I agree to the Terms & Privacy Policy</span>
+                  <span className="text-xs text-slate-600 font-medium">I agree to the Terms & Privacy Policy</span>
                 </label>
               </div>
 
@@ -141,7 +144,7 @@ export default function CliPadSignUp() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full h-11 bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004d52] text-white font-bold rounded-xl text-sm shadow-md transition-all active:scale-[0.99] disabled:opacity-60 flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full h-11 bg-[#006065] hover:bg-[#004d52] text-white font-bold rounded-xl text-sm shadow-md transition-all active:scale-[0.99] disabled:opacity-60 flex items-center justify-center gap-2 cursor-pointer"
               >
                 {loading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : 'Get Started'}
               </button>
@@ -150,10 +153,10 @@ export default function CliPadSignUp() {
             {/* Divider */}
             <div className="relative my-5">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-200 dark:border-border"></div>
+                <div className="w-full border-t border-slate-200"></div>
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white dark:bg-card px-3 text-slate-400 font-bold tracking-widest text-[10px]">OR</span>
+                <span className="bg-white px-3 text-slate-400 font-bold tracking-widest text-[10px]">OR</span>
               </div>
             </div>
 
@@ -162,16 +165,16 @@ export default function CliPadSignUp() {
               <button
                 onClick={handleSSOLogin}
                 type="button"
-                className="w-full h-11 px-3 bg-white dark:bg-card hover:bg-slate-50 dark:bg-background text-slate-700 dark:text-foreground border border-slate-200 dark:border-border rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-sm cursor-pointer"
+                className="w-full h-11 px-3 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-sm cursor-pointer"
               >
-                <img src="/optavel-favicon.svg" alt="Optavel" className="w-4 h-4" />
+                <Logo hideText={true} className="w-4 h-4 text-[#006065]" />
                 Sign up with Optavel SSO
               </button>
               <button 
                 onClick={handleGoogleOAuth}
                 disabled={loading}
                 type="button"
-                className="w-full h-11 px-3 bg-white dark:bg-card hover:bg-slate-50 dark:bg-background text-slate-700 dark:text-foreground border border-slate-200 dark:border-border rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-sm cursor-pointer"
+                className="w-full h-11 px-3 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-sm cursor-pointer"
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24">
                   <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -184,7 +187,7 @@ export default function CliPadSignUp() {
             </div>
 
             {/* Footer Navigation */}
-            <div className="text-center pt-6 text-xs text-slate-600 dark:text-muted-foreground font-medium">
+            <div className="text-center pt-6 text-xs text-slate-600 font-medium">
               Already have an account?{' '}
               <button
                 type="button"
@@ -202,8 +205,8 @@ export default function CliPadSignUp() {
           
           {/* Top Branding & Headline */}
           <div className="relative z-10">
-            <div className="mb-8">
-              <CliPadLogo height={80} white={true} />
+            <div className="flex items-center gap-2 mb-4">
+              <CliPadLogo size={32} color="#ffffff" dotColor="#fad503" />
             </div>
             <h2 className="text-3xl lg:text-4xl font-extrabold text-white leading-tight tracking-tight max-w-md mt-2">
               AI-Powered Organizational Memory & Intelligence
@@ -223,19 +226,19 @@ export default function CliPadSignUp() {
               }}
             >
               {/* Inner Device Screen */}
-              <div className="w-full h-full bg-[#f8fafc] dark:bg-background rounded-[22px] overflow-hidden flex flex-row text-[10px] text-slate-800 font-sans shadow-inner">
+              <div className="w-full h-full bg-[#f8fafc] rounded-[22px] overflow-hidden flex flex-row text-[10px] text-slate-800 font-sans shadow-inner">
                 {/* Sidebar */}
-                <div className="w-44 bg-[#006065] dark:bg-[#131A2C] text-white p-3 flex flex-col justify-between shrink-0">
+                <div className="w-44 bg-[#006065] text-white p-3 flex flex-col justify-between shrink-0">
                   <div>
                     <div className="flex items-center gap-1.5 mb-4">
-                      <CliPadLogo height={16} white={true} iconOnly={true} />
-                      <span className="font-bold tracking-tight text-xs text-white">KERINT V3</span>
+                      <CliPadLogo size={16} color="#00beac" dotColor="#fad503" />
+                      <span className="font-bold tracking-tight text-xs text-white">CliPad V3</span>
                     </div>
 
                     <div className="text-[9px] uppercase font-bold text-white/40 tracking-wider mb-1.5">General</div>
                     <div className="space-y-1 mb-3">
                       <div className="bg-[#fad503] text-[#006065] font-bold px-2 py-1 rounded-md flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#006065] dark:bg-[#131A2C]"></span> Home
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#006065]"></span> Home
                       </div>
                       <div className="text-white/70 hover:text-white px-2 py-1">Search</div>
                       <div className="text-white/70 hover:text-white px-2 py-1">Spaces</div>
@@ -258,26 +261,26 @@ export default function CliPadSignUp() {
                 </div>
 
                 {/* Main App Content View */}
-                <div className="flex-1 bg-white dark:bg-card p-3.5 flex flex-col justify-between overflow-hidden">
+                <div className="flex-1 bg-white p-3.5 flex flex-col justify-between overflow-hidden">
                   <div>
                     {/* Header Bar */}
                     <div className="flex items-center justify-between mb-3">
                       <div>
-                        <div className="text-xs font-extrabold text-slate-900 dark:text-foreground">Welcome Back</div>
-                        <div className="text-[8px] text-slate-500 dark:text-muted-foreground">Manage your workspace intelligence</div>
+                        <div className="text-xs font-extrabold text-slate-900">Welcome Back</div>
+                        <div className="text-[8px] text-slate-500">Manage your workspace intelligence</div>
                       </div>
-                      <div className="bg-slate-100 dark:bg-secondary border border-slate-200 dark:border-border px-2 py-0.5 rounded-full text-slate-400 text-[8px] flex items-center gap-1">
+                      <div className="bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full text-slate-400 text-[8px] flex items-center gap-1">
                         🔍 Search memory...
                       </div>
                     </div>
 
                     {/* Stat Cards */}
                     <div className="grid grid-cols-2 gap-2 mb-3">
-                      <div className="bg-slate-50 dark:bg-background border border-slate-100 p-2 rounded-xl">
+                      <div className="bg-slate-50 border border-slate-100 p-2 rounded-xl">
                         <div className="text-slate-400 text-[8px] font-semibold">Smart Moments</div>
-                        <div className="text-xs font-extrabold text-slate-900 dark:text-foreground mt-0.5">128 extracted</div>
+                        <div className="text-xs font-extrabold text-slate-900 mt-0.5">128 extracted</div>
                       </div>
-                      <div className="bg-slate-50 dark:bg-background border border-slate-100 p-2 rounded-xl">
+                      <div className="bg-slate-50 border border-slate-100 p-2 rounded-xl">
                         <div className="text-slate-400 text-[8px] font-semibold">Memory Core</div>
                         <div className="text-xs font-extrabold text-[#006065] mt-0.5">Active & Syncing</div>
                       </div>
@@ -285,14 +288,14 @@ export default function CliPadSignUp() {
 
                     {/* Records Table Mockup */}
                     <div className="border border-slate-100 rounded-xl overflow-hidden">
-                      <div className="bg-slate-50 dark:bg-background px-2.5 py-1 border-b border-slate-100 font-bold text-slate-600 dark:text-muted-foreground text-[8px] flex justify-between">
+                      <div className="bg-slate-50 px-2.5 py-1 border-b border-slate-100 font-bold text-slate-600 text-[8px] flex justify-between">
                         <span>Recent Meeting / Source</span>
                         <span>Status</span>
                       </div>
                       <div className="divide-y divide-slate-100 text-[8px]">
                         <div className="px-2.5 py-1 flex justify-between items-center">
                           <span className="font-semibold text-slate-800">Q4 Product Architecture</span>
-                          <span className="bg-[#006065] dark:bg-[#131A2C]/10 text-[#006065] font-bold px-1.5 py-0.5 rounded text-[7px]">Processed</span>
+                          <span className="bg-[#006065]/10 text-[#006065] font-bold px-1.5 py-0.5 rounded text-[7px]">Processed</span>
                         </div>
                         <div className="px-2.5 py-1 flex justify-between items-center">
                           <span className="font-semibold text-slate-800">Sprint Review Recording</span>
@@ -307,8 +310,8 @@ export default function CliPadSignUp() {
                   </div>
 
                   <div className="flex items-center justify-between text-[8px] text-slate-400 pt-1.5 border-t border-slate-100">
-                    <span>KERINT V3</span>
-                    <span className="text-[#006065] font-bold">● System Operational</span>
+                    <span>CliPad V3</span>
+                    <span className="text-[#00beac] font-bold">● System Operational</span>
                   </div>
                 </div>
               </div>
@@ -321,5 +324,4 @@ export default function CliPadSignUp() {
     </>
   );
 }
-
 

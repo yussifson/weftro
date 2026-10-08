@@ -119,7 +119,7 @@ export default function VideoDownloadModal({ open, onOpenChange, videoUrl, video
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                 <Download className="w-6 h-6 text-primary" />
               </div>
-              <span className="text-xl font-bold text-slate-900 dark:text-foreground">Download Video</span>
+              <span className="text-xl font-bold text-slate-900 dark:text-white">Download Video</span>
             </DialogTitle>
           </DialogHeader>
 
@@ -129,8 +129,8 @@ export default function VideoDownloadModal({ open, onOpenChange, videoUrl, video
                 <Lock className="w-7 h-7" />
               </div>
               <div>
-                <h3 className="font-bold text-slate-900 dark:text-foreground text-lg">Pro Feature</h3>
-                <p className="text-sm text-slate-500 dark:text-muted-foreground mt-1.5 leading-relaxed px-2">Video downloads are exclusively available on Pro and Enterprise plans.</p>
+                <h3 className="font-bold text-slate-900 dark:text-white text-lg">Pro Feature</h3>
+                <p className="text-sm text-slate-500 mt-1.5 leading-relaxed px-2">Video downloads are exclusively available on Pro and Enterprise plans.</p>
               </div>
               <Button className="w-full rounded-xl py-6 font-semibold" onClick={() => onOpenChange(false)}>
                 Upgrade to Download
@@ -159,14 +159,14 @@ export default function VideoDownloadModal({ open, onOpenChange, videoUrl, video
                             : 'border-slate-100 dark:border-border hover:border-slate-200 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-900/50'
                         }`}
                       >
-                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-3 transition-colors ${selectedQuality === q.id ? 'bg-primary/10 text-primary' : 'bg-slate-100 dark:bg-secondary text-slate-500 dark:text-muted-foreground group-hover:text-slate-700 dark:group-hover:text-slate-300'}`}>
+                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-3 transition-colors ${selectedQuality === q.id ? 'bg-primary/10 text-primary' : 'bg-slate-100 dark:bg-secondary text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-300'}`}>
                           <Icon className="w-5 h-5" />
                         </div>
                         <div className="flex-1">
                           <div className={`font-bold text-sm ${selectedQuality === q.id ? 'text-primary' : 'text-slate-700 dark:text-foreground'}`}>
                             {q.label}
                           </div>
-                          <div className="text-xs text-slate-500 dark:text-muted-foreground mt-0.5">{q.desc}</div>
+                          <div className="text-xs text-slate-500 mt-0.5">{q.desc}</div>
                         </div>
                         <div className={`text-[10px] font-bold font-mono px-2 py-1 rounded-md uppercase tracking-wider ${selectedQuality === q.id ? 'bg-primary/10 text-primary' : 'bg-slate-100 dark:bg-secondary text-slate-400'}`}>
                           {q.ext}
@@ -193,7 +193,7 @@ export default function VideoDownloadModal({ open, onOpenChange, videoUrl, video
                     </div>
                   </div>
                   <div>
-                    <div className="text-sm font-bold text-slate-900 dark:text-foreground">{statusText}</div>
+                    <div className="text-sm font-bold text-slate-900 dark:text-white">{statusText}</div>
                     {progress > 0 && (
                       <div className="text-3xl font-black text-primary mt-2">{progress}%</div>
                     )}

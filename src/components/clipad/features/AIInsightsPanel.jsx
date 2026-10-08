@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Brain, Sparkles, ArrowRight, Zap, Target, Lightbulb } from 'lucide-react';
 import { supabase } from '@/api/supabaseClient';
 
@@ -40,7 +40,7 @@ export default function AIInsightsPanel({ spaceId, workspaceId }) {
           type: 'knowledge',
           icon: Lightbulb,
           color: 'text-[#006065]',
-          bg: 'bg-[#006065] dark:bg-card',
+          bg: 'bg-[#006065]/10 dark:bg-[#006065]/10',
           title: 'Undocumented Decisions',
           description: 'Several recent meetings mentioned "pricing architecture" but no formal decisions were logged. Should we draft a decision record for this?',
           action: 'Draft Decision'
@@ -95,7 +95,7 @@ export default function AIInsightsPanel({ spaceId, workspaceId }) {
                   <Icon className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-900 dark:text-foreground text-sm mb-1">{insight.title}</h4>
+                  <h4 className="font-bold text-slate-900 dark:text-white text-sm mb-1">{insight.title}</h4>
                   <p className="text-sm text-slate-600 dark:text-muted-foreground leading-relaxed mb-3">
                     {insight.description}
                   </p>
@@ -111,4 +111,3 @@ export default function AIInsightsPanel({ spaceId, workspaceId }) {
     </div>
   );
 }
-

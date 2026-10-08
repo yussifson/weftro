@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
@@ -233,21 +233,21 @@ export default function CliPadCustomPricing() {
               <div className="text-primary transition-transform group-hover:scale-105">
                 <CliPadLogo size={28} />
               </div>
-              <span className="font-bold text-lg tracking-tight">KERINT</span>
+              <span className="font-bold text-lg tracking-tight">CliPad</span>
             </Link>
           </div>
 
           <div className="flex items-center gap-3">
             <button
               onClick={() => navigate('/')}
-              className="flex items-center gap-1.5 text-xs font-semibold text-white/80 dark:text-foreground/60 hover:text-white dark:hover:text-white px-3 py-2 rounded-xl transition-colors"
+              className="flex items-center gap-1.5 text-xs font-semibold text-white/80 dark:text-white/60 hover:text-white dark:hover:text-white px-3 py-2 rounded-xl transition-colors"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               Back to Home
             </button>
             <Link
               to={user ? '/dashboard' : '/login'}
-              className="text-xs font-bold px-4 py-2 rounded-xl bg-[#006065] dark:bg-[#131A2C] hover:bg-slate-800 text-white dark:bg-card text-white dark:hover:bg-white/15 dark:text-foreground transition-all shadow-sm"
+              className="text-xs font-bold px-4 py-2 rounded-xl bg-[#006065] hover:bg-slate-800 text-white dark:bg-[#006065] text-white dark:hover:bg-white/15 dark:text-white transition-all shadow-sm"
             >
               {user ? 'Go to Dashboard' : 'Sign In'}
             </Link>
@@ -259,8 +259,8 @@ export default function CliPadCustomPricing() {
       <main className="flex-1 max-w-6xl mx-auto w-full px-6 md:px-8 py-10 md:py-16">
         {submittedRequest ? (
           /* SUCCESS CONFIRMATION */
-          <div className="max-w-xl mx-auto bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-[#111625] border border-white/15 dark:border-white/10 rounded-3xl p-8 md:p-12 shadow-xl text-center animate-in fade-in zoom-in-95 duration-300">
-            <div className="w-16 h-16 bg-[#006065] dark:bg-[#131A2C]/10 text-[#006065] dark:text-[#00beac] rounded-2xl mx-auto flex items-center justify-center mb-6">
+          <div className="max-w-xl mx-auto bg-[#006065] text-white dark:bg-[#111625] border border-white/15 dark:border-white/10 rounded-3xl p-8 md:p-12 shadow-xl text-center animate-in fade-in zoom-in-95 duration-300">
+            <div className="w-16 h-16 bg-[#006065]/10 text-[#006065] dark:text-[#00beac] rounded-2xl mx-auto flex items-center justify-center mb-6">
               <CheckCircle2 className="w-8 h-8" />
             </div>
 
@@ -271,7 +271,7 @@ export default function CliPadCustomPricing() {
             <h1 className="text-2xl md:text-3xl font-black tracking-tight mb-2 text-foreground">
               Request Received, {submittedRequest.fullName.split(' ')[0]}!
             </h1>
-            <p className="text-white/80 dark:text-foreground/60 text-sm leading-relaxed mb-6">
+            <p className="text-white/80 dark:text-white/60 text-sm leading-relaxed mb-6">
               Our enterprise solutions team has received your request for <strong className="text-foreground">{submittedRequest.companyName}</strong>. A dedicated specialist will review your requirements and reach out within 2 hours.
             </p>
 
@@ -320,7 +320,7 @@ export default function CliPadCustomPricing() {
                 <h1 className="text-3xl md:text-4xl font-black tracking-tight leading-tight mb-3 text-foreground">
                   Tailored scale & dedicated infrastructure.
                 </h1>
-                <p className="text-white/80 dark:text-foreground/60 text-sm leading-relaxed">
+                <p className="text-white/80 dark:text-white/60 text-sm leading-relaxed">
                   Design a dedicated communication and meeting intelligence stack configured to your exact security, data residency, and integration standards.
                 </p>
               </div>
@@ -379,14 +379,14 @@ export default function CliPadCustomPricing() {
               {/* Fast Response Guarantee Box */}
               <div className="p-4 rounded-2xl bg-orange-500/5 dark:bg-orange-500/10 border border-orange-500/20 flex items-center gap-3">
                 <Zap className="w-4 h-4 text-orange-500 shrink-0" />
-                <p className="text-xs text-white/90 dark:text-foreground/50 font-medium">
+                <p className="text-xs text-white/90 dark:text-white/50 font-medium">
                   <strong className="text-foreground font-bold">Fast SLA:</strong> Inquiries are assigned directly to an enterprise solution architect within 2 hours.
                 </p>
               </div>
             </div>
 
             {/* Right Column: Clean, High-Converting Form Card */}
-            <div className="lg:col-span-7 bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-[#111625] border border-white/15 dark:border-white/10 rounded-3xl p-6 md:p-8 shadow-sm">
+            <div className="lg:col-span-7 bg-[#006065] text-white dark:bg-[#111625] border border-white/15 dark:border-white/10 rounded-3xl p-6 md:p-8 shadow-sm">
               <div className="mb-6">
                 <h2 className="text-xl font-bold tracking-tight text-foreground">Contact Enterprise Sales</h2>
                 <p className="text-xs text-muted-foreground mt-1">
@@ -610,4 +610,3 @@ export default function CliPadCustomPricing() {
     </div>
   );
 }
-
