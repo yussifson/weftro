@@ -382,7 +382,7 @@ export default function SearchHub() {
           .replace(/<(think|thought)>[\s\S]*$/gi, '')
           .replace(/<\/(think|thought)>/gi, '')
           // Clean up raw backslash escaped quotes, braces, brackets, and raw backslash characters
-          .replace(/\\([\\`*_{}[\]()#+\-.!])/g, '$1')
+          .replace(/\\([\`*_{}[\]()#+\-.!])/g, '$1')
           // Strip out typical malformed token artifacts or corrupt byte markers sometimes outputted by LLMs
           .replace(/[\uFFFD\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '')
           .trim();
@@ -469,7 +469,7 @@ export default function SearchHub() {
           .replace(/<(think|thought)>[\s\S]*?<\/\1>/gi, '')
           .replace(/<(think|thought)>[\s\S]*$/gi, '')
           .replace(/<\/(think|thought)>/gi, '')
-          .replace(/\\([\\`*_{}[\]()#+\-.!])/g, '$1')
+          .replace(/\\([\`*_{}[\]()#+\-.!])/g, '$1')
           .replace(/[\uFFFD\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '')
           .trim();
       };

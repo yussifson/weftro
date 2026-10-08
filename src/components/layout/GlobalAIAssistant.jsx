@@ -695,7 +695,7 @@ ${JSON.stringify(automationRegistries.triggers)}
 VERIFIED ACTIONS:
 ${JSON.stringify(automationRegistries.actions)}
 
-To create an automation, use the \`create_record\` tool with recordType "automation". The payload MUST match the new registry:
+To create an automation, use the `create_record` tool with recordType "automation". The payload MUST match the new registry:
 - name: String
 - description: String
 - trigger_key: MUST be exactly one of the verified trigger_keys
@@ -871,7 +871,7 @@ RULES FOR MULTI-STEP REASONING & AUTOMATIONS:
 3. When asked to CREATE a record, create the record and STOP. DO NOT use navigate_to to show the record.
 4. If asked to create an ENTIRE NEW MODULE, custom feature, or a page that does NOT exist in the ROUTE MAP, you MUST use navigate_to to route the user to "/slate/BOLT" AND use show_toast to tell them: "I can help you build this! Just click 'Generate with AI' on this page."
 5. ONLY use navigate_to for routes that EXACTLY appear in the ROUTE MAP above, plus "/slate/BOLT".
-6. To create an AUTOMATION, use the \`create_record\` tool with recordType "automation". (See AUTOMATION mode context if active). If creating legacy automations, adapt to the new "automation" table schema instead of "automation_rule".
+6. To create an AUTOMATION, use the `create_record` tool with recordType "automation". (See AUTOMATION mode context if active). If creating legacy automations, adapt to the new "automation" table schema instead of "automation_rule".
 7. For 'case' records, use 'title' instead of 'name'.
 8. If the user's input has a typo, is ambiguous, or if you are unsure which page they mean, ALWAYS use the 'ask_confirmation' tool first.
 9. If the user asks for multiple distinct actions (e.g. "create a task and a lead"), ensure you output an <AGENT_ACTION> block for EACH request before summarizing.
@@ -884,7 +884,7 @@ RULES FOR MULTI-STEP REASONING & AUTOMATIONS:
  { role: 'system', content: systemPrompt},
  ...allMessages.slice(-20).map(m => ({ 
  role: m.role, 
- content: m.hiddenContext ? `${m.content}\n\nSystem Context:\n\`\`\`json\n${m.hiddenContext}\n\`\`\`` : m.content 
+ content: m.hiddenContext ? `${m.content}\n\nSystem Context:\n```json\n${m.hiddenContext}\n```` : m.content 
 }))
  ];
 
