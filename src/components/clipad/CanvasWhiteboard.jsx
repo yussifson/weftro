@@ -1,9 +1,9 @@
-﻿import React, { useRef, useEffect, use<ZoomIn size={16} />ate, useCallback } from 'react';
-import { Sparkles, Brain, Loader2, X, MousePointer2, Pen, Eraser, Minus, ArrowRight, Square, Circle, <ZoomIn size={16} />ickyNote, Type, Image as ImageIcon, Grid, ZoomIn, Undo, Redo, ChevronDown, ChevronUp } from 'lucide-react';
+﻿import React, { useRef, useEffect, useState, useCallback } from 'react';
+import { Sparkles, Brain, Loader2, X, MousePointer2, Pen, Eraser, Minus, ArrowRight, Square, Circle, StickyNote, Type, Image as ImageIcon, Grid, ZoomIn, Undo, Redo, ChevronDown, ChevronUp } from 'lucide-react';
 import { generateText } from '@/lib/cloudflareAI';
 
 // â”€â”€ Tool definitions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-con<ZoomIn size={16} /> TOOLS = [
+const TOOLS = [
   { id: 'select',  label: 'Select',       icon: <MousePointer2 size={16} />, shortcut: 'V' },
   { id: 'pen',     label: 'Pen',          icon: <Pen size={16} />, shortcut: 'P' },
   { id: 'eraser',  label: 'Eraser',       icon: <Eraser size={16} />,  shortcut: 'E' },
@@ -11,20 +11,20 @@ con<ZoomIn size={16} /> TOOLS = [
   { id: 'arrow',   label: 'Arrow',        icon: <ArrowRight size={16} />,  shortcut: 'A' },
   { id: 'rect',    label: 'Rectangle',    icon: <Square size={16} />,  shortcut: 'R' },
   { id: 'circle',  label: 'Circle',       icon: <Circle size={16} />,  shortcut: 'C' },
-  { id: '<ZoomIn size={16} />icky',  label: '<ZoomIn size={16} />icky Note',  icon: <<ZoomIn size={16} />ickyNote size={16} />, shortcut: 'N' },
+  { id: 'sticky',  label: 'Sticky Note',  icon: <StickyNote size={16} />, shortcut: 'N' },
   { id: 'text',    label: 'Text',         icon: <Type size={16} />,  shortcut: 'T' },
   { id: 'image',   label: 'Image',        icon: <ImageIcon size={16} />, shortcut: 'I' },
 ];
 
-con<ZoomIn size={16} /> PALETTE = [
+const PALETTE = [
   '#111827','#6b7280','#ffffff',
   '#ef4444','#f97316','#eab308',
   '#22c55e','#06b6d4','#3b82f6',
   '#8b5cf6','#ec4899','#10b981',
 ];
 
-con<ZoomIn size={16} /> <ZoomIn size={16} />ICKY_COLORS = ['#fef08a','#bbf7d0','#bfdbfe','#fecaca','#e9d5ff','#fed7aa'];
-con<ZoomIn size={16} /> SIZES = [2, 4, 8, 16];
+const STICKY_COLORS = ['#fef08a','#bbf7d0','#bfdbfe','#fecaca','#e9d5ff','#fed7aa'];
+const SIZES = [2, 4, 8, 16];
 
 // â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function getClientPos(e) {
@@ -33,101 +33,101 @@ function getClientPos(e) {
 }
 
 function drawArrow(ctx, x1, y1, x2, y2, size) {
-  con<ZoomIn size={16} /> headLen = Math.max(10, size * 5);
-  con<ZoomIn size={16} /> angle = Math.atan2(y2 - y1, x2 - x1);
+  const headLen = Math.max(10, size * 5);
+  const angle = Math.atan2(y2 - y1, x2 - x1);
   ctx.beginPath();
   ctx.moveTo(x1, y1);
   ctx.lineTo(x2, y2);
-  ctx.<ZoomIn size={16} />roke();
+  ctx.stroke();
   ctx.beginPath();
   ctx.moveTo(x2, y2);
   ctx.lineTo(x2 - headLen * Math.cos(angle - Math.PI / 6), y2 - headLen * Math.sin(angle - Math.PI / 6));
   ctx.moveTo(x2, y2);
   ctx.lineTo(x2 - headLen * Math.cos(angle + Math.PI / 6), y2 - headLen * Math.sin(angle + Math.PI / 6));
-  ctx.<ZoomIn size={16} />roke();
+  ctx.stroke();
 }
 
-function drawShape(ctx, <ZoomIn size={16} />art, end, tool, color, size) {
-  ctx.<ZoomIn size={16} />roke<ZoomIn size={16} />yle = color;
+function drawShape(ctx, start, end, tool, color, size) {
+  ctx.strokeStyle = color;
   ctx.lineWidth = size;
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
   if (tool === 'line') {
-    ctx.beginPath(); ctx.moveTo(<ZoomIn size={16} />art.x, <ZoomIn size={16} />art.y); ctx.lineTo(end.x, end.y); ctx.<ZoomIn size={16} />roke();
+    ctx.beginPath(); ctx.moveTo(start.x, start.y); ctx.lineTo(end.x, end.y); ctx.stroke();
   } else if (tool === 'arrow') {
-    drawArrow(ctx, <ZoomIn size={16} />art.x, <ZoomIn size={16} />art.y, end.x, end.y, size);
+    drawArrow(ctx, start.x, start.y, end.x, end.y, size);
   } else if (tool === 'rect') {
-    ctx.beginPath(); ctx.<ZoomIn size={16} />rokeRect(<ZoomIn size={16} />art.x, <ZoomIn size={16} />art.y, end.x - <ZoomIn size={16} />art.x, end.y - <ZoomIn size={16} />art.y);
+    ctx.beginPath(); ctx.strokeRect(start.x, start.y, end.x - start.x, end.y - start.y);
   } else if (tool === 'circle') {
-    con<ZoomIn size={16} /> rx = (end.x - <ZoomIn size={16} />art.x) / 2, ry = (end.y - <ZoomIn size={16} />art.y) / 2;
-    ctx.beginPath(); ctx.ellipse(<ZoomIn size={16} />art.x + rx, <ZoomIn size={16} />art.y + ry, Math.abs(rx), Math.abs(ry), 0, 0, 2 * Math.PI); ctx.<ZoomIn size={16} />roke();
+    const rx = (end.x - start.x) / 2, ry = (end.y - start.y) / 2;
+    ctx.beginPath(); ctx.ellipse(start.x + rx, start.y + ry, Math.abs(rx), Math.abs(ry), 0, 0, 2 * Math.PI); ctx.stroke();
   }
 }
 
 // â”€â”€ Main Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function CanvasWhiteboard({ onClose }) {
-  con<ZoomIn size={16} /> canvasRef  = useRef(null);
-  con<ZoomIn size={16} /> ctxRef     = useRef(null);
-  con<ZoomIn size={16} /> fileRef    = useRef(null);
-  con<ZoomIn size={16} /> textRef    = useRef(null);
+  const canvasRef  = useRef(null);
+  const ctxRef     = useRef(null);
+  const fileRef    = useRef(null);
+  const textRef    = useRef(null);
 
-  con<ZoomIn size={16} /> isDrawing  = useRef(false);
-  con<ZoomIn size={16} /> <ZoomIn size={16} />artPos   = useRef({ x: 0, y: 0 });
-  con<ZoomIn size={16} /> snapshot   = useRef(null);
-  con<ZoomIn size={16} /> hi<ZoomIn size={16} />ory    = useRef([]);
-  con<ZoomIn size={16} /> redo<ZoomIn size={16} />ack  = useRef([]);
-  con<ZoomIn size={16} /> isPanning  = useRef(false);
-  con<ZoomIn size={16} /> la<ZoomIn size={16} />Pan    = useRef({ x: 0, y: 0 });
+  const isDrawing  = useRef(false);
+  const startPos   = useRef({ x: 0, y: 0 });
+  const snapshot   = useRef(null);
+  const history    = useRef([]);
+  const redoStack  = useRef([]);
+  const isPanning  = useRef(false);
+  const lastPan    = useRef({ x: 0, y: 0 });
 
-  con<ZoomIn size={16} /> [tool,         setTool]         = use<ZoomIn size={16} />ate('pen');
-  con<ZoomIn size={16} /> [color,        setColor]        = use<ZoomIn size={16} />ate('#111827');
-  con<ZoomIn size={16} /> [size,         setSize]         = use<ZoomIn size={16} />ate(3);
-  con<ZoomIn size={16} /> [showGrid,     setShowGrid]     = use<ZoomIn size={16} />ate(true);
-  con<ZoomIn size={16} /> [zoom,         setZoom]         = use<ZoomIn size={16} />ate(1);
-  con<ZoomIn size={16} /> [pan,          setPan]          = use<ZoomIn size={16} />ate({ x: 0, y: 0 });
-  con<ZoomIn size={16} /> [textInput,    setTextInput]    = use<ZoomIn size={16} />ate(null);   // { x, y, val }
-  con<ZoomIn size={16} /> [<ZoomIn size={16} />ickies,     set<ZoomIn size={16} />ickies]     = use<ZoomIn size={16} />ate([]);     // [{id,x,y,text,bg}]
-  con<ZoomIn size={16} /> [edit<ZoomIn size={16} />icky,   setEdit<ZoomIn size={16} />icky]   = use<ZoomIn size={16} />ate(null);
-  con<ZoomIn size={16} /> [<ZoomIn size={16} />ickyColor,  set<ZoomIn size={16} />ickyColor]  = use<ZoomIn size={16} />ate(<ZoomIn size={16} />ICKY_COLORS[0]);
-  con<ZoomIn size={16} /> [showPalette,  setShowPalette]  = use<ZoomIn size={16} />ate(false);
-  con<ZoomIn size={16} /> [showMobileTools, setShowMobileTools] = use<ZoomIn size={16} />ate(false);
+  const [tool,         setTool]         = useState('pen');
+  const [color,        setColor]        = useState('#111827');
+  const [size,         setSize]         = useState(3);
+  const [showGrid,     setShowGrid]     = useState(true);
+  const [zoom,         setZoom]         = useState(1);
+  const [pan,          setPan]          = useState({ x: 0, y: 0 });
+  const [textInput,    setTextInput]    = useState(null);   // { x, y, val }
+  const [stickies,     setStickies]     = useState([]);     // [{id,x,y,text,bg}]
+  const [editSticky,   setEditSticky]   = useState(null);
+  const [stickyColor,  setStickyColor]  = useState(STICKY_COLORS[0]);
+  const [showPalette,  setShowPalette]  = useState(false);
+  const [showMobileTools, setShowMobileTools] = useState(false);
 
-  con<ZoomIn size={16} /> [showAiModal, setShowAiModal] = use<ZoomIn size={16} />ate(false);
-  con<ZoomIn size={16} /> [aiPrompt, setAiPrompt] = use<ZoomIn size={16} />ate('');
-  con<ZoomIn size={16} /> [isAiGenerating, setIsAiGenerating] = use<ZoomIn size={16} />ate(false);
-  con<ZoomIn size={16} /> [aiSummary, setAiSummary] = use<ZoomIn size={16} />ate(null);
+  const [showAiModal, setShowAiModal] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [isAiGenerating, setIsAiGenerating] = useState(false);
+  const [aiSummary, setAiSummary] = useState(null);
 
-  con<ZoomIn size={16} /> handleAiGenerateDiagram = async () => {
+  const handleAiGenerateDiagram = async () => {
     if (!aiPrompt.trim()) return;
     setIsAiGenerating(true);
     try {
-      con<ZoomIn size={16} /> response = await generateText([
+      const response = await generateText([
         {
-          role: 'sy<ZoomIn size={16} />em',
+          role: 'system',
           content: `You are an expert software architect & UX designer AI. The user will ask for a diagram, flowchart, mindmap, or architectural diagram.
-Return ONLY valid JSON with a "<ZoomIn size={16} />ickies" array. Each <ZoomIn size={16} />icky object mu<ZoomIn size={16} /> have:
-- "text": <ZoomIn size={16} />ring description or <ZoomIn size={16} />ep title
+Return ONLY valid JSON with a "stickies" array. Each sticky object must have:
+- "text": string description or step title
 - "x": number coordinate (e.g. 100, 320, 540)
 - "y": number coordinate (e.g. 100, 100, 300)
-- "bg": hex color <ZoomIn size={16} />ring from ['#bfdbfe', '#bbf7d0', '#fef08a', '#e9d5ff', '#fed7aa']
-Layout the <ZoomIn size={16} />ickies in a clear grid or workflow sequence. Return ONLY raw JSON without markdown blocks.`
+- "bg": hex color string from ['#bfdbfe', '#bbf7d0', '#fef08a', '#e9d5ff', '#fed7aa']
+Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON without markdown blocks.`
         },
         { role: 'user', content: aiPrompt.trim() }
       ]);
 
-      let text = typeof response === '<ZoomIn size={16} />ring' ? response : response?.response || '';
+      let text = typeof response === 'string' ? response : response?.response || '';
       text = text.replace(/```json/gi, '').replace(/```/gi, '').trim();
-      con<ZoomIn size={16} /> parsed = JSON.parse(text);
+      const parsed = JSON.parse(text);
 
-      if (parsed.<ZoomIn size={16} />ickies && Array.isArray(parsed.<ZoomIn size={16} />ickies)) {
-        con<ZoomIn size={16} /> newNotes = parsed.<ZoomIn size={16} />ickies.map((s, idx) => ({
-          id: `ai-<ZoomIn size={16} />icky-${Date.now()}-${idx}`,
+      if (parsed.stickies && Array.isArray(parsed.stickies)) {
+        const newNotes = parsed.stickies.map((s, idx) => ({
+          id: `ai-sticky-${Date.now()}-${idx}`,
           x: s.x || (100 + (idx % 3) * 220),
           y: s.y || (100 + Math.floor(idx / 3) * 160),
-          text: s.text || '<ZoomIn size={16} />ep',
-          bg: s.bg || <ZoomIn size={16} />ICKY_COLORS[idx % <ZoomIn size={16} />ICKY_COLORS.length]
+          text: s.text || 'Step',
+          bg: s.bg || STICKY_COLORS[idx % STICKY_COLORS.length]
         }));
-        set<ZoomIn size={16} />ickies(prev => [...prev, ...newNotes]);
+        setStickies(prev => [...prev, ...newNotes]);
       }
       setShowAiModal(false);
       setAiPrompt('');
@@ -138,19 +138,19 @@ Layout the <ZoomIn size={16} />ickies in a clear grid or workflow sequence. Retu
     }
   };
 
-  con<ZoomIn size={16} /> handleAiSynthesizeBoard = async () => {
-    con<ZoomIn size={16} /> allText = <ZoomIn size={16} />ickies.map(s => s.text).filter(Boolean).join('\n---\n');
+  const handleAiSynthesizeBoard = async () => {
+    const allText = stickies.map(s => s.text).filter(Boolean).join('\n---\n');
     if (!allText) return;
     setIsAiGenerating(true);
     try {
-      con<ZoomIn size={16} /> response = await generateText([
+      const response = await generateText([
         {
-          role: 'sy<ZoomIn size={16} />em',
-          content: 'You are an executive assi<ZoomIn size={16} />ant. Synthesize the contents of the whiteboard into a <ZoomIn size={16} />ructured briefing with 3 sections: 1. Executive Overview, 2. Key Decisions & Nodes, 3. Proposed Action Items.'
+          role: 'system',
+          content: 'You are an executive assistant. Synthesize the contents of the whiteboard into a structured briefing with 3 sections: 1. Executive Overview, 2. Key Decisions & Nodes, 3. Proposed Action Items.'
         },
         { role: 'user', content: allText }
       ]);
-      con<ZoomIn size={16} /> summaryText = typeof response === '<ZoomIn size={16} />ring' ? response : response?.response || '';
+      const summaryText = typeof response === 'string' ? response : response?.response || '';
       setAiSummary(summaryText);
     } catch (err) {
       console.error('AI Board synthesis error:', err);
@@ -161,169 +161,169 @@ Layout the <ZoomIn size={16} />ickies in a clear grid or workflow sequence. Retu
 
   // â”€â”€ Canvas init / resize â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   useEffect(() => {
-    con<ZoomIn size={16} /> canvas = canvasRef.current;
+    const canvas = canvasRef.current;
     if (!canvas) return;
-    con<ZoomIn size={16} /> resize = () => {
-      con<ZoomIn size={16} /> rect = canvas.parentElement.getBoundingClientRect();
-      con<ZoomIn size={16} /> old  = canvas.toDataURL();
+    const resize = () => {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      const old  = canvas.toDataURL();
       canvas.width  = rect.width;
       canvas.height = rect.height;
-      con<ZoomIn size={16} /> ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext('2d');
       ctxRef.current = ctx;
-      ctx.fill<ZoomIn size={16} />yle = '#ffffff';
+      ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      con<ZoomIn size={16} /> img = new Image();
+      const img = new Image();
       img.onload = () => ctx.drawImage(img, 0, 0);
       img.src = old;
     };
     resize();
-    con<ZoomIn size={16} /> ro = new ResizeObserver(resize);
+    const ro = new ResizeObserver(resize);
     ro.observe(canvas.parentElement);
     return () => ro.disconnect();
   }, []);
 
   // â”€â”€ Grid overlay â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   useEffect(() => {
-    con<ZoomIn size={16} /> canvas = canvasRef.current;
+    const canvas = canvasRef.current;
     if (!canvas || !showGrid) return;
     // grid is purely visual via CSS background on parent â€” no canvas needed
   }, [showGrid]);
 
   // â”€â”€ Pointer helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  con<ZoomIn size={16} /> toCanvas = useCallback((clientX, clientY) => {
-    con<ZoomIn size={16} /> canvas = canvasRef.current;
-    con<ZoomIn size={16} /> rect   = canvas.getBoundingClientRect();
+  const toCanvas = useCallback((clientX, clientY) => {
+    const canvas = canvasRef.current;
+    const rect   = canvas.getBoundingClientRect();
     return {
       x: (clientX - rect.left - pan.x) / zoom,
       y: (clientY - rect.top  - pan.y) / zoom,
     };
   }, [zoom, pan]);
 
-  con<ZoomIn size={16} /> saveHi<ZoomIn size={16} />ory = useCallback(() => {
-    con<ZoomIn size={16} /> canvas = canvasRef.current;
+  const saveHistory = useCallback(() => {
+    const canvas = canvasRef.current;
     if (!canvas) return;
-    hi<ZoomIn size={16} />ory.current.push(canvas.toDataURL());
-    if (hi<ZoomIn size={16} />ory.current.length > 60) hi<ZoomIn size={16} />ory.current.shift();
-    redo<ZoomIn size={16} />ack.current = [];
+    history.current.push(canvas.toDataURL());
+    if (history.current.length > 60) history.current.shift();
+    redoStack.current = [];
   }, []);
 
-  con<ZoomIn size={16} /> applyCtx<ZoomIn size={16} />yle = useCallback((ctx) => {
-    ctx.<ZoomIn size={16} />roke<ZoomIn size={16} />yle = color;
-    ctx.fill<ZoomIn size={16} />yle   = color;
+  const applyCtxStyle = useCallback((ctx) => {
+    ctx.strokeStyle = color;
+    ctx.fillStyle   = color;
     ctx.lineWidth   = size;
     ctx.lineCap     = 'round';
     ctx.lineJoin    = 'round';
   }, [color, size]);
 
   // â”€â”€ Undo / Redo â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  con<ZoomIn size={16} /> undo = useCallback(() => {
-    con<ZoomIn size={16} /> canvas = canvasRef.current, ctx = ctxRef.current;
-    if (!canvas || !ctx || !hi<ZoomIn size={16} />ory.current.length) return;
-    redo<ZoomIn size={16} />ack.current.push(canvas.toDataURL());
-    con<ZoomIn size={16} /> prev = hi<ZoomIn size={16} />ory.current.pop();
-    con<ZoomIn size={16} /> img  = new Image();
+  const undo = useCallback(() => {
+    const canvas = canvasRef.current, ctx = ctxRef.current;
+    if (!canvas || !ctx || !history.current.length) return;
+    redoStack.current.push(canvas.toDataURL());
+    const prev = history.current.pop();
+    const img  = new Image();
     img.onload = () => { ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(img,0,0); };
     img.src = prev;
   }, []);
 
-  con<ZoomIn size={16} /> redo = useCallback(() => {
-    con<ZoomIn size={16} /> canvas = canvasRef.current, ctx = ctxRef.current;
-    if (!canvas || !ctx || !redo<ZoomIn size={16} />ack.current.length) return;
-    hi<ZoomIn size={16} />ory.current.push(canvas.toDataURL());
-    con<ZoomIn size={16} /> next = redo<ZoomIn size={16} />ack.current.pop();
-    con<ZoomIn size={16} /> img  = new Image();
+  const redo = useCallback(() => {
+    const canvas = canvasRef.current, ctx = ctxRef.current;
+    if (!canvas || !ctx || !redoStack.current.length) return;
+    history.current.push(canvas.toDataURL());
+    const next = redoStack.current.pop();
+    const img  = new Image();
     img.onload = () => { ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(img,0,0); };
     img.src = next;
   }, []);
 
-  con<ZoomIn size={16} /> clearBoard = useCallback(() => {
-    con<ZoomIn size={16} /> canvas = canvasRef.current, ctx = ctxRef.current;
+  const clearBoard = useCallback(() => {
+    const canvas = canvasRef.current, ctx = ctxRef.current;
     if (!canvas || !ctx) return;
-    saveHi<ZoomIn size={16} />ory();
-    ctx.fill<ZoomIn size={16} />yle = '#ffffff';
+    saveHistory();
+    ctx.fillStyle = '#ffffff';
     ctx.fillRect(0,0,canvas.width,canvas.height);
-    set<ZoomIn size={16} />ickies([]);
-  }, [saveHi<ZoomIn size={16} />ory]);
+    setStickies([]);
+  }, [saveHistory]);
 
-  con<ZoomIn size={16} /> download = useCallback(() => {
-    con<ZoomIn size={16} /> canvas = canvasRef.current;
+  const download = useCallback(() => {
+    const canvas = canvasRef.current;
     if (!canvas) return;
-    con<ZoomIn size={16} /> link = document.createElement('a');
+    const link = document.createElement('a');
     link.download = `whiteboard-${Date.now()}.png`;
     link.href = canvas.toDataURL('image/png');
     link.click();
   }, []);
 
   // â”€â”€ Image import â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  con<ZoomIn size={16} /> onFileChange = useCallback((e) => {
-    con<ZoomIn size={16} /> file = e.target.files?.[0];
+  const onFileChange = useCallback((e) => {
+    const file = e.target.files?.[0];
     if (!file) return;
-    con<ZoomIn size={16} /> reader = new FileReader();
+    const reader = new FileReader();
     reader.onload = (ev) => {
-      con<ZoomIn size={16} /> img = new Image();
+      const img = new Image();
       img.onload = () => {
-        con<ZoomIn size={16} /> canvas = canvasRef.current, ctx = ctxRef.current;
+        const canvas = canvasRef.current, ctx = ctxRef.current;
         if (!canvas || !ctx) return;
-        saveHi<ZoomIn size={16} />ory();
-        con<ZoomIn size={16} /> maxW = canvas.width * 0.5;
-        con<ZoomIn size={16} /> scale = img.width > maxW ? maxW / img.width : 1;
-        con<ZoomIn size={16} /> cx = (canvas.width  - img.width  * scale) / 2;
-        con<ZoomIn size={16} /> cy = (canvas.height - img.height * scale) / 2;
+        saveHistory();
+        const maxW = canvas.width * 0.5;
+        const scale = img.width > maxW ? maxW / img.width : 1;
+        const cx = (canvas.width  - img.width  * scale) / 2;
+        const cy = (canvas.height - img.height * scale) / 2;
         ctx.drawImage(img, cx, cy, img.width * scale, img.height * scale);
       };
       img.src = ev.target.result;
     };
     reader.readAsDataURL(file);
     e.target.value = '';
-  }, [saveHi<ZoomIn size={16} />ory]);
+  }, [saveHistory]);
 
   // â”€â”€ Pointer events â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  con<ZoomIn size={16} /> onPointerDown = useCallback((e) => {
+  const onPointerDown = useCallback((e) => {
     e.preventDefault();
-    con<ZoomIn size={16} /> { x: cx, y: cy } = getClientPos(e);
+    const { x: cx, y: cy } = getClientPos(e);
 
     // Middle mouse or space+drag â†’ pan
     if (e.button === 1 || (e.button === 0 && e.altKey)) {
       isPanning.current = true;
-      la<ZoomIn size={16} />Pan.current = { x: cx, y: cy };
+      lastPan.current = { x: cx, y: cy };
       return;
     }
 
     if (tool === 'image') { fileRef.current?.click(); return; }
 
-    if (tool === '<ZoomIn size={16} />icky') {
-      con<ZoomIn size={16} /> pos = toCanvas(cx, cy);
-      set<ZoomIn size={16} />ickies(prev => [...prev, { id: Date.now(), x: pos.x, y: pos.y, text: '', bg: <ZoomIn size={16} />ickyColor }]);
-      setEdit<ZoomIn size={16} />icky(Date.now()); // will not match yet â€” set after <ZoomIn size={16} />ate update
+    if (tool === 'sticky') {
+      const pos = toCanvas(cx, cy);
+      setStickies(prev => [...prev, { id: Date.now(), x: pos.x, y: pos.y, text: '', bg: stickyColor }]);
+      setEditSticky(Date.now()); // will not match yet â€” set after state update
       return;
     }
 
     if (tool === 'text') {
-      con<ZoomIn size={16} /> pos = toCanvas(cx, cy);
+      const pos = toCanvas(cx, cy);
       setTextInput({ x: pos.x, y: pos.y, val: '' });
       setTimeout(() => textRef.current?.focus(), 30);
       return;
     }
 
-    con<ZoomIn size={16} /> ctx    = ctxRef.current;
-    con<ZoomIn size={16} /> canvas = canvasRef.current;
+    const ctx    = ctxRef.current;
+    const canvas = canvasRef.current;
     if (!ctx || !canvas) return;
 
-    saveHi<ZoomIn size={16} />ory();
+    saveHistory();
     isDrawing.current = true;
-    con<ZoomIn size={16} /> pos = toCanvas(cx, cy);
-    <ZoomIn size={16} />artPos.current = pos;
+    const pos = toCanvas(cx, cy);
+    startPos.current = pos;
 
     ctx.save();
     ctx.translate(pan.x, pan.y);
     ctx.scale(zoom, zoom);
-    applyCtx<ZoomIn size={16} />yle(ctx);
+    applyCtxStyle(ctx);
 
     if (tool === 'pen') {
       ctx.beginPath();
       ctx.moveTo(pos.x, pos.y);
     } else if (tool === 'eraser') {
-      ctx.<ZoomIn size={16} />roke<ZoomIn size={16} />yle = '#ffffff';
+      ctx.strokeStyle = '#ffffff';
       ctx.lineWidth   = size * 5;
       ctx.lineCap     = 'round';
       ctx.beginPath();
@@ -331,119 +331,119 @@ Layout the <ZoomIn size={16} />ickies in a clear grid or workflow sequence. Retu
     } else {
       snapshot.current = canvas.toDataURL();
     }
-    ctx.re<ZoomIn size={16} />ore();
-  }, [tool, toCanvas, saveHi<ZoomIn size={16} />ory, applyCtx<ZoomIn size={16} />yle, pan, zoom, size, <ZoomIn size={16} />ickyColor]);
+    ctx.restore();
+  }, [tool, toCanvas, saveHistory, applyCtxStyle, pan, zoom, size, stickyColor]);
 
-  con<ZoomIn size={16} /> onPointerMove = useCallback((e) => {
+  const onPointerMove = useCallback((e) => {
     e.preventDefault();
-    con<ZoomIn size={16} /> { x: cx, y: cy } = getClientPos(e);
+    const { x: cx, y: cy } = getClientPos(e);
 
     if (isPanning.current) {
-      con<ZoomIn size={16} /> dx = cx - la<ZoomIn size={16} />Pan.current.x;
-      con<ZoomIn size={16} /> dy = cy - la<ZoomIn size={16} />Pan.current.y;
-      la<ZoomIn size={16} />Pan.current = { x: cx, y: cy };
+      const dx = cx - lastPan.current.x;
+      const dy = cy - lastPan.current.y;
+      lastPan.current = { x: cx, y: cy };
       setPan(p => ({ x: p.x + dx, y: p.y + dy }));
       return;
     }
 
     if (!isDrawing.current) return;
-    con<ZoomIn size={16} /> ctx = ctxRef.current, canvas = canvasRef.current;
+    const ctx = ctxRef.current, canvas = canvasRef.current;
     if (!ctx || !canvas) return;
 
-    con<ZoomIn size={16} /> pos = toCanvas(cx, cy);
+    const pos = toCanvas(cx, cy);
 
     ctx.save();
     ctx.translate(pan.x, pan.y);
     ctx.scale(zoom, zoom);
-    applyCtx<ZoomIn size={16} />yle(ctx);
+    applyCtxStyle(ctx);
 
     if (tool === 'pen') {
-      ctx.lineTo(pos.x, pos.y); ctx.<ZoomIn size={16} />roke();
+      ctx.lineTo(pos.x, pos.y); ctx.stroke();
     } else if (tool === 'eraser') {
-      ctx.<ZoomIn size={16} />roke<ZoomIn size={16} />yle = '#ffffff';
+      ctx.strokeStyle = '#ffffff';
       ctx.lineWidth   = size * 5;
       ctx.lineCap     = 'round';
-      ctx.lineTo(pos.x, pos.y); ctx.<ZoomIn size={16} />roke();
+      ctx.lineTo(pos.x, pos.y); ctx.stroke();
     } else if (snapshot.current) {
-      con<ZoomIn size={16} /> img = new Image();
+      const img = new Image();
       img.onload = () => {
         ctx.clearRect(-pan.x / zoom, -pan.y / zoom, canvas.width / zoom, canvas.height / zoom);
         ctx.drawImage(img, -pan.x / zoom, -pan.y / zoom, canvas.width / zoom, canvas.height / zoom);
-        drawShape(ctx, <ZoomIn size={16} />artPos.current, pos, tool, color, size);
+        drawShape(ctx, startPos.current, pos, tool, color, size);
       };
       img.src = snapshot.current;
     }
-    ctx.re<ZoomIn size={16} />ore();
-  }, [tool, toCanvas, applyCtx<ZoomIn size={16} />yle, pan, zoom, color, size]);
+    ctx.restore();
+  }, [tool, toCanvas, applyCtxStyle, pan, zoom, color, size]);
 
-  con<ZoomIn size={16} /> onPointerUp = useCallback((e) => {
+  const onPointerUp = useCallback((e) => {
     e.preventDefault();
     if (isPanning.current) { isPanning.current = false; return; }
     if (!isDrawing.current) return;
     isDrawing.current = false;
-    con<ZoomIn size={16} /> ctx = ctxRef.current, canvas = canvasRef.current;
+    const ctx = ctxRef.current, canvas = canvasRef.current;
     if (!ctx || !canvas) return;
 
-    con<ZoomIn size={16} /> { x: cx, y: cy } = getClientPos(e);
-    con<ZoomIn size={16} /> pos = toCanvas(cx, cy);
+    const { x: cx, y: cy } = getClientPos(e);
+    const pos = toCanvas(cx, cy);
 
     if (snapshot.current && !['pen','eraser'].includes(tool)) {
       ctx.save();
       ctx.translate(pan.x, pan.y);
       ctx.scale(zoom, zoom);
-      applyCtx<ZoomIn size={16} />yle(ctx);
-      drawShape(ctx, <ZoomIn size={16} />artPos.current, pos, tool, color, size);
-      ctx.re<ZoomIn size={16} />ore();
+      applyCtxStyle(ctx);
+      drawShape(ctx, startPos.current, pos, tool, color, size);
+      ctx.restore();
     }
     ctx.beginPath();
     snapshot.current = null;
-  }, [tool, toCanvas, applyCtx<ZoomIn size={16} />yle, pan, zoom, color, size]);
+  }, [tool, toCanvas, applyCtxStyle, pan, zoom, color, size]);
 
   // â”€â”€ Text submit â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  con<ZoomIn size={16} /> submitText = useCallback(() => {
-    con<ZoomIn size={16} /> ctx = ctxRef.current;
+  const submitText = useCallback(() => {
+    const ctx = ctxRef.current;
     if (!ctx || !textInput?.val?.trim()) { setTextInput(null); return; }
     ctx.save();
     ctx.translate(pan.x, pan.y);
     ctx.scale(zoom, zoom);
     ctx.font = `${Math.max(14, size * 5)}px Inter, sans-serif`;
-    ctx.fill<ZoomIn size={16} />yle = color;
+    ctx.fillStyle = color;
     ctx.fillText(textInput.val, textInput.x, textInput.y);
-    ctx.re<ZoomIn size={16} />ore();
+    ctx.restore();
     setTextInput(null);
   }, [textInput, color, size, pan, zoom]);
 
   // â”€â”€ Zoom â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  con<ZoomIn size={16} /> onWheel = useCallback((e) => {
+  const onWheel = useCallback((e) => {
     e.preventDefault();
-    con<ZoomIn size={16} /> delta = e.deltaY < 0 ? 0.1 : -0.1;
+    const delta = e.deltaY < 0 ? 0.1 : -0.1;
     setZoom(z => Math.max(0.2, Math.min(5, z + delta)));
   }, []);
 
   // â”€â”€ Keyboard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   useEffect(() => {
-    con<ZoomIn size={16} /> fn = (e) => {
+    const fn = (e) => {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
       if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); undo(); }
       if ((e.ctrlKey || e.metaKey) && e.key === 'y') { e.preventDefault(); redo(); }
-      if (e.key === 'Escape') { setTextInput(null); setEdit<ZoomIn size={16} />icky(null); }
+      if (e.key === 'Escape') { setTextInput(null); setEditSticky(null); }
       if (e.key === '+' || e.key === '=') setZoom(z => Math.min(5, z + 0.1));
       if (e.key === '-') setZoom(z => Math.max(0.2, z - 0.1));
       if (e.key === '0') { setZoom(1); setPan({ x: 0, y: 0 }); }
       TOOLS.forEach(t => { if (e.key.toLowerCase() === t.shortcut?.toLowerCase()) setTool(t.id); });
     };
-    window.addEventLi<ZoomIn size={16} />ener('keydown', fn);
-    return () => window.removeEventLi<ZoomIn size={16} />ener('keydown', fn);
+    window.addEventListener('keydown', fn);
+    return () => window.removeEventListener('keydown', fn);
   }, [undo, redo]);
 
-  con<ZoomIn size={16} /> zoomPct = Math.round(zoom * 100);
-  con<ZoomIn size={16} /> cursorMap = { select: 'default', pen: 'crosshair', eraser: 'cell', text: 'text', image: 'pointer', <ZoomIn size={16} />icky: 'copy' };
-  con<ZoomIn size={16} /> cursor = cursorMap[tool] || 'crosshair';
+  const zoomPct = Math.round(zoom * 100);
+  const cursorMap = { select: 'default', pen: 'crosshair', eraser: 'cell', text: 'text', image: 'pointer', sticky: 'copy' };
+  const cursor = cursorMap[tool] || 'crosshair';
 
   return (
-    <div className="absolute inset-0 z-[9999] flex flex-col bg-white select-none" <ZoomIn size={16} />yle={{ touchAction: 'none', fontFamily: "'Inter', sans-serif" }}>
+    <div className="absolute inset-0 z-[9999] flex flex-col bg-white select-none" style={{ touchAction: 'none', fontFamily: "'Inter', sans-serif" }}>
       {/* â”€â”€ Mobile Toolbar Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <div className="flex md:hidden items-center ju<ZoomIn size={16} />ify-between px-3 py-2 bg-slate-50 border-b border-slate-200 flex-shrink-0 shadow-sm relative z-[10000]">
+      <div className="flex md:hidden items-center justify-between px-3 py-2 bg-slate-50 border-b border-slate-200 flex-shrink-0 shadow-sm relative z-[10000]">
         <button onClick={() => setShowMobileTools(!showMobileTools)} className="px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold flex items-center gap-2 shadow-sm text-slate-700">
           Tools {showMobileTools ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
         </button>
@@ -453,13 +453,13 @@ Layout the <ZoomIn size={16} />ickies in a clear grid or workflow sequence. Retu
       </div>
 
       {/* â”€â”€ Toolbar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <div className={`${showMobileTools ? 'flex absolute top-[53px] left-0 right-0 bg-slate-50 border-b p-3 z-[9999] shadow-xl flex-wrap' : 'hidden'} md:flex items-center gap-1.5 md:px-3 md:py-1.5 md:bg-slate-50 md:border-b border-slate-200 flex-shrink-0 flex-wrap md:shadow-sm md:<ZoomIn size={16} />atic`}>
+      <div className={`${showMobileTools ? 'flex absolute top-[53px] left-0 right-0 bg-slate-50 border-b p-3 z-[9999] shadow-xl flex-wrap' : 'hidden'} md:flex items-center gap-1.5 md:px-3 md:py-1.5 md:bg-slate-50 md:border-b border-slate-200 flex-shrink-0 flex-wrap md:shadow-sm md:static`}>
 
         {/* Tool group */}
         <div className="flex items-center gap-0.5 bg-white border border-slate-200 rounded-xl p-1 shadow-sm">
           {TOOLS.map(t => (
             <button key={t.id} onClick={() => setTool(t.id)} title={`${t.label} (${t.shortcut})`}
-              className={`w-8 h-8 rounded-lg text-sm font-medium flex items-center ju<ZoomIn size={16} />ify-center transition-all ${tool === t.id ? 'bg-[#006065] text-white shadow-sm' : 'hover:bg-slate-100 text-slate-600'}`}>
+              className={`w-8 h-8 rounded-lg text-sm font-medium flex items-center justify-center transition-all ${tool === t.id ? 'bg-[#006065] text-white shadow-sm' : 'hover:bg-slate-100 text-slate-600'}`}>
               {t.icon}
             </button>
           ))}
@@ -471,16 +471,16 @@ Layout the <ZoomIn size={16} />ickies in a clear grid or workflow sequence. Retu
         <div className="relative">
           <button onClick={() => setShowPalette(p => !p)}
             className="w-8 h-8 rounded-xl border-2 border-white shadow-md ring-2 ring-slate-200 transition-transform hover:scale-110"
-            <ZoomIn size={16} />yle={{ background: color }} title="Color" />
+            style={{ background: color }} title="Color" />
           {showPalette && (
             <div className="absolute top-10 left-0 z-50 bg-white border border-slate-200 rounded-2xl p-2 shadow-xl grid grid-cols-6 gap-1.5 w-44">
               {PALETTE.map(c => (
                 <button key={c} onClick={() => { setColor(c); setShowPalette(false); }}
                   className="w-6 h-6 rounded-full border border-slate-200 hover:scale-125 transition-transform shadow-sm"
-                  <ZoomIn size={16} />yle={{ background: c, outline: color === c ? '2px solid #059669' : 'none', outlineOffset: 2 }} />
+                  style={{ background: c, outline: color === c ? '2px solid #059669' : 'none', outlineOffset: 2 }} />
               ))}
               <input type="color" value={color} onChange={e => setColor(e.target.value)}
-                className="w-6 h-6 rounded-full cursor-pointer border-0 p-0 bg-transparent" title="Cu<ZoomIn size={16} />om color" />
+                className="w-6 h-6 rounded-full cursor-pointer border-0 p-0 bg-transparent" title="Custom color" />
             </div>
           )}
         </div>
@@ -489,18 +489,18 @@ Layout the <ZoomIn size={16} />ickies in a clear grid or workflow sequence. Retu
         <div className="flex items-center gap-0.5 bg-white border border-slate-200 rounded-xl p-1 shadow-sm">
           {SIZES.map(s => (
             <button key={s} onClick={() => setSize(s)}
-              className={`w-7 h-7 rounded-lg flex items-center ju<ZoomIn size={16} />ify-center transition-all ${size === s ? 'bg-[#006065]' : 'hover:bg-slate-100'}`}>
-              <div className="rounded-full bg-current" <ZoomIn size={16} />yle={{ width: Math.min(s + 2, 16), height: Math.min(s + 2, 16), color: size === s ? 'white' : '#334155' }} />
+              className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all ${size === s ? 'bg-[#006065]' : 'hover:bg-slate-100'}`}>
+              <div className="rounded-full bg-current" style={{ width: Math.min(s + 2, 16), height: Math.min(s + 2, 16), color: size === s ? 'white' : '#334155' }} />
             </button>
           ))}
         </div>
 
-        {tool === '<ZoomIn size={16} />icky' && (
+        {tool === 'sticky' && (
           <div className="flex items-center gap-1 bg-white border border-slate-200 rounded-xl p-1 shadow-sm">
-            {<ZoomIn size={16} />ICKY_COLORS.map(c => (
-              <button key={c} onClick={() => set<ZoomIn size={16} />ickyColor(c)}
+            {STICKY_COLORS.map(c => (
+              <button key={c} onClick={() => setStickyColor(c)}
                 className="w-6 h-6 rounded-full border-2 hover:scale-110 transition-transform"
-                <ZoomIn size={16} />yle={{ background: c, borderColor: <ZoomIn size={16} />ickyColor === c ? '#059669' : 'transparent' }} />
+                style={{ background: c, borderColor: stickyColor === c ? '#059669' : 'transparent' }} />
             ))}
           </div>
         )}
@@ -509,18 +509,18 @@ Layout the <ZoomIn size={16} />ickies in a clear grid or workflow sequence. Retu
 
         {/* Actions */}
         <div className="flex items-center gap-0.5 bg-white border border-slate-200 rounded-xl p-1 shadow-sm">
-          <button onClick={undo} title="Undo (Ctrl+Z)" className="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center ju<ZoomIn size={16} />ify-center text-slate-600 font-bold text-sm">â†©</button>
-          <button onClick={redo} title="Redo (Ctrl+Y)" className="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center ju<ZoomIn size={16} />ify-center text-slate-600 font-bold text-sm">â†ª</button>
+          <button onClick={undo} title="Undo (Ctrl+Z)" className="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-sm">â†©</button>
+          <button onClick={redo} title="Redo (Ctrl+Y)" className="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-sm">â†ª</button>
           <button onClick={() => setShowGrid(g => !g)} title="Toggle grid"
-            className={`w-8 h-8 rounded-lg flex items-center ju<ZoomIn size={16} />ify-center text-xs font-bold transition-all ${showGrid ? 'bg-[#006065] text-white' : 'hover:bg-slate-100 text-slate-600'}`}>âŠž</button>
-          <button onClick={download} title="Export PNG" className="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center ju<ZoomIn size={16} />ify-center text-slate-600 text-sm">ðŸ’¾</button>
-          <button onClick={clearBoard} title="Clear" className="w-8 h-8 rounded-lg hover:bg-red-50 flex items-center ju<ZoomIn size={16} />ify-center text-red-500 text-sm">ðŸ—‘</button>
+            className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold transition-all ${showGrid ? 'bg-[#006065] text-white' : 'hover:bg-slate-100 text-slate-600'}`}>âŠž</button>
+          <button onClick={download} title="Export PNG" className="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-600 text-sm">ðŸ’¾</button>
+          <button onClick={clearBoard} title="Clear" className="w-8 h-8 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-500 text-sm">ðŸ—‘</button>
         </div>
 
         <div className="flex items-center gap-1 bg-white border border-slate-200 rounded-xl px-2 py-1 shadow-sm text-xs font-semibold text-slate-600">
-          <button onClick={() => setZoom(z => Math.max(0.2, z - 0.1))} className="w-5 h-5 rounded hover:bg-slate-100 flex items-center ju<ZoomIn size={16} />ify-center font-bold">âˆ’</button>
+          <button onClick={() => setZoom(z => Math.max(0.2, z - 0.1))} className="w-5 h-5 rounded hover:bg-slate-100 flex items-center justify-center font-bold">âˆ’</button>
           <span className="w-10 text-center">{zoomPct}%</span>
-          <button onClick={() => setZoom(z => Math.min(5, z + 0.1))} className="w-5 h-5 rounded hover:bg-slate-100 flex items-center ju<ZoomIn size={16} />ify-center font-bold">+</button>
+          <button onClick={() => setZoom(z => Math.min(5, z + 0.1))} className="w-5 h-5 rounded hover:bg-slate-100 flex items-center justify-center font-bold">+</button>
           <button onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }} className="ml-1 text-[#006065] hover:text-[#004e52]" title="Reset view">âŠ™</button>
         </div>
 
@@ -530,7 +530,7 @@ Layout the <ZoomIn size={16} />ickies in a clear grid or workflow sequence. Retu
             className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-bold shadow-sm flex items-center gap-1.5 transition-all">
             <Sparkles className="w-3.5 h-3.5" /> AI Diagram
           </button>
-          {<ZoomIn size={16} />ickies.length > 0 && (
+          {stickies.length > 0 && (
             <button onClick={handleAiSynthesizeBoard} disabled={isAiGenerating} title="AI Synthesize Canvas"
               className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm text-xs font-bold shadow-sm flex items-center gap-1.5 transition-all disabled:opacity-50">
               {isAiGenerating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Brain className="w-3.5 h-3.5 text-cyan-400" />}
@@ -551,59 +551,59 @@ Layout the <ZoomIn size={16} />ickies in a clear grid or workflow sequence. Retu
       {/* â”€â”€ Canvas area â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div
         className="flex-1 relative overflow-hidden"
-        <ZoomIn size={16} />yle={{ background: showGrid ? 'radial-gradient(circle, #cbd5e1 1px, transparent 1px)' : '#ffffff', backgroundSize: showGrid ? '24px 24px' : undefined }}
+        style={{ background: showGrid ? 'radial-gradient(circle, #cbd5e1 1px, transparent 1px)' : '#ffffff', backgroundSize: showGrid ? '24px 24px' : undefined }}
         onWheel={onWheel}
       >
         <canvas
           ref={canvasRef}
-          <ZoomIn size={16} />yle={{ cursor, display: 'block', width: '100%', height: '100%', transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`, transformOrigin: '0 0' }}
+          style={{ cursor, display: 'block', width: '100%', height: '100%', transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`, transformOrigin: '0 0' }}
           onMouseDown={onPointerDown}
           onMouseMove={onPointerMove}
           onMouseUp={onPointerUp}
           onMouseLeave={onPointerUp}
-          onTouch<ZoomIn size={16} />art={onPointerDown}
+          onTouchStart={onPointerDown}
           onTouchMove={onPointerMove}
           onTouchEnd={onPointerUp}
         />
 
-        {/* <ZoomIn size={16} />icky notes overlay */}
-        {<ZoomIn size={16} />ickies.map(s => (
+        {/* Sticky notes overlay */}
+        {stickies.map(s => (
           <div key={s.id}
-            <ZoomIn size={16} />yle={{ position: 'absolute', left: s.x * zoom + pan.x, top: s.y * zoom + pan.y, background: s.bg, width: 180, minHeight: 100, zIndex: 10 }}
+            style={{ position: 'absolute', left: s.x * zoom + pan.x, top: s.y * zoom + pan.y, background: s.bg, width: 180, minHeight: 100, zIndex: 10 }}
             className="rounded-xl shadow-lg border border-black/10 p-3 flex flex-col gap-1 cursor-move group"
             onMouseDown={e => {
-              e.<ZoomIn size={16} />opPropagation();
-              con<ZoomIn size={16} /> <ZoomIn size={16} />artX = e.clientX, <ZoomIn size={16} />artY = e.clientY;
-              con<ZoomIn size={16} /> origX = s.x, origY = s.y;
-              con<ZoomIn size={16} /> move = (ev) => {
-                con<ZoomIn size={16} /> dx = (ev.clientX - <ZoomIn size={16} />artX) / zoom;
-                con<ZoomIn size={16} /> dy = (ev.clientY - <ZoomIn size={16} />artY) / zoom;
-                set<ZoomIn size={16} />ickies(prev => prev.map(n => n.id === s.id ? { ...n, x: origX + dx, y: origY + dy } : n));
+              e.stopPropagation();
+              const startX = e.clientX, startY = e.clientY;
+              const origX = s.x, origY = s.y;
+              const move = (ev) => {
+                const dx = (ev.clientX - startX) / zoom;
+                const dy = (ev.clientY - startY) / zoom;
+                setStickies(prev => prev.map(n => n.id === s.id ? { ...n, x: origX + dx, y: origY + dy } : n));
               };
-              con<ZoomIn size={16} /> up = () => { window.removeEventLi<ZoomIn size={16} />ener('mousemove', move); window.removeEventLi<ZoomIn size={16} />ener('mouseup', up); };
-              window.addEventLi<ZoomIn size={16} />ener('mousemove', move);
-              window.addEventLi<ZoomIn size={16} />ener('mouseup', up);
+              const up = () => { window.removeEventListener('mousemove', move); window.removeEventListener('mouseup', up); };
+              window.addEventListener('mousemove', move);
+              window.addEventListener('mouseup', up);
             }}
           >
-            <div className="flex items-center ju<ZoomIn size={16} />ify-between mb-1">
+            <div className="flex items-center justify-between mb-1">
               <span className="text-[10px] font-bold text-black/40 uppercase tracking-wide">Note</span>
-              <button onClick={() => set<ZoomIn size={16} />ickies(prev => prev.filter(n => n.id !== s.id))}
-                className="opacity-0 group-hover:opacity-100 transition-opacity w-4 h-4 rounded flex items-center ju<ZoomIn size={16} />ify-center text-black/40 hover:text-red-500 text-xs">âœ•</button>
+              <button onClick={() => setStickies(prev => prev.filter(n => n.id !== s.id))}
+                className="opacity-0 group-hover:opacity-100 transition-opacity w-4 h-4 rounded flex items-center justify-center text-black/40 hover:text-red-500 text-xs">âœ•</button>
             </div>
             <textarea
               value={s.text}
-              onChange={e => set<ZoomIn size={16} />ickies(prev => prev.map(n => n.id === s.id ? { ...n, text: e.target.value } : n))}
+              onChange={e => setStickies(prev => prev.map(n => n.id === s.id ? { ...n, text: e.target.value } : n))}
               placeholder="Type your note..."
               className="flex-1 bg-transparent resize-none text-sm text-slate-800 placeholder-black/30 outline-none leading-relaxed"
-              <ZoomIn size={16} />yle={{ minHeight: 60, fontFamily: 'Inter, sans-serif' }}
-              onClick={e => e.<ZoomIn size={16} />opPropagation()}
+              style={{ minHeight: 60, fontFamily: 'Inter, sans-serif' }}
+              onClick={e => e.stopPropagation()}
             />
           </div>
         ))}
 
         {/* Floating text input */}
         {textInput && (
-          <div className="absolute z-20" <ZoomIn size={16} />yle={{ left: textInput.x * zoom + pan.x, top: textInput.y * zoom + pan.y - 10 }}>
+          <div className="absolute z-20" style={{ left: textInput.x * zoom + pan.x, top: textInput.y * zoom + pan.y - 10 }}>
             <input
               ref={textRef}
               type="text"
@@ -613,7 +613,7 @@ Layout the <ZoomIn size={16} />ickies in a clear grid or workflow sequence. Retu
               onBlur={submitText}
               placeholder="Type here..."
               className="outline-none border-b-2 border-indigo-500 bg-transparent text-base min-w-[100px] placeholder-slate-300"
-              <ZoomIn size={16} />yle={{ color, fontSize: Math.max(14, size * 5), fontFamily: 'Inter, sans-serif' }}
+              style={{ color, fontSize: Math.max(14, size * 5), fontFamily: 'Inter, sans-serif' }}
             />
           </div>
         )}
@@ -624,9 +624,9 @@ Layout the <ZoomIn size={16} />ickies in a clear grid or workflow sequence. Retu
 
       {/* AI Generate Diagram Modal */}
       {showAiModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center ju<ZoomIn size={16} />ify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4 animate-in fade-in zoom-in-95">
-            <div className="flex items-center ju<ZoomIn size={16} />ify-between">
+            <div className="flex items-center justify-between">
               <h3 className="font-bold text-lg text-slate-900 flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-purple-600" /> Generate AI Diagram
               </h3>
@@ -636,10 +636,10 @@ Layout the <ZoomIn size={16} />ickies in a clear grid or workflow sequence. Retu
             <textarea
               value={aiPrompt}
               onChange={e => setAiPrompt(e.target.value)}
-              placeholder="e.g., Create a 4-<ZoomIn size={16} />ep user authentication & token refresh architecture diagram"
+              placeholder="e.g., Create a 4-step user authentication & token refresh architecture diagram"
               className="w-full h-24 p-3 rounded-xl border border-slate-200 text-sm outline-none focus:border-purple-600 resize-none"
             />
-            <div className="flex ju<ZoomIn size={16} />ify-end gap-2">
+            <div className="flex justify-end gap-2">
               <button onClick={() => setShowAiModal(false)} className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">Cancel</button>
               <button onClick={handleAiGenerateDiagram} disabled={isAiGenerating || !aiPrompt.trim()}
                 className="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white text-xs font-bold flex items-center gap-2">
@@ -653,7 +653,7 @@ Layout the <ZoomIn size={16} />ickies in a clear grid or workflow sequence. Retu
       {/* AI Board Synthesis Drawer */}
       {aiSummary && (
         <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white rounded-2xl p-6 max-w-lg w-full shadow-2xl border border-slate-800 space-y-3 animate-in slide-in-from-bottom-5">
-          <div className="flex items-center ju<ZoomIn size={16} />ify-between border-b border-slate-800 pb-3">
+          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
             <h4 className="font-bold text-sm text-cyan-400 flex items-center gap-2">
               <Brain className="w-4 h-4" /> Board AI Briefing
             </h4>
@@ -667,5 +667,4 @@ Layout the <ZoomIn size={16} />ickies in a clear grid or workflow sequence. Retu
     </div>
   );
 }
-
 

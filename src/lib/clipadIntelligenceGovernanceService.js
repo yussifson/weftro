@@ -2,6 +2,7 @@
 // Clipad V3 - Phase 8: Role-Aware Intelligence + Governance + Privacy
 
 import { supabase } from '@/api/supabaseClient';
+import { isV3FeatureEnabled, V3_FLAGS } from './clipadV3Flags';
 
 export const PRIVACY_LEVELS = {
   PERSONAL: 'PERSONAL',
@@ -15,8 +16,30 @@ export const PRIVACY_LEVELS = {
  * Derives a secure intelligence context for the authenticated user based on actual DB state.
  * This guarantees the AI never receives unauthorized knowledge.
  */
+
 export async function resolveIntelligenceContext(user) {
   if (!user) throw new Error('Unauthenticated user cannot resolve intelligence context');
+
+  // Check Feature Flag
+  const isEnabled = isV3FeatureEnabled(V3_FLAGS.ROLE_AWARE_INTELLIGENCE_ENABLED, user);
+  if (!isEnabled) {
+    // Backward compatibility mode
+    return {
+      userId: user.id,
+      companyId: user.company_id || user.user_metadata?.company_id,
+      role: 'admin', // Full access
+      isAdmin: true,
+      accessibleSpaces: [],
+      managedSpaces: [],
+      allowedMemoryScopes: ['PERSONAL', 'TEAM', 'ORGANIZATION', 'PRIVATE', 'RESTRICTED'],
+      allowedKnowledgeScopes: ['public', 'team', 'organizational'],
+      allowedMomentScopes: ['ORGANIZATION', 'TEAM', 'PERSONAL'],
+      allowedContextScopes: ['GLOBAL', 'SPACE', 'USER'],
+      allowedActions: ['READ', 'WRITE', 'DELETE'],
+      isGovernanceBypassed: true
+    };
+  }
+
 
   const companyId = user.user_metadata?.company_id || user.company_id;
   const role = user.role || user.user_metadata?.role || 'member';
@@ -66,6 +89,7 @@ export async function resolveIntelligenceContext(user) {
  * Uses the resolved governance context.
  */
 export function filterAuthorizedMemories(memories = [], governanceContext) {
+  if (governanceContext.isGovernanceBypassed) return memories;
   const { userId, isAdmin, accessibleSpaces } = governanceContext;
 
   return memories.filter(mem => {
@@ -104,6 +128,7 @@ export function filterAuthorizedMemories(memories = [], governanceContext) {
  * Prevents side-channel leaks (e.g. seeing a private meeting node through a public project edge)
  */
 export function filterAuthorizedGraph(graph = { nodes: [], edges: [] }, governanceContext) {
+  if (governanceContext.isGovernanceBypassed) return graph;
   const { userId, accessibleSpaces } = governanceContext;
 
   const validNodes = graph.nodes.filter(node => {
@@ -132,6 +157,7 @@ export function filterAuthorizedGraph(graph = { nodes: [], edges: [] }, governan
  * Filter Smart Moments 
  */
 export function filterAuthorizedMoments(moments = [], governanceContext) {
+  if (governanceContext.isGovernanceBypassed) return moments;
   const { userId, isAdmin, accessibleSpaces } = governanceContext;
 
   return moments.filter(moment => {
