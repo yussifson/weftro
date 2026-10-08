@@ -1,72 +1,56 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/AuthContext';
-import { supabase } from '@/api/supabaseClient';
-import { createConnectApp, revokeToken } from '@/lib/clipadOAuthService';
-import { registerWebhook, getWebhooks, deleteWebhook } from '@/lib/clipadWebhookService';
+import { getApps, createConnectApp, getWebhooks, createWebhook } from '@/lib/clipadConnectService';
 import { isV3FeatureEnabled, V3_FLAGS } from '@/lib/clipadV3Flags';
-import { Loader2, Webhook, KeyRound, Globe, Trash2, Plus, TerminalSquare, AlertCircle } from 'lucide-react';
-import { useToast } from '@/components/ui/use-toast';
+import { TerminalSquare, KeyRound, Webhook, Fingerprint, Loader2, Plus, ArrowRight, ShieldCheck, Cpu, Code2, Copy, CheckCircle2 } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export default function ConnectSettings() {
   const { user } = useAuth();
-  const { toast } = useToast();
   const [apps, setApps] = useState([]);
   const [webhooks, setWebhooks] = useState([]);
   const [loading, setLoading] = useState(true);
   
-  // Forms
   const [newAppName, setNewAppName] = useState('');
   const [newWebhookUrl, setNewWebhookUrl] = useState('');
-  const [createdSecret, setCreatedSecret] = useState(null);
 
-  const companyId = user?.user_metadata?.company_id || user?.company_id;
-  const isConnectEnabled = isV3FeatureEnabled(V3_FLAGS.CONNECT_ENABLED, user);
+  const isEnabled = isV3FeatureEnabled(V3_FLAGS.CONNECT_ENABLED, user);
+  const isMcpEnabled = isV3FeatureEnabled(V3_FLAGS.MCP_SERVER_ENABLED, user);
   const isWebhooksEnabled = isV3FeatureEnabled(V3_FLAGS.WEBHOOKS_ENABLED, user);
-  const isMcpEnabled = isV3FeatureEnabled(V3_FLAGS.MCP_ENABLED, user);
 
   useEffect(() => {
-    if (user && isConnectEnabled) {
-      loadData();
-    } else {
-      setLoading(false);
-    }
-  }, [user, isConnectEnabled]);
-
-  const loadData = async () => {
-    setLoading(true);
-    try {
-      // Load Developer Apps
-      const { data: appsData } = await supabase
-        .from('clipad_v3_connect_apps')
-        .select('*')
-        .eq('company_id', companyId);
-      setApps(appsData || []);
-
-      // Load Webhooks
-      if (isWebhooksEnabled) {
-        const whs = await getWebhooks(companyId);
-        setWebhooks(whs || []);
+    async function load() {
+      if (!user || !isEnabled) return;
+      try {
+        const [a, w] = await Promise.all([
+          getApps(user),
+          getWebhooks(user)
+        ]);
+        setApps(a || []);
+        setWebhooks(w || []);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
       }
-    } catch (e) {
-      toast({ title: 'Error loading Connect settings', variant: 'destructive' });
     }
-    setLoading(false);
-  };
+    load();
+  }, [user, isEnabled]);
 
   const handleCreateApp = async (e) => {
     e.preventDefault();
     if (!newAppName.trim()) return;
     try {
-      const newApp = await createConnectApp(user.id, companyId, { 
-        name: newAppName.trim(), 
-        description: 'Created from Connect Hub' 
-      });
-      setApps([newApp, ...apps]);
-      setCreatedSecret(newApp.raw_secret); // Only time we show it!
+      await createConnectApp(user, newAppName);
       setNewAppName('');
-      toast({ title: 'Application registered' });
+      const a = await getApps(user);
+      setApps(a);
     } catch (e) {
-      toast({ title: 'Error creating app', variant: 'destructive' });
+      console.error(e);
     }
   };
 
@@ -74,158 +58,202 @@ export default function ConnectSettings() {
     e.preventDefault();
     if (!newWebhookUrl.trim()) return;
     try {
-      const wh = await registerWebhook(user.id, companyId, { 
-        endpointUrl: newWebhookUrl.trim(),
-        events: ['memory.created', 'capture.processed']
-      });
-      setWebhooks([wh, ...webhooks]);
+      await createWebhook(user, newWebhookUrl);
       setNewWebhookUrl('');
-      toast({ title: 'Webhook registered' });
+      const w = await getWebhooks(user);
+      setWebhooks(w);
     } catch (e) {
-      toast({ title: 'Error registering webhook', variant: 'destructive' });
+      console.error(e);
     }
   };
 
-  const handleDeleteWebhook = async (id) => {
-    try {
-      await deleteWebhook(id);
-      setWebhooks(webhooks.filter(w => w.id !== id));
-      toast({ title: 'Webhook removed' });
-    } catch (e) {
-      toast({ title: 'Error removing webhook', variant: 'destructive' });
-    }
-  };
-
-  if (!isConnectEnabled) {
+  if (!isEnabled) {
     return (
-      <div className="flex flex-col items-center justify-center p-10 text-center border border-border rounded-xl bg-card">
-        <KeyRound className="w-8 h-8 text-muted-foreground mb-4" />
-        <h3 className="text-lg font-bold">Connect API is Disabled</h3>
-        <p className="text-sm text-muted-foreground max-w-sm mt-2">
-          Your organization has disabled API access and developer applications.
-        </p>
-      </div>
+      <Card className="border-dashed bg-secondary/20">
+        <CardContent className="flex flex-col items-center justify-center py-16 text-center">
+          <TerminalSquare className="w-12 h-12 text-muted-foreground mb-4 opacity-50" />
+          <h3 className="text-xl font-bold mb-2">Connect API is Disabled</h3>
+          <p className="text-sm text-muted-foreground max-w-sm">
+            Your organization has disabled API access and developer applications.
+          </p>
+        </CardContent>
+      </Card>
     );
   }
 
-  if (loading) return <Loader2 className="w-6 h-6 animate-spin text-muted-foreground m-6" />;
+  if (loading) return (
+    <div className="flex flex-col items-center justify-center py-20 text-muted-foreground animate-in fade-in">
+      <Loader2 className="w-8 h-8 animate-spin mb-4 text-primary" />
+      <p className="text-sm font-medium">Loading API configuration...</p>
+    </div>
+  );
 
   return (
-    <div className="space-y-8 max-w-4xl">
-      <div className="bg-gradient-to-r from-blue-500/10 to-indigo-500/10 border border-blue-500/20 rounded-xl p-6">
-        <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
-          <TerminalSquare className="w-5 h-5 text-blue-500" />
-          Clipad Connect
-        </h2>
-        <p className="text-sm text-muted-foreground mt-2 max-w-2xl">
-          Securely connect external applications and AI systems to your Clipad Knowledge Graph.
-          All requests dynamically respect your existing Row-Level Security and organizational permissions.
-        </p>
-        
-        <div className="flex gap-4 mt-4 text-xs font-bold">
-          <span className="px-2 py-1 bg-background rounded border border-border text-foreground">API: Active</span>
-          <span className={`px-2 py-1 rounded border ${isMcpEnabled ? 'bg-green-100 text-green-700 border-green-200' : 'bg-slate-100 text-slate-500 border-slate-200'}`}>MCP: {isMcpEnabled ? 'Active' : 'Disabled'}</span>
-          <span className={`px-2 py-1 rounded border ${isWebhooksEnabled ? 'bg-green-100 text-green-700 border-green-200' : 'bg-slate-100 text-slate-500 border-slate-200'}`}>Webhooks: {isWebhooksEnabled ? 'Active' : 'Disabled'}</span>
-        </div>
+    <div className="space-y-8 animate-in fade-in duration-500">
+      <div className="flex flex-col gap-2">
+        <h2 className="text-3xl font-bold tracking-tight">Developer Connect</h2>
+        <p className="text-muted-foreground text-lg">Securely integrate Clipad's Intelligence Graph into your custom applications and workflows.</p>
       </div>
 
-      {/* Developer Apps Section */}
-      <div className="bg-card border border-border rounded-xl p-6">
-        <h3 className="text-lg font-bold text-foreground flex items-center gap-2 mb-4">
-          <KeyRound className="w-5 h-5 text-primary" />
-          Developer Applications (OAuth)
-        </h3>
-        
-        {createdSecret && (
-          <div className="bg-amber-100 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 p-4 rounded-lg mb-6 flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-amber-600 mt-0.5 shrink-0" />
-            <div>
-              <p className="text-sm font-bold text-amber-800 dark:text-amber-400">Save your Client Secret now!</p>
-              <p className="text-xs text-amber-700 dark:text-amber-500 mt-1">This is the only time it will be shown. Do not commit it to frontend code.</p>
-              <code className="block mt-2 bg-amber-200/50 dark:bg-black/20 p-2 rounded text-xs select-all break-all text-foreground">
-                {createdSecret}
-              </code>
-              <button onClick={() => setCreatedSecret(null)} className="mt-2 text-xs font-bold text-amber-800 hover:underline">I have saved it</button>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card className="border-blue-500/20 bg-blue-500/5">
+          <CardContent className="p-6 flex items-center justify-between">
+            <div className="flex flex-col gap-1">
+              <span className="text-sm font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5"><TerminalSquare className="w-4 h-4"/> REST API</span>
+              <span className="text-2xl font-bold text-foreground">Active</span>
             </div>
-          </div>
-        )}
+            <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-600">
+              <Code2 className="w-6 h-6" />
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className={isMcpEnabled ? "border-emerald-500/20 bg-emerald-500/5" : "border-border bg-secondary/20 opacity-70"}>
+          <CardContent className="p-6 flex items-center justify-between">
+            <div className="flex flex-col gap-1">
+              <span className="text-sm font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5"><Cpu className="w-4 h-4"/> MCP Protocol</span>
+              <span className="text-2xl font-bold text-foreground">{isMcpEnabled ? 'Active' : 'Disabled'}</span>
+            </div>
+            <div className={`w-12 h-12 rounded-full flex items-center justify-center ${isMcpEnabled ? 'bg-emerald-500/10 text-emerald-600' : 'bg-secondary text-muted-foreground'}`}>
+              <Cpu className="w-6 h-6" />
+            </div>
+          </CardContent>
+        </Card>
 
-        <form onSubmit={handleCreateApp} className="flex gap-3 mb-6">
-          <input 
-            type="text" 
-            placeholder="App Name (e.g. My External AI Assistant)"
-            value={newAppName}
-            onChange={(e) => setNewAppName(e.target.value)}
-            className="flex-1 bg-background border border-border rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-          />
-          <button type="submit" disabled={!newAppName.trim()} className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-bold rounded-lg transition-colors flex items-center gap-2">
-            <Plus className="w-4 h-4" /> Create App
-          </button>
-        </form>
-
-        <div className="space-y-3">
-          {apps.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-4">No connected applications found.</p>
-          ) : (
-            apps.map(app => (
-              <div key={app.id} className="p-4 border border-border rounded-lg bg-background flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                  <h4 className="font-bold text-foreground text-sm">{app.name}</h4>
-                  <p className="text-xs text-muted-foreground font-mono mt-1">Client ID: {app.client_id}</p>
-                </div>
-                <div className="flex gap-2">
-                  <span className="px-2 py-1 bg-secondary text-secondary-foreground text-xs font-bold rounded-md">
-                    {app.is_active ? 'Active' : 'Revoked'}
-                  </span>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
+        <Card className={isWebhooksEnabled ? "border-purple-500/20 bg-purple-500/5" : "border-border bg-secondary/20 opacity-70"}>
+          <CardContent className="p-6 flex items-center justify-between">
+            <div className="flex flex-col gap-1">
+              <span className="text-sm font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5"><Webhook className="w-4 h-4"/> Webhooks</span>
+              <span className="text-2xl font-bold text-foreground">{isWebhooksEnabled ? 'Active' : 'Disabled'}</span>
+            </div>
+            <div className={`w-12 h-12 rounded-full flex items-center justify-center ${isWebhooksEnabled ? 'bg-purple-500/10 text-purple-600' : 'bg-secondary text-muted-foreground'}`}>
+              <Webhook className="w-6 h-6" />
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Webhooks Section */}
-      {isWebhooksEnabled && (
-        <div className="bg-card border border-border rounded-xl p-6">
-          <h3 className="text-lg font-bold text-foreground flex items-center gap-2 mb-4">
-            <Webhook className="w-5 h-5 text-primary" />
-            Outbound Webhooks
-          </h3>
-          
-          <form onSubmit={handleCreateWebhook} className="flex gap-3 mb-6">
-            <input 
-              type="url" 
-              placeholder="https://your-server.com/clipad-webhook"
-              value={newWebhookUrl}
-              onChange={(e) => setNewWebhookUrl(e.target.value)}
-              className="flex-1 bg-background border border-border rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-            />
-            <button type="submit" disabled={!newWebhookUrl.trim()} className="px-4 py-2 bg-secondary hover:bg-secondary/80 text-foreground text-sm font-bold rounded-lg transition-colors flex items-center gap-2">
-              <Plus className="w-4 h-4" /> Add Webhook
-            </button>
-          </form>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Apps Section */}
+        <Card className="shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <KeyRound className="w-5 h-5 text-primary" />
+              Developer Apps (OAuth)
+            </CardTitle>
+            <CardDescription>Create clients to authenticate on behalf of your users.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <form onSubmit={handleCreateApp} className="flex flex-col gap-3">
+              <Label htmlFor="appName" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">New Application Name</Label>
+              <div className="flex gap-2">
+                <Input 
+                  id="appName"
+                  placeholder="e.g. Internal Analytics Dashboard" 
+                  value={newAppName}
+                  onChange={(e) => setNewAppName(e.target.value)}
+                  className="bg-secondary/30"
+                />
+                <Button type="submit" disabled={!newAppName.trim()}>Create App</Button>
+              </div>
+            </form>
 
-          <div className="space-y-3">
-            {webhooks.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-4">No active webhooks.</p>
-            ) : (
-              webhooks.map(wh => (
-                <div key={wh.id} className="p-4 border border-border rounded-lg bg-background flex flex-col md:flex-row md:items-center justify-between gap-4">
-                  <div>
-                    <h4 className="font-bold text-foreground text-sm">{wh.endpoint_url}</h4>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Events: {wh.events.join(', ')}
-                    </p>
-                  </div>
-                  <button onClick={() => handleDeleteWebhook(wh.id)} className="p-2 text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+            <div className="space-y-3">
+              {apps.length === 0 ? (
+                <div className="p-6 rounded-lg bg-secondary/20 border border-dashed flex flex-col items-center justify-center text-center">
+                  <KeyRound className="w-8 h-8 text-muted-foreground mb-2 opacity-50" />
+                  <p className="text-sm text-muted-foreground">No applications created yet.</p>
                 </div>
-              ))
+              ) : (
+                apps.map(app => (
+                  <div key={app.id} className="p-4 rounded-lg border bg-card shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="font-bold">{app.name}</h4>
+                      <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">Active</Badge>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">Client ID</span>
+                        <code className="text-xs font-mono bg-secondary px-2 py-1.5 rounded text-foreground flex items-center justify-between group">
+                          {app.client_id}
+                          <Copy className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity" />
+                        </code>
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">Client Secret</span>
+                        <code className="text-xs font-mono bg-secondary px-2 py-1.5 rounded text-foreground">••••••••••••••••••••••••</code>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Webhooks Section */}
+        <Card className="shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Webhook className="w-5 h-5 text-primary" />
+              Event Webhooks
+            </CardTitle>
+            <CardDescription>Receive real-time intelligence updates and capture events.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {!isWebhooksEnabled ? (
+              <div className="p-6 rounded-lg bg-amber-500/10 border border-amber-500/20 flex flex-col items-center justify-center text-center">
+                <ShieldCheck className="w-8 h-8 text-amber-600 mb-2" />
+                <h4 className="text-sm font-bold text-amber-700">Webhooks Disabled</h4>
+                <p className="text-xs text-amber-600/80 mt-1">Your organization has disabled outbound webhooks for security compliance.</p>
+              </div>
+            ) : (
+              <>
+                <form onSubmit={handleCreateWebhook} className="flex flex-col gap-3">
+                  <Label htmlFor="webhookUrl" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Endpoint URL</Label>
+                  <div className="flex gap-2">
+                    <Input 
+                      id="webhookUrl"
+                      type="url"
+                      placeholder="https://your-server.com/webhook" 
+                      value={newWebhookUrl}
+                      onChange={(e) => setNewWebhookUrl(e.target.value)}
+                      className="bg-secondary/30"
+                    />
+                    <Button type="submit" disabled={!newWebhookUrl.trim()} variant="secondary">Add Endpoint</Button>
+                  </div>
+                </form>
+
+                <div className="space-y-3">
+                  {webhooks.length === 0 ? (
+                    <div className="p-6 rounded-lg bg-secondary/20 border border-dashed flex flex-col items-center justify-center text-center">
+                      <Webhook className="w-8 h-8 text-muted-foreground mb-2 opacity-50" />
+                      <p className="text-sm text-muted-foreground">No webhooks configured.</p>
+                    </div>
+                  ) : (
+                    webhooks.map(wh => (
+                      <div key={wh.id} className="p-4 rounded-lg border bg-card shadow-sm hover:shadow-md transition-shadow">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="min-w-0">
+                            <h4 className="font-medium text-sm text-foreground truncate">{wh.endpoint_url}</h4>
+                            <div className="flex gap-2 mt-2">
+                              <Badge variant="secondary" className="text-[10px]">capture.created</Badge>
+                              <Badge variant="secondary" className="text-[10px]">smart_moment.detected</Badge>
+                            </div>
+                          </div>
+                          <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 shrink-0 flex items-center gap-1">
+                            <CheckCircle2 className="w-3 h-3" /> Active
+                          </Badge>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </>
             )}
-          </div>
-        </div>
-      )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

@@ -1,105 +1,71 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
-import { Loader2, Inbox, RefreshCw, FileText, CheckCircle2, AlertCircle, Video, File, Mic, Monitor, Link as LinkIcon, Users, BrainCircuit, Play, Pause, Archive } from 'lucide-react';
-import { useToast } from '@/components/ui/use-toast';
-import { contextualizeCapture } from '@/lib/clipadContextualizationService';
+import { 
+  getInboxCaptures, 
+  processCaptureToMemory,
+  getContextSessions,
+  createContextSession,
+  updateContextSessionStatus,
+  associateCaptureWithSession
+} from '@/lib/clipadCaptureService';
 import { isV3FeatureEnabled, V3_FLAGS } from '@/lib/clipadV3Flags';
 import BrowserCaptureSettings from './BrowserCaptureSettings';
-import { updateCapture } from '@/lib/clipadCaptureService';
-import { getUserContextSessions, createContextSession, updateContextSession, completeContextSession, archiveContextSession } from '@/lib/clipadContextSessionService';
-
-const getSourceIcon = (type) => {
-  switch (type) {
-    case 'VIDEO': return <Video className="w-4 h-4" />;
-    case 'MEETING_CONTEXT': return <Users className="w-4 h-4" />;
-    case 'DOCUMENT': return <File className="w-4 h-4" />;
-    case 'VOICE': return <Mic className="w-4 h-4" />;
-    case 'SCREEN': return <Monitor className="w-4 h-4" />;
-    case 'LINK': return <LinkIcon className="w-4 h-4" />;
-    default: return <FileText className="w-4 h-4" />;
-  }
-};
-
-const getStatusBadge = (status) => {
-  switch (status) {
-    case 'CREATED': return <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 text-xs font-semibold">Created</span>;
-    case 'PROCESSING': return <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 text-xs font-semibold flex items-center gap-1"><Loader2 className="w-3 h-3 animate-spin"/> Processing</span>;
-    case 'CONTEXTUALIZED': return <span className="px-2 py-0.5 rounded-full bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400 text-xs font-semibold flex items-center gap-1"><CheckCircle2 className="w-3 h-3"/> Contextualized</span>;
-    case 'FAILED': return <span className="px-2 py-0.5 rounded-full bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 text-xs font-semibold flex items-center gap-1"><AlertCircle className="w-3 h-3"/> Failed</span>;
-    default: return <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 text-xs font-semibold">{status}</span>;
-  }
-};
+import { 
+  Loader2, Sparkles, BrainCircuit, Mic, Type, FileText, Link2, Monitor, 
+  PlaySquare, Users, MessageSquare, Plus, CheckCircle2, AlertCircle, 
+  Clock, ArrowRight, Play, Pause, Archive, Settings2, FolderOpen
+} from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function CaptureInbox() {
   const { user } = useAuth();
-  const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState('captures');
   const [captures, setCaptures] = useState([]);
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState(null);
-  const [activeTab, setActiveTab] = useState('captures'); // 'captures' | 'sessions'
   const [newSessionTitle, setNewSessionTitle] = useState('');
 
-  const companyId = user?.user_metadata?.company_id || user?.company_id;
   const contextSessionsEnabled = isV3FeatureEnabled(V3_FLAGS.CONTEXT_SESSIONS_ENABLED, user);
   const browserCaptureEnabled = isV3FeatureEnabled(V3_FLAGS.BROWSER_CAPTURE_ENABLED, user);
 
-  const loadData = async () => {
-    setLoading(true);
-    
-    // Load Captures
-    const { data: capData, error: capErr } = await supabase
-      .from('clipad_v3_captures')
-      .select('*')
-      .order('captured_at', { ascending: false })
-      .limit(50);
-    
-    if (capErr) {
-      toast({ title: 'Error', description: 'Could not load capture inbox.', variant: 'destructive' });
-    } else {
-      setCaptures(capData || []);
-    }
-
-    // Load Sessions if enabled
-    if (contextSessionsEnabled && companyId) {
-      const sessData = await getUserContextSessions(user.id, companyId);
-      setSessions(sessData || []);
-    }
-
-    setLoading(false);
-  };
-
   useEffect(() => {
-    if (user) loadData();
-  }, [user, contextSessionsEnabled, companyId]);
+    loadData();
+  }, [user]);
+
+  async function loadData() {
+    if (!user) return;
+    setLoading(true);
+    try {
+      const inbox = await getInboxCaptures(user, 50);
+      setCaptures(inbox || []);
+      
+      if (contextSessionsEnabled) {
+        const sess = await getContextSessions(user);
+        setSessions(sess || []);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const handleProcess = async (capture) => {
-    if (processingId) return;
     setProcessingId(capture.id);
-    
     try {
-      setCaptures(prev => prev.map(c => c.id === capture.id ? { ...c, status: 'PROCESSING' } : c));
-      const updated = await contextualizeCapture(capture.id);
-      setCaptures(prev => prev.map(c => c.id === capture.id ? updated : c));
-      toast({ title: 'Success', description: 'Capture contextualized successfully.' });
-    } catch (error) {
-      console.error(error);
-      setCaptures(prev => prev.map(c => c.id === capture.id ? { ...c, status: 'FAILED' } : c));
-      toast({ title: 'Error', description: 'Failed to contextualize capture.', variant: 'destructive' });
+      await processCaptureToMemory(user, capture.id);
+      await loadData();
+    } catch (e) {
+      console.error("Failed to process", e);
+      alert("Failed to process capture into organizational memory");
     } finally {
       setProcessingId(null);
-    }
-  };
-
-  
-  const handleAssociateSession = async (captureId, sessionId) => {
-    try {
-      const updated = await updateCapture(captureId, { context_session_id: sessionId || null });
-      setCaptures(prev => prev.map(c => c.id === captureId ? updated : c));
-      toast({ title: 'Success', description: 'Session association updated.' });
-    } catch (e) {
-      toast({ title: 'Error', description: 'Failed to associate session.', variant: 'destructive' });
     }
   };
 
@@ -107,241 +73,261 @@ export default function CaptureInbox() {
     e.preventDefault();
     if (!newSessionTitle.trim()) return;
     try {
-      const session = await createContextSession({
-        companyId,
-        userId: user.id,
-        title: newSessionTitle.trim(),
-        description: 'Created from Capture Inbox'
-      });
-      setSessions([session, ...sessions]);
+      await createContextSession(user, newSessionTitle);
       setNewSessionTitle('');
-      toast({ title: 'Session created' });
-    } catch (error) {
-      toast({ title: 'Error', description: 'Could not create session.', variant: 'destructive' });
+      await loadData();
+    } catch (e) {
+      console.error(e);
+      alert("Failed to start session");
     }
   };
 
-  const handleSessionAction = async (id, action) => {
+  const handleSessionAction = async (sessionId, action) => {
+    let newStatus = 'ACTIVE';
+    if (action === 'pause') newStatus = 'PAUSED';
+    if (action === 'complete') newStatus = 'COMPLETED';
+    if (action === 'archive') newStatus = 'ARCHIVED';
+    
     try {
-      let updated;
-      if (action === 'pause') updated = await updateContextSession(id, { status: 'PAUSED' });
-      else if (action === 'resume') updated = await updateContextSession(id, { status: 'ACTIVE' });
-      else if (action === 'complete') updated = await completeContextSession(id);
-      else if (action === 'archive') updated = await archiveContextSession(id);
-      
-      setSessions(prev => prev.map(s => s.id === id ? updated : s));
-      toast({ title: `Session ${action}d` });
+      await updateContextSessionStatus(user, sessionId, newStatus);
+      await loadData();
     } catch (e) {
-      toast({ title: 'Error', description: `Failed to ${action} session.`, variant: 'destructive' });
+      console.error(e);
+      alert("Failed to update session");
+    }
+  };
+
+  const handleAssociateSession = async (captureId, sessionId) => {
+    try {
+      await associateCaptureWithSession(user, captureId, sessionId || null);
+      await loadData();
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const getSourceIcon = (type) => {
+    switch(type) {
+      case 'VOICE': return <Mic className="w-4 h-4 text-rose-500" />;
+      case 'NOTE': return <Type className="w-4 h-4 text-amber-500" />;
+      case 'DOCUMENT': return <FileText className="w-4 h-4 text-blue-500" />;
+      case 'LINK': return <Link2 className="w-4 h-4 text-emerald-500" />;
+      case 'SCREEN': return <Monitor className="w-4 h-4 text-indigo-500" />;
+      case 'VIDEO': return <PlaySquare className="w-4 h-4 text-purple-500" />;
+      case 'MEETING_CONTEXT': return <Users className="w-4 h-4 text-sky-500" />;
+      case 'CONVERSATION_CONTEXT': return <MessageSquare className="w-4 h-4 text-teal-500" />;
+      default: return <Sparkles className="w-4 h-4 text-slate-500" />;
+    }
+  };
+
+  const getStatusBadge = (status) => {
+    switch(status) {
+      case 'CREATED': return <Badge variant="secondary" className="bg-blue-500/10 text-blue-500 hover:bg-blue-500/20">Ready</Badge>;
+      case 'PROCESSING': return <Badge variant="secondary" className="bg-amber-500/10 text-amber-500 hover:bg-amber-500/20"><Loader2 className="w-3 h-3 mr-1 animate-spin" /> Processing</Badge>;
+      case 'PROCESSED': return <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20">Processed</Badge>;
+      case 'FAILED': return <Badge variant="destructive" className="bg-red-500/10 text-red-500 hover:bg-red-500/20 border-red-500/20">Failed</Badge>;
+      default: return <Badge variant="outline">{status}</Badge>;
     }
   };
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
-        <Loader2 className="w-8 h-8 animate-spin mb-4" />
-        <p>Loading capture inbox...</p>
+      <div className="flex flex-col items-center justify-center min-h-[300px] text-muted-foreground animate-in fade-in">
+        <Loader2 className="w-8 h-8 animate-spin mb-4 text-primary" />
+        <p className="text-sm font-medium animate-pulse">Loading capture inbox...</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-4">
-          <h2 className="text-lg font-bold text-foreground">
-            {activeTab === 'captures' ? 'Processing Inbox' : 'Context Sessions'}
-          </h2>
-          {contextSessionsEnabled && (
-            <div className="flex bg-secondary rounded-lg p-1">
-              <button 
-                onClick={() => setActiveTab('captures')}
-                className={`px-3 py-1 text-xs font-bold rounded-md transition-colors ${activeTab === 'captures' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-              >
-                Captures
-              </button>
-              <button 
-                onClick={() => setActiveTab('sessions')}
-                className={`px-3 py-1 text-xs font-bold rounded-md transition-colors ${activeTab === 'sessions' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-              >
-                Sessions
-              </button>
-
-              {browserCaptureEnabled && (
-                <button 
-                  onClick={() => setActiveTab('extension')}
-                  className={`px-3 py-1 text-xs font-bold rounded-md transition-colors ${activeTab === 'extension' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-                >
-                  Extension
-                </button>
-              )}
-            </div>
-
-          )}
-        </div>
-        <button 
-          onClick={loadData}
-          className="p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg text-muted-foreground transition-colors"
-        >
-          <RefreshCw className="w-4 h-4" />
-        </button>
+    <div className="space-y-8 animate-in fade-in duration-500">
+      <div className="flex flex-col gap-2">
+        <h2 className="text-3xl font-bold tracking-tight">Capture & Context Inbox</h2>
+        <p className="text-muted-foreground">Process incoming captures, manage live context sessions, and configure browser extensions.</p>
       </div>
 
-      {activeTab === 'captures' && (
-        captures.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center px-4">
-            <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
-              <Inbox className="w-8 h-8 text-primary" />
-            </div>
-            <h3 className="text-xl font-bold text-foreground mb-2">No captures yet</h3>
-            <p className="text-muted-foreground max-w-md">
-              When you record videos, host meetings, or sync data through integrations, the raw data will appear here to be processed into organizational memory.
-            </p>
-          </div>
-        ) : (
-          <div className="grid gap-3">
-            {captures.map(capture => (
-              <div key={capture.id} className="bg-card border border-border rounded-xl p-4 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between shadow-sm hover:shadow transition-shadow group">
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center shrink-0 text-muted-foreground mt-1 md:mt-0">
-                    {getSourceIcon(capture.capture_type)}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-bold text-foreground text-sm">{capture.title || 'Untitled Capture'}</h3>
-                      {getStatusBadge(capture.status)}
-                    </div>
-                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                      <span>{new Date(capture.captured_at).toLocaleString()}</span>
-                      <span>•</span>
-                      <span>{capture.source_type}</span>
-                      {capture.visibility !== 'PERSONAL' && (
-                        <>
-                          <span>•</span>
-                          <span className="uppercase text-[10px] font-bold tracking-wider">{capture.visibility}</span>
-                        </>
-                      )}
-                    </div>
-                    {capture.metadata?.extracted_topics && capture.metadata.extracted_topics.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {capture.metadata.extracted_topics.map(t => (
-                          <span key={t} className="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 text-[10px] font-medium">{t}</span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+      <Tabs defaultValue="captures" value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-3 max-w-md bg-secondary/50">
+          <TabsTrigger value="captures" className="font-semibold">Processing Inbox</TabsTrigger>
+          {contextSessionsEnabled && <TabsTrigger value="sessions" className="font-semibold">Live Sessions</TabsTrigger>}
+          {browserCaptureEnabled && <TabsTrigger value="extension" className="font-semibold"><Settings2 className="w-4 h-4 mr-2"/> Settings</TabsTrigger>}
+        </TabsList>
+
+        <TabsContent value="captures" className="mt-6 space-y-4">
+          {captures.length === 0 ? (
+            <Card className="border-dashed bg-secondary/20 shadow-none">
+              <CardContent className="flex flex-col items-center justify-center py-16 text-center">
+                <div className="w-12 h-12 bg-background rounded-full flex items-center justify-center mb-4 shadow-sm border border-border">
+                  <FolderOpen className="w-5 h-5 text-muted-foreground" />
                 </div>
-                
-                <div className="flex items-center gap-2 w-full md:w-auto mt-2 md:mt-0">
-                  
-                  {contextSessionsEnabled && (
-                    <select 
-                      className="text-xs bg-secondary border border-border rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-primary text-foreground"
-                      value={capture.context_session_id || ''}
-                      onChange={(e) => handleAssociateSession(capture.id, e.target.value)}
-                    >
-                      <option value="">No Session</option>
-                      {sessions.filter(s => s.status === 'ACTIVE' || s.id === capture.context_session_id).map(s => (
-                        <option key={s.id} value={s.id}>
-                          {s.title} {s.status !== 'ACTIVE' ? '(Inactive)' : ''}
-                        </option>
-                      ))}
-                    </select>
-                  )}
-
-                    {['CREATED', 'FAILED'].includes(capture.status) && (
-                    <button
-                      onClick={() => handleProcess(capture)}
-                      disabled={processingId === capture.id}
-                      className="w-full md:w-auto px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center gap-1.5 hover:bg-primary/90 disabled:opacity-50 transition-colors"
-                    >
-                      {processingId === capture.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <BrainCircuit className="w-3.5 h-3.5" />}
-                      Process Context
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )
-      )}
-
-      {activeTab === 'sessions' && contextSessionsEnabled && (
-        <div className="space-y-6">
-          <form onSubmit={handleCreateSession} className="flex gap-2">
-            <input 
-              type="text" 
-              placeholder="New session title... (e.g. Q3 Roadmap Planning)"
-              className="flex-1 bg-background border border-border rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-              value={newSessionTitle}
-              onChange={(e) => setNewSessionTitle(e.target.value)}
-            />
-            <button 
-              type="submit"
-              disabled={!newSessionTitle.trim()}
-              className="px-4 py-2 bg-primary text-primary-foreground text-sm font-bold rounded-lg hover:bg-primary/90 disabled:opacity-50 transition-colors"
-            >
-              Start Session
-            </button>
-          </form>
-
-          {sessions.length === 0 ? (
-            <div className="text-center py-10 text-muted-foreground text-sm">
-              No context sessions active.
-            </div>
+                <h3 className="text-lg font-semibold mb-1">Inbox is empty</h3>
+                <p className="text-sm text-muted-foreground max-w-sm">You have no pending captures. Use the Clipad extension, API, or integration tools to capture context.</p>
+              </CardContent>
+            </Card>
           ) : (
-            <div className="grid gap-3">
-              {sessions.map(session => (
-                <div key={session.id} className="bg-card border border-border rounded-xl p-4 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between shadow-sm hover:shadow transition-shadow">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-bold text-foreground text-sm">{session.title}</h3>
-                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                        session.status === 'ACTIVE' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
-                        session.status === 'PAUSED' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' :
-                        'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400'
-                      }`}>
-                        {session.status}
-                      </span>
+            <div className="space-y-4">
+              {captures.map(capture => (
+                <Card key={capture.id} className="group overflow-hidden transition-all hover:shadow-md hover:border-primary/20">
+                  <CardContent className="p-0">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center p-4 gap-4">
+                      <div className="flex-1 flex items-start gap-4 w-full">
+                        <div className="w-10 h-10 rounded-xl bg-secondary border border-border flex items-center justify-center shrink-0">
+                          {getSourceIcon(capture.capture_type)}
+                        </div>
+                        <div className="flex-1 min-w-0 space-y-1">
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-semibold text-foreground truncate">{capture.title || 'Untitled Capture'}</h3>
+                            {getStatusBadge(capture.status)}
+                          </div>
+                          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                            <span className="flex items-center"><Clock className="w-3 h-3 mr-1"/> {new Date(capture.captured_at).toLocaleDateString()} {new Date(capture.captured_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                            <span>•</span>
+                            <span className="font-medium tracking-wide">{capture.source_type}</span>
+                            {capture.visibility !== 'PERSONAL' && (
+                              <>
+                                <span>•</span>
+                                <Badge variant="outline" className="text-[10px] h-4 px-1.5 uppercase tracking-wider">{capture.visibility}</Badge>
+                              </>
+                            )}
+                          </div>
+                          {capture.metadata?.extracted_topics && capture.metadata.extracted_topics.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-2">
+                              {capture.metadata.extracted_topics.map(t => (
+                                <Badge key={t} variant="secondary" className="text-[10px] font-medium bg-secondary/50 text-secondary-foreground">{t}</Badge>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto shrink-0 border-t sm:border-t-0 sm:border-l border-border pt-4 sm:pt-0 sm:pl-4 mt-2 sm:mt-0">
+                        {contextSessionsEnabled && (
+                          <Select 
+                            value={capture.context_session_id || 'none'}
+                            onValueChange={(val) => handleAssociateSession(capture.id, val === 'none' ? null : val)}
+                          >
+                            <SelectTrigger className="w-full sm:w-[140px] h-8 text-xs bg-secondary/50 border-border">
+                              <SelectValue placeholder="No Session" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="none">No Session</SelectItem>
+                              {sessions.filter(s => s.status === 'ACTIVE' || s.id === capture.context_session_id).map(s => (
+                                <SelectItem key={s.id} value={s.id}>
+                                  {s.title} {s.status !== 'ACTIVE' ? '(Inactive)' : ''}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        )}
+
+                        {['CREATED', 'FAILED'].includes(capture.status) && (
+                          <Button
+                            onClick={() => handleProcess(capture)}
+                            disabled={processingId === capture.id}
+                            size="sm"
+                            className="w-full sm:w-auto h-8 text-xs font-semibold"
+                          >
+                            {processingId === capture.id ? (
+                              <Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" />
+                            ) : (
+                              <BrainCircuit className="w-3.5 h-3.5 mr-2" />
+                            )}
+                            Process Context
+                          </Button>
+                        )}
+                      </div>
                     </div>
-                    <div className="text-xs text-muted-foreground">
-                      Started: {new Date(session.started_at).toLocaleString()}
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    {session.status === 'ACTIVE' && (
-                      <button onClick={() => handleSessionAction(session.id, 'pause')} className="p-1.5 hover:bg-amber-500/10 text-amber-600 rounded-lg transition-colors" title="Pause Session">
-                        <Pause className="w-4 h-4" />
-                      </button>
-                    )}
-                    {session.status === 'PAUSED' && (
-                      <button onClick={() => handleSessionAction(session.id, 'resume')} className="p-1.5 hover:bg-green-500/10 text-green-600 rounded-lg transition-colors" title="Resume Session">
-                        <Play className="w-4 h-4" />
-                      </button>
-                    )}
-                    {['ACTIVE', 'PAUSED'].includes(session.status) && (
-                      <button onClick={() => handleSessionAction(session.id, 'complete')} className="p-1.5 hover:bg-blue-500/10 text-blue-600 rounded-lg transition-colors" title="Complete Session">
-                        <CheckCircle2 className="w-4 h-4" />
-                      </button>
-                    )}
-                    {session.status !== 'ARCHIVED' && (
-                      <button onClick={() => handleSessionAction(session.id, 'archive')} className="p-1.5 hover:bg-red-500/10 text-red-600 rounded-lg transition-colors" title="Archive Session">
-                        <Archive className="w-4 h-4" />
-                      </button>
-                    )}
-                  </div>
-                </div>
+                  </CardContent>
+                </Card>
               ))}
             </div>
           )}
-        </div>
-      )}
-    
-      {activeTab === 'extension' && browserCaptureEnabled && (
-        <BrowserCaptureSettings />
-      )}
+        </TabsContent>
 
+        {contextSessionsEnabled && (
+          <TabsContent value="sessions" className="mt-6 space-y-6">
+            <Card>
+              <CardHeader className="pb-4">
+                <CardTitle className="text-lg">Start New Session</CardTitle>
+                <CardDescription>Group incoming captures under a specific context like a meeting or deep work sprint.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleCreateSession} className="flex gap-3">
+                  <Input 
+                    type="text" 
+                    placeholder="New session title... (e.g. Q3 Roadmap Planning)"
+                    value={newSessionTitle}
+                    onChange={(e) => setNewSessionTitle(e.target.value)}
+                    className="flex-1 bg-secondary/30"
+                  />
+                  <Button type="submit" disabled={!newSessionTitle.trim()} className="shrink-0 font-semibold shadow-sm">
+                    <Plus className="w-4 h-4 mr-2" /> Start Session
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+
+            {sessions.length === 0 ? (
+              <Card className="border-dashed bg-secondary/20 shadow-none">
+                <CardContent className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
+                  <Clock className="w-8 h-8 mb-3 opacity-50" />
+                  <p className="text-sm">No context sessions are currently active.</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {sessions.map(session => (
+                  <Card key={session.id} className={`transition-all ${session.status === 'ACTIVE' ? 'border-primary/40 shadow-sm' : 'opacity-80'}`}>
+                    <CardHeader className="pb-3">
+                      <div className="flex items-start justify-between gap-2">
+                        <CardTitle className="text-base line-clamp-1" title={session.title}>{session.title}</CardTitle>
+                        <Badge variant="outline" className={`text-[10px] font-bold uppercase tracking-wider shrink-0 ${
+                          session.status === 'ACTIVE' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' :
+                          session.status === 'PAUSED' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' :
+                          'bg-secondary text-muted-foreground'
+                        }`}>
+                          {session.status}
+                        </Badge>
+                      </div>
+                      <CardDescription className="text-xs flex items-center">
+                        <Clock className="w-3 h-3 mr-1.5" /> Started {new Date(session.started_at).toLocaleDateString()}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardFooter className="pt-0 border-t bg-secondary/10 px-4 py-3 mt-4 flex items-center justify-end gap-2">
+                      {session.status === 'ACTIVE' && (
+                        <Button variant="ghost" size="icon" onClick={() => handleSessionAction(session.id, 'pause')} className="h-8 w-8 text-amber-600 hover:bg-amber-500/10" title="Pause Session">
+                          <Pause className="w-4 h-4" />
+                        </Button>
+                      )}
+                      {session.status === 'PAUSED' && (
+                        <Button variant="ghost" size="icon" onClick={() => handleSessionAction(session.id, 'resume')} className="h-8 w-8 text-emerald-600 hover:bg-emerald-500/10" title="Resume Session">
+                          <Play className="w-4 h-4" />
+                        </Button>
+                      )}
+                      {['ACTIVE', 'PAUSED'].includes(session.status) && (
+                        <Button variant="ghost" size="icon" onClick={() => handleSessionAction(session.id, 'complete')} className="h-8 w-8 text-blue-600 hover:bg-blue-500/10" title="Complete Session">
+                          <CheckCircle2 className="w-4 h-4" />
+                        </Button>
+                      )}
+                      {session.status !== 'ARCHIVED' && (
+                        <Button variant="ghost" size="icon" onClick={() => handleSessionAction(session.id, 'archive')} className="h-8 w-8 text-red-600 hover:bg-red-500/10" title="Archive Session">
+                          <Archive className="w-4 h-4" />
+                        </Button>
+                      )}
+                    </CardFooter>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+        )}
+      
+        {browserCaptureEnabled && (
+          <TabsContent value="extension" className="mt-6">
+            <BrowserCaptureSettings />
+          </TabsContent>
+        )}
+      </Tabs>
     </div>
   );
 }
