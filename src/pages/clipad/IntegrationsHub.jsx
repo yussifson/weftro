@@ -24,6 +24,7 @@ import { INTEGRATIONS, CATEGORIES } from '@/config/integrationsList';
 import CaptureInbox from '@/components/clipad/features/CaptureInbox';
 import ConnectSettings from '@/components/clipad/features/ConnectSettings';
 import GovernanceSettings from '@/components/clipad/features/GovernanceSettings';
+import { isV3FeatureEnabled, V3_FLAGS } from '@/lib/clipadV3Flags';
 
 const isSuperAdmin = (user) => user?.role === 'super_admin' || user?.user_metadata?.role === 'super_admin';
 
@@ -59,6 +60,7 @@ export default function IntegrationsHub() {
 
   const userRole = user?.role || user?.user_metadata?.role || 'member';
   const isAdmin = ['super_admin', 'admin'].includes(userRole);
+  const isConnectEnabled = isAdmin && isV3FeatureEnabled(V3_FLAGS.CONNECT_ENABLED, user);
 
   // Handle OAuth callback status
   useEffect(() => {
