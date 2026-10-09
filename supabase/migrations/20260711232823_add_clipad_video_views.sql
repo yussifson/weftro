@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS public.clipad_video_views (
 
 ALTER TABLE public.clipad_video_views ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Enable all for authenticated users" ON public.clipad_video_views;
 CREATE POLICY "Enable all for authenticated users" ON public.clipad_video_views FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
 -- Add to PowerSync publication (safe if already published, but powersync might complain so we use a safe block if needed, but standard is just ADD TABLE)

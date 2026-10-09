@@ -62,11 +62,17 @@ ALTER TABLE public.clipad_scheduling_links ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.clipad_external_calendar_connections ENABLE ROW LEVEL SECURITY;
 
 -- POLICIES (All authenticated users for spaces layer)
+DROP POLICY IF EXISTS "Enable all for authenticated users" ON public.clipad_docs;
 CREATE POLICY "Enable all for authenticated users" ON public.clipad_docs FOR ALL TO authenticated USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Enable all for authenticated users" ON public.clipad_doc_versions;
 CREATE POLICY "Enable all for authenticated users" ON public.clipad_doc_versions FOR ALL TO authenticated USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Enable all for authenticated users" ON public.clipad_doc_links;
 CREATE POLICY "Enable all for authenticated users" ON public.clipad_doc_links FOR ALL TO authenticated USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Enable all for authenticated users" ON public.clipad_calendar_events;
 CREATE POLICY "Enable all for authenticated users" ON public.clipad_calendar_events FOR ALL TO authenticated USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Enable all for authenticated users" ON public.clipad_scheduling_links;
 CREATE POLICY "Enable all for authenticated users" ON public.clipad_scheduling_links FOR ALL TO authenticated USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Enable all for authenticated users" ON public.clipad_external_calendar_connections;
 CREATE POLICY "Enable all for authenticated users" ON public.clipad_external_calendar_connections FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
 -- POWERSYNC PUBLICATION

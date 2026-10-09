@@ -81,6 +81,7 @@ CREATE INDEX IF NOT EXISTS idx_knowledge_relationships_company ON public.clipad_
 -- Enable RLS on the new table
 ALTER TABLE public.clipad_knowledge_relationships ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "knowledge_relationships_company_isolation" ON public.clipad_knowledge_relationships;
 CREATE POLICY "knowledge_relationships_company_isolation" ON public.clipad_knowledge_relationships
   FOR ALL USING (
     company_id::text IN (

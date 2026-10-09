@@ -359,59 +359,78 @@ ALTER TABLE public.univ_re_e_signatures ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.univ_re_audit_log ENABLE ROW LEVEL SECURITY;
 
 -- ===== CREATE RLS POLICIES =====
+DROP POLICY IF EXISTS "re_counter_offers_company_access" ON public.univ_re_counter_offers;
 CREATE POLICY "re_counter_offers_company_access" ON public.univ_re_counter_offers
   FOR ALL USING (company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid()));
 
+DROP POLICY IF EXISTS "re_commission_rules_company_access" ON public.univ_re_commission_rules;
 CREATE POLICY "re_commission_rules_company_access" ON public.univ_re_commission_rules
   FOR ALL USING (company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid()));
 
+DROP POLICY IF EXISTS "re_commission_details_company_access" ON public.univ_re_commission_details;
 CREATE POLICY "re_commission_details_company_access" ON public.univ_re_commission_details
   FOR ALL USING (company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid()));
 
+DROP POLICY IF EXISTS "re_trust_accounts_company_access" ON public.univ_re_trust_accounts;
 CREATE POLICY "re_trust_accounts_company_access" ON public.univ_re_trust_accounts
   FOR ALL USING (company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid()));
 
+DROP POLICY IF EXISTS "re_trust_ledger_company_access" ON public.univ_re_trust_ledger;
 CREATE POLICY "re_trust_ledger_company_access" ON public.univ_re_trust_ledger
   FOR ALL USING (company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid()));
 
+DROP POLICY IF EXISTS "re_escrow_accounts_company_access" ON public.univ_re_escrow_accounts;
 CREATE POLICY "re_escrow_accounts_company_access" ON public.univ_re_escrow_accounts
   FOR ALL USING (company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid()));
 
+DROP POLICY IF EXISTS "re_comparable_properties_company_access" ON public.univ_re_comparable_properties;
 CREATE POLICY "re_comparable_properties_company_access" ON public.univ_re_comparable_properties
   FOR ALL USING (company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid()));
 
+DROP POLICY IF EXISTS "re_market_data_company_access" ON public.univ_re_market_data;
 CREATE POLICY "re_market_data_company_access" ON public.univ_re_market_data
   FOR ALL USING (company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid()));
 
+DROP POLICY IF EXISTS "re_contractors_company_access" ON public.univ_re_contractors;
 CREATE POLICY "re_contractors_company_access" ON public.univ_re_contractors
   FOR ALL USING (company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid()));
 
+DROP POLICY IF EXISTS "re_contractor_reviews_company_access" ON public.univ_re_contractor_reviews;
 CREATE POLICY "re_contractor_reviews_company_access" ON public.univ_re_contractor_reviews
   FOR ALL USING (company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid()));
 
+DROP POLICY IF EXISTS "re_client_scoring_company_access" ON public.univ_re_client_scoring;
 CREATE POLICY "re_client_scoring_company_access" ON public.univ_re_client_scoring
   FOR ALL USING (company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid()));
 
+DROP POLICY IF EXISTS "re_agent_metrics_company_access" ON public.univ_re_agent_metrics;
 CREATE POLICY "re_agent_metrics_company_access" ON public.univ_re_agent_metrics
   FOR ALL USING (company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid()));
 
+DROP POLICY IF EXISTS "re_agent_recommendations_company_access" ON public.univ_re_agent_recommendations;
 CREATE POLICY "re_agent_recommendations_company_access" ON public.univ_re_agent_recommendations
   FOR ALL USING (company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid()));
 
+DROP POLICY IF EXISTS "re_lease_renewals_company_access" ON public.univ_re_lease_renewals;
 CREATE POLICY "re_lease_renewals_company_access" ON public.univ_re_lease_renewals
   FOR ALL USING (company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid()));
 
+DROP POLICY IF EXISTS "re_rent_payment_schedules_company_access" ON public.univ_re_rent_payment_schedules;
 CREATE POLICY "re_rent_payment_schedules_company_access" ON public.univ_re_rent_payment_schedules
   FOR ALL USING (company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid()));
 
+DROP POLICY IF EXISTS "re_rent_payment_history_company_access" ON public.univ_re_rent_payment_history;
 CREATE POLICY "re_rent_payment_history_company_access" ON public.univ_re_rent_payment_history
   FOR ALL USING (company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid()));
 
+DROP POLICY IF EXISTS "re_document_templates_company_access" ON public.univ_re_document_templates;
 CREATE POLICY "re_document_templates_company_access" ON public.univ_re_document_templates
   FOR ALL USING (company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid()));
 
+DROP POLICY IF EXISTS "re_e_signatures_company_access" ON public.univ_re_e_signatures;
 CREATE POLICY "re_e_signatures_company_access" ON public.univ_re_e_signatures
   FOR ALL USING (company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid()));
 
+DROP POLICY IF EXISTS "re_audit_log_company_access" ON public.univ_re_audit_log;
 CREATE POLICY "re_audit_log_company_access" ON public.univ_re_audit_log
   FOR ALL USING (company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid()));

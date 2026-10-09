@@ -41,23 +41,33 @@ ALTER TABLE public.clipad_v3_organizational_insights ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.clipad_v3_automation_rules ENABLE ROW LEVEL SECURITY;
 
 -- Insights RLS
+DROP POLICY IF EXISTS "Users can view company insights"
+    ON public.clipad_v3_organizational_insights;
 CREATE POLICY "Users can view company insights"
     ON public.clipad_v3_organizational_insights FOR SELECT
     USING (company_id IN (SELECT company_id FROM public.profiles WHERE id = auth.uid()));
 
+DROP POLICY IF EXISTS "Users can update company insights"
+    ON public.clipad_v3_organizational_insights;
 CREATE POLICY "Users can update company insights"
     ON public.clipad_v3_organizational_insights FOR UPDATE
     USING (company_id IN (SELECT company_id FROM public.profiles WHERE id = auth.uid()));
 
+DROP POLICY IF EXISTS "Users can insert company insights"
+    ON public.clipad_v3_organizational_insights;
 CREATE POLICY "Users can insert company insights"
     ON public.clipad_v3_organizational_insights FOR INSERT
     WITH CHECK (company_id IN (SELECT company_id FROM public.profiles WHERE id = auth.uid()));
 
 -- Automation Rules RLS
+DROP POLICY IF EXISTS "Users can view company automation rules"
+    ON public.clipad_v3_automation_rules;
 CREATE POLICY "Users can view company automation rules"
     ON public.clipad_v3_automation_rules FOR SELECT
     USING (company_id IN (SELECT company_id FROM public.profiles WHERE id = auth.uid()));
 
+DROP POLICY IF EXISTS "Admins can manage company automation rules"
+    ON public.clipad_v3_automation_rules;
 CREATE POLICY "Admins can manage company automation rules"
     ON public.clipad_v3_automation_rules FOR ALL
     USING (

@@ -94,14 +94,23 @@ ALTER TABLE public.clipad_notifications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.clipad_notification_preferences ENABLE ROW LEVEL SECURITY;
 
 -- POLICIES (All authenticated users)
+DROP POLICY IF EXISTS "Enable all for authenticated users" ON public.clipad_channels;
 CREATE POLICY "Enable all for authenticated users" ON public.clipad_channels FOR ALL TO authenticated USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Enable all for authenticated users" ON public.clipad_channel_members;
 CREATE POLICY "Enable all for authenticated users" ON public.clipad_channel_members FOR ALL TO authenticated USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Enable all for authenticated users" ON public.clipad_messages;
 CREATE POLICY "Enable all for authenticated users" ON public.clipad_messages FOR ALL TO authenticated USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Enable all for authenticated users" ON public.clipad_message_reactions;
 CREATE POLICY "Enable all for authenticated users" ON public.clipad_message_reactions FOR ALL TO authenticated USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Enable all for authenticated users" ON public.clipad_task_boards;
 CREATE POLICY "Enable all for authenticated users" ON public.clipad_task_boards FOR ALL TO authenticated USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Enable all for authenticated users" ON public.clipad_tasks;
 CREATE POLICY "Enable all for authenticated users" ON public.clipad_tasks FOR ALL TO authenticated USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Enable all for authenticated users" ON public.clipad_task_comments;
 CREATE POLICY "Enable all for authenticated users" ON public.clipad_task_comments FOR ALL TO authenticated USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Enable all for authenticated users" ON public.clipad_notifications;
 CREATE POLICY "Enable all for authenticated users" ON public.clipad_notifications FOR ALL TO authenticated USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Enable all for authenticated users" ON public.clipad_notification_preferences;
 CREATE POLICY "Enable all for authenticated users" ON public.clipad_notification_preferences FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
 -- POWERSYNC PUBLICATION

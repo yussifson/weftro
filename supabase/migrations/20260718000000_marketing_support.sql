@@ -15,16 +15,19 @@ CREATE TABLE IF NOT EXISTS public.clipad_marketing_requests (
 ALTER TABLE public.clipad_marketing_requests ENABLE ROW LEVEL SECURITY;
 
 -- Allow anyone (including anonymous) to insert
+DROP POLICY IF EXISTS "Allow anonymous inserts" ON public.clipad_marketing_requests;
 CREATE POLICY "Allow anonymous inserts" ON public.clipad_marketing_requests 
 FOR INSERT TO anon, authenticated WITH CHECK (true);
 
 -- Only Super Admins can select/view
+DROP POLICY IF EXISTS "Super admins can view all marketing requests" ON public.clipad_marketing_requests;
 CREATE POLICY "Super admins can view all marketing requests" ON public.clipad_marketing_requests 
 FOR SELECT USING (
     EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'super_admin')
 );
 
 -- Only Super Admins can update
+DROP POLICY IF EXISTS "Super admins can update marketing requests" ON public.clipad_marketing_requests;
 CREATE POLICY "Super admins can update marketing requests" ON public.clipad_marketing_requests 
 FOR UPDATE USING (
     EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'super_admin')

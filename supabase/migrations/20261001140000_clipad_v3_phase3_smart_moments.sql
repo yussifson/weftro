@@ -48,6 +48,7 @@ DROP POLICY IF EXISTS clipad_v3_moments_update ON public.clipad_v3_smart_moments
 DROP POLICY IF EXISTS clipad_v3_moments_delete ON public.clipad_v3_smart_moments;
 
 -- SELECT Policy: Inherits tenant, personal, and team space boundaries
+DROP POLICY IF EXISTS clipad_v3_moments_select ON public.clipad_v3_smart_moments;
 CREATE POLICY clipad_v3_moments_select ON public.clipad_v3_smart_moments
   FOR SELECT USING (
     company_id IN (SELECT company_id FROM public.profiles WHERE id = auth.uid())
@@ -60,6 +61,7 @@ CREATE POLICY clipad_v3_moments_select ON public.clipad_v3_smart_moments
   );
 
 -- INSERT Policy
+DROP POLICY IF EXISTS clipad_v3_moments_insert ON public.clipad_v3_smart_moments;
 CREATE POLICY clipad_v3_moments_insert ON public.clipad_v3_smart_moments
   FOR INSERT WITH CHECK (
     company_id IN (SELECT company_id FROM public.profiles WHERE id = auth.uid())
@@ -71,6 +73,7 @@ CREATE POLICY clipad_v3_moments_insert ON public.clipad_v3_smart_moments
   );
 
 -- UPDATE Policy: Allows creator, space members, or admins to confirm/edit/dismiss
+DROP POLICY IF EXISTS clipad_v3_moments_update ON public.clipad_v3_smart_moments;
 CREATE POLICY clipad_v3_moments_update ON public.clipad_v3_smart_moments
   FOR UPDATE USING (
     company_id IN (SELECT company_id FROM public.profiles WHERE id = auth.uid())
@@ -82,6 +85,7 @@ CREATE POLICY clipad_v3_moments_update ON public.clipad_v3_smart_moments
   );
 
 -- DELETE Policy
+DROP POLICY IF EXISTS clipad_v3_moments_delete ON public.clipad_v3_smart_moments;
 CREATE POLICY clipad_v3_moments_delete ON public.clipad_v3_smart_moments
   FOR DELETE USING (
     company_id IN (SELECT company_id FROM public.profiles WHERE id = auth.uid())

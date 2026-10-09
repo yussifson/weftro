@@ -67,10 +67,15 @@ ALTER TABLE public.clipad_commitments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.clipad_timezone_fairness ENABLE ROW LEVEL SECURITY;
 
 -- Policies (Mirroring Phase 1 approach)
+DROP POLICY IF EXISTS "Enable all for authenticated users" ON public.clipad_meeting_metrics;
 CREATE POLICY "Enable all for authenticated users" ON public.clipad_meeting_metrics FOR ALL TO authenticated USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Enable all for authenticated users" ON public.clipad_stakeholder_alerts;
 CREATE POLICY "Enable all for authenticated users" ON public.clipad_stakeholder_alerts FOR ALL TO authenticated USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Enable all for authenticated users" ON public.clipad_work_topics;
 CREATE POLICY "Enable all for authenticated users" ON public.clipad_work_topics FOR ALL TO authenticated USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Enable all for authenticated users" ON public.clipad_commitments;
 CREATE POLICY "Enable all for authenticated users" ON public.clipad_commitments FOR ALL TO authenticated USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Enable all for authenticated users" ON public.clipad_timezone_fairness;
 CREATE POLICY "Enable all for authenticated users" ON public.clipad_timezone_fairness FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
 -- Add to PowerSync Publication

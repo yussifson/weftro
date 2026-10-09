@@ -41,27 +41,37 @@ ALTER TABLE public.support_messages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.support_callbacks ENABLE ROW LEVEL SECURITY;
 
 -- Policies for support_chats
+DROP POLICY IF EXISTS "Users can view own chats" ON public.support_chats;
 CREATE POLICY "Users can view own chats" ON public.support_chats FOR SELECT USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users can insert own chats" ON public.support_chats;
 CREATE POLICY "Users can insert own chats" ON public.support_chats FOR INSERT WITH CHECK (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users can update own chats" ON public.support_chats;
 CREATE POLICY "Users can update own chats" ON public.support_chats FOR UPDATE USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Super admins can view all chats" ON public.support_chats;
 CREATE POLICY "Super admins can view all chats" ON public.support_chats FOR ALL USING (
     EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'super_admin')
 );
 
 -- Policies for support_messages
+DROP POLICY IF EXISTS "Users can view messages in own chats" ON public.support_messages;
 CREATE POLICY "Users can view messages in own chats" ON public.support_messages FOR SELECT USING (
     EXISTS (SELECT 1 FROM public.support_chats WHERE id = support_messages.chat_id AND user_id = auth.uid())
 );
+DROP POLICY IF EXISTS "Users can insert messages in own chats" ON public.support_messages;
 CREATE POLICY "Users can insert messages in own chats" ON public.support_messages FOR INSERT WITH CHECK (
     EXISTS (SELECT 1 FROM public.support_chats WHERE id = support_messages.chat_id AND user_id = auth.uid())
 );
+DROP POLICY IF EXISTS "Super admins can view and insert all messages" ON public.support_messages;
 CREATE POLICY "Super admins can view and insert all messages" ON public.support_messages FOR ALL USING (
     EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'super_admin')
 );
 
 -- Policies for support_callbacks
+DROP POLICY IF EXISTS "Users can view own callbacks" ON public.support_callbacks;
 CREATE POLICY "Users can view own callbacks" ON public.support_callbacks FOR SELECT USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users can insert own callbacks" ON public.support_callbacks;
 CREATE POLICY "Users can insert own callbacks" ON public.support_callbacks FOR INSERT WITH CHECK (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Super admins can view and manage all callbacks" ON public.support_callbacks;
 CREATE POLICY "Super admins can view and manage all callbacks" ON public.support_callbacks FOR ALL USING (
     EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'super_admin')
 );

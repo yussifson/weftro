@@ -8,7 +8,9 @@ CREATE TABLE IF NOT EXISTS public.clipad_meeting_views (
 
 ALTER TABLE public.clipad_meeting_views ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Enable all for authenticated users" ON public.clipad_meeting_views;
 CREATE POLICY "Enable all for authenticated users" ON public.clipad_meeting_views FOR ALL TO authenticated USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Enable all for public" ON public.clipad_meeting_views;
 CREATE POLICY "Enable all for public" ON public.clipad_meeting_views FOR ALL USING (true) WITH CHECK (true);
 
 DO $$

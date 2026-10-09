@@ -59,36 +59,46 @@ CREATE TABLE IF NOT EXISTS public.billing_transactions (
 
 -- Subscription Plans (Read by all authenticated, Write by super_admin)
 ALTER TABLE public.subscription_plans ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Plans are viewable by everyone" ON public.subscription_plans;
 CREATE POLICY "Plans are viewable by everyone" ON public.subscription_plans FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Plans insertable by super admin" ON public.subscription_plans;
 CREATE POLICY "Plans insertable by super admin" ON public.subscription_plans FOR INSERT WITH CHECK (auth.uid() IN (SELECT id::uuid FROM profiles WHERE role = 'super_admin'));
+DROP POLICY IF EXISTS "Plans updatable by super admin" ON public.subscription_plans;
 CREATE POLICY "Plans updatable by super admin" ON public.subscription_plans FOR UPDATE USING (auth.uid() IN (SELECT id::uuid FROM profiles WHERE role = 'super_admin'));
 
 -- Company Subscriptions (Read by company members, Write by super_admin / webhooks)
 ALTER TABLE public.company_subscriptions ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users can view their company subscription" ON public.company_subscriptions;
 CREATE POLICY "Users can view their company subscription" ON public.company_subscriptions FOR SELECT USING (
     company_id IN (SELECT company_id::uuid FROM profiles WHERE id = auth.uid())
 );
+DROP POLICY IF EXISTS "Super admins can manage all subscriptions" ON public.company_subscriptions;
 CREATE POLICY "Super admins can manage all subscriptions" ON public.company_subscriptions FOR ALL USING (
     auth.uid() IN (SELECT id::uuid FROM profiles WHERE role = 'super_admin')
 );
 
 -- Usage Metrics (Read by company members, Write by system/functions)
 ALTER TABLE public.usage_metrics ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users can view their usage" ON public.usage_metrics;
 CREATE POLICY "Users can view their usage" ON public.usage_metrics FOR SELECT USING (
     company_id IN (SELECT company_id::uuid FROM profiles WHERE id = auth.uid())
 );
+DROP POLICY IF EXISTS "Users can update their usage" ON public.usage_metrics;
 CREATE POLICY "Users can update their usage" ON public.usage_metrics FOR UPDATE USING (
     company_id IN (SELECT company_id::uuid FROM profiles WHERE id = auth.uid())
 );
+DROP POLICY IF EXISTS "Users can insert their usage" ON public.usage_metrics;
 CREATE POLICY "Users can insert their usage" ON public.usage_metrics FOR INSERT WITH CHECK (
     company_id IN (SELECT company_id::uuid FROM profiles WHERE id = auth.uid())
 );
 
 -- Billing Transactions
 ALTER TABLE public.billing_transactions ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users can view their company transactions" ON public.billing_transactions;
 CREATE POLICY "Users can view their company transactions" ON public.billing_transactions FOR SELECT USING (
     company_id IN (SELECT company_id::uuid FROM profiles WHERE id = auth.uid())
 );
+DROP POLICY IF EXISTS "Super admins can manage all transactions" ON public.billing_transactions;
 CREATE POLICY "Super admins can manage all transactions" ON public.billing_transactions FOR ALL USING (
     auth.uid() IN (SELECT id::uuid FROM profiles WHERE role = 'super_admin')
 );

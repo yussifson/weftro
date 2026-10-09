@@ -18,18 +18,26 @@ CREATE TABLE IF NOT EXISTS public.clipad_standups (
 
 ALTER TABLE public.clipad_standups ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Standups are viewable by everyone in the company"
+    ON public.clipad_standups;
 CREATE POLICY "Standups are viewable by everyone in the company"
     ON public.clipad_standups FOR SELECT
     USING (true);
 
+DROP POLICY IF EXISTS "Users can insert their own standups"
+    ON public.clipad_standups;
 CREATE POLICY "Users can insert their own standups"
     ON public.clipad_standups FOR INSERT
     WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update their own standups"
+    ON public.clipad_standups;
 CREATE POLICY "Users can update their own standups"
     ON public.clipad_standups FOR UPDATE
     USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete their own standups"
+    ON public.clipad_standups;
 CREATE POLICY "Users can delete their own standups"
     ON public.clipad_standups FOR DELETE
     USING (auth.uid() = user_id);

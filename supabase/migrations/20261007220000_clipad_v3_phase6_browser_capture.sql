@@ -13,18 +13,26 @@ CREATE TABLE IF NOT EXISTS clipad_v3_capture_settings (
 -- RLS Policies
 ALTER TABLE clipad_v3_capture_settings ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view their own capture settings"
+    ON clipad_v3_capture_settings;
 CREATE POLICY "Users can view their own capture settings"
     ON clipad_v3_capture_settings FOR SELECT
     USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert their own capture settings"
+    ON clipad_v3_capture_settings;
 CREATE POLICY "Users can insert their own capture settings"
     ON clipad_v3_capture_settings FOR INSERT
     WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update their own capture settings"
+    ON clipad_v3_capture_settings;
 CREATE POLICY "Users can update their own capture settings"
     ON clipad_v3_capture_settings FOR UPDATE
     USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete their own capture settings"
+    ON clipad_v3_capture_settings;
 CREATE POLICY "Users can delete their own capture settings"
     ON clipad_v3_capture_settings FOR DELETE
     USING (auth.uid() = user_id);

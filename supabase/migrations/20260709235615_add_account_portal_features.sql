@@ -20,15 +20,19 @@ CREATE TABLE IF NOT EXISTS public.user_sessions (
 ALTER TABLE public.user_sessions ENABLE ROW LEVEL SECURITY;
 
 -- Policies for user_sessions
+DROP POLICY IF EXISTS "Users can view their own sessions" ON public.user_sessions;
 CREATE POLICY "Users can view their own sessions" ON public.user_sessions
     FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert their own sessions" ON public.user_sessions;
 CREATE POLICY "Users can insert their own sessions" ON public.user_sessions
     FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update their own sessions" ON public.user_sessions;
 CREATE POLICY "Users can update their own sessions" ON public.user_sessions
     FOR UPDATE USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete their own sessions" ON public.user_sessions;
 CREATE POLICY "Users can delete their own sessions" ON public.user_sessions
     FOR DELETE USING (auth.uid() = user_id);
 
@@ -40,7 +44,8 @@ BEGIN
         SELECT 1 FROM pg_policies 
         WHERE tablename = 'slate_sites' AND policyname = 'Allow public to view published sites'
     ) THEN
-        CREATE POLICY "Allow public to view published sites" ON public.slate_sites
+        DROP POLICY IF EXISTS "Allow public to view published sites" ON public.slate_sites;
+CREATE POLICY "Allow public to view published sites" ON public.slate_sites
             FOR SELECT USING (is_published = true);
     END IF;
 END $$;

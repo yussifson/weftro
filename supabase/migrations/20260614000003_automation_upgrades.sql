@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS public.automation_logs (
 );
 
 ALTER TABLE public.automation_logs ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users can view own company automation logs" ON public.automation_logs;
 CREATE POLICY "Users can view own company automation logs" ON public.automation_logs FOR SELECT USING (company_id = ((SELECT company_id FROM public.profiles WHERE id = auth.uid()))::uuid);
 
 CREATE TABLE IF NOT EXISTS public.automation_queue (

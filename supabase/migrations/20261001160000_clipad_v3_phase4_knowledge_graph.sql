@@ -99,6 +99,7 @@ CREATE TABLE IF NOT EXISTS public.clipad_v3_query_log (
 ALTER TABLE public.clipad_v3_query_log ENABLE ROW LEVEL SECURITY;
 
 -- Users can only see their own query logs; admins can see company-wide.
+DROP POLICY IF EXISTS v3_query_log_select ON public.clipad_v3_query_log;
 CREATE POLICY v3_query_log_select ON public.clipad_v3_query_log
   FOR SELECT USING (
     company_id IN (SELECT company_id FROM public.profiles WHERE id = auth.uid())
@@ -108,6 +109,7 @@ CREATE POLICY v3_query_log_select ON public.clipad_v3_query_log
     )
   );
 
+DROP POLICY IF EXISTS v3_query_log_insert ON public.clipad_v3_query_log;
 CREATE POLICY v3_query_log_insert ON public.clipad_v3_query_log
   FOR INSERT WITH CHECK (
     company_id IN (SELECT company_id FROM public.profiles WHERE id = auth.uid())
@@ -137,22 +139,26 @@ CREATE INDEX IF NOT EXISTS idx_v3_aliases_canonical
 ALTER TABLE public.clipad_v3_entity_aliases ENABLE ROW LEVEL SECURITY;
 
 -- Same company = readable; writing requires membership.
+DROP POLICY IF EXISTS v3_aliases_select ON public.clipad_v3_entity_aliases;
 CREATE POLICY v3_aliases_select ON public.clipad_v3_entity_aliases
   FOR SELECT USING (
     company_id IN (SELECT company_id FROM public.profiles WHERE id = auth.uid())
   );
 
+DROP POLICY IF EXISTS v3_aliases_insert ON public.clipad_v3_entity_aliases;
 CREATE POLICY v3_aliases_insert ON public.clipad_v3_entity_aliases
   FOR INSERT WITH CHECK (
     company_id IN (SELECT company_id FROM public.profiles WHERE id = auth.uid())
   );
 
+DROP POLICY IF EXISTS v3_aliases_update ON public.clipad_v3_entity_aliases;
 CREATE POLICY v3_aliases_update ON public.clipad_v3_entity_aliases
   FOR UPDATE USING (
     company_id IN (SELECT company_id FROM public.profiles WHERE id = auth.uid())
     AND EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role IN ('super_admin', 'admin'))
   );
 
+DROP POLICY IF EXISTS v3_aliases_delete ON public.clipad_v3_entity_aliases;
 CREATE POLICY v3_aliases_delete ON public.clipad_v3_entity_aliases
   FOR DELETE USING (
     company_id IN (SELECT company_id FROM public.profiles WHERE id = auth.uid())

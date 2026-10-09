@@ -77,21 +77,25 @@ DROP POLICY IF EXISTS clipad_v3_entities_insert ON public.clipad_v3_entities;
 DROP POLICY IF EXISTS clipad_v3_entities_update ON public.clipad_v3_entities;
 DROP POLICY IF EXISTS clipad_v3_entities_delete ON public.clipad_v3_entities;
 
+DROP POLICY IF EXISTS clipad_v3_entities_select ON public.clipad_v3_entities;
 CREATE POLICY clipad_v3_entities_select ON public.clipad_v3_entities
   FOR SELECT USING (
     company_id IN (SELECT company_id FROM public.profiles WHERE id = auth.uid())
   );
 
+DROP POLICY IF EXISTS clipad_v3_entities_insert ON public.clipad_v3_entities;
 CREATE POLICY clipad_v3_entities_insert ON public.clipad_v3_entities
   FOR INSERT WITH CHECK (
     company_id IN (SELECT company_id FROM public.profiles WHERE id = auth.uid())
   );
 
+DROP POLICY IF EXISTS clipad_v3_entities_update ON public.clipad_v3_entities;
 CREATE POLICY clipad_v3_entities_update ON public.clipad_v3_entities
   FOR UPDATE USING (
     company_id IN (SELECT company_id FROM public.profiles WHERE id = auth.uid())
   );
 
+DROP POLICY IF EXISTS clipad_v3_entities_delete ON public.clipad_v3_entities;
 CREATE POLICY clipad_v3_entities_delete ON public.clipad_v3_entities
   FOR DELETE USING (
     company_id IN (SELECT company_id FROM public.profiles WHERE id = auth.uid() AND role IN ('super_admin', 'admin'))
@@ -102,21 +106,25 @@ DROP POLICY IF EXISTS clipad_v3_rels_insert ON public.clipad_v3_entity_relations
 DROP POLICY IF EXISTS clipad_v3_rels_update ON public.clipad_v3_entity_relationships;
 DROP POLICY IF EXISTS clipad_v3_rels_delete ON public.clipad_v3_entity_relationships;
 
+DROP POLICY IF EXISTS clipad_v3_rels_select ON public.clipad_v3_entity_relationships;
 CREATE POLICY clipad_v3_rels_select ON public.clipad_v3_entity_relationships
   FOR SELECT USING (
     company_id IN (SELECT company_id FROM public.profiles WHERE id = auth.uid())
   );
 
+DROP POLICY IF EXISTS clipad_v3_rels_insert ON public.clipad_v3_entity_relationships;
 CREATE POLICY clipad_v3_rels_insert ON public.clipad_v3_entity_relationships
   FOR INSERT WITH CHECK (
     company_id IN (SELECT company_id FROM public.profiles WHERE id = auth.uid())
   );
 
+DROP POLICY IF EXISTS clipad_v3_rels_update ON public.clipad_v3_entity_relationships;
 CREATE POLICY clipad_v3_rels_update ON public.clipad_v3_entity_relationships
   FOR UPDATE USING (
     company_id IN (SELECT company_id FROM public.profiles WHERE id = auth.uid())
   );
 
+DROP POLICY IF EXISTS clipad_v3_rels_delete ON public.clipad_v3_entity_relationships;
 CREATE POLICY clipad_v3_rels_delete ON public.clipad_v3_entity_relationships
   FOR DELETE USING (
     company_id IN (SELECT company_id FROM public.profiles WHERE id = auth.uid() AND role IN ('super_admin', 'admin'))
@@ -129,6 +137,7 @@ DROP POLICY IF EXISTS clipad_v3_memories_update ON public.clipad_v3_memories;
 DROP POLICY IF EXISTS clipad_v3_memories_delete ON public.clipad_v3_memories;
 
 -- SELECT Policy with Authoritative Space Membership & Private Source Protection
+DROP POLICY IF EXISTS clipad_v3_memories_select ON public.clipad_v3_memories;
 CREATE POLICY clipad_v3_memories_select ON public.clipad_v3_memories
   FOR SELECT USING (
     -- Multi-tenant isolation baseline
@@ -155,6 +164,7 @@ CREATE POLICY clipad_v3_memories_select ON public.clipad_v3_memories
   );
 
 -- INSERT Policy with Scope & Privacy Validation
+DROP POLICY IF EXISTS clipad_v3_memories_insert ON public.clipad_v3_memories;
 CREATE POLICY clipad_v3_memories_insert ON public.clipad_v3_memories
   FOR INSERT WITH CHECK (
     user_id = auth.uid()
@@ -174,6 +184,7 @@ CREATE POLICY clipad_v3_memories_insert ON public.clipad_v3_memories
   );
 
 -- UPDATE Policy
+DROP POLICY IF EXISTS clipad_v3_memories_update ON public.clipad_v3_memories;
 CREATE POLICY clipad_v3_memories_update ON public.clipad_v3_memories
   FOR UPDATE USING (
     (memory_tier = 'personal' AND user_id = auth.uid())
@@ -190,6 +201,7 @@ CREATE POLICY clipad_v3_memories_update ON public.clipad_v3_memories
   );
 
 -- DELETE Policy
+DROP POLICY IF EXISTS clipad_v3_memories_delete ON public.clipad_v3_memories;
 CREATE POLICY clipad_v3_memories_delete ON public.clipad_v3_memories
   FOR DELETE USING (
     (memory_tier = 'personal' AND user_id = auth.uid())

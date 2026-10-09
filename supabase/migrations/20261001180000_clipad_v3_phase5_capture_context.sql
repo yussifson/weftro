@@ -89,18 +89,26 @@ CREATE INDEX IF NOT EXISTS idx_captures_visibility ON clipad_v3_captures(visibil
 -- 4. RLS POLICIES FOR CONTEXT SESSIONS
 ALTER TABLE clipad_v3_context_sessions ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view their own context sessions"
+    ON clipad_v3_context_sessions;
 CREATE POLICY "Users can view their own context sessions"
     ON clipad_v3_context_sessions FOR SELECT
     USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can create their own context sessions"
+    ON clipad_v3_context_sessions;
 CREATE POLICY "Users can create their own context sessions"
     ON clipad_v3_context_sessions FOR INSERT
     WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update their own context sessions"
+    ON clipad_v3_context_sessions;
 CREATE POLICY "Users can update their own context sessions"
     ON clipad_v3_context_sessions FOR UPDATE
     USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete their own context sessions"
+    ON clipad_v3_context_sessions;
 CREATE POLICY "Users can delete their own context sessions"
     ON clipad_v3_context_sessions FOR DELETE
     USING (auth.uid() = user_id);
@@ -109,6 +117,8 @@ CREATE POLICY "Users can delete their own context sessions"
 ALTER TABLE clipad_v3_captures ENABLE ROW LEVEL SECURITY;
 
 -- Personal visibility: only creator can see
+DROP POLICY IF EXISTS "Users can view their own personal captures"
+    ON clipad_v3_captures;
 CREATE POLICY "Users can view their own personal captures"
     ON clipad_v3_captures FOR SELECT
     USING (
@@ -129,6 +139,8 @@ CREATE POLICY "Users can view their own personal captures"
         )
     );
 
+DROP POLICY IF EXISTS "Users can insert their own captures"
+    ON clipad_v3_captures;
 CREATE POLICY "Users can insert their own captures"
     ON clipad_v3_captures FOR INSERT
     WITH CHECK (
@@ -136,10 +148,14 @@ CREATE POLICY "Users can insert their own captures"
         AND company_id IN (SELECT company_id FROM profiles WHERE id = auth.uid())
     );
 
+DROP POLICY IF EXISTS "Users can update their own captures"
+    ON clipad_v3_captures;
 CREATE POLICY "Users can update their own captures"
     ON clipad_v3_captures FOR UPDATE
     USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete their own captures"
+    ON clipad_v3_captures;
 CREATE POLICY "Users can delete their own captures"
     ON clipad_v3_captures FOR DELETE
     USING (auth.uid() = user_id);

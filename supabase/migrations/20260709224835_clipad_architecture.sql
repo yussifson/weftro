@@ -11,9 +11,13 @@ CREATE TABLE IF NOT EXISTS public.clipad_spaces (
 );
 
 ALTER TABLE public.clipad_spaces ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Enable read for authenticated users" ON public.clipad_spaces;
 CREATE POLICY "Enable read for authenticated users" ON public.clipad_spaces FOR SELECT TO authenticated USING (true);
+DROP POLICY IF EXISTS "Enable insert for authenticated users" ON public.clipad_spaces;
 CREATE POLICY "Enable insert for authenticated users" ON public.clipad_spaces FOR INSERT TO authenticated WITH CHECK (true);
+DROP POLICY IF EXISTS "Enable update for authenticated users" ON public.clipad_spaces;
 CREATE POLICY "Enable update for authenticated users" ON public.clipad_spaces FOR UPDATE TO authenticated USING (true);
+DROP POLICY IF EXISTS "Enable delete for authenticated users" ON public.clipad_spaces;
 CREATE POLICY "Enable delete for authenticated users" ON public.clipad_spaces FOR DELETE TO authenticated USING (true);
 
 -- 2. clipad_videos (Async Video Layer)
@@ -34,9 +38,13 @@ CREATE TABLE IF NOT EXISTS public.clipad_videos (
 );
 
 ALTER TABLE public.clipad_videos ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Enable read for authenticated users" ON public.clipad_videos;
 CREATE POLICY "Enable read for authenticated users" ON public.clipad_videos FOR SELECT TO authenticated USING (true);
+DROP POLICY IF EXISTS "Enable insert for authenticated users" ON public.clipad_videos;
 CREATE POLICY "Enable insert for authenticated users" ON public.clipad_videos FOR INSERT TO authenticated WITH CHECK (true);
+DROP POLICY IF EXISTS "Enable update for authenticated users" ON public.clipad_videos;
 CREATE POLICY "Enable update for authenticated users" ON public.clipad_videos FOR UPDATE TO authenticated USING (true);
+DROP POLICY IF EXISTS "Enable delete for authenticated users" ON public.clipad_videos;
 CREATE POLICY "Enable delete for authenticated users" ON public.clipad_videos FOR DELETE TO authenticated USING (true);
 
 -- 3. clipad_video_comments
@@ -51,6 +59,7 @@ CREATE TABLE IF NOT EXISTS public.clipad_video_comments (
 );
 
 ALTER TABLE public.clipad_video_comments ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Enable all for authenticated users" ON public.clipad_video_comments;
 CREATE POLICY "Enable all for authenticated users" ON public.clipad_video_comments FOR ALL TO authenticated USING (true);
 
 -- 4. clipad_video_reactions
@@ -64,6 +73,7 @@ CREATE TABLE IF NOT EXISTS public.clipad_video_reactions (
 );
 
 ALTER TABLE public.clipad_video_reactions ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Enable all for authenticated users" ON public.clipad_video_reactions;
 CREATE POLICY "Enable all for authenticated users" ON public.clipad_video_reactions FOR ALL TO authenticated USING (true);
 
 -- 5. clipad_meeting_records (AI Intelligence Layer)
@@ -82,6 +92,7 @@ CREATE TABLE IF NOT EXISTS public.clipad_meeting_records (
 );
 
 ALTER TABLE public.clipad_meeting_records ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Enable all for authenticated users" ON public.clipad_meeting_records;
 CREATE POLICY "Enable all for authenticated users" ON public.clipad_meeting_records FOR ALL TO authenticated USING (true);
 
 -- Add to powersync publication to support offline sync

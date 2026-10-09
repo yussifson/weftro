@@ -88,20 +88,24 @@ CREATE INDEX IF NOT EXISTS idx_automation_triggers_v   ON automation_triggers(ve
 -- ── RLS ───────────────────────────────────────────────────────────────────────
 
 ALTER TABLE automations ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "automations_company" ON automations;
 CREATE POLICY "automations_company" ON automations FOR ALL USING (
   company_id = (((SELECT company_id FROM public.profiles WHERE id = auth.uid()))::uuid)::uuid OR is_template = true
 );
 
 ALTER TABLE automation_runs ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "runs_company" ON automation_runs;
 CREATE POLICY "runs_company" ON automation_runs FOR ALL USING (
   company_id = (((SELECT company_id FROM public.profiles WHERE id = auth.uid()))::uuid)::uuid
 );
 
 -- Registries are read-only for all authenticated users
 ALTER TABLE automation_triggers ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "triggers_read" ON automation_triggers;
 CREATE POLICY "triggers_read" ON automation_triggers FOR SELECT TO authenticated USING (true);
 
 ALTER TABLE automation_actions ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "actions_read" ON automation_actions;
 CREATE POLICY "actions_read" ON automation_actions FOR SELECT TO authenticated USING (true);
 
 

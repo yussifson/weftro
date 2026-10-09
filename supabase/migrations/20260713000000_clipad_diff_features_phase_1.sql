@@ -66,9 +66,13 @@ ALTER TABLE public.clipad_context_capsule_cache ENABLE ROW LEVEL SECURITY;
 -- Let's check `clipad_spaces`. `clipad_spaces` uses `USING (true)`. The user said "mirroring the exact pattern already used by Team Spaces".
 -- So we will mirror it precisely to avoid breaking anything, but conceptually it is scoped.
 
+DROP POLICY IF EXISTS "Enable all for authenticated users" ON public.clipad_signal_events;
 CREATE POLICY "Enable all for authenticated users" ON public.clipad_signal_events FOR ALL TO authenticated USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Enable all for authenticated users" ON public.clipad_decisions;
 CREATE POLICY "Enable all for authenticated users" ON public.clipad_decisions FOR ALL TO authenticated USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Enable all for authenticated users" ON public.clipad_blockers;
 CREATE POLICY "Enable all for authenticated users" ON public.clipad_blockers FOR ALL TO authenticated USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Enable all for authenticated users" ON public.clipad_context_capsule_cache;
 CREATE POLICY "Enable all for authenticated users" ON public.clipad_context_capsule_cache FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
 -- Add to PowerSync Publication

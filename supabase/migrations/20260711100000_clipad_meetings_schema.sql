@@ -23,9 +23,11 @@ CREATE TABLE IF NOT EXISTS public.clipad_action_items (
 
 -- RLS
 ALTER TABLE public.clipad_meeting_records ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Enable all for authenticated users" ON public.clipad_meeting_records;
 CREATE POLICY "Enable all for authenticated users" ON public.clipad_meeting_records FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
 ALTER TABLE public.clipad_action_items ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Enable all for authenticated users" ON public.clipad_action_items;
 CREATE POLICY "Enable all for authenticated users" ON public.clipad_action_items FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
 -- Add to PowerSync

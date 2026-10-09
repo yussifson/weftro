@@ -18,6 +18,7 @@ CREATE INDEX IF NOT EXISTS idx_knowledge_chunks_company_id ON public.clipad_know
 -- Enable RLS
 ALTER TABLE public.clipad_knowledge_chunks ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "knowledge_chunks_company_isolation" ON public.clipad_knowledge_chunks;
 CREATE POLICY "knowledge_chunks_company_isolation" ON public.clipad_knowledge_chunks
   FOR ALL USING (
     company_id::text IN (

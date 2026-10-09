@@ -33,6 +33,7 @@ DROP POLICY IF EXISTS "integrations_manage"          ON public.clipad_integratio
 
 -- SELECT: personal (connecting user) OR company-wide (same company) OR space (member)
 -- All comparisons use ::text to be safe across any underlying column type
+DROP POLICY IF EXISTS "integrations_select" ON public.clipad_integrations;
 CREATE POLICY "integrations_select" ON public.clipad_integrations
   FOR SELECT USING (
     -- Personal: only the user who connected it
@@ -56,6 +57,7 @@ CREATE POLICY "integrations_select" ON public.clipad_integrations
   );
 
 -- INSERT: anyone in the company can connect; company-wide requires admin role
+DROP POLICY IF EXISTS "integrations_insert" ON public.clipad_integrations;
 CREATE POLICY "integrations_insert" ON public.clipad_integrations
   FOR INSERT WITH CHECK (
     company_id::text IN (
@@ -70,6 +72,7 @@ CREATE POLICY "integrations_insert" ON public.clipad_integrations
   );
 
 -- UPDATE / DELETE: owner or admin
+DROP POLICY IF EXISTS "integrations_manage" ON public.clipad_integrations;
 CREATE POLICY "integrations_manage" ON public.clipad_integrations
   FOR ALL USING (
     connected_by_user_id = auth.uid()::text

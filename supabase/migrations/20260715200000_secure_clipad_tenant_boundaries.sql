@@ -29,6 +29,7 @@ DROP POLICY IF EXISTS "Enable all for authenticated users" ON public.clipad_meet
 -- Since the previous policy was FOR ALL, we need to split it or recreate it for SELECT, INSERT, UPDATE, DELETE
 -- Or just create one for ALL with the strict check, but usually creators need to update/delete. 
 -- For safety, we will restrict SELECT and allow updates/deletes only if they pass the company check as well.
+DROP POLICY IF EXISTS "Enable all for same company users" ON public.clipad_meeting_records;
 CREATE POLICY "Enable all for same company users" ON public.clipad_meeting_records 
 FOR ALL TO authenticated 
 USING (public.check_user_company_access(space_id, host_id))

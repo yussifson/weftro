@@ -10,18 +10,22 @@ CREATE TABLE clipad_automations (
 
 ALTER TABLE clipad_automations ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view automations for their spaces" ON clipad_automations;
 CREATE POLICY "Users can view automations for their spaces" ON clipad_automations FOR SELECT USING (
   space_id IN (SELECT space_id FROM clipad_space_members WHERE user_id = auth.uid())
 );
 
+DROP POLICY IF EXISTS "Users can insert automations for their spaces" ON clipad_automations;
 CREATE POLICY "Users can insert automations for their spaces" ON clipad_automations FOR INSERT WITH CHECK (
   space_id IN (SELECT space_id FROM clipad_space_members WHERE user_id = auth.uid())
 );
 
+DROP POLICY IF EXISTS "Users can update automations for their spaces" ON clipad_automations;
 CREATE POLICY "Users can update automations for their spaces" ON clipad_automations FOR UPDATE USING (
   space_id IN (SELECT space_id FROM clipad_space_members WHERE user_id = auth.uid())
 );
 
+DROP POLICY IF EXISTS "Users can delete automations for their spaces" ON clipad_automations;
 CREATE POLICY "Users can delete automations for their spaces" ON clipad_automations FOR DELETE USING (
   space_id IN (SELECT space_id FROM clipad_space_members WHERE user_id = auth.uid())
 );

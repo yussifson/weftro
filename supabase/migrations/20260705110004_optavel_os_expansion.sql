@@ -15,7 +15,8 @@ CREATE TABLE IF NOT EXISTS public.optavel_employees (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW())
 );
 ALTER TABLE public.optavel_employees ENABLE ROW LEVEL SECURITY;
--- CREATE POLICY "optavel_employees_policy" ON public.optavel_employees FOR ALL USING (auth.uid() IN (SELECT user_id FROM public.profiles WHERE company_id = optavel_employees.company_id));
+-- DROP POLICY IF EXISTS "optavel_employees_policy" ON public.optavel_employees;
+CREATE POLICY "optavel_employees_policy" ON public.optavel_employees FOR ALL USING (auth.uid() IN (SELECT user_id FROM public.profiles WHERE company_id = optavel_employees.company_id));
 
 CREATE TABLE IF NOT EXISTS public.optavel_leave_requests (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -28,7 +29,8 @@ CREATE TABLE IF NOT EXISTS public.optavel_leave_requests (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW())
 );
 ALTER TABLE public.optavel_leave_requests ENABLE ROW LEVEL SECURITY;
--- CREATE POLICY "optavel_leave_requests_policy" ON public.optavel_leave_requests FOR ALL USING (auth.uid() IN (SELECT user_id FROM public.profiles WHERE company_id = optavel_leave_requests.company_id));
+-- DROP POLICY IF EXISTS "optavel_leave_requests_policy" ON public.optavel_leave_requests;
+CREATE POLICY "optavel_leave_requests_policy" ON public.optavel_leave_requests FOR ALL USING (auth.uid() IN (SELECT user_id FROM public.profiles WHERE company_id = optavel_leave_requests.company_id));
 
 -- 2. Customer Support
 CREATE TABLE IF NOT EXISTS public.optavel_support_tickets (
@@ -44,7 +46,8 @@ CREATE TABLE IF NOT EXISTS public.optavel_support_tickets (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW())
 );
 ALTER TABLE public.optavel_support_tickets ENABLE ROW LEVEL SECURITY;
--- CREATE POLICY "optavel_support_tickets_policy" ON public.optavel_support_tickets FOR ALL USING (auth.uid() IN (SELECT user_id FROM public.profiles WHERE company_id = optavel_support_tickets.company_id));
+-- DROP POLICY IF EXISTS "optavel_support_tickets_policy" ON public.optavel_support_tickets;
+CREATE POLICY "optavel_support_tickets_policy" ON public.optavel_support_tickets FOR ALL USING (auth.uid() IN (SELECT user_id FROM public.profiles WHERE company_id = optavel_support_tickets.company_id));
 
 CREATE TABLE IF NOT EXISTS public.optavel_nps_responses (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -55,7 +58,8 @@ CREATE TABLE IF NOT EXISTS public.optavel_nps_responses (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW())
 );
 ALTER TABLE public.optavel_nps_responses ENABLE ROW LEVEL SECURITY;
--- CREATE POLICY "optavel_nps_responses_policy" ON public.optavel_nps_responses FOR ALL USING (auth.uid() IN (SELECT user_id FROM public.profiles WHERE company_id = optavel_nps_responses.company_id));
+-- DROP POLICY IF EXISTS "optavel_nps_responses_policy" ON public.optavel_nps_responses;
+CREATE POLICY "optavel_nps_responses_policy" ON public.optavel_nps_responses FOR ALL USING (auth.uid() IN (SELECT user_id FROM public.profiles WHERE company_id = optavel_nps_responses.company_id));
 
 -- 3. Partnerships
 CREATE TABLE IF NOT EXISTS public.optavel_partners (
@@ -68,7 +72,8 @@ CREATE TABLE IF NOT EXISTS public.optavel_partners (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW())
 );
 ALTER TABLE public.optavel_partners ENABLE ROW LEVEL SECURITY;
--- CREATE POLICY "optavel_partners_policy" ON public.optavel_partners FOR ALL USING (auth.uid() IN (SELECT user_id FROM public.profiles WHERE company_id = optavel_partners.company_id));
+-- DROP POLICY IF EXISTS "optavel_partners_policy" ON public.optavel_partners;
+CREATE POLICY "optavel_partners_policy" ON public.optavel_partners FOR ALL USING (auth.uid() IN (SELECT user_id FROM public.profiles WHERE company_id = optavel_partners.company_id));
 
 -- Ensure replication includes new tables
 /* ALTER PUBLICATION skipped */

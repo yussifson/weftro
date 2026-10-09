@@ -6,12 +6,14 @@ BEGIN
   ALTER TABLE IF EXISTS component_registry ENABLE ROW LEVEL SECURITY;
   
   BEGIN
-    CREATE POLICY "Allow public read access" ON component_registry 
+    DROP POLICY IF EXISTS "Allow public read access" ON component_registry;
+CREATE POLICY "Allow public read access" ON component_registry 
     FOR SELECT USING (true);
   EXCEPTION WHEN duplicate_object THEN NULL; END;
 
   BEGIN
-    CREATE POLICY "Allow service role full access" ON component_registry 
+    DROP POLICY IF EXISTS "Allow service role full access" ON component_registry;
+CREATE POLICY "Allow service role full access" ON component_registry 
     FOR ALL TO service_role USING (true) WITH CHECK (true);
   EXCEPTION WHEN duplicate_object THEN NULL; END;
 

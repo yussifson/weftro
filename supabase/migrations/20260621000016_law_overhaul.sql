@@ -47,9 +47,11 @@ CREATE INDEX IF NOT EXISTS idx_trust_transactions_account ON trust_transactions(
 
 ALTER TABLE trust_accounts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE trust_transactions ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "trust_accounts_company" ON trust_accounts;
 CREATE POLICY "trust_accounts_company" ON trust_accounts FOR ALL USING (
   company_id IN (SELECT company_id::uuid FROM profiles WHERE id::uuid = auth.uid())
 );
+DROP POLICY IF EXISTS "trust_transactions_company" ON trust_transactions;
 CREATE POLICY "trust_transactions_company" ON trust_transactions FOR ALL USING (
   company_id IN (SELECT company_id::uuid FROM profiles WHERE id::uuid = auth.uid())
 );
@@ -85,9 +87,11 @@ CREATE TABLE IF NOT EXISTS client_portal_uploads (
 
 ALTER TABLE client_portal_access ENABLE ROW LEVEL SECURITY;
 ALTER TABLE client_portal_uploads ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "portal_access_company" ON client_portal_access;
 CREATE POLICY "portal_access_company" ON client_portal_access FOR ALL USING (
   company_id IN (SELECT company_id::uuid FROM profiles WHERE id::uuid = auth.uid())
 );
+DROP POLICY IF EXISTS "portal_uploads_company" ON client_portal_uploads;
 CREATE POLICY "portal_uploads_company" ON client_portal_uploads FOR ALL USING (
   company_id IN (SELECT company_id::uuid FROM profiles WHERE id::uuid = auth.uid())
 );
@@ -121,9 +125,11 @@ CREATE TABLE IF NOT EXISTS generated_documents (
 
 ALTER TABLE document_templates ENABLE ROW LEVEL SECURITY;
 ALTER TABLE generated_documents ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "doc_templates_company" ON document_templates;
 CREATE POLICY "doc_templates_company" ON document_templates FOR ALL USING (
   company_id IN (SELECT company_id::uuid FROM profiles WHERE id::uuid = auth.uid())
 );
+DROP POLICY IF EXISTS "generated_docs_company" ON generated_documents;
 CREATE POLICY "generated_docs_company" ON generated_documents FOR ALL USING (
   company_id IN (SELECT company_id::uuid FROM profiles WHERE id::uuid = auth.uid())
 );
@@ -156,9 +162,11 @@ CREATE TABLE IF NOT EXISTS intake_submissions (
 
 ALTER TABLE intake_forms ENABLE ROW LEVEL SECURITY;
 ALTER TABLE intake_submissions ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "intake_forms_company" ON intake_forms;
 CREATE POLICY "intake_forms_company" ON intake_forms FOR ALL USING (
   company_id IN (SELECT company_id::uuid FROM profiles WHERE id::uuid = auth.uid())
 );
+DROP POLICY IF EXISTS "intake_submissions_company" ON intake_submissions;
 CREATE POLICY "intake_submissions_company" ON intake_submissions FOR ALL USING (
   company_id IN (SELECT company_id::uuid FROM profiles WHERE id::uuid = auth.uid())
 );
@@ -190,6 +198,7 @@ CREATE TABLE IF NOT EXISTS conflict_check_results (
 );
 
 ALTER TABLE conflict_check_results ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "conflict_check_company" ON conflict_check_results;
 CREATE POLICY "conflict_check_company" ON conflict_check_results FOR ALL USING (
   company_id IN (SELECT company_id::uuid FROM profiles WHERE id::uuid = auth.uid())
 );
@@ -215,6 +224,7 @@ CREATE INDEX IF NOT EXISTS idx_court_hearings_case      ON court_hearings(case_i
 CREATE INDEX IF NOT EXISTS idx_court_hearings_company ON court_hearings(company_id, hearing_date);
 
 ALTER TABLE court_hearings ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "court_hearings_company" ON court_hearings;
 CREATE POLICY "court_hearings_company" ON court_hearings FOR ALL USING (
   company_id IN (SELECT company_id::uuid FROM profiles WHERE id::uuid = auth.uid())
 );

@@ -18,6 +18,8 @@ CREATE TABLE IF NOT EXISTS public.system_activity_logs (
 -- RLS Policies
 ALTER TABLE public.system_activity_logs ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view their company activity logs"
+    ON public.system_activity_logs;
 CREATE POLICY "Users can view their company activity logs"
     ON public.system_activity_logs
     FOR SELECT
@@ -25,6 +27,8 @@ CREATE POLICY "Users can view their company activity logs"
         SELECT company_id::text FROM public.profiles WHERE id = auth.uid()
     ));
 
+DROP POLICY IF EXISTS "Users can insert activity logs for their company"
+    ON public.system_activity_logs;
 CREATE POLICY "Users can insert activity logs for their company"
     ON public.system_activity_logs
     FOR INSERT

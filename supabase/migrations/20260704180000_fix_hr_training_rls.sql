@@ -11,7 +11,9 @@ BEGIN
         WHERE tablename = 'hr_training_courses' 
         AND policyname = 'Allow all actions for authenticated users'
     ) THEN
-        CREATE POLICY "Allow all actions for authenticated users" 
+        DROP POLICY IF EXISTS "Allow all actions for authenticated users" 
+        ON hr_training_courses;
+CREATE POLICY "Allow all actions for authenticated users" 
         ON hr_training_courses 
         FOR ALL 
         USING (auth.role() = 'authenticated')

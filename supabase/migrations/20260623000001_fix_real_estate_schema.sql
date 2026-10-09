@@ -234,32 +234,42 @@ ALTER TABLE public.univ_re_rent_payments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.univ_re_maintenance_requests ENABLE ROW LEVEL SECURITY;
 
 -- Create RLS policies
+DROP POLICY IF EXISTS "real_estate_properties_company_access" ON public.univ_re_properties;
 CREATE POLICY "real_estate_properties_company_access" ON public.univ_re_properties
   FOR ALL USING (company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid()));
 
+DROP POLICY IF EXISTS "real_estate_clients_company_access" ON public.univ_re_clients;
 CREATE POLICY "real_estate_clients_company_access" ON public.univ_re_clients
   FOR ALL USING (company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid()));
 
+DROP POLICY IF EXISTS "real_estate_viewings_company_access" ON public.univ_re_viewings;
 CREATE POLICY "real_estate_viewings_company_access" ON public.univ_re_viewings
   FOR ALL USING (company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid()));
 
+DROP POLICY IF EXISTS "real_estate_offers_company_access" ON public.univ_re_offers;
 CREATE POLICY "real_estate_offers_company_access" ON public.univ_re_offers
   FOR ALL USING (company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid()));
 
+DROP POLICY IF EXISTS "real_estate_transactions_company_access" ON public.univ_re_transactions;
 CREATE POLICY "real_estate_transactions_company_access" ON public.univ_re_transactions
   FOR ALL USING (company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid()));
 
+DROP POLICY IF EXISTS "real_estate_commissions_company_access" ON public.univ_re_commissions;
 CREATE POLICY "real_estate_commissions_company_access" ON public.univ_re_commissions
   FOR ALL USING (company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid()));
 
+DROP POLICY IF EXISTS "real_estate_documents_company_access" ON public.univ_re_documents;
 CREATE POLICY "real_estate_documents_company_access" ON public.univ_re_documents
   FOR ALL USING (company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid()));
 
+DROP POLICY IF EXISTS "real_estate_leases_company_access" ON public.univ_re_leases;
 CREATE POLICY "real_estate_leases_company_access" ON public.univ_re_leases
   FOR ALL USING (company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid()));
 
+DROP POLICY IF EXISTS "real_estate_rent_payments_company_access" ON public.univ_re_rent_payments;
 CREATE POLICY "real_estate_rent_payments_company_access" ON public.univ_re_rent_payments
   FOR ALL USING (company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid()));
 
+DROP POLICY IF EXISTS "real_estate_maintenance_company_access" ON public.univ_re_maintenance_requests;
 CREATE POLICY "real_estate_maintenance_company_access" ON public.univ_re_maintenance_requests
   FOR ALL USING (company_id = (SELECT company_id FROM public.profiles WHERE id = auth.uid()));

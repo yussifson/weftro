@@ -18,19 +18,23 @@ WHERE NOT EXISTS (
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public Access' AND tablename = 'objects' AND schemaname = 'storage') THEN
-        CREATE POLICY "Public Access" ON storage.objects FOR SELECT USING (bucket_id = 'clipad_videos');
+        DROP POLICY IF EXISTS "Public Access" ON storage.objects;
+CREATE POLICY "Public Access" ON storage.objects FOR SELECT USING (bucket_id = 'clipad_videos');
     END IF;
 
     IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Authenticated Upload' AND tablename = 'objects' AND schemaname = 'storage') THEN
-        CREATE POLICY "Authenticated Upload" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'clipad_videos' AND auth.role() = 'authenticated');
+        DROP POLICY IF EXISTS "Authenticated Upload" ON storage.objects;
+CREATE POLICY "Authenticated Upload" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'clipad_videos' AND auth.role() = 'authenticated');
     END IF;
 
     IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users Update Own Objects' AND tablename = 'objects' AND schemaname = 'storage') THEN
-        CREATE POLICY "Users Update Own Objects" ON storage.objects FOR UPDATE USING (bucket_id = 'clipad_videos' AND auth.uid() = owner);
+        DROP POLICY IF EXISTS "Users Update Own Objects" ON storage.objects;
+CREATE POLICY "Users Update Own Objects" ON storage.objects FOR UPDATE USING (bucket_id = 'clipad_videos' AND auth.uid() = owner);
     END IF;
 
     IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users Delete Own Objects' AND tablename = 'objects' AND schemaname = 'storage') THEN
-        CREATE POLICY "Users Delete Own Objects" ON storage.objects FOR DELETE USING (bucket_id = 'clipad_videos' AND auth.uid() = owner);
+        DROP POLICY IF EXISTS "Users Delete Own Objects" ON storage.objects;
+CREATE POLICY "Users Delete Own Objects" ON storage.objects FOR DELETE USING (bucket_id = 'clipad_videos' AND auth.uid() = owner);
     END IF;
 END
 $$;

@@ -51,10 +51,12 @@ DROP POLICY IF EXISTS "users_insert_own"   ON public.integration_knowledge;
 DROP POLICY IF EXISTS "users_manage_own"   ON public.integration_knowledge;
 
 -- Own records
+DROP POLICY IF EXISTS "users_see_own" ON public.integration_knowledge;
 CREATE POLICY "users_see_own" ON public.integration_knowledge
   FOR SELECT USING (connected_by_user_id = auth.uid()::text);
 
 -- Company-wide records
+DROP POLICY IF EXISTS "users_see_company" ON public.integration_knowledge;
 CREATE POLICY "users_see_company" ON public.integration_knowledge
   FOR SELECT USING (
     visibility = 'company' AND
@@ -64,6 +66,7 @@ CREATE POLICY "users_see_company" ON public.integration_knowledge
   );
 
 -- Space records
+DROP POLICY IF EXISTS "users_see_space" ON public.integration_knowledge;
 CREATE POLICY "users_see_space" ON public.integration_knowledge
   FOR SELECT USING (
     visibility = 'space' AND
@@ -72,9 +75,11 @@ CREATE POLICY "users_see_space" ON public.integration_knowledge
     )
   );
 
+DROP POLICY IF EXISTS "users_insert_own" ON public.integration_knowledge;
 CREATE POLICY "users_insert_own" ON public.integration_knowledge
   FOR INSERT WITH CHECK (connected_by_user_id = auth.uid()::text);
 
+DROP POLICY IF EXISTS "users_manage_own" ON public.integration_knowledge;
 CREATE POLICY "users_manage_own" ON public.integration_knowledge
   FOR ALL USING (connected_by_user_id = auth.uid()::text);
 

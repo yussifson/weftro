@@ -11,7 +11,8 @@ CREATE TABLE IF NOT EXISTS public.clipad_meeting_comments (
 ALTER TABLE public.clipad_meeting_comments ENABLE ROW LEVEL SECURITY;
 
 DO $$ BEGIN
-  CREATE POLICY "Enable all for authenticated users" ON public.clipad_meeting_comments FOR ALL TO authenticated USING (true);
+  DROP POLICY IF EXISTS "Enable all for authenticated users" ON public.clipad_meeting_comments;
+CREATE POLICY "Enable all for authenticated users" ON public.clipad_meeting_comments FOR ALL TO authenticated USING (true);
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 CREATE TABLE IF NOT EXISTS public.clipad_meeting_reactions (
@@ -26,7 +27,8 @@ CREATE TABLE IF NOT EXISTS public.clipad_meeting_reactions (
 ALTER TABLE public.clipad_meeting_reactions ENABLE ROW LEVEL SECURITY;
 
 DO $$ BEGIN
-  CREATE POLICY "Enable all for authenticated users" ON public.clipad_meeting_reactions FOR ALL TO authenticated USING (true);
+  DROP POLICY IF EXISTS "Enable all for authenticated users" ON public.clipad_meeting_reactions;
+CREATE POLICY "Enable all for authenticated users" ON public.clipad_meeting_reactions FOR ALL TO authenticated USING (true);
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 -- PowerSync publication

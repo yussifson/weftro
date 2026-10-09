@@ -20,6 +20,8 @@ CREATE TABLE IF NOT EXISTS public.logistics_pickups (
 ALTER TABLE public.logistics_pickups ENABLE ROW LEVEL SECURITY;
 
 -- Create policy for company isolation
+DROP POLICY IF EXISTS "Users can view and manage pickups for their company"
+    ON public.logistics_pickups;
 CREATE POLICY "Users can view and manage pickups for their company"
     ON public.logistics_pickups
     FOR ALL

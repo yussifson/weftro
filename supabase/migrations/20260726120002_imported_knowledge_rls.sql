@@ -15,6 +15,7 @@ DROP POLICY IF EXISTS "imported_knowledge_insert" ON public.clipad_imported_know
 DROP POLICY IF EXISTS "imported_knowledge_manage" ON public.clipad_imported_knowledge;
 
 -- SELECT Policy: Users see personal items, space-scoped items they have access to, or company-scoped items
+DROP POLICY IF EXISTS "imported_knowledge_select" ON public.clipad_imported_knowledge;
 CREATE POLICY "imported_knowledge_select" ON public.clipad_imported_knowledge
   FOR SELECT USING (
     -- Personal: only the user who connected/imported it
@@ -38,6 +39,7 @@ CREATE POLICY "imported_knowledge_select" ON public.clipad_imported_knowledge
   );
 
 -- INSERT/UPDATE/DELETE Policy: Owner or admin
+DROP POLICY IF EXISTS "imported_knowledge_manage" ON public.clipad_imported_knowledge;
 CREATE POLICY "imported_knowledge_manage" ON public.clipad_imported_knowledge
   FOR ALL USING (
     connected_by_user_id = auth.uid()::text
