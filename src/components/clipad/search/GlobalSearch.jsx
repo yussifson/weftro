@@ -17,14 +17,14 @@ import ThinkingAccordion, { parseThinking } from '@/components/chat/ThinkingAcco
 
 // â”€â”€â”€ Type metadata â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const TYPE_META = {
-  meeting:     { icon: Calendar,      label: 'Meeting',   color: 'text-blue-700 dark:text-blue-400',       bg: 'bg-blue-100 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700/50',     route: (id) => `/meetings/${id}` },
-  video:       { icon: Video,         label: 'Video',     color: 'text-purple-700 dark:text-purple-400',   bg: 'bg-purple-100 dark:bg-purple-900/30 border border-purple-200 dark:border-purple-700/50', route: (id) => `/watch/${id}` },
+  meeting:     { icon: Calendar,      label: 'Meeting',   color: 'text-slate-600 dark:text-slate-400 group-hover:text-[#006065]', bg: 'bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800',     route: (id) => `/meetings/${id}` },
+  video:       { icon: Video,         label: 'Video',     color: 'text-slate-600 dark:text-slate-400 group-hover:text-[#006065]', bg: 'bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800', route: (id) => `/watch/${id}` },
   doc:         { icon: FileText,      label: 'Doc',       color: 'text-[#004e52] dark:text-[#00beac]', bg: 'bg-[#006065] dark:bg-card border border-emerald-200 dark:border-emerald-700/50', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=docs&docId=${id}` : null },
-  task:        { icon: CheckCircle,   label: 'Task',      color: 'text-amber-700 dark:text-amber-400',     bg: 'bg-amber-100 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700/50',   route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=tasks&taskId=${id}` : null },
-  message:     { icon: MessageSquare, label: 'Chat',      color: 'text-indigo-700 dark:text-indigo-400',   bg: 'bg-indigo-100 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-700/50', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=chat` : null },
-  decision:    { icon: ShieldAlert,   label: 'Decision',  color: 'text-rose-700 dark:text-rose-400',       bg: 'bg-rose-100 dark:bg-rose-900/30 border border-rose-200 dark:border-rose-700/50',     route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=decisions` : null },
-  blocker:     { icon: AlertTriangle, label: 'Blocker',   color: 'text-orange-700 dark:text-orange-400',   bg: 'bg-orange-100 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-700/50', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=overview` : null },
-  standup:     { icon: Zap,           label: 'Standup',   color: 'text-teal-700 dark:text-teal-400',       bg: 'bg-teal-100 dark:bg-teal-900/30 border border-teal-200 dark:border-teal-700/50',     route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=standup` : null },
+  task:        { icon: CheckCircle,   label: 'Task',      color: 'text-slate-600 dark:text-slate-400 group-hover:text-[#006065]', bg: 'bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800',   route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=tasks&taskId=${id}` : null },
+  message:     { icon: MessageSquare, label: 'Chat',      color: 'text-[#006065] dark:text-teal-400',   bg: 'bg-indigo-100 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-700/50', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=chat` : null },
+  decision:    { icon: ShieldAlert,   label: 'Decision',  color: 'text-slate-600 dark:text-slate-400 group-hover:text-[#006065]', bg: 'bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800',     route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=decisions` : null },
+  blocker:     { icon: AlertTriangle, label: 'Blocker',   color: 'text-slate-600 dark:text-slate-400 group-hover:text-[#006065]', bg: 'bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=overview` : null },
+  standup:     { icon: Zap,           label: 'Standup',   color: 'text-slate-600 dark:text-slate-400 group-hover:text-[#006065]', bg: 'bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800',     route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=standup` : null },
   integration: { icon: ExternalLink,  label: 'Imported',  color: 'text-slate-700 dark:text-muted-foreground',     bg: 'bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-border',   route: () => `/integrations` },
   person:      { icon: User,          label: 'Person',    color: 'text-violet-700 dark:text-violet-400',   bg: 'bg-violet-100 dark:bg-violet-900/30 border border-violet-200 dark:border-violet-700/50', route: () => null },
 };
@@ -125,12 +125,12 @@ async function searchPeople(query, companyId) {
 
 // â”€â”€â”€ Suggestion config â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const DEFAULT_SUGGESTIONS = [
-  { key: '1', text: 'What decisions were made last week?',   type: 'decision', icon: ShieldAlert,   color: 'text-rose-700 dark:text-rose-400',    bg: 'bg-rose-100 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800/60' },
-  { key: '2', text: 'Show me overdue tasks across spaces',   type: 'task',     icon: CheckCircle,   color: 'text-amber-700 dark:text-amber-400',  bg: 'bg-amber-100 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800/60' },
-  { key: '3', text: 'Find recent meetings about pricing',    type: 'meeting',  icon: Calendar,      color: 'text-blue-700 dark:text-blue-400',    bg: 'bg-blue-100 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/60' },
-  { key: '4', text: 'Any active blockers in engineering?',   type: 'blocker',  icon: AlertTriangle, color: 'text-orange-700 dark:text-orange-400',bg: 'bg-orange-100 dark:bg-orange-950/60 border border-orange-200 dark:border-orange-800/60' },
-  { key: '5', text: 'What videos were recorded this month?', type: 'video',    icon: Video,         color: 'text-purple-700 dark:text-purple-400',bg: 'bg-purple-100 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800/60' },
-  { key: '6', text: 'Summarize key updates from standups',   type: 'standup',  icon: Zap,           color: 'text-teal-700 dark:text-teal-400',    bg: 'bg-teal-100 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800/60' },
+  { key: '1', text: 'What decisions were made last week?',   type: 'decision', icon: ShieldAlert,   color: 'text-slate-600 dark:text-slate-400 group-hover:text-[#006065]', bg: 'bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800' },
+  { key: '2', text: 'Show me overdue tasks across spaces',   type: 'task',     icon: CheckCircle,   color: 'text-slate-600 dark:text-slate-400 group-hover:text-[#006065]', bg: 'bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800' },
+  { key: '3', text: 'Find recent meetings about pricing',    type: 'meeting',  icon: Calendar,      color: 'text-slate-600 dark:text-slate-400 group-hover:text-[#006065]', bg: 'bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800' },
+  { key: '4', text: 'Any active blockers in engineering?',   type: 'blocker',  icon: AlertTriangle, color: 'text-slate-600 dark:text-slate-400 group-hover:text-[#006065]', bg: 'bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800' },
+  { key: '5', text: 'What videos were recorded this month?', type: 'video',    icon: Video,         color: 'text-slate-600 dark:text-slate-400 group-hover:text-[#006065]', bg: 'bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800' },
+  { key: '6', text: 'Summarize key updates from standups',   type: 'standup',  icon: Zap,           color: 'text-slate-600 dark:text-slate-400 group-hover:text-[#006065]', bg: 'bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800' },
 ];
 
 // â”€â”€â”€ Highlight matched text â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -626,7 +626,7 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
               <button
                 onClick={() => handleSearch(undefined, false)}
                 title="Press Enter to ask AI"
-                className="shrink-0 flex items-center gap-1.5 text-xs font-bold text-indigo-700 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-2.5 py-1.5 rounded-md border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors"
+                className="shrink-0 flex items-center gap-1.5 text-xs font-bold text-[#006065] dark:text-teal-400 bg-[#006065]/5 dark:bg-[#006065]/10 px-2.5 py-1.5 rounded-md border border-[#006065]/20 dark:border-[#006065]/40 hover:bg-[#006065]/10 dark:hover:bg-[#006065]/20 transition-colors"
               >
                 <Sparkles className="w-3.5 h-3.5" /> Ask AI
               </button>
@@ -639,7 +639,7 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
               <ExternalLink className="w-4 h-4" />
             </button>
             {isSynthesizing && (
-              <span className="shrink-0 flex items-center gap-1.5 text-xs font-bold text-indigo-700 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-2.5 py-1.5 rounded-md border border-indigo-200 dark:border-indigo-800 animate-pulse">
+              <span className="shrink-0 flex items-center gap-1.5 text-xs font-bold text-[#006065] dark:text-teal-400 bg-[#006065]/5 dark:bg-[#006065]/10 px-2.5 py-1.5 rounded-md border border-[#006065]/20 dark:border-[#006065]/40 animate-pulse">
                 <Sparkles className="w-3.5 h-3.5 animate-spin" /> Thinking...
               </span>
             )}
@@ -663,14 +663,14 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
                   onClick={() => setSelectedFilter(tab.id)}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors ${
                     selectedFilter === tab.id
-                      ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400'
+                      ? 'bg-[#006065]/10 text-[#006065] dark:bg-[#006065]/20 dark:text-teal-400'
                       : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-border text-slate-600 dark:text-muted-foreground hover:bg-slate-100 dark:hover:bg-accent'
                   }`}
                 >
                   <tab.icon className="w-3.5 h-3.5" />
                   {tab.label}
                   {hasSearched && getScopeCount(tab.id) > 0 && (
-                    <span className={`ml-0.5 text-[10px] font-bold ${selectedFilter === tab.id ? 'text-indigo-500' : 'text-slate-400'}`}>
+                    <span className={`ml-0.5 text-[10px] font-bold ${selectedFilter === tab.id ? 'text-[#006065] dark:text-teal-500' : 'text-slate-400'}`}>
                       {getScopeCount(tab.id)}
                     </span>
                   )}
@@ -715,7 +715,7 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
                       const Icon = item.icon;
                       return (
                         <button key={item.key} onClick={() => { setQuery(item.text); handleSearch(item.text); }}
-                          className="w-full text-left flex items-start gap-3 p-3 rounded-xl bg-white dark:bg-card border border-slate-200 dark:border-border hover:border-indigo-300 dark:hover:border-indigo-700 hover:shadow-sm transition-all group">
+                          className="w-full text-left flex items-start gap-3 p-3 rounded-xl bg-white dark:bg-card border border-slate-200 dark:border-border hover:border-[#006065]/40 dark:hover:border-teal-700/50 hover:shadow-sm transition-all group">
                           <div className={`w-8 h-8 rounded-lg ${item.bg} flex items-center justify-center shrink-0`}>
                             <Icon className={`w-4 h-4 ${item.color}`} />
                           </div>
@@ -746,9 +746,9 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
                       <h3 className="text-sm font-bold text-slate-900 dark:text-foreground">Orbit AI</h3>
                     </div>
                     
-                    <div className="text-sm text-slate-700 dark:text-muted-foreground leading-relaxed space-y-3 prose prose-sm dark:prose-invert max-w-none prose-p:leading-relaxed prose-a:text-indigo-600">
+                    <div className="text-sm text-slate-700 dark:text-muted-foreground leading-relaxed space-y-3 prose prose-sm dark:prose-invert max-w-none prose-p:leading-relaxed prose-a:text-[#006065]">
                       {isSynthesizing && !aiAnswer ? (
-                        <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
+                        <div className="flex items-center gap-2 text-[#006065] dark:text-indigo-400">
                           <Loader2 className="w-4 h-4 animate-spin" />
                           <span className="font-medium animate-pulse">Synthesizing across workspace...</span>
                         </div>
@@ -793,7 +793,7 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
                           {peopleResults.map((p, idx) => {
                             const isSelected = selectedIndex === idx;
                             return (
-                              <button key={p.id} onMouseEnter={() => setSelectedIndex(idx)} className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all ${isSelected ? 'bg-indigo-50 border-indigo-200 dark:bg-indigo-900/20 dark:border-indigo-800 shadow-sm' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-border hover:border-slate-300 dark:border-border'}`}>
+                              <button key={p.id} onMouseEnter={() => setSelectedIndex(idx)} className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all ${isSelected ? 'bg-[#006065]/5 border-[#006065]/20 dark:bg-[#006065]/10 dark:border-[#006065]/30 shadow-sm' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-border hover:border-slate-300 dark:border-border'}`}>
                                 <img src={p.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${p.label}`} className="w-5 h-5 rounded-full" alt="" />
                                 <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">{p.label}</span>
                               </button>
@@ -819,7 +819,7 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
                               if (r) { navigate(r); setIsOpen(false); }
                             }
                           }}
-                          className={`mx-2 p-3 rounded-xl border transition-all cursor-pointer flex gap-3 ${isSelected ? 'bg-indigo-50/50 dark:bg-indigo-900/10 border-indigo-200 dark:border-indigo-800/50 shadow-sm' : 'bg-transparent border-transparent hover:bg-slate-50 dark:hover:bg-accent/50'}`}
+                          className={`mx-2 p-3 rounded-xl border transition-all cursor-pointer flex gap-3 ${isSelected ? 'bg-indigo-50/50 dark:bg-indigo-900/10 border-[#006065]/20 dark:border-[#006065]/40/50 shadow-sm' : 'bg-transparent border-transparent hover:bg-slate-50 dark:hover:bg-accent/50'}`}
                         >
                           <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${meta.bg}`}>
                             <Icon className={`w-4 h-4 ${meta.color}`} />
@@ -854,7 +854,7 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
                     })}
 
                     {hasSearched && totalMatchCount > filteredResults.length && !showAllResults && (
-                       <button onClick={handleLoadMore} className="w-full py-3 text-xs font-bold text-indigo-600 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100 dark:text-indigo-400 dark:bg-indigo-900/20 dark:hover:bg-indigo-900/40 transition-colors mt-2 rounded-lg">
+                       <button onClick={handleLoadMore} className="w-full py-3 text-xs font-bold text-[#006065] hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100 dark:text-indigo-400 dark:bg-indigo-900/20 dark:hover:bg-indigo-900/40 transition-colors mt-2 rounded-lg">
                          Load more results ({totalMatchCount - filteredResults.length} hidden)
                        </button>
                     )}
