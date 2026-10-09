@@ -435,11 +435,8 @@ export default function MeetLandingPage() {
         type="website"
       />
       <header className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 border-b border-slate-200  bg-white/80  backdrop-blur-md shadow-sm">
-        <div className="flex items-center gap-2.5">
-          <div className="w-10 h-10 flex items-center justify-center text-primary">
-            <CliPadLogo size={36} />
-          </div>
-          <span className="text-xl font-bold tracking-tight text-slate-900 ">KERINT</span>
+        <div className="flex items-center">
+          <CliPadLogo size={42} />
         </div>
         
         {/* Desktop Nav */}
@@ -997,11 +994,9 @@ export default function MeetLandingPage() {
         {/* ΓöÇΓöÇ FOOTER ΓöÇΓöÇ */}
         <footer className="border-t border-border py-6 px-6 md:px-12 bg-slate-50 dark:bg-background/50">
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2 text-slate-500 dark:text-muted-foreground text-sm font-medium">
-              <div className="text-primary mr-1">
-                <CliPadLogo size={24} />
-              </div>
-              <span>&copy; {new Date().getFullYear()} KERINT by Optavel Technologies</span>
+            <div className="flex items-center gap-2 text-slate-500 text-sm font-medium">
+              <CliPadLogo size={18} iconOnly />
+              <span>© {new Date().getFullYear()} KERINT by Optavel Technologies</span>
             </div>
             <div className="flex items-center gap-6 text-sm text-muted-foreground">
               <span className="hover:text-muted-foreground cursor-pointer transition-colors">Privacy</span>

@@ -33,6 +33,8 @@ const ActionItems = React.lazy(() => import('@/pages/clipad/ActionItems'));
 const KnowledgeJourney = React.lazy(() => import('@/pages/clipad/KnowledgeJourney'));
 const IntegrationAnalytics = React.lazy(() => import('@/pages/clipad/IntegrationAnalytics'));
 const MeetLandingPage = React.lazy(() => import('@/pages/MeetLandingPage'));
+const PricingPage = React.lazy(() => import('@/pages/PricingPage'));
+const SecurityPage = React.lazy(() => import('@/pages/SecurityPage'));
 const CliPadDashboard = React.lazy(() => import('@/pages/clipad/CliPadDashboard'));
 const CliPadLogin = React.lazy(() => import('@/pages/clipad/CliPadLogin'));
 const CliPadSignUp = React.lazy(() => import('@/pages/clipad/CliPadSignUp'));
@@ -101,7 +103,8 @@ function App() {
                         <Route path="/signup" element={<CliPadSignUp />} />
                         <Route path="/custom-pricing" element={<CliPadCustomPricing />} />
                         <Route path="/" element={<MeetLandingPage />} />
-                        <Route path="/pricing" element={<PricingPage />} />`n<Route path="/security" element={<SecurityPage />} />
+                        <Route path="/pricing" element={<PricingPage />} />
+                        <Route path="/security" element={<SecurityPage />} />
                         <Route path="/home" element={<MeetLandingPage />} />
                         <Route path="/marketing" element={<MeetLandingPage />} />
                         <Route path="/about" element={<MeetLandingPage />} />
