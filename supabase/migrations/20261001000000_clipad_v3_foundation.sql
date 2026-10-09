@@ -1,3 +1,4 @@
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
 -- ──────────────────────────────────────────────────────────────────
 -- CLIPAD V3 — PHASE 1 FOUNDATION MIGRATION (STRICT MULTI-TENANT SECURITY)
 -- Non-Destructive Extension of Existing Schema for Clipad V3
