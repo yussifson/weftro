@@ -83,7 +83,11 @@ export default function CaptureInbox() {
     e.preventDefault();
     if (!newSessionTitle.trim()) return;
     try {
-      await createContextSession(user.id, companyId, newSessionTitle);
+      await createContextSession({
+        userId: user.id,
+        companyId: companyId,
+        title: newSessionTitle
+      });
       setNewSessionTitle('');
       await loadData();
       toast({ title: "Session Started", description: "Captures can now be routed to this session." });
