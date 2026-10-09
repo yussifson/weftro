@@ -1,53 +1,53 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Layers, Video, Camera, Brain, Target, Zap } from 'lucide-react';
 
 const pillars = [
   {
     icon: Video,
-    color: 'from-orange-500 to-orange-400',
-    glow: 'shadow-orange-500/20',
-    bg: 'bg-orange-50 dark:bg-orange-900/10',
+    color: 'from-slate-600 to-slate-500',
+    glow: 'shadow-slate-500/20',
+    bg: 'bg-slate-50 dark:bg-orange-900/10',
     title: 'HD Live Meetings',
     desc: 'No time limits. Up to 500 participants. Speaker spotlight, noise cancellation, live captions, breakout rooms and a persistent whiteboard.'
   },
   {
     icon: Camera,
-    color: 'from-green-500 to-emerald-500',
-    glow: 'shadow-green-500/20',
+    color: 'from-primary to-primary/80',
+    glow: 'shadow-primary/20',
     bg: 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-emerald-900/10',
     title: 'Async Video Messages',
     desc: 'Record camera, screen, or both in picture-in-picture. Share an instant link. Viewers leave timestamped comments and emoji reactions.'
   },
   {
     icon: Brain,
-    color: 'from-yellow-500 to-amber-500',
-    glow: 'shadow-yellow-500/20',
-    bg: 'bg-amber-50 dark:bg-amber-900/10',
+    color: 'from-zinc-500 to-zinc-600',
+    glow: 'shadow-zinc-500/20',
+    bg: 'bg-zinc-50 dark:bg-amber-900/10',
     title: 'AI Intelligence',
-    desc: 'Every meeting produces a full summary, key decisions, extracted action items with owners, open questions, and sentiment â€” instantly.'
+    desc: 'Every meeting produces a full summary, key decisions, extracted action items with owners, open questions, and sentiment — instantly.'
   },
   {
     icon: Layers,
-    color: 'from-blue-500 to-indigo-500',
-    glow: 'shadow-blue-500/20',
-    bg: 'bg-blue-50 dark:bg-blue-900/10',
+    color: 'from-slate-700 to-slate-600',
+    glow: 'shadow-slate-600/20',
+    bg: 'bg-slate-100 dark:bg-blue-900/10',
     title: 'Team Spaces',
     desc: 'Persistent rooms for every team and project. Live meetings, async videos, shared notes, action boards, and cross-space search.'
   },
   {
     icon: Target,
-    color: 'from-purple-500 to-fuchsia-500',
-    glow: 'shadow-purple-500/20',
-    bg: 'bg-purple-50 dark:bg-purple-900/10',
+    color: 'from-primary/70 to-primary/60',
+    glow: 'shadow-primary/20',
+    bg: 'bg-slate-50 dark:bg-purple-900/10',
     title: 'Sales & Demo Layer',
     desc: 'Record personalised video proposals. Know who watched, how much, where they paused, and whether they shared it.'
   },
   {
     icon: Zap,
-    color: 'from-rose-500 to-red-500',
-    glow: 'shadow-rose-500/20',
-    bg: 'bg-rose-50 dark:bg-rose-900/10',
+    color: 'from-stone-500 to-stone-400',
+    glow: 'shadow-stone-500/20',
+    bg: 'bg-stone-50 dark:bg-rose-900/10',
     title: 'Smart Follow-up',
     desc: 'After every meeting, each participant receives only their personal action items with full context. Not the whole notes.'
   },

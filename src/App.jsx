@@ -101,7 +101,7 @@ function App() {
                         <Route path="/signup" element={<CliPadSignUp />} />
                         <Route path="/custom-pricing" element={<CliPadCustomPricing />} />
                         <Route path="/" element={<MeetLandingPage />} />
-                        <Route path="/landing" element={<MeetLandingPage />} />
+                        <Route path="/pricing" element={<PricingPage />} />`n<Route path="/security" element={<SecurityPage />} />
                         <Route path="/home" element={<MeetLandingPage />} />
                         <Route path="/marketing" element={<MeetLandingPage />} />
                         <Route path="/about" element={<MeetLandingPage />} />
