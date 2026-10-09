@@ -53,4 +53,5 @@ AFTER INSERT OR UPDATE ON public.industry_records
 FOR EACH ROW EXECUTE FUNCTION public.invoke_automation_engine();
 
 -- 3. We can optionally attach it to core tables if requested:
+DROP TRIGGER IF EXISTS core_leads_automation_trigger ON public.leads;
 -- Example: CREATE TRIGGER core_leads_automation_trigger AFTER INSERT OR UPDATE ON public.leads FOR EACH ROW EXECUTE FUNCTION public.invoke_automation_engine();

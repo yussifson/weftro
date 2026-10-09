@@ -156,6 +156,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trigger_update_clipad_v3_captures_updated_at ON clipad_v3_captures;
 CREATE TRIGGER trigger_update_clipad_v3_captures_updated_at
 BEFORE UPDATE ON clipad_v3_captures
 FOR EACH ROW
@@ -169,6 +170,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trigger_update_clipad_v3_context_sessions_updated_at ON clipad_v3_context_sessions;
 CREATE TRIGGER trigger_update_clipad_v3_context_sessions_updated_at
 BEFORE UPDATE ON clipad_v3_context_sessions
 FOR EACH ROW
