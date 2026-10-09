@@ -424,30 +424,30 @@ export default function MeetLandingPage() {
 
 
   return (
-    <div className={`light min-h-screen bg-white  text-slate-900  flex flex-col font-sans relative transition-all duration-500 ease-in-out overflow-x-hidden ${supportPanel ? 'lg:pr-[400px]' : ''}`}>
+    <div className={`light min-h-screen bg-white dark:bg-card text-slate-900 dark:text-foreground flex flex-col font-sans relative transition-all duration-500 ease-in-out overflow-x-hidden ${supportPanel ? 'lg:pr-[400px]' : ''}`}>
       <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute -top-[20%] -left-[10%] w-[70vw] h-[70vw] rounded-full bg-slate-200/50 blur-[120px]" />
-        <div className="absolute -bottom-[20%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-slate-300/30 blur-[120px]" />
+        <div className="absolute -top-[20%] -left-[10%] w-[70vw] h-[70vw] rounded-full bg-primary/5 blur-[120px]" />
+        <div className="absolute -bottom-[20%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-[#fad503]/5 blur-[120px]" />
       </div>
       <SEO 
         title="KERINT - #1 Enterprise AI-Powered Organizational Memory Layer" 
         description="KERINT is a free, secure, enterprise-grade collaborative productivity workspace. Connect your team with chat, spaces, and HD video meetings instantly. Trusted by teams worldwide." 
         type="website"
       />
-      <header className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 border-b border-slate-200  bg-white/80  backdrop-blur-md shadow-sm">
-        <div className="flex items-center">
+      <header className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-border/50 bg-white/80 dark:bg-background/80 backdrop-blur-md shadow-sm">
+        <div className="flex items-center gap-2.5">
           <CliPadLogo size={42} />
         </div>
         
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-1 text-sm text-muted-foreground">
           <a href="#features" className="px-4 py-2 rounded-lg hover:text-foreground hover:bg-secondary transition-colors">Features</a>
-          <a href="/pricing" className="px-4 py-2 rounded-lg hover:text-foreground hover:bg-secondary transition-colors">Pricing</a>`n            <a href="/security" className="px-4 py-2 rounded-lg hover:text-foreground hover:bg-secondary transition-colors">Security</a>
+          <a href="#pricing" className="px-4 py-2 rounded-lg hover:text-foreground hover:bg-secondary transition-colors">Pricing</a>
           <a href="#contact" className="px-4 py-2 rounded-lg hover:text-foreground hover:bg-secondary transition-colors">Support</a>
         </div>
         
         <div className="flex items-center gap-4">
-          <div className="hidden md:flex items-center gap-2 text-sm font-semibold tabular-nums bg-slate-100 dark:bg-secondary/80 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-border/60 shadow-inner text-slate-700 ">
+          <div className="hidden md:flex items-center gap-2 text-sm font-semibold tabular-nums bg-slate-100 dark:bg-secondary/80 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-border/60 shadow-inner text-slate-700 dark:text-foreground">
             <Clock className="w-4 h-4 text-primary" />
             <span>{timeStr}</span>
             <span className="text-slate-300 mx-0.5">|</span>
@@ -455,7 +455,7 @@ export default function MeetLandingPage() {
           </div>
           
           <div className="flex items-center gap-2">
-            <LanguageSwitcher className="h-9 w-[130px] rounded-xl border border-slate-200 dark:border-border bg-background hover:bg-slate-50 dark:hover:bg-secondary text-slate-700  text-xs" />
+            <LanguageSwitcher className="h-9 w-[130px] rounded-xl border border-slate-200 dark:border-border bg-background hover:bg-slate-50 dark:hover:bg-secondary text-slate-700 dark:text-foreground text-xs" />
             {user ? (
               <Button onClick={() => navigate('/dashboard')} className="rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm">
                 <Layers className="w-4 h-4 mr-2" /> Dashboard
@@ -505,14 +505,14 @@ export default function MeetLandingPage() {
                   className="flex items-center gap-3 p-3 cursor-pointer rounded-lg hover:bg-slate-50 dark:bg-background"
                 >
                   <LinkIcon className="w-5 h-5 text-slate-500 dark:text-muted-foreground" />
-                  <span className="font-medium text-slate-700 ">Create a meeting for later</span>
+                  <span className="font-medium text-slate-700 dark:text-foreground">Create a meeting for later</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => handleCreateMeeting('instant')}
                   className="flex items-center gap-3 p-3 cursor-pointer rounded-lg hover:bg-slate-50 dark:bg-background"
                 >
                   <Plus className="w-5 h-5 text-slate-500 dark:text-muted-foreground" />
-                  <span className="font-medium text-slate-700 ">Start an instant meeting</span>
+                  <span className="font-medium text-slate-700 dark:text-foreground">Start an instant meeting</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -543,7 +543,7 @@ export default function MeetLandingPage() {
         <div className="flex-1 hidden md:flex items-center justify-center relative min-h-[520px]">
           <button
             onClick={prevSlide}
-            className="absolute left-0 z-10 w-10 h-10 rounded-full bg-white  hover:bg-slate-50 dark:bg-background shadow-md border border-slate-100 flex items-center justify-center transition-all"
+            className="absolute left-0 z-10 w-10 h-10 rounded-full bg-white dark:bg-card hover:bg-slate-50 dark:bg-background shadow-md border border-slate-100 flex items-center justify-center transition-all"
           >
             <ChevronLeft className="w-5 h-5 text-slate-500 dark:text-muted-foreground" />
           </button>
@@ -561,7 +561,7 @@ export default function MeetLandingPage() {
               ))}
             </div>
             <div className="h-28">
-              <h2 className="text-2xl font-semibold text-slate-900  mb-2 tracking-tight">
+              <h2 className="text-2xl font-semibold text-slate-900 dark:text-foreground mb-2 tracking-tight">
                 {slides[currentSlide].title}
               </h2>
               <p className="text-sm text-slate-500 dark:text-muted-foreground leading-relaxed max-w-xs mx-auto">
@@ -584,7 +584,7 @@ export default function MeetLandingPage() {
           </div>
           <button
             onClick={nextSlide}
-            className="absolute right-0 z-10 w-10 h-10 rounded-full bg-white  hover:bg-slate-50 dark:bg-background shadow-md border border-slate-100 flex items-center justify-center transition-all"
+            className="absolute right-0 z-10 w-10 h-10 rounded-full bg-white dark:bg-card hover:bg-slate-50 dark:bg-background shadow-md border border-slate-100 flex items-center justify-center transition-all"
           >
             <ChevronRight className="w-5 h-5 text-slate-500 dark:text-muted-foreground" />
           </button>
@@ -994,9 +994,9 @@ export default function MeetLandingPage() {
         {/* ΓöÇΓöÇ FOOTER ΓöÇΓöÇ */}
         <footer className="border-t border-border py-6 px-6 md:px-12 bg-slate-50 dark:bg-background/50">
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2 text-slate-500 text-sm font-medium">
-              <CliPadLogo size={18} iconOnly />
-              <span>© {new Date().getFullYear()} KERINT by Optavel Technologies</span>
+            <div className="flex items-center gap-2 text-slate-500 dark:text-muted-foreground text-sm font-medium">
+              <CliPadLogo size={18} iconOnly={true} />
+              <span>&copy; {new Date().getFullYear()} Optavel Technologies</span>
             </div>
             <div className="flex items-center gap-6 text-sm text-muted-foreground">
               <span className="hover:text-muted-foreground cursor-pointer transition-colors">Privacy</span>
@@ -1021,7 +1021,7 @@ export default function MeetLandingPage() {
             </div>
 
             {/* Text */}
-            <h2 className="text-xl font-bold text-slate-900  mb-2 tracking-tight">Your meeting is ready</h2>
+            <h2 className="text-xl font-bold text-slate-900 dark:text-foreground mb-2 tracking-tight">Your meeting is ready</h2>
             <p className="text-slate-500 dark:text-muted-foreground mb-8 max-w-sm text-sm leading-relaxed">
               Share this link with anyone you'd like to invite. They can join from any browser.
             </p>
@@ -1075,7 +1075,7 @@ export default function MeetLandingPage() {
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: '100%', opacity: 0 }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed right-0 top-0 bottom-0 w-[400px] max-w-full bg-white  shadow-[-10px_0_30px_rgba(0,0,0,0.05)] flex flex-col z-[110] border-l-4 border-primary"
+              className="fixed right-0 top-0 bottom-0 w-[400px] max-w-full bg-white dark:bg-card shadow-[-10px_0_30px_rgba(0,0,0,0.05)] flex flex-col z-[110] border-l-4 border-primary"
               onClick={e => e.stopPropagation()}
             >
               <div className="flex items-center justify-between p-6 border-b border-slate-100">
@@ -1111,7 +1111,7 @@ export default function MeetLandingPage() {
                       }
                     }}>
                     <div>
-                      <label className="text-sm font-medium text-slate-700 ">Name</label>
+                      <label className="text-sm font-medium text-slate-700 dark:text-foreground">Name</label>
                       <input 
                         type="text" 
                         required 
@@ -1121,7 +1121,7 @@ export default function MeetLandingPage() {
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-slate-700 ">Phone Number</label>
+                      <label className="text-sm font-medium text-slate-700 dark:text-foreground">Phone Number</label>
                       <input 
                         type="tel" 
                         required 

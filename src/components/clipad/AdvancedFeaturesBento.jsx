@@ -32,8 +32,8 @@ const features = [
     description: "Automatic transcription, key decisions, and action items generated the second your meeting ends.",
     icon: Sparkles,
     span: "md:col-span-1 md:row-span-2",
-    accent: "from-slate-600 to-slate-800",
-    iconColor: "text-slate-700",
+    accent: "from-violet-600 to-fuchsia-600",
+    iconColor: "text-violet-600",
     visual: (
       <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-12 group-hover:translate-y-4 transition-transform duration-700">
         <div className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl p-4 space-y-3 shadow-xl">
@@ -52,11 +52,11 @@ const features = [
     description: "Record your screen and camera in pristine 1080p. Send updates instantly.",
     icon: Video,
     span: "md:col-span-1",
-    accent: "from-sky-600 to-sky-800",
-    iconColor: "text-sky-700",
+    accent: "from-blue-600 to-cyan-600",
+    iconColor: "text-blue-600",
     visual: (
       <div className="absolute -right-6 -bottom-6 opacity-10 group-hover:opacity-20 group-hover:-rotate-12 transition-all duration-700">
-        <Video className="w-40 h-40 text-sky-700" />
+        <Video className="w-40 h-40 text-blue-600" />
       </div>
     )
   },
@@ -65,31 +65,31 @@ const features = [
     description: "Instantly route users to real human agents within the same chat interface.",
     icon: HeadphonesIcon,
     span: "md:col-span-1",
-    accent: "from-zinc-500 to-zinc-700",
-    iconColor: "text-zinc-600",
+    accent: "from-rose-600 to-orange-600",
+    iconColor: "text-rose-600",
   },
   {
     title: "Smart Spaces",
     description: "Organize teams, projects, and topics securely.",
     icon: LayoutGrid,
     span: "md:col-span-1",
-    accent: "from-slate-500 to-slate-700",
-    iconColor: "text-slate-600",
+    accent: "from-indigo-600 to-blue-600",
+    iconColor: "text-indigo-600",
   },
   {
     title: "Decision Ledger",
     description: "A chronological record of every key decision made across the organization.",
     icon: BookOpen,
     span: "md:col-span-1",
-    accent: "from-stone-500 to-stone-700",
-    iconColor: "text-stone-600",
+    accent: "from-amber-500 to-orange-500",
+    iconColor: "text-amber-600",
   },
   {
     title: "Global Search",
     description: "Find exactly what was said in any video, instantly.",
     icon: Search,
     span: "md:col-span-2",
-    accent: "from-primary to-primary/80",
+    accent: "from-primary to-cyan-600",
     iconColor: "text-primary",
     visual: (
       <div className="absolute inset-y-0 right-0 w-1/2 flex items-center p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-700 translate-x-8 group-hover:translate-x-0">
@@ -105,16 +105,16 @@ const features = [
     description: "Track ROI, adoption, and organizational health.",
     icon: TrendingUp,
     span: "md:col-span-1",
-    accent: "from-slate-700 to-slate-900",
-    iconColor: "text-slate-800",
+    accent: "from-pink-600 to-rose-600",
+    iconColor: "text-pink-600",
   },
   {
     title: "Async Standups",
     description: "Keep remote teams aligned without disruptive meetings.",
     icon: Clock,
     span: "md:col-span-1",
-    accent: "from-primary/90 to-primary",
-    iconColor: "text-primary",
+    accent: "from-teal-600 to-primary",
+    iconColor: "text-teal-600",
   }
 ];
 
