@@ -1,9 +1,24 @@
 -- Migration for Clipad V3 Phase 5 - Capture System & Context Sessions
 
 -- 1. ENUMS
-CREATE TYPE capture_status AS ENUM ('CREATED', 'PROCESSING', 'PROCESSED', 'CLASSIFIED', 'CONTEXTUALIZED', 'INGESTED', 'FAILED', 'DISMISSED', 'ARCHIVED');
-CREATE TYPE capture_visibility AS ENUM ('PERSONAL', 'TEAM', 'ORGANIZATIONAL');
-CREATE TYPE context_session_status AS ENUM ('ACTIVE', 'PAUSED', 'COMPLETED', 'ARCHIVED');
+DO $
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'capture_status') THEN
+    CREATE TYPE capture_status AS ENUM ('CREATED', 'PROCESSING', 'PROCESSED', 'CLASSIFIED', 'CONTEXTUALIZED', 'INGESTED', 'FAILED', 'DISMISSED', 'ARCHIVED');
+  END IF;
+END$;
+DO $
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'capture_visibility') THEN
+    CREATE TYPE capture_visibility AS ENUM ('PERSONAL', 'TEAM', 'ORGANIZATIONAL');
+  END IF;
+END$;
+DO $
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'context_session_status') THEN
+    CREATE TYPE context_session_status AS ENUM ('ACTIVE', 'PAUSED', 'COMPLETED', 'ARCHIVED');
+  END IF;
+END$;
 
 -- 2. CONTEXT SESSIONS TABLE
 CREATE TABLE IF NOT EXISTS clipad_v3_context_sessions (
