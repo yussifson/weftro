@@ -4,20 +4,35 @@
 DO $
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'capture_status') THEN
+    DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'capture_status') THEN
     CREATE TYPE capture_status AS ENUM ('CREATED', 'PROCESSING', 'PROCESSED', 'CLASSIFIED', 'CONTEXTUALIZED', 'INGESTED', 'FAILED', 'DISMISSED', 'ARCHIVED');
+  END IF;
+END$$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'capture_visibility') THEN
+      END IF;
+END$$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'context_session_status') THEN
+      END IF;
+END$$;
   END IF;
 END$;
 DO $
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'capture_visibility') THEN
-    CREATE TYPE capture_visibility AS ENUM ('PERSONAL', 'TEAM', 'ORGANIZATIONAL');
-  END IF;
+      END IF;
 END$;
 DO $
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'context_session_status') THEN
-    CREATE TYPE context_session_status AS ENUM ('ACTIVE', 'PAUSED', 'COMPLETED', 'ARCHIVED');
-  END IF;
+      END IF;
 END$;
 
 -- 2. CONTEXT SESSIONS TABLE
