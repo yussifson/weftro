@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS public.clipad_v3_organizational_insights (
     updated_at TIMESTAMPTZ DEFAULT now()
 );
 
-CREATE INDEX idx_clipad_v3_insights_company ON public.clipad_v3_organizational_insights(company_id, insight_type, status);
+CREATE INDEX IF NOT EXISTS idx_clipad_v3_insights_company ON public.clipad_v3_organizational_insights(company_id, insight_type, status);
 
 -- 2. Automation Rules Table
 CREATE TABLE IF NOT EXISTS public.clipad_v3_automation_rules (
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS public.clipad_v3_automation_rules (
     created_at TIMESTAMPTZ DEFAULT now()
 );
 
-CREATE INDEX idx_clipad_v3_automation_company ON public.clipad_v3_automation_rules(company_id, is_active, trigger_event);
+CREATE INDEX IF NOT EXISTS idx_clipad_v3_automation_company ON public.clipad_v3_automation_rules(company_id, is_active, trigger_event);
 
 -- Enable RLS
 ALTER TABLE public.clipad_v3_organizational_insights ENABLE ROW LEVEL SECURITY;

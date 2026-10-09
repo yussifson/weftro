@@ -51,9 +51,9 @@ CREATE TABLE IF NOT EXISTS clipad_v3_context_sessions (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_context_sessions_company ON clipad_v3_context_sessions(company_id);
-CREATE INDEX idx_context_sessions_user ON clipad_v3_context_sessions(user_id);
-CREATE INDEX idx_context_sessions_status ON clipad_v3_context_sessions(status);
+CREATE INDEX IF NOT EXISTS idx_context_sessions_company ON clipad_v3_context_sessions(company_id);
+CREATE INDEX IF NOT EXISTS idx_context_sessions_user ON clipad_v3_context_sessions(user_id);
+CREATE INDEX IF NOT EXISTS idx_context_sessions_status ON clipad_v3_context_sessions(status);
 
 -- 3. CAPTURES TABLE
 CREATE TABLE IF NOT EXISTS clipad_v3_captures (
@@ -80,11 +80,11 @@ CREATE TABLE IF NOT EXISTS clipad_v3_captures (
     UNIQUE (company_id, id)
 );
 
-CREATE INDEX idx_captures_company ON clipad_v3_captures(company_id);
-CREATE INDEX idx_captures_user ON clipad_v3_captures(user_id);
-CREATE INDEX idx_captures_session ON clipad_v3_captures(context_session_id);
-CREATE INDEX idx_captures_status ON clipad_v3_captures(status);
-CREATE INDEX idx_captures_visibility ON clipad_v3_captures(visibility);
+CREATE INDEX IF NOT EXISTS idx_captures_company ON clipad_v3_captures(company_id);
+CREATE INDEX IF NOT EXISTS idx_captures_user ON clipad_v3_captures(user_id);
+CREATE INDEX IF NOT EXISTS idx_captures_session ON clipad_v3_captures(context_session_id);
+CREATE INDEX IF NOT EXISTS idx_captures_status ON clipad_v3_captures(status);
+CREATE INDEX IF NOT EXISTS idx_captures_visibility ON clipad_v3_captures(visibility);
 
 -- 4. RLS POLICIES FOR CONTEXT SESSIONS
 ALTER TABLE clipad_v3_context_sessions ENABLE ROW LEVEL SECURITY;
