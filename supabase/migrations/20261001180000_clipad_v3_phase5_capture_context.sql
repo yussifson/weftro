@@ -118,10 +118,10 @@ CREATE POLICY "Users can view their own personal captures"
             (visibility = 'ORGANIZATIONAL')
             OR
             (visibility = 'TEAM' AND EXISTS (
-                SELECT 1 FROM clipad_team_members ctm 
-                JOIN clipad_teams t ON t.id = ctm.team_id 
-                WHERE ctm.user_id = auth.uid() 
-                AND ctm.team_id = (permission_info->>'team_id')::uuid
+                SELECT 1 FROM clipad_space_members csm 
+                JOIN clipad_spaces s ON s.id = csm.space_id 
+                WHERE csm.user_id = auth.uid() 
+                AND csm.space_id = COALESCE(permission_info->>'space_id', permission_info->>'team_id', permission_info->>'team_space_id')::uuid
             ))
         )
     );
