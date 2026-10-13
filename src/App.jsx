@@ -112,7 +112,7 @@ function App() {
 
                         <Route element={<ClipadLayout />}>
                           <Route path="/dashboard" element={<CliPadDashboard />} />
-                          <Route path="/analytics" element={<AnalyticsPageRouter />} />
+                          <Route path="/analytics" element={<AdminRoute><AnalyticsPageRouter /></AdminRoute>} />
                           <Route path="/enterprise" element={<CliPadEnterpriseDashboard />} />
                           <Route path="/spaces" element={<SpacesList />} />
                           <Route path="/spaces/:spaceId" element={<SpaceDashboard />} />
@@ -122,7 +122,7 @@ function App() {
                           <Route path="/graph" element={<KnowledgeGraph />} />
                           <Route path="/action-items" element={<ActionItems />} />
                           <Route path="/knowledge" element={<KnowledgeJourney />} />
-                          <Route path="/integration-analytics" element={<IntegrationAnalytics />} />
+                          <Route path="/integration-analytics" element={<AdminRoute><IntegrationAnalytics /></AdminRoute>} />
                           <Route path="/record-meeting" element={<MeetingRecord />} />
 
                           <Route path="/record" element={<RecordVideo />} />

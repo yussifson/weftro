@@ -8,6 +8,7 @@ import ThemeToggle from '@/components/layout/ThemeToggle';
 import NotificationCenter from '@/components/clipad/notifications/NotificationCenter';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { getSavedAccounts } from '@/lib/multiAccountUtils';
+import { isAdmin } from '@/lib/constants';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -57,10 +58,12 @@ export default function ClipadTopNav({ forceMobile = false }) {
             <DropdownMenuItem onClick={() => navigate('/meetings')} className="cursor-pointer font-bold py-2.5 rounded-xl text-white hover:bg-white/10 focus:bg-white/10 transition-colors">
               <Calendar className="w-4 h-4 mr-2.5 text-[#fad503]" /> Meet
             </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => navigate('/analytics')} className="cursor-pointer font-bold py-2.5 rounded-xl text-white hover:bg-white/10 focus:bg-white/10 transition-colors">
+            {isAdmin(user) && (
+              <DropdownMenuItem onClick={() => navigate('/analytics')} className="cursor-pointer font-bold py-2.5 rounded-xl text-white hover:bg-white/10 focus:bg-white/10 transition-colors">
                 <BarChart3 className="w-4 h-4 mr-2.5 text-[#fad503]" /> Analytics
               </DropdownMenuItem>
-            </DropdownMenuContent>
+            )}
+          </DropdownMenuContent>
         </DropdownMenu>
 
       </div>

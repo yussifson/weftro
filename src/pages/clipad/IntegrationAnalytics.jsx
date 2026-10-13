@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
 import { 
@@ -177,7 +177,7 @@ export default function IntegrationAnalytics() {
       </div>
     );
   }
-  if (!isUserAdmin) return <Navigate to="/clipad" replace />;
+  if (!isUserAdmin) return <Navigate to="/dashboard" replace />;
 
   return (
     <div className="min-h-full bg-slate-50 dark:bg-background flex flex-col text-slate-900 dark:text-slate-100 w-full page-enter">

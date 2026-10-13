@@ -1,5 +1,5 @@
-﻿import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
 import { hasFeature } from '@/lib/clipadPricing';
@@ -243,7 +243,7 @@ export default function VideoAnalytics() {
 
 
   if (!isAdmin(user)) {
-    return null; // Prevents rendering anything while redirect happens
+    return <Navigate to="/dashboard" replace />;
   }
 
   // Max value for chart scaling

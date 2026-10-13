@@ -61,9 +61,12 @@ export default function ClipadSidebar({ forceMobile }) {
   ];
 
   const isSuperAdmin = user?.role === 'super_admin';
+  const isUserAdmin = isAdmin(user);
   const intelligenceItems = [
     { label: 'Capture', path: '/integrations', icon: Plug },
-    { label: 'Analytics', path: '/integration-analytics', icon: BarChart2 },
+    ...(isUserAdmin ? [
+      { label: 'Analytics', path: '/integration-analytics', icon: BarChart2 },
+    ] : []),
     { label: 'Graph', path: '/graph', icon: Network },
     { label: 'Timeline', path: '/timeline', icon: Clock },
     { label: 'Decisions', path: '/decisions', icon: Scale },

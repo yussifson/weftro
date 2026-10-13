@@ -4,6 +4,7 @@ import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { Home, Layers, Video, Camera, User, MessageSquare, Bot, Sparkles, Menu, Settings, Shield, LogOut, X, Tag, Star, Phone, Globe, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/lib/AuthContext';
+import { isAdmin } from '@/lib/constants';
 import { useTheme } from '@/lib/ThemeContext';
 import ThemeToggle from '@/components/layout/ThemeToggle';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -173,27 +174,29 @@ export default function ClipadMobileNav({ isMarketing = false, forceMobile = fal
                   <span className="text-[13px] font-medium text-slate-700 dark:text-muted-foreground">Settings</span>
                 </button>
 
-                {/* Analytics / Enterprise */}
-                {user?.clipad_plan !== 'enterprise' ? (
-                  <button
-                    onClick={() => { setIsMenuOpen(false); navigate(window.location.pathname.startsWith('/clipad') ? '/clipad/analytics' : '/analytics'); }}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[14px] hover:bg-purple-50/80 dark:hover:bg-purple-500/10 transition-colors group"
-                  >
-                    <div className="w-8 h-8 rounded-full bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center group-hover:scale-105 transition-transform shadow-sm border border-purple-100/50 dark:border-transparent">
-                      <Bot className="w-4 h-4" />
-                    </div>
-                    <span className="text-[13px] font-medium text-slate-700 dark:text-muted-foreground">Analytics</span>
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => { setIsMenuOpen(false); navigate(window.location.pathname.startsWith('/clipad') ? '/clipad/enterprise' : '/enterprise'); }}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[14px] hover:bg-indigo-50/80 dark:hover:bg-indigo-500/10 transition-colors group"
-                  >
-                    <div className="w-8 h-8 rounded-full bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center group-hover:scale-105 transition-transform shadow-sm border border-indigo-100/50 dark:border-transparent">
-                      <Layers className="w-4 h-4" />
-                    </div>
-                    <span className="text-[13px] font-medium text-slate-700 dark:text-muted-foreground">Enterprise</span>
-                  </button>
+                {/* Analytics / Enterprise (Admin only) */}
+                {isAdmin(user) && (
+                  user?.clipad_plan !== 'enterprise' ? (
+                    <button
+                      onClick={() => { setIsMenuOpen(false); navigate(window.location.pathname.startsWith('/clipad') ? '/clipad/analytics' : '/analytics'); }}
+                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[14px] hover:bg-purple-50/80 dark:hover:bg-purple-500/10 transition-colors group"
+                    >
+                      <div className="w-8 h-8 rounded-full bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center group-hover:scale-105 transition-transform shadow-sm border border-purple-100/50 dark:border-transparent">
+                        <Bot className="w-4 h-4" />
+                      </div>
+                      <span className="text-[13px] font-medium text-slate-700 dark:text-muted-foreground">Analytics</span>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => { setIsMenuOpen(false); navigate(window.location.pathname.startsWith('/clipad') ? '/clipad/enterprise' : '/enterprise'); }}
+                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[14px] hover:bg-indigo-50/80 dark:hover:bg-indigo-500/10 transition-colors group"
+                    >
+                      <div className="w-8 h-8 rounded-full bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center group-hover:scale-105 transition-transform shadow-sm border border-indigo-100/50 dark:border-transparent">
+                        <Layers className="w-4 h-4" />
+                      </div>
+                      <span className="text-[13px] font-medium text-slate-700 dark:text-muted-foreground">Enterprise</span>
+                    </button>
+                  )
                 )}
 
                 {/* Optavel Account */}
