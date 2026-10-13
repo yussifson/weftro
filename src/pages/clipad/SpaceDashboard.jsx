@@ -319,7 +319,7 @@ export default function SpaceDashboard() {
           id: crypto.randomUUID(),
           company_id: user?.company_id || user?.user_metadata?.company_id || null,
           daily_room_name: targetRoomName,
-          daily_room_url: roomData?.url || `https://optavel.daily.co/${targetRoomName}`,
+          daily_room_url: roomData?.url || `https://optalflow.daily.co/${targetRoomName}`,
           privacy_type: privacyType || 'public',
           host_id: user?.id || null,
           status: 'active',
@@ -328,7 +328,7 @@ export default function SpaceDashboard() {
       } catch (_) { /* db insert failed — meeting still works */ }
 
       try {
-        await supabase.from('clipad_spaces').update({ meeting_url: roomData?.url || `https://optavel.daily.co/${targetRoomName}` }).eq('id', spaceId);
+        await supabase.from('clipad_spaces').update({ meeting_url: roomData?.url || `https://optalflow.daily.co/${targetRoomName}` }).eq('id', spaceId);
       } catch (_) {}
 
       navigate(`/join/${targetRoomName}?spaceId=${spaceId}`);

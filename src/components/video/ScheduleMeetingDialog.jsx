@@ -111,7 +111,7 @@ export default function ScheduleMeetingDialog({ open, onOpenChange, onScheduled 
       } catch (_) { /* edge function unavailable */ }
 
       const roomName = dailyData?.name || shortId;
-      const realUrl = dailyData?.url || `https://optavel.daily.co/${roomName}`;
+      const realUrl = dailyData?.url || `https://optalflow.daily.co/${roomName}`;
 
       let meetingDomain = window.location.hostname;
       if (meetingDomain.includes('localhost') || meetingDomain.includes('127.0.0.1')) {

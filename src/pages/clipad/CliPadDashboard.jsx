@@ -273,7 +273,7 @@ export default function CliPadDashboard() {
           id: crypto.randomUUID(),
           company_id: user?.company_id || user?.user_metadata?.company_id || null,
           daily_room_name: targetRoomName,
-          daily_room_url: roomData?.url || `https://optavel.daily.co/${targetRoomName}`,
+          daily_room_url: roomData?.url || `https://optalflow.daily.co/${targetRoomName}`,
           privacy_type: privacyType || 'public',
           host_id: user?.id || null,
           status: 'active',

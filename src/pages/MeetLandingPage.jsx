@@ -379,7 +379,7 @@ export default function MeetLandingPage() {
           id: crypto.randomUUID(),
           company_id: companyId || null,
           daily_room_name: targetRoomName,
-          daily_room_url: roomData?.url || `https://optavel.daily.co/${targetRoomName}`,
+          daily_room_url: roomData?.url || `https://optalflow.daily.co/${targetRoomName}`,
           privacy_type: 'public',
           host_id: user?.id || null,
           status: 'active',

@@ -1454,16 +1454,60 @@ function ParticipantTile({ id, isLocal, className }) {
 // Wrapper to initialize Daily provider
 export default function VideoRoom({ roomUrl, userName, token, initialAudio = true, initialVideo = true, initialBackground, onLeave, isPipMode, togglePipMode, spaceId }) {
  const { id: routeId } = useParams();
- const cleanRoomId = routeId ? routeId.replace(/^optavel\//i, '') : '';
- const finalRoomUrl = roomUrl || (cleanRoomId ? `https://optavel.daily.co/${cleanRoomId}` : null);
+ const cleanRoomId = routeId ? routeId.replace(/^optavel\//i, '').replace(/^optalflow\//i, '') : '';
+ const [resolvedRoomUrl, setResolvedRoomUrl] = useState(roomUrl || null);
  const { user } = useAuth();
  const [daily, setDaily] = useState(null);
- // Keep a ref so the cleanup closure always has access to the latest callObject
- // without triggering re-renders on creation
  const callRef = useRef(null);
 
+ // Auto-resolve & ensure the room exists on Daily.co
  useEffect(() => {
-  if (!finalRoomUrl) return;
+  if (roomUrl) {
+    setResolvedRoomUrl(roomUrl);
+    return;
+  }
+  if (!cleanRoomId) return;
+
+  let cancelled = false;
+  const ensureRoom = async () => {
+    try {
+      // 1. Check if room URL is already in Supabase video_rooms
+      const { data: dbRoom } = await supabase
+        .from('video_rooms')
+        .select('daily_room_url')
+        .eq('daily_room_name', cleanRoomId)
+        .maybeSingle();
+
+      if (!cancelled && dbRoom?.daily_room_url && !dbRoom.daily_room_url.includes('optavel.daily.co')) {
+        setResolvedRoomUrl(dbRoom.daily_room_url);
+        return;
+      }
+
+      // 2. Ensure room exists on Daily.co by invoking create-daily-room
+      const { data: fnData } = await supabase.functions.invoke('create-daily-room', {
+        body: { roomName: cleanRoomId, privacy: 'public', companyId: user?.company_id || user?.user_metadata?.company_id }
+      });
+
+      if (!cancelled) {
+        if (fnData?.url) {
+          setResolvedRoomUrl(fnData.url);
+        } else {
+          setResolvedRoomUrl(`https://optalflow.daily.co/${cleanRoomId}`);
+        }
+      }
+    } catch (e) {
+      if (!cancelled) {
+        setResolvedRoomUrl(`https://optalflow.daily.co/${cleanRoomId}`);
+      }
+    }
+  };
+
+  ensureRoom();
+  return () => { cancelled = true; };
+ }, [cleanRoomId, roomUrl]);
+
+ useEffect(() => {
+  if (!resolvedRoomUrl) return;
 
   let cancelled = false;
 
@@ -1497,9 +1541,9 @@ export default function VideoRoom({ roomUrl, userName, token, initialAudio = tru
    
    let parsedUrl;
    let finalToken = token;
-   let cleanUrl = finalRoomUrl || '';
+   let cleanUrl = resolvedRoomUrl || '';
    try {
-     if (finalRoomUrl) { parsedUrl = new URL(finalRoomUrl); } else { parsedUrl = null; }
+     if (resolvedRoomUrl) { parsedUrl = new URL(resolvedRoomUrl); } else { parsedUrl = null; }
      const urlToken = parsedUrl.searchParams.get('t');
      if (urlToken) {
        finalToken = finalToken || urlToken;
@@ -1593,7 +1637,7 @@ export default function VideoRoom({ roomUrl, userName, token, initialAudio = tru
   };
  }, [roomUrl, token]);
 
-  if (!daily || !finalRoomUrl) {
+  if (!daily || !resolvedRoomUrl) {
    return (
     <div className="flex flex-col h-full bg-slate-50 dark:bg-background rounded-xl items-center justify-center gap-4">
       <ClipadLoader size="lg" text="Connecting to secure video server..." />
@@ -1603,7 +1647,7 @@ export default function VideoRoom({ roomUrl, userName, token, initialAudio = tru
 
  return (
   <DailyProvider callObject={daily}>
-   <VideoRoomInner roomUrl={finalRoomUrl} onLeave={onLeave} isPipMode={isPipMode} togglePipMode={togglePipMode} initialBackground={initialBackground} spaceId={spaceId} initialAudio={initialAudio} initialVideo={initialVideo} />
+   <VideoRoomInner roomUrl={resolvedRoomUrl} onLeave={onLeave} isPipMode={isPipMode} togglePipMode={togglePipMode} initialBackground={initialBackground} spaceId={spaceId} initialAudio={initialAudio} initialVideo={initialVideo} />
   </DailyProvider>
  );
 }
