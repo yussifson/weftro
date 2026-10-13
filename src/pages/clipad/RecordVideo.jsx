@@ -415,6 +415,7 @@ export default function RecordVideo() {
     } else if (countdown === 0) {
       document.body.style.overflow = origBodyOverflow;
       document.documentElement.style.overflow = origHtmlOverflow;
+      setPhase('recording');
       startMediaRecorder();
       setCountdown(null);
     }
@@ -458,7 +459,7 @@ export default function RecordVideo() {
         setRecordingSeconds(seconds);
         recordingSecondsRef.current = seconds;
         
-        if (seconds >= maxSeconds) {
+        if (typeof maxSeconds === 'number' && maxSeconds > 0 && isFinite(maxSeconds) && seconds >= maxSeconds) {
           playAlertSound();
           stopRecording();
           setShowPaywall(true);
@@ -758,8 +759,7 @@ export default function RecordVideo() {
     const success = await prepareStreamsAndPip();
     setIsPreparingStream(false);
     if (success) {
-      setPhase('recording');
-      // pip only opened via user controls or explicit trigger
+      setPhase('countdown');
       setCountdown(5);
     }
   };
@@ -782,7 +782,7 @@ export default function RecordVideo() {
           screenStream = await navigator.mediaDevices.getDisplayMedia({ video: { frameRate: { ideal: 60 } }, audio: { echoCancellation: true, noiseSuppression: true } });
           streamsRef.current.screen = screenStream;
           // If user stops screen share from browser UI
-          screenStream.getVideoTracks()[0].onended = () => stopRecording();
+          screenStream.getVideoTracks()[0].onended = () => { console.log('[RecordVideo] Screen stream ended'); stopRecording(); };
         }
       }
 
@@ -1188,7 +1188,7 @@ export default function RecordVideo() {
         setRecordingSeconds(seconds);
         recordingSecondsRef.current = seconds;
         
-        if (seconds >= maxSeconds) {
+        if (typeof maxSeconds === 'number' && maxSeconds > 0 && isFinite(maxSeconds) && seconds >= maxSeconds) {
           playAlertSound();
           stopRecording();
           setShowPaywall(true);

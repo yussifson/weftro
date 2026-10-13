@@ -15,7 +15,7 @@ import {
  useActiveSpeakerId,
  useWaitingParticipants
 } from '@daily-co/daily-react';
-import { Mic, MicOff, Video as VideoIcon, VideoOff, PhoneOff, MonitorUp, Sparkles, ExternalLink, MessageSquare, Send, UserPlus, Mail, Settings, Smile, PanelRightClose, PenTool, MoreHorizontal, Wifi, WifiOff, Users, Shield, Lock, Copy, Check } from 'lucide-react';
+import { Home, ArrowLeft, Mic, MicOff, Video as VideoIcon, VideoOff, PhoneOff, MonitorUp, Sparkles, ExternalLink, MessageSquare, Send, UserPlus, Mail, Settings, Smile, PanelRightClose, PenTool, MoreHorizontal, Wifi, WifiOff, Users, Shield, Lock, Copy, Check } from 'lucide-react';
 import { Button} from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -749,10 +749,183 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
    </div>
 
    {/* Main Layout Area - full height since top header bar is removed */}
- <div className="relative z-10 flex-1 flex flex-row relative min-w-0 overflow-hidden">
- 
- {/* Video Content Area */}
- <div className="flex-1 flex flex-col relative min-w-0">
+ {/* Main Layout Area - Corporate Left Sidebar + Full-Height Video Stage */}
+ <div className="relative z-10 flex-1 flex flex-row min-w-0 overflow-hidden">
+
+   {/* Corporate Left Mission Control Sidebar */}
+   <aside className="w-16 sm:w-20 bg-white/90 dark:bg-[#0c141a]/95 backdrop-blur-2xl border-r border-slate-200/90 dark:border-white/10 flex flex-col items-center justify-between py-4 px-2 z-40 shrink-0 select-none shadow-lg transition-colors">
+     
+     {/* Top Section: Back / Home & System Brand */}
+     <div className="flex flex-col items-center gap-3 w-full">
+       <button
+         onClick={() => {
+           if (window.confirm("Leave meeting and return to Dashboard?")) {
+             leaveCall();
+             navigate('/dashboard');
+           }
+         }}
+         className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-700 dark:text-slate-200 border border-slate-200/80 dark:border-white/10 transition-all shadow-sm hover:scale-105 active:scale-95"
+         title="Go to Dashboard / Home"
+       >
+         <Home className="w-5 h-5 text-[#006065] dark:text-[#fad503]" />
+       </button>
+       <div className="w-8 h-px bg-slate-200 dark:bg-white/10 my-0.5" />
+     </div>
+
+     {/* Center Section: Core Mission Controls */}
+     <div className="flex flex-col items-center gap-2.5 w-full">
+       {/* Audio Toggle */}
+       <button
+         onClick={toggleAudio}
+         className={`w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center transition-all shadow-sm hover:scale-105 active:scale-95 ${
+           isMuted
+             ? 'bg-red-500 hover:bg-red-600 text-white shadow-red-500/25'
+             : 'bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-emerald-600 dark:text-emerald-400 hover:bg-slate-200 dark:hover:bg-white/10'
+         }`}
+         title={isMuted ? "Unmute Microphone" : "Mute Microphone"}
+       >
+         {isMuted ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+       </button>
+
+       {/* Video Toggle */}
+       <button
+         onClick={toggleVideo}
+         className={`w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center transition-all shadow-sm hover:scale-105 active:scale-95 ${
+           isVideoOff
+             ? 'bg-red-500 hover:bg-red-600 text-white shadow-red-500/25'
+             : 'bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-emerald-600 dark:text-emerald-400 hover:bg-slate-200 dark:hover:bg-white/10'
+         }`}
+         title={isVideoOff ? "Turn Camera On" : "Turn Camera Off"}
+       >
+         {isVideoOff ? <VideoOff className="w-5 h-5" /> : <VideoIcon className="w-5 h-5" />}
+       </button>
+
+       {/* Share Screen */}
+       <button
+         onClick={toggleScreenShare}
+         className={`w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center transition-all shadow-sm hover:scale-105 active:scale-95 ${
+           isSharingScreen
+             ? 'bg-[#006065] text-white shadow-[#006065]/25'
+             : 'bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
+         }`}
+         title="Share Screen"
+       >
+         <MonitorUp className="w-5 h-5" />
+       </button>
+
+       {/* Whiteboard */}
+       <button
+         onClick={() => setShowWhiteboard(!showWhiteboard)}
+         className={`w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center transition-all shadow-sm hover:scale-105 active:scale-95 ${
+           showWhiteboard
+             ? 'bg-[#006065] text-white'
+             : 'bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
+         }`}
+         title="Interactive Whiteboard"
+       >
+         <PenTool className="w-5 h-5" />
+       </button>
+
+       {/* Record Meeting */}
+       <button
+         onClick={async () => {
+           if (isRecording) {
+             if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+               mediaRecorderRef.current.stop();
+             }
+             setIsRecording(false);
+           } else {
+             try {
+               const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+               const mr = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
+               recordedChunksRef.current = [];
+               mr.ondataavailable = (e) => { if (e.data.size > 0) recordedChunksRef.current.push(e.data); };
+               mr.onstop = () => {
+                 const blob = new Blob(recordedChunksRef.current, { type: 'video/webm' });
+                 const url = URL.createObjectURL(blob);
+                 const a = document.createElement('a');
+                 a.href = url;
+                 a.download = `meeting-${new Date().toISOString().slice(0, 10)}.webm`;
+                 a.click();
+                 stream.getTracks().forEach(t => t.stop());
+               };
+               mr.start(1000);
+               mediaRecorderRef.current = mr;
+               setIsRecording(true);
+             } catch (err) {
+               console.error('Failed to start recording:', err);
+             }
+           }
+         }}
+         className={`w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center transition-all shadow-sm hover:scale-105 active:scale-95 ${
+           isRecording
+             ? 'bg-red-500 text-white animate-pulse shadow-red-500/30'
+             : 'bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30'
+         }`}
+         title={isRecording ? "Stop Recording" : "Record Meeting"}
+       >
+         <div className={`w-3 h-3 rounded-full ${isRecording ? 'bg-white' : 'bg-red-500'}`} />
+       </button>
+
+       {/* Chat Button */}
+       <button
+         onClick={() => setShowChat(!showChat)}
+         className={`w-10 h-10 sm:w-11 sm:h-11 rounded-2xl relative flex items-center justify-center transition-all shadow-sm hover:scale-105 active:scale-95 ${
+           showChat
+             ? 'bg-[#006065] text-white'
+             : 'bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
+         }`}
+         title="Chat"
+       >
+         <MessageSquare className="w-5 h-5" />
+         {chatMessages.length > 0 && !showChat && (
+           <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-white dark:ring-black" />
+         )}
+       </button>
+
+       {/* Invite Participants */}
+       <button
+         onClick={() => setShowInvite(true)}
+         className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10 transition-all shadow-sm hover:scale-105 active:scale-95"
+         title="Invite Participants"
+       >
+         <UserPlus className="w-5 h-5" />
+       </button>
+
+       {/* AI Notes */}
+       <button
+         onClick={handleAiAssist}
+         disabled={isAiLoading}
+         className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10 transition-all shadow-sm hover:scale-105 active:scale-95"
+         title="Generate AI Notes & Summary"
+       >
+         <Sparkles className="w-5 h-5 text-[#fad503]" />
+       </button>
+
+       {/* Settings */}
+       <button
+         onClick={() => setShowSettings(true)}
+         className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10 transition-all shadow-sm hover:scale-105 active:scale-95"
+         title="Settings"
+       >
+         <Settings className="w-5 h-5" />
+       </button>
+     </div>
+
+     {/* Bottom Section: Red Leave Call */}
+     <div className="flex flex-col items-center w-full gap-2">
+       <button
+         onClick={leaveCall}
+         className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-500/25 hover:shadow-red-500/40 transition-all hover:scale-105 active:scale-95"
+         title="Leave Meeting"
+       >
+         <PhoneOff className="w-5 h-5" />
+       </button>
+     </div>
+   </aside>
+
+   {/* Video Content Area - Takes Full Remaining Width and 100% Height */}
+   <div className="flex-1 flex flex-col relative min-w-0 h-full">
 
 
 
@@ -774,7 +947,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
        ) : (
          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/80 dark:bg-black/60 backdrop-blur-md border border-slate-200/80 dark:border-white/10 text-xs font-medium text-slate-700 dark:text-slate-300 shadow-sm">
            <Lock className="w-3.5 h-3.5 text-emerald-500" />
-           <span className="font-mono font-medium">{roomUrl.split("/").pop().split("?")[0]}</span>
+           <span className="font-mono font-medium">"Secure Meeting Room"</span>
          </div>
        )}
      </div>
@@ -839,7 +1012,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           {showWhiteboard && (
             <CanvasWhiteboard onClose={() => setShowWhiteboard(false)} />
           )}
-          {isBranded && (
+          {true && (
             <div className="absolute top-6 left-6 z-40 flex items-center gap-2 opacity-80 select-none pointer-events-none bg-black/30 px-3 py-1.5 rounded-xl backdrop-blur-md border border-white/10">
               <CliPadLogo size={18} className="text-white drop-shadow-md" />
             </div>
@@ -1083,137 +1256,6 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
    }
  `}</style>
 
-   {/* Executive Microsoft Teams / Google Meet Style Control Dock */}
-  <div className="relative z-30 w-full px-3 py-3 sm:py-4 flex items-center justify-center pointer-events-auto shrink-0 bg-white/80 dark:bg-[#091114]/80 backdrop-blur-2xl border-t border-slate-200 dark:border-white/10 transition-colors">
-    <div className="flex items-center justify-between sm:justify-center gap-2 sm:gap-6 max-w-5xl w-full">
-      
-      {/* Group 1: Core AV Controls */}
-      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-slate-100/80 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 backdrop-blur-xl shadow-md dark:shadow-xl">
-        <Button 
-          onClick={toggleAudio}
-          variant={isMuted ? "destructive" : "secondary"}
-          size="icon"
-          className={`w-11 h-11 sm:w-12 sm:h-12 rounded-xl transition-all shadow-md ${isMuted ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-slate-800/90 hover:bg-slate-700 text-white border border-white/10'}`}
-          title={isMuted ? "Unmute Microphone" : "Mute Microphone"}
-        >
-          {isMuted ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5 text-emerald-400" />}
-        </Button>
-        <Button 
-          onClick={toggleVideo}
-          variant={isVideoOff ? "destructive" : "secondary"}
-          size="icon"
-          className={`w-11 h-11 sm:w-12 sm:h-12 rounded-xl transition-all shadow-md ${isVideoOff ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-slate-800/90 hover:bg-slate-700 text-white border border-white/10'}`}
-          title={isVideoOff ? "Turn Camera On" : "Turn Camera Off"}
-        >
-          {isVideoOff ? <VideoOff className="w-5 h-5" /> : <VideoIcon className="w-5 h-5 text-emerald-400" />}
-        </Button>
-      </div>
-
-      {/* Group 2: Collaboration & Sharing */}
-      <div className="hidden sm:flex items-center gap-2 p-1.5 rounded-2xl bg-slate-100/80 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 backdrop-blur-xl shadow-md dark:shadow-xl">
-        <Button 
-          onClick={toggleScreenShare}
-          variant={isSharingScreen ? "default" : "ghost"}
-          size="icon"
-          className={`w-11 h-11 rounded-xl transition-all ${isSharingScreen ? 'bg-[#006065] text-white hover:bg-[#006065]/90' : 'text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-white/10'}`}
-          title="Share Screen"
-        >
-          <MonitorUp className="w-5 h-5" />
-        </Button>
-        <Button 
-          onClick={() => setShowWhiteboard(!showWhiteboard)}
-          variant={showWhiteboard ? "default" : "ghost"}
-          size="icon"
-          className={`w-11 h-11 rounded-xl transition-all ${showWhiteboard ? 'bg-[#006065] text-white hover:bg-[#006065]/90' : 'text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-white/10'}`}
-          title="Interactive Whiteboard"
-        >
-          <PenTool className="w-5 h-5" />
-        </Button>
-        <div className="relative">
-          {showEmojis && (
-            <div className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 bg-slate-900 border border-white/15 shadow-2xl rounded-full px-4 py-2 flex gap-3 animate-in fade-in slide-in-from-bottom-2 z-50">
-              {EMOJIS.map(emoji => (
-                <button 
-                  key={emoji} 
-                  onClick={() => sendReaction(emoji)}
-                  className="text-2xl hover:scale-125 transition-transform"
-                >
-                  {emoji}
-                </button>
-              ))}
-            </div>
-          )}
-          <Button 
-            onClick={() => setShowEmojis(!showEmojis)}
-            variant={showEmojis ? "default" : "ghost"}
-            size="icon"
-            className={`w-11 h-11 rounded-xl transition-all ${showEmojis ? 'bg-[#006065] text-white' : 'text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-white/10'}`}
-            title="Reactions"
-          >
-            <Smile className="w-5 h-5" />
-          </Button>
-        </div>
-      </div>
-
-      {/* Group 3: Intelligence & Meeting Tools */}
-      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-slate-100/80 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 backdrop-blur-xl shadow-md dark:shadow-xl">
-        <Button 
-          onClick={() => setShowChat(!showChat)}
-          variant={showChat ? "default" : "ghost"}
-          size="icon"
-          className={`w-11 h-11 sm:w-11 sm:h-11 rounded-xl relative transition-all ${showChat ? 'bg-[#006065] text-white hover:bg-[#006065]/90' : 'text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-white/10'}`}
-          title="Chat"
-        >
-          <MessageSquare className="w-5 h-5" />
-          {chatMessages.length > 0 && !showChat && (
-            <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-emerald-400" />
-          )}
-        </Button>
-        <Button 
-          onClick={() => setShowInvite(true)}
-          variant="ghost"
-          size="icon"
-          className="w-11 h-11 rounded-xl text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-white/10 transition-all"
-          title="Invite Participants"
-        >
-          <UserPlus className="w-5 h-5" />
-        </Button>
-        <Button 
-          variant="ghost"
-          onClick={handleAiAssist}
-          disabled={isAiLoading}
-          className="h-11 px-3 rounded-xl font-medium text-xs sm:text-sm flex items-center gap-2 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-white/10 transition-all"
-          title="Generate AI Notes & Summary"
-        >
-          <Sparkles className="w-4 h-4 text-[#fad503]" />
-          <span className="hidden md:inline">{isAiLoading ? "Processing..." : "AI Notes"}</span>
-        </Button>
-        <Button 
-          onClick={() => setShowSettings(true)}
-          variant="ghost"
-          size="icon"
-          className="w-11 h-11 rounded-xl text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-white/10 transition-all"
-          title="Settings"
-        >
-          <Settings className="w-5 h-5" />
-        </Button>
-      </div>
-
-      {/* Group 4: Red End Call Button */}
-      <div className="flex items-center">
-        <Button 
-          onClick={leaveCall}
-          variant="destructive"
-          className="h-11 px-4 sm:px-6 rounded-2xl font-bold text-sm flex items-center justify-center shadow-lg shadow-red-500/20 hover:shadow-red-500/40 bg-red-600 hover:bg-red-700 text-white transition-all hover:scale-105 active:scale-95"
-          title="Leave Meeting"
-        >
-          <PhoneOff className="w-5 h-5 mr-1.5" />
-          <span>Leave</span>
-        </Button>
-      </div>
-
-    </div>
-  </div>
   </div>
   );
 }
