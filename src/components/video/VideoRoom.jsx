@@ -15,7 +15,7 @@ import {
  useActiveSpeakerId,
  useWaitingParticipants
 } from '@daily-co/daily-react';
-import { Mic, MicOff, Video as VideoIcon, VideoOff, PhoneOff, MonitorUp, Sparkles, ExternalLink, MessageSquare, Send, UserPlus, Mail, Settings, Smile, PanelRightClose, PenTool, MoreHorizontal, Wifi, WifiOff, Users } from 'lucide-react';
+import { Mic, MicOff, Video as VideoIcon, VideoOff, PhoneOff, MonitorUp, Sparkles, ExternalLink, MessageSquare, Send, UserPlus, Mail, Settings, Smile, PanelRightClose, PenTool, MoreHorizontal, Wifi, WifiOff, Users, Shield, Lock, Copy, Check } from 'lucide-react';
 import { Button} from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -54,7 +54,7 @@ export const VIRTUAL_BACKGROUNDS = [
 ];
 
 // Fix #17: EMOJIS constant outside component — avoids recreation on every render
-const EMOJIS = ['ðŸ‘', 'ï¸', 'ðŸ‘', '😂', '🎉', '🔥'];
+const EMOJIS = ['👍', '❤️', '👏', '😂', '🎉', '🔥'];
 
 function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBackground, spaceId, initialAudio = true, initialVideo = true }) {
   const navigate = useNavigate();
@@ -454,7 +454,22 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
 
   const leaveCall = async () => {
     if (!daily) return;
-    
+
+    // Safety fallback: guaranteed exit after 2.5s even if network or DB stalls
+    const safetyTimer = setTimeout(() => {
+      try { daily.leave(); } catch (_) {}
+      if (onLeave) onLeave(null);
+      else navigate(spaceId ? `/spaces/${spaceId}` : '/meetings');
+    }, 2500);
+
+    const safeExit = (targetPath) => {
+      clearTimeout(safetyTimer);
+      try { daily.leave(); } catch (_) {}
+      if (targetPath) navigate(targetPath);
+      else if (onLeave) onLeave(null);
+      else navigate(spaceId ? `/spaces/${spaceId}` : '/meetings');
+    };
+
     if (joined) {
       // If currently recording, stop it and wait for the upload to finish before saving
       if (isRecording && mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
@@ -576,37 +591,22 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           }
 
           
-          daily.leave();
           const basePath = window.location.pathname.startsWith('/clipad') ? '/clipad' : '';
           if (insertedMeeting) {
-            // Always navigate to save page using the real UUID from the DB record
-            navigate(`${basePath}/save-meeting/${insertedMeeting.id}${spaceId ? `?spaceId=${spaceId}` : ''}`);
+            safeExit(`${basePath}/save-meeting/${insertedMeeting.id}${spaceId ? `?spaceId=${spaceId}` : ''}`);
           } else {
-            // Insert failed — let the caller (e.g. StandaloneMeeting) decide where to go
-            toast({ title: 'Meeting ended', description: 'Could not save record. Please check your connection.', variant: 'destructive' });
-            if (onLeave) onLeave(null);
+            safeExit(spaceId ? `/spaces/${spaceId}` : '/meetings');
           }
           return;
         }
       } catch (e) {
         console.error('Failed to save meeting record:', e);
-        // On unexpected error, still call onLeave so the UI isn't stuck
-        daily.leave();
-        if (onLeave) {
-          onLeave(null);
-        } else {
-          navigate(spaceId ? `/spaces/${spaceId}` : '/meetings');
-        }
+        safeExit(spaceId ? `/spaces/${spaceId}` : '/meetings');
         return;
       }
     }
     
-    daily.leave();
-    if (onLeave) {
-      onLeave(null);
-    } else {
-      navigate(spaceId ? `/spaces/${spaceId}` : '/meetings');
-    }
+    safeExit(spaceId ? `/spaces/${spaceId}` : '/meetings');
   };
 
  // Fix #7: Real-time transcription — cross-browser (Chrome + Firefox fallback)
@@ -741,12 +741,81 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
 };
 
  return (
- <div className="flex flex-col h-full bg-slate-50 dark:bg-[#0B1121] rounded-xl overflow-hidden relative border-[0.5px] border-black/9 dark:border-white/8 border-primary/40 group font-sans">
-  {/* Realistic Background Layers */}
-  <div className="absolute inset-0 pointer-events-none z-0">
-    <div className="absolute -top-[20%] -left-[10%] w-[70vw] h-[70vw] rounded-full bg-primary/5 dark:bg-primary/10 blur-[120px]" />
-    <div className="absolute -bottom-[20%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-blue-500/5 dark:bg-blue-500/10 blur-[120px]" />
+ <div className="flex flex-col h-screen w-screen overflow-hidden relative bg-[#091114] text-white font-sans select-none">
+  {/* Subtle corporate ambient glow */}
+  <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+    <div className="absolute -top-[15%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-[#006065]/15 blur-[140px]" />
+    <div className="absolute -bottom-[15%] -right-[10%] w-[50vw] h-[50vw] rounded-full bg-sky-900/10 blur-[140px]" />
   </div>
+
+  {/* Top Executive Header Bar */}
+  {!isPipMode && (
+    <header className="relative z-20 h-14 px-4 sm:px-6 bg-[#091114]/90 backdrop-blur-xl border-b border-white/10 flex items-center justify-between shrink-0">
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
+          <CliPadLogo size={22} className="text-[#006065] dark:text-[#fad503]" />
+          <div className="hidden sm:flex flex-col">
+            <span className="text-[10px] font-bold tracking-wider uppercase text-slate-400">Secure Live Meeting</span>
+            <span className="text-sm font-semibold text-white truncate max-w-[240px]">
+              {roomUrl.split("/").pop().split("?")[0] || "Executive Room"}
+            </span>
+          </div>
+        </div>
+        <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-medium">
+          <Shield className="w-3 h-3 text-emerald-400" />
+          <span>E2EE Encrypted</span>
+        </div>
+      </div>
+
+      {/* Center Call Duration / Recording Status */}
+      <div className="flex items-center gap-2">
+        {isRecording ? (
+          <div className="flex items-center gap-2 bg-red-500/15 border border-red-500/30 text-red-400 px-3 py-1 rounded-full text-xs font-mono font-semibold tracking-wider shadow-inner">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
+            </span>
+            <span>{Math.floor(recordingSeconds / 60).toString().padStart(2, "0")}:{(recordingSeconds % 60).toString().padStart(2, "0")}</span>
+            <span className="text-[10px] font-bold text-red-300">REC</span>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-slate-300 text-xs font-medium">
+            <Lock className="w-3 h-3 text-emerald-400" />
+            <span>Active Session</span>
+          </div>
+        )}
+      </div>
+
+      {/* Right Header: Participants count + Network Quality + Fast Copy */}
+      <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-slate-300">
+          {networkQuality === "very-low" ? (
+            <WifiOff className="w-3.5 h-3.5 text-red-400" />
+          ) : networkQuality === "low" ? (
+            <Wifi className="w-3.5 h-3.5 text-yellow-400" />
+          ) : (
+            <Wifi className="w-3.5 h-3.5 text-emerald-400" />
+          )}
+          <span className="hidden sm:inline">
+            {networkQuality === "very-low" ? "Poor" : networkQuality === "low" ? "Fair" : "HD"}
+          </span>
+        </div>
+        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-slate-300">
+          <Users className="w-3.5 h-3.5 text-[#006065] dark:text-[#fad503]" />
+          <span>{participantIds.length + 1}</span>
+        </div>
+        <Button 
+          size="sm" 
+          variant="ghost" 
+          onClick={handleCopyLink} 
+          className="h-8 px-2.5 text-xs text-slate-300 hover:text-white hover:bg-white/10 rounded-full" 
+          title="Copy Meeting Link"
+        >
+          {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+        </Button>
+      </div>
+    </header>
+  )}
 
  {/* Main Layout Area */}
  <div className="relative z-10 flex-1 flex flex-row relative min-w-0 overflow-hidden">
@@ -1064,334 +1133,139 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
    }
  `}</style>
 
- {/* Control Bar */}
- <div className={`relative z-10 w-full max-w-full px-2 sm:px-0 sm:max-w-fit mx-auto mb-4 sm:mb-6`}>
-   {/* Network quality + participant count bar */}
-   {!isPipMode && (
-     <div className="flex items-center justify-between px-4 mb-1 text-xs text-slate-500 dark:text-muted-foreground">
-       <div className="flex items-center gap-1.5">
-         {networkQuality === 'very-low' ? (
-           <WifiOff className="w-3.5 h-3.5 text-red-500" />
-         ) : networkQuality === 'low' ? (
-           <Wifi className="w-3.5 h-3.5 text-yellow-500" />
-         ) : (
-           <Wifi className="w-3.5 h-3.5 text-green-500" />
-         )}
-         <span className={networkQuality === 'very-low' ? 'text-red-500' : networkQuality === 'low' ? 'text-yellow-500' : 'text-green-500'}>
-           {networkQuality === 'very-low' ? 'Poor connection' : networkQuality === 'low' ? 'Weak signal' : 'Connected'}
-         </span>
-       </div>
-       <div className="flex items-center gap-1">
-         <Users className="w-3.5 h-3.5" />
-         <span>{participantIds.length + 1} in call</span>
-       </div>
-     </div>
-   )}
-   <div className={`bg-slate-900/90 dark:bg-card/90 backdrop-blur-2xl border border-white/10 ring-1 ring-white/5 flex items-center justify-start sm:justify-center transition-all shadow-2xl rounded-3xl sm:rounded-full overflow-x-auto no-scrollbar ${isPipMode ? 'h-14 px-3 gap-2' : 'h-[72px] sm:h-[80px] px-4 sm:px-6 gap-2 sm:gap-4'}`}>
- <div className="relative">
-   {showEmojis && (
-     <div className="absolute bottom-full mb-4 left-1/2 -translate-x-1/2 bg-card border border-primary/20 shadow-xl rounded-full px-4 py-3 flex gap-3 animate-in fade-in slide-in-from-bottom-4 z-50">
-       {EMOJIS.map(emoji => (
-         <button 
-           key={emoji} 
-           onClick={() => sendReaction(emoji)}
-           className="text-2xl hover:scale-125 transition-transform origin-bottom"
-         >
-           {emoji}
-         </button>
-       ))}
-     </div>
-   )}
-   <Button 
-     onClick={() => setShowEmojis(!showEmojis)}
-     variant={showEmojis ? "default" : "secondary"}
-     size="icon"
-     className={`${isPipMode ? 'w-10 h-10' : 'w-12 h-12 sm:w-14 sm:h-14 shrink-0'} rounded-[1.25rem] shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5`}
-   >
-     <Smile className={isPipMode ? "w-3 h-3" : "w-5 h-5"} />
-   </Button>
- </div>
- <Button 
- onClick={toggleAudio}
- variant={isMuted ? "destructive" : "secondary"}
- size="icon"
- className={`${isPipMode ? 'w-10 h-10' : 'w-12 h-12 sm:w-14 sm:h-14 shrink-0'} rounded-[1.25rem] shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5 ${isMuted ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-white dark:bg-secondary border border-slate-200 dark:border-border text-slate-700 dark:text-foreground'}`}
- >
- {isMuted ? <MicOff className={isPipMode ? "w-3 h-3" : "w-5 h-5"} /> : <Mic className={isPipMode ? "w-3 h-3" : "w-5 h-5"} />}
- </Button>
- <Button 
- onClick={toggleVideo}
- variant={isVideoOff ? "destructive" : "secondary"}
- size="icon"
- className={`${isPipMode ? 'w-10 h-10' : 'w-12 h-12 sm:w-14 sm:h-14 shrink-0'} rounded-[1.25rem] shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5 ${isVideoOff ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-white dark:bg-secondary border border-slate-200 dark:border-border text-slate-700 dark:text-foreground'}`}
- >
- {isVideoOff ? <VideoOff className={isPipMode ? "w-3 h-3" : "w-5 h-5"} /> : <VideoIcon className={isPipMode ? "w-3 h-3" : "w-5 h-5"} />}
- </Button>
-  {!isPipMode && (
-  <>
-  <Button 
-    onClick={() => setShowMobileMenu(!showMobileMenu)}
-    variant={showMobileMenu ? "default" : "outline"}
-    size="icon"
-    className={`sm:hidden w-12 h-12 shrink-0 rounded-[1.25rem] shadow-sm transition-all ${showMobileMenu ? '' : 'bg-white dark:bg-secondary border-slate-200 dark:border-border text-slate-700 dark:text-foreground'}`}
-    title="More Options"
-  >
-    <MoreHorizontal className="w-5 h-5" />
-  </Button>
-  <div className={`${showMobileMenu ? 'absolute bottom-[calc(100%+1rem)] left-4 right-4 bg-white/95 dark:bg-card/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-2xl rounded-3xl p-4 flex flex-wrap justify-center gap-3 z-50 animate-in fade-in slide-in-from-bottom-4' : 'hidden'} sm:flex sm:static sm:bg-transparent sm:border-0 sm:shadow-none sm:p-0 sm:flex-row sm:flex-nowrap items-center gap-2 sm:gap-4`}>
- <Button 
- onClick={toggleScreenShare}
- variant={isSharingScreen ? "default" : "outline"}
- size="icon"
- className={`w-12 h-12 shrink-0 rounded-full flex shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5 ${isSharingScreen ? '' : 'bg-white dark:bg-secondary border-slate-200 dark:border-border'}`}
- title="Share Screen"
- >
- <MonitorUp className="w-5 h-5" />
- </Button>
- <Button 
- onClick={() => setShowWhiteboard(!showWhiteboard)}
- variant={showWhiteboard ? "default" : "outline"}
- size="icon"
- className={`w-12 h-12 shrink-0 rounded-full flex shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5 ${showWhiteboard ? '' : 'bg-white dark:bg-secondary border-slate-200 dark:border-border'}`}
- title="Whiteboard"
- >
- <PenTool className="w-5 h-5" />
- </Button>
- <Button 
- onClick={() => setShowChat(!showChat)}
- variant={showChat ? "default" : "outline"}
- size="icon"
- className={`w-12 h-12 shrink-0 rounded-full flex shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5 ${showChat ? '' : 'bg-white dark:bg-secondary border-slate-200 dark:border-border'}`}
- title="Chat"
- >
- <MessageSquare className="w-5 h-5" />
- </Button>
-  <Button 
-  onClick={() => setShowInvite(true)}
-  variant="outline"
-  size="icon"
-  className="w-12 h-12 shrink-0 rounded-full flex shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5 bg-white dark:bg-secondary border-slate-200 dark:border-border text-slate-700 dark:text-foreground"
-  title="Invite People"
-  >
-  <UserPlus className="w-5 h-5" />
-  </Button>
-  <Button 
-  onClick={async () => {
-    if (isRecording) {
-      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-        mediaRecorderRef.current.stop();
-        setIsRecording(false);
-        toast({ title: 'Recording Stopped', description: 'Processing and saving your recording to the secure cloud...' });
-      }
-    } else {
-      try {
-        // --- STORAGE LIMIT CHECK ---
-        const maxStorageGB = getLimit(user, 'maxStorageGB') || 2;
-        const firstDayOfMonth = new Date();
-        firstDayOfMonth.setDate(1);
-        firstDayOfMonth.setHours(0, 0, 0, 0);
-        
-        const { data: vids } = await supabase
-          .from('clipad_videos')
-          .select('duration_seconds')
-          .eq('creator_id', user.id)
-          .gte('created_at', firstDayOfMonth.toISOString());
-        if (vids) {
-          const totalSeconds = vids.reduce((acc, curr) => acc + (curr.duration_seconds || 0), 0);
-          const totalGB = (totalSeconds * 0.25) / 1024;
-          if (maxStorageGB !== Infinity && totalGB >= maxStorageGB) {
-            toast({ title: 'Storage Limit Reached', description: `You have used your ${maxStorageGB}GB monthly limit. Upgrade to record more.`, variant: 'destructive' });
-            return;
-          }
-        }
-        // ---------------------------
-        
-        let displayStream;
-        const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        if (!isMobileDevice && navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
-          displayStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
-        } else {
-          // Mobile fallback: use front camera + mic instead of screen capture
-          toast({ title: 'Camera Recording', description: 'Screen recording is not available on mobile. Recording from camera instead.', variant: 'default' });
-          displayStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: true });
-        }
-        let micStream;
-        if (!isMobileDevice) {
-          try {
-            micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          } catch (e) {
-            console.warn("No microphone access, recording without mic audio.", e);
-          }
-        }
+   {/* Executive Microsoft Teams / Google Meet Style Control Dock */}
+  <div className="relative z-30 w-full px-3 py-3 sm:py-4 flex items-center justify-center pointer-events-auto shrink-0 bg-[#091114]/70 backdrop-blur-2xl border-t border-white/10">
+    <div className="flex items-center justify-between sm:justify-center gap-2 sm:gap-6 max-w-5xl w-full">
+      
+      {/* Group 1: Core AV Controls */}
+      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-xl">
+        <Button 
+          onClick={toggleAudio}
+          variant={isMuted ? "destructive" : "secondary"}
+          size="icon"
+          className={`w-11 h-11 sm:w-12 sm:h-12 rounded-xl transition-all shadow-md ${isMuted ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-slate-800/90 hover:bg-slate-700 text-white border border-white/10'}`}
+          title={isMuted ? "Unmute Microphone" : "Mute Microphone"}
+        >
+          {isMuted ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5 text-emerald-400" />}
+        </Button>
+        <Button 
+          onClick={toggleVideo}
+          variant={isVideoOff ? "destructive" : "secondary"}
+          size="icon"
+          className={`w-11 h-11 sm:w-12 sm:h-12 rounded-xl transition-all shadow-md ${isVideoOff ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-slate-800/90 hover:bg-slate-700 text-white border border-white/10'}`}
+          title={isVideoOff ? "Turn Camera On" : "Turn Camera Off"}
+        >
+          {isVideoOff ? <VideoOff className="w-5 h-5" /> : <VideoIcon className="w-5 h-5 text-emerald-400" />}
+        </Button>
+      </div>
 
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const dest = audioContext.createMediaStreamDestination();
+      {/* Group 2: Collaboration & Sharing */}
+      <div className="hidden sm:flex items-center gap-2 p-1.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-xl">
+        <Button 
+          onClick={toggleScreenShare}
+          variant={isSharingScreen ? "default" : "ghost"}
+          size="icon"
+          className={`w-11 h-11 rounded-xl transition-all ${isSharingScreen ? 'bg-[#006065] text-white hover:bg-[#006065]/90' : 'text-slate-200 hover:text-white hover:bg-white/10'}`}
+          title="Share Screen"
+        >
+          <MonitorUp className="w-5 h-5" />
+        </Button>
+        <Button 
+          onClick={() => setShowWhiteboard(!showWhiteboard)}
+          variant={showWhiteboard ? "default" : "ghost"}
+          size="icon"
+          className={`w-11 h-11 rounded-xl transition-all ${showWhiteboard ? 'bg-[#006065] text-white hover:bg-[#006065]/90' : 'text-slate-200 hover:text-white hover:bg-white/10'}`}
+          title="Interactive Whiteboard"
+        >
+          <PenTool className="w-5 h-5" />
+        </Button>
+        <div className="relative">
+          {showEmojis && (
+            <div className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 bg-slate-900 border border-white/15 shadow-2xl rounded-full px-4 py-2 flex gap-3 animate-in fade-in slide-in-from-bottom-2 z-50">
+              {EMOJIS.map(emoji => (
+                <button 
+                  key={emoji} 
+                  onClick={() => sendReaction(emoji)}
+                  className="text-2xl hover:scale-125 transition-transform"
+                >
+                  {emoji}
+                </button>
+              ))}
+            </div>
+          )}
+          <Button 
+            onClick={() => setShowEmojis(!showEmojis)}
+            variant={showEmojis ? "default" : "ghost"}
+            size="icon"
+            className={`w-11 h-11 rounded-xl transition-all ${showEmojis ? 'bg-[#006065] text-white' : 'text-slate-200 hover:text-white hover:bg-white/10'}`}
+            title="Reactions"
+          >
+            <Smile className="w-5 h-5" />
+          </Button>
+        </div>
+      </div>
 
-        if (displayStream.getAudioTracks().length > 0) {
-          const displaySource = audioContext.createMediaStreamSource(displayStream);
-          displaySource.connect(dest);
-        }
-        if (micStream && micStream.getAudioTracks().length > 0) {
-          const micSource = audioContext.createMediaStreamSource(micStream);
-          micSource.connect(dest);
-        }
+      {/* Group 3: Intelligence & Meeting Tools */}
+      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-xl">
+        <Button 
+          onClick={() => setShowChat(!showChat)}
+          variant={showChat ? "default" : "ghost"}
+          size="icon"
+          className={`w-11 h-11 sm:w-11 sm:h-11 rounded-xl relative transition-all ${showChat ? 'bg-[#006065] text-white hover:bg-[#006065]/90' : 'text-slate-200 hover:text-white hover:bg-white/10'}`}
+          title="Chat"
+        >
+          <MessageSquare className="w-5 h-5" />
+          {chatMessages.length > 0 && !showChat && (
+            <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-emerald-400" />
+          )}
+        </Button>
+        <Button 
+          onClick={() => setShowInvite(true)}
+          variant="ghost"
+          size="icon"
+          className="w-11 h-11 rounded-xl text-slate-200 hover:text-white hover:bg-white/10 transition-all"
+          title="Invite Participants"
+        >
+          <UserPlus className="w-5 h-5" />
+        </Button>
+        <Button 
+          variant="ghost"
+          onClick={handleAiAssist}
+          disabled={isAiLoading}
+          className="h-11 px-3 rounded-xl font-medium text-xs sm:text-sm flex items-center gap-2 text-slate-200 hover:text-white hover:bg-white/10 transition-all"
+          title="Generate AI Notes & Summary"
+        >
+          <Sparkles className="w-4 h-4 text-[#fad503]" />
+          <span className="hidden md:inline">{isAiLoading ? "Processing..." : "AI Notes"}</span>
+        </Button>
+        <Button 
+          onClick={() => setShowSettings(true)}
+          variant="ghost"
+          size="icon"
+          className="w-11 h-11 rounded-xl text-slate-200 hover:text-white hover:bg-white/10 transition-all"
+          title="Settings"
+        >
+          <Settings className="w-5 h-5" />
+        </Button>
+      </div>
 
-        const combinedStream = new MediaStream([
-          ...displayStream.getVideoTracks(),
-          ...dest.stream.getTracks()
-        ]);
+      {/* Group 4: Red End Call Button */}
+      <div className="flex items-center">
+        <Button 
+          onClick={leaveCall}
+          variant="destructive"
+          className="h-11 px-4 sm:px-6 rounded-2xl font-bold text-sm flex items-center justify-center shadow-lg shadow-red-500/20 hover:shadow-red-500/40 bg-red-600 hover:bg-red-700 text-white transition-all hover:scale-105 active:scale-95"
+          title="Leave Meeting"
+        >
+          <PhoneOff className="w-5 h-5 mr-1.5" />
+          <span>Leave</span>
+        </Button>
+      </div>
 
-        recordedChunksRef.current = [];
-        
-        let options = { mimeType: 'video/webm' };
-        if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')) {
-          options.mimeType = 'video/webm; codecs=vp9,opus';
-        } else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus')) {
-          options.mimeType = 'video/webm; codecs=vp8,opus';
-        }
-        
-        const mediaRecorder = new MediaRecorder(combinedStream, options);
-        
-        mediaRecorder.ondataavailable = (e) => {
-          if (e.data.size > 0) {
-            recordedChunksRef.current.push(e.data);
-          }
-        };
-        
-        mediaRecorder.onstop = async () => {
-          setIsUploading(true);
-          try {
-            const blob = new Blob(recordedChunksRef.current, { type: 'video/webm' });
-            const fileName = `meetings/${user?.id || 'anon'}_${Date.now()}.webm`;
-            const { error } = await db.storage.from('clipad_videos').upload(fileName, blob, { contentType: 'video/webm' });
-            if (error) throw error;
-            const { data } = db.storage.from('clipad_videos').getPublicUrl(fileName);
-            if (data?.publicUrl) {
-              const videoUrl = data.publicUrl;
-              setMeetingVideoUrl(videoUrl);
-              meetingVideoUrlRef.current = videoUrl;
-
-              // Insert into clipad_videos so we can attach comments and reactions to it!
-              try {
-                await db.from('clipad_videos').insert({
-                  user_id: user?.id,
-                  space_id: spaceId,
-                  title: 'Live Meeting Recording',
-                  description: 'Meeting recording uploaded automatically.',
-                  video_url: videoUrl,
-                  is_public: true
-                });
-              } catch (err) {
-                console.error("Failed to insert into clipad_videos", err);
-              }
-
-              toast({ title: 'Recording Saved', description: 'Video has been successfully uploaded.' });
-              logAuditEvent({ action: 'video_recorded', user, details: 'Recorded Live Meeting' });
-            }
-          } catch (e) {
-            console.error(e);
-            toast({ title: 'Recording Error', description: 'Failed to upload video.', variant: 'destructive' });
-          } finally {
-            setIsUploading(false);
-          }
-          displayStream.getTracks().forEach(track => track.stop());
-          if (micStream) micStream.getTracks().forEach(track => track.stop());
-          audioContext.close();
-        };
-        
-        mediaRecorderRef.current = mediaRecorder;
-        mediaRecorder.start();
-        setIsRecording(true);
-        toast({ title: 'Recording Started', description: 'Meeting is now being recorded locally.' });
-        
-        displayStream.getVideoTracks()[0].onended = () => {
-          if (mediaRecorderRef.current.state !== 'inactive') {
-             mediaRecorderRef.current.stop();
-             setIsRecording(false);
-          }
-        };
-      } catch (err) {
-        console.error("Failed to start screen recording:", err);
-        toast({ title: 'Recording Error', description: 'Could not access screen share for recording.', variant: 'destructive' });
-      }
-    }
-  }}
-  variant={isRecording ? "destructive" : "outline"}
-  size="icon"
-  className={`w-12 h-12 shrink-0 rounded-full flex shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5 ${isRecording ? 'animate-pulse' : 'bg-white dark:bg-secondary border-slate-200 dark:border-border text-slate-700 dark:text-foreground'}`}
-  title="Record Meeting"
-  >
-  <VideoIcon className="w-5 h-5" />
-  </Button>
-  <Button 
-  onClick={() => setShowSettings(true)}
-  variant="outline"
-  size="icon"
-  className="w-12 h-12 shrink-0 rounded-full flex shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5 bg-white dark:bg-secondary border-slate-200 dark:border-border text-slate-700 dark:text-foreground"
-  title="Settings"
-  >
-  <Settings className="w-5 h-5" />
-  </Button>
-
-  {/* Advanced Noise Filtering */}
-  <Button 
-  onClick={async () => {
-    try {
-      const isCurrentlyEnabled = daily.getInputSettings()?.audio?.processor?.type === 'noise-cancellation';
-      await daily.updateInputSettings({
-        audio: {
-          processor: { type: isCurrentlyEnabled ? 'none' : 'noise-cancellation' },
-          settings: {
-            echoCancellation: true,
-            noiseSuppression: isCurrentlyEnabled,
-            autoGainControl: isCurrentlyEnabled,
-          }
-        }
-      });
-      setIsStudioAudioOn(!isCurrentlyEnabled);
-      toast({ title: 'Audio Settings Updated', description: `Studio Noise Cancellation is now ${isCurrentlyEnabled ? 'OFF' : 'ON'}` });
-    } catch(e) {
-      toast({ title: 'Action Failed', description: 'Your browser may not support advanced audio processing.', variant: 'destructive' });
-    }
-  }}
-  variant={isStudioAudioOn ? "default" : "outline"}
-  size="icon"
-  className={`w-12 h-12 shrink-0 rounded-full flex shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5 relative group ${isStudioAudioOn ? 'bg-primary/20 border-primary text-primary shadow-[0_0_15px_rgba(var(--primary),0.3)]' : 'bg-white dark:bg-secondary border-slate-200 dark:border-border text-slate-700 dark:text-foreground'}`}
-  title="Studio Audio"
-  >
-  <Sparkles className="w-5 h-5" />
-  <span className="absolute -top-2 -right-2 bg-primary text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity">PRO</span>
-  </Button>
- <Button 
-  variant="default"
-  onClick={handleAiAssist}
-  disabled={isAiLoading}
-  className="h-12 px-3 sm:h-14 sm:px-6 shrink-0 rounded-[1.25rem] font-semibold text-sm sm:text-base flex items-center gap-2 shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 transition-all hover:-translate-y-0.5 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white"
- >
-  <Sparkles className="w-4 h-4" /> {isAiLoading ? "Processing..." : "AI Notes"}
- </Button>
- <Button 
-  variant="secondary"
-  onClick={handleAiFollowUp}
-  disabled={isAiLoading}
-  className="h-12 px-3 sm:px-5 shrink-0 rounded-full font-semibold text-sm sm:text-base flex items-center gap-2 hover:bg-primary hover:text-primary-foreground transition-colors"
- >
-  <Mail className="w-4 h-4" /> AI Follow-Up
- </Button>
- </div>
- </>
- )}
- <Button 
- onClick={leaveCall}
- variant="destructive"
- className={`${isPipMode ? 'h-10 w-10 p-0 rounded-xl' : 'h-12 px-4 sm:h-14 sm:px-8 shrink-0 rounded-[1.25rem]'} font-bold text-sm sm:text-base flex items-center justify-center shadow-lg shadow-red-500/20 hover:shadow-red-500/40 transition-all hover:-translate-y-0.5 bg-red-500 hover:bg-red-600 text-white`}
- >
- {isPipMode ? <PhoneOff className="w-3 h-3" /> : <><PhoneOff className="w-5 h-5 mr-2" /> Leave</>}
- </Button>
- </div>
- </div>
- </div>
- );
+    </div>
+  </div>
+  </div>
+  );
 }
 
 function ScreenShareTile({ screen, className }) {

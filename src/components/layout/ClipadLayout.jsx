@@ -7,6 +7,7 @@ import ClipadSidebar from '@/components/clipad/ClipadSidebar';
 import { useChatDock } from '@/hooks/useChatDock';
 const ClipadChat = React.lazy(() => import('@/pages/clipad/ClipadChat'));
 import { MessageSquare } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 import PullToRefresh from '@/components/ui/PullToRefresh';
 
@@ -52,19 +53,19 @@ export default function ClipadLayout() {
     };
   }, []);
 
-  // Never hide nav
-  const isImmersive = false;
+  // Hide sidebar and topnav when inside live immersive video meeting rooms
+  const isImmersive = location.pathname.startsWith('/join');
 
   return (
     <div data-theme="brand" className="flex flex-row h-[100dvh] w-full overflow-hidden bg-[#f8fafc] dark:bg-background text-[#0f172a] dark:text-foreground pt-[var(--sat)] pb-[var(--sab)] pl-[var(--sal)] pr-[var(--sar)]">
       
       {/* Premium Sidebar Component */}
-      <ClipadSidebar forceMobile={forceMobile} />
+      {!isImmersive && <ClipadSidebar forceMobile={forceMobile} />}
 
       {/* Main Content Column */}
       <div ref={containerRef} className="flex flex-col flex-1 w-0 overflow-hidden relative @container bg-[#f8fafc] dark:bg-background transition-all">
         {!isImmersive && <ClipadTopNav forceMobile={forceMobile} />}
-        <PullToRefresh className="relative z-30 page-enter pb-[80px] md:pb-0 h-full overflow-y-auto overflow-x-hidden scrollbar-thin">
+        <PullToRefresh className={cn("relative z-30 page-enter h-full overflow-x-hidden scrollbar-thin", isImmersive ? "pb-0 overflow-y-hidden" : "pb-[80px] md:pb-0 overflow-y-auto")}>
           {location.pathname === '/chat' && isChatDocked ? (
             <div className="flex items-center justify-center h-full text-white flex-col gap-3">
               <MessageSquare className="w-8 h-8 opacity-50" />
@@ -100,14 +101,16 @@ export default function ClipadLayout() {
       )}
 
       {/* Global AI Assistant Floating Overlay */}
-      <GlobalAIAssistant 
-        isOpen={isAIOpen} 
-        onClose={() => { setIsAIOpen(false); setInjectedContext(null); }} 
-        injectedContext={injectedContext}
-      />
+      {!isImmersive && (
+        <GlobalAIAssistant 
+          isOpen={isAIOpen} 
+          onClose={() => { setIsAIOpen(false); setInjectedContext(null); }} 
+          injectedContext={injectedContext}
+        />
+      )}
 
       {/* Native Mobile Bottom Navigation Bar */}
-      <ClipadMobileNav forceMobile={forceMobile} />
+      {!isImmersive && <ClipadMobileNav forceMobile={forceMobile} />}
     </div>
   );
 }

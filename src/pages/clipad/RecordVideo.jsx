@@ -1765,29 +1765,29 @@ export default function RecordVideo() {
 
         {/* ── EXECUTIVE CORPORATE COUNTDOWN OVERLAY ── */}
         {countdown !== null && countdown > 0 && createPortal(
-          <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-slate-950/85 backdrop-blur-xl">
+          <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50 dark:bg-slate-950/85 backdrop-blur-md">
             <motion.div 
               key={countdown}
               initial={{ scale: 0.85, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 1.1, opacity: 0 }}
               transition={{ duration: 0.25, ease: "easeOut" }}
-              className="flex flex-col items-center gap-6 p-10 rounded-3xl bg-[#091114]/95 border border-white/10 shadow-[0_25px_70px_rgba(0,0,0,0.8)]"
+              className="flex flex-col items-center gap-6 p-10 rounded-3xl bg-white/95 dark:bg-[#091114]/95 border border-slate-200 dark:border-white/10 shadow-[0_25px_70px_rgba(0,0,0,0.2)] dark:shadow-[0_25px_70px_rgba(0,0,0,0.8)]"
             >
               {/* Executive Dial */}
               <div className="relative flex items-center justify-center w-36 h-36">
-                <div className="absolute inset-0 rounded-full border border-teal-500/20" />
-                <div className="absolute inset-2 rounded-full border border-teal-500/40" />
-                <div className="absolute inset-0 rounded-full border-t-2 border-[#00beac] animate-spin" style={{ animationDuration: '2s' }} />
-                <span className="text-7xl font-extrabold text-white tabular-nums tracking-tighter drop-shadow-md">
+                <div className="absolute inset-0 rounded-full border border-[#006065]/20 dark:border-teal-500/20" />
+                <div className="absolute inset-2 rounded-full border border-[#006065]/40 dark:border-teal-500/40" />
+                <div className="absolute inset-0 rounded-full border-t-2 border-[#006065] dark:border-[#00beac] animate-spin" style={{ animationDuration: '2s' }} />
+                <span className="text-7xl font-extrabold text-slate-900 dark:text-white tabular-nums tracking-tighter drop-shadow-sm">
                   {countdown}
                 </span>
               </div>
               
               {/* Executive Status Indicator */}
-              <div className="flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/5 border border-white/10">
-                <span className="w-2 h-2 rounded-full bg-[#fad503] animate-pulse" />
-                <span className="text-xs font-semibold uppercase tracking-widest text-slate-300">Preparing Workspace</span>
+              <div className="flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10">
+                <span className="w-2 h-2 rounded-full bg-[#006065] dark:bg-[#fad503] animate-pulse" />
+                <span className="text-xs font-semibold uppercase tracking-widest text-slate-700 dark:text-slate-300">Preparing Recording</span>
               </div>
             </motion.div>
           </div>,
