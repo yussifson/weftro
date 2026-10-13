@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { FileText, CheckCircle, MessageSquare, Calendar, Video,
   Loader2, X, ShieldAlert, AlertTriangle, ExternalLink, Zap, Layers, Copy, CheckCheck,
@@ -311,14 +311,14 @@ export default function SearchHub() {
       safeQuery(spaceIdArr.length > 0 ? supabase.from('clipad_standups').select('id, user_name, today, yesterday, blockers, space_id, created_at').in('space_id', spaceIdArr).ilike('today', term).limit(20) : []),
       safeQuery(supabase.from('clipad_imported_knowledge').select('id, title, content, provider, content_type, updated_at').eq('company_id', cid).ilike('title', term).limit(20)),
       searchPeople(q, cid),
-      safeQuery(supabase.from('clipad_v3_memories').select('id, name, content, updated_at').eq('company_id', cid).ilike('content', term).limit(10)),
+      safeQuery(supabase.from('clipad_v3_memories').select('id, title, content, updated_at').eq('company_id', cid).ilike('content', term).limit(10)),
       safeQuery(supabase.from('clipad_v3_captures').select('id, title, content, created_at').eq('user_id', user.id).ilike('content', term).limit(10)),
       safeQuery(supabase.from('clipad_v3_smart_moments').select('id, title, description, created_at').eq('company_id', cid).ilike('description', term).limit(10))
     ]);
 
     const raw = [
       ...(people || []),
-      ...(memories || []).map(m => ({ type: 'memory', id: m.id, label: m.name || 'Memory', snippet: m.content, created_at: m.updated_at })),
+      ...(memories || []).map(m => ({ type: 'memory', id: m.id, label: m.title || 'Memory', snippet: m.content, created_at: m.updated_at })),
       ...(captures || []).map(c => ({ type: 'capture', id: c.id, label: c.title || 'Capture', snippet: c.content, created_at: c.created_at })),
       ...(moments || []).map(m => ({ type: 'smart_moment', id: m.id, label: m.title || 'Smart Moment', snippet: m.description, created_at: m.created_at })),
       ...(docs || []).map(d => ({ type: 'doc', id: d.id, space_id: d.space_id, label: d.title, snippet: d.content, created_at: d.created_at })),
