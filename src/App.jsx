@@ -55,6 +55,7 @@ const CliPadCustomPricing = React.lazy(() => import('@/pages/clipad/CliPadCustom
 const CustomRequests = React.lazy(() => import('@/pages/clipad/admin/CustomRequests'));
 
 const IntegrationsHub = React.lazy(() => import('@/pages/clipad/IntegrationsHub'));
+const CapturePage = React.lazy(() => import('@/pages/clipad/CapturePage'));
 const SearchHub = React.lazy(() => import('@/pages/clipad/SearchHub'));
 const DecisionReplay = React.lazy(() => import('@/pages/clipad/DecisionReplay'));
 const CommitmentIntelligence = React.lazy(() => import('@/pages/clipad/CommitmentIntelligence'));
@@ -136,6 +137,7 @@ function App() {
                           <Route path="/videos" element={<VideosList />} />
                           <Route path="/support" element={<CliPadSupport />} />
                           <Route path="/chat" element={<ClipadChat />} />
+                          <Route path="/capture" element={<CapturePage />} />
                           <Route path="/integrations" element={<IntegrationsHub />} />
                           <Route path="/search" element={<SearchHub />} />
                           <Route path="/settings" element={<CliPadSettings />} />

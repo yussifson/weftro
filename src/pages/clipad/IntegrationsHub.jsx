@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import { useAuth } from '@/lib/AuthContext';
@@ -60,7 +60,7 @@ export default function IntegrationsHub() {
 
   const userRole = user?.role || user?.user_metadata?.role || 'member';
   const isAdmin = ['super_admin', 'admin'].includes(userRole);
-  const isConnectEnabled = isAdmin && isV3FeatureEnabled(V3_FLAGS.CONNECT_ENABLED, user);
+  const isConnectEnabled = isV3FeatureEnabled(V3_FLAGS.CONNECT_ENABLED, user);
 
   // Handle OAuth callback status
   useEffect(() => {
@@ -444,8 +444,8 @@ export default function IntegrationsHub() {
               <Plug className="w-5 h-5 text-primary" />
             </div>
             <div className="mt-1">
-              <h1 className="text-2xl font-bold text-foreground">Capture</h1>
-              <p className="text-sm text-muted-foreground">Connect your tools. Capture organizational memory.</p>
+              <h1 className="text-2xl font-bold text-foreground">Integrations & Connect</h1>
+              <p className="text-sm text-muted-foreground">Connect your tools, configure REST APIs, MCP Protocol, OAuth, and Webhooks.</p>
             </div>
           </div>
           {/* Stats row */}
@@ -469,23 +469,24 @@ export default function IntegrationsHub() {
                 onClick={() => setActiveTab('connections')}
                 className={`pb-3 px-1 text-sm font-bold border-b-2 transition-colors ${activeTab === 'connections' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
               >
-                Connections & Sources
+                App Integrations
               </button>
-              <button 
-                onClick={() => setActiveTab('inbox')}
-                className={`pb-3 px-1 text-sm font-bold border-b-2 transition-colors ${activeTab === 'inbox' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
-              >
-                Capture Inbox
+              {isConnectEnabled && (
+                <button 
+                  onClick={() => setActiveTab('connect')}
+                  className={`pb-3 px-1 text-sm font-bold border-b-2 transition-colors ${activeTab === 'connect' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
+                >
+                  Developer API & MCP
                 </button>
-
-                {isConnectEnabled && (
-                  <button 
-                    onClick={() => setActiveTab('connect')}
-                    className={`pb-3 px-1 text-sm font-bold border-b-2 transition-colors ${activeTab === 'connect' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
-                  >
-                    Developer API
-                  </button>
-                )}
+              )}
+              {isAdmin && (
+                <button 
+                  onClick={() => setActiveTab('governance')}
+                  className={`pb-3 px-1 text-sm font-bold border-b-2 transition-colors ${activeTab === 'governance' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
+                >
+                  Governance & Compliance
+                </button>
+              )}
             </div>
           </div>
 

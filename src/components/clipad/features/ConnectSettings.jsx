@@ -167,6 +167,62 @@ export default function ConnectSettings() {
         </Card>
       </div>
 
+      {/* MCP Quickstart Card */}
+      <Card className="border border-emerald-500/30 bg-emerald-500/5 shadow-sm">
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-lg flex items-center gap-2 text-foreground">
+              <Cpu className="w-5 h-5 text-emerald-500" />
+              Model Context Protocol (MCP) Server
+            </CardTitle>
+            <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/30 font-mono text-xs">
+              mcp-v1.0 active
+            </Badge>
+          </div>
+          <CardDescription>
+            Connect Cursor, Claude Desktop, Windsurf, or custom AI agents directly to your Clipad Knowledge Graph.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="p-3.5 bg-background border border-border rounded-xl">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                <TerminalSquare className="w-3.5 h-3.5 text-primary" /> Claude Desktop & Cursor Config (claude_desktop_config.json)
+              </span>
+            </div>
+            <pre className="font-mono text-xs bg-secondary/50 p-3 rounded-lg overflow-x-auto text-foreground">
+{`{
+  "mcpServers": {
+    "clipad": {
+      "command": "npx",
+      "args": ["-y", "@clipad/mcp-server"],
+      "env": {
+        "CLIPAD_COMPANY_ID": "${companyId || 'YOUR_COMPANY_ID'}",
+        "CLIPAD_API_URL": "${import.meta.env.VITE_SUPABASE_URL || 'https://api.clipad.com'}"
+      }
+    }
+  }
+}`}
+            </pre>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+            <div className="p-3 rounded-lg bg-card border border-border">
+              <span className="font-semibold text-foreground block mb-1">🔍 Tool: search_memory</span>
+              <p className="text-muted-foreground text-[11px]">Query organizational decisions, meeting records, and synced docs with semantic search.</p>
+            </div>
+            <div className="p-3 rounded-lg bg-card border border-border">
+              <span className="font-semibold text-foreground block mb-1">⚡ Tool: capture_context</span>
+              <p className="text-muted-foreground text-[11px]">Stream code snippets, terminal traces, and architecture notes into the company memory.</p>
+            </div>
+            <div className="p-3 rounded-lg bg-card border border-border">
+              <span className="font-semibold text-foreground block mb-1">🌐 Tool: query_graph</span>
+              <p className="text-muted-foreground text-[11px]">Traverse entity relationships across teams, spaces, decisions, and external integrations.</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <Card className="shadow-sm">
           <CardHeader>
