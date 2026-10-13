@@ -58,8 +58,8 @@ export function useCompany() {
       }
     },
     enabled: !!companyId,
-    staleTime: 30 * 1000,
-    refetchOnWindowFocus: true,
+    staleTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
   const override = typeof window !== 'undefined' ? sessionStorage.getItem('slate_industry_override') : null;

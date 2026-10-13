@@ -223,6 +223,40 @@ export default function ConnectSettings() {
         </CardContent>
       </Card>
 
+      {/* REST API & cURL Explorer */}
+      <Card className="border border-border shadow-sm">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg flex items-center gap-2">
+            <TerminalSquare className="w-5 h-5 text-primary" />
+            Direct REST API Access & Authorization
+          </CardTitle>
+          <CardDescription>
+            Authenticate with Bearer tokens or your OAuth Client credentials to query decisions and stream captures.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <span className="text-xs font-semibold uppercase text-muted-foreground">1. Query Memory & Decisions (cURL)</span>
+              <pre className="font-mono text-xs bg-secondary/40 p-3 rounded-lg border border-border overflow-x-auto text-foreground">
+{`curl -X GET "${import.meta.env.VITE_SUPABASE_URL || 'https://api.clipad.com'}/rest/v1/clipad_v3_memories?company_id=eq.${companyId || 'COMPANY_ID'}" \\
+  -H "apikey: <YOUR_API_KEY>" \\
+  -H "Authorization: Bearer <USER_ACCESS_TOKEN>"`}
+              </pre>
+            </div>
+            <div className="space-y-2">
+              <span className="text-xs font-semibold uppercase text-muted-foreground">2. Ingest Context Capture (cURL)</span>
+              <pre className="font-mono text-xs bg-secondary/40 p-3 rounded-lg border border-border overflow-x-auto text-foreground">
+{`curl -X POST "${import.meta.env.VITE_SUPABASE_URL || 'https://api.clipad.com'}/rest/v1/clipad_v3_captures" \\
+  -H "apikey: <YOUR_API_KEY>" \\
+  -H "Content-Type: application/json" \\
+  -d '{"company_id":"${companyId || 'COMPANY_ID'}","source_type":"API","capture_type":"NOTE","title":"API Integration","content":"Ingested via API"}'`}
+              </pre>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <Card className="shadow-sm">
           <CardHeader>
@@ -248,13 +282,24 @@ export default function ConnectSettings() {
             </form>
 
             {createdSecret && (
-              <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-                <p className="text-sm font-bold text-green-800 dark:text-green-400 mb-2">App Created Successfully!</p>
-                <p className="text-xs text-green-700 dark:text-green-500 mb-2">Copy this secret now. It will not be shown again.</p>
-                <div className="font-mono text-xs p-2 bg-black/5 dark:bg-white/5 rounded break-all select-all">
-                  {createdSecret.secret}
+              <div className="p-4 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-300 dark:border-emerald-800 rounded-lg">
+                <p className="text-sm font-bold text-emerald-800 dark:text-emerald-400 mb-1">App Created Successfully!</p>
+                <p className="text-xs text-emerald-700 dark:text-emerald-500 mb-2">Copy this secret now. It will not be shown again.</p>
+                <div className="font-mono text-xs p-2 bg-emerald-100/50 dark:bg-emerald-900/40 rounded border border-emerald-200 dark:border-emerald-700 break-all select-all flex items-center justify-between">
+                  <span>{createdSecret.secret}</span>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-6 px-2 text-xs" 
+                    onClick={() => {
+                      navigator.clipboard.writeText(createdSecret.secret);
+                      toast({ title: "Copied", description: "Secret copied to clipboard" });
+                    }}
+                  >
+                    <Copy className="w-3.5 h-3.5" />
+                  </Button>
                 </div>
-                <Button variant="outline" size="sm" className="mt-2" onClick={() => setCreatedSecret(null)}>I have saved it</Button>
+                <Button variant="outline" size="sm" className="mt-2 text-xs" onClick={() => setCreatedSecret(null)}>I have saved it</Button>
               </div>
             )}
 
@@ -275,7 +320,17 @@ export default function ConnectSettings() {
                       <div className="flex flex-col gap-1">
                         <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">Client ID</span>
                         <code className="text-xs font-mono bg-secondary px-2 py-1.5 rounded text-foreground flex items-center justify-between group">
-                          {app.client_id}
+                          <span>{app.client_id}</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              navigator.clipboard.writeText(app.client_id);
+                              toast({ title: "Copied", description: "Client ID copied" });
+                            }}
+                            className="text-muted-foreground hover:text-foreground"
+                          >
+                            <Copy className="w-3.5 h-3.5" />
+                          </button>
                         </code>
                       </div>
                     </div>

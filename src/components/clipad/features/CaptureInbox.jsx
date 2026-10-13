@@ -16,8 +16,11 @@ import { useToast } from '@/components/ui/use-toast';
 import { contextualizeCapture } from '@/lib/clipadContextualizationService';
 import { isV3FeatureEnabled, V3_FLAGS } from '@/lib/clipadV3Flags';
 import BrowserCaptureSettings from './BrowserCaptureSettings';
-import { updateCapture } from '@/lib/clipadCaptureService';
+import { updateCapture, createCapture } from '@/lib/clipadCaptureService';
 import { getUserContextSessions, createContextSession, updateContextSession, completeContextSession, archiveContextSession } from '@/lib/clipadContextSessionService';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 
 export default function CaptureInbox() {
   const { user } = useAuth();
@@ -30,6 +33,15 @@ export default function CaptureInbox() {
   
   // Forms
   const [newSessionTitle, setNewSessionTitle] = useState('');
+  const [isCreateCaptureOpen, setIsCreateCaptureOpen] = useState(false);
+  const [isSubmittingCapture, setIsSubmittingCapture] = useState(false);
+  const [captureForm, setCaptureForm] = useState({
+    title: '',
+    content: '',
+    captureType: 'NOTE',
+    visibility: 'ORGANIZATIONAL',
+    contextSessionId: 'none'
+  });
 
   const companyId = user?.user_metadata?.company_id || user?.company_id;
   const contextSessionsEnabled = isV3FeatureEnabled(V3_FLAGS.CONTEXT_SESSIONS_ENABLED, user);
@@ -96,6 +108,59 @@ export default function CaptureInbox() {
     }
   };
 
+  const handleCreateCapture = async (e) => {
+    e.preventDefault();
+    if (!captureForm.title.trim() && !captureForm.content.trim()) {
+      toast({ title: "Validation Error", description: "Please enter a title or content for your capture.", variant: "destructive" });
+      return;
+    }
+
+    setIsSubmittingCapture(true);
+    try {
+      const newCap = await createCapture({
+        companyId,
+        userId: user.id,
+        contextSessionId: captureForm.contextSessionId === 'none' ? null : captureForm.contextSessionId,
+        sourceType: 'WEB_APP',
+        captureType: captureForm.captureType,
+        title: captureForm.title.trim() || 'Quick Capture',
+        content: captureForm.content.trim(),
+        contentType: 'text/plain',
+        visibility: captureForm.visibility,
+        metadata: {
+          client: 'Clipad Web App',
+          created_via: 'Capture Inbox Quick Action'
+        }
+      });
+
+      toast({ title: "Capture Created", description: "Starting background AI contextualization..." });
+      setIsCreateCaptureOpen(false);
+      setCaptureForm({
+        title: '',
+        content: '',
+        captureType: 'NOTE',
+        visibility: 'ORGANIZATIONAL',
+        contextSessionId: 'none'
+      });
+
+      await loadData();
+
+      // Trigger automatic contextualization in background
+      if (newCap?.id) {
+        contextualizeCapture(newCap.id).then(() => {
+          loadData();
+        }).catch(err => {
+          console.warn('Auto contextualization error:', err);
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      toast({ title: "Capture Failed", description: err.message, variant: "destructive" });
+    } finally {
+      setIsSubmittingCapture(false);
+    }
+  };
+
   const handleSessionAction = async (sessionId, action) => {
     try {
       if (action === 'pause') await updateContextSession(sessionId, { status: 'PAUSED' });
@@ -151,15 +216,129 @@ export default function CaptureInbox() {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
-      <div className="flex flex-col gap-2">
-        <h2 className="text-3xl font-bold tracking-tight">Capture & Context Inbox</h2>
-        <p className="text-muted-foreground">Process incoming captures, manage live context sessions, and configure browser extensions.</p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex flex-col gap-1">
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Capture & Context Inbox</h2>
+          <p className="text-muted-foreground text-sm">Process incoming captures, manage live context sessions, and feed organizational memory.</p>
+        </div>
+
+        {/* Quick Capture Trigger Modal */}
+        <Dialog open={isCreateCaptureOpen} onOpenChange={setIsCreateCaptureOpen}>
+          <DialogTrigger asChild>
+            <Button className="font-semibold shadow-sm gap-2 shrink-0 bg-primary hover:bg-primary/90 text-white">
+              <Plus className="w-4 h-4" /> Quick Capture
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-lg">
+            <form onSubmit={handleCreateCapture}>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-primary" />
+                  Create New Capture
+                </DialogTitle>
+                <DialogDescription>
+                  Manually record decisions, discussions, links, or notes to feed into Clipad V3 intelligence graph.
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-4 py-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="cap-title" className="text-xs font-semibold uppercase text-muted-foreground">Title</Label>
+                  <Input
+                    id="cap-title"
+                    placeholder="e.g. Architecture decision on microservices"
+                    value={captureForm.title}
+                    onChange={(e) => setCaptureForm({ ...captureForm, title: e.target.value })}
+                    className="bg-secondary/20"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold uppercase text-muted-foreground">Capture Type</Label>
+                    <Select
+                      value={captureForm.captureType}
+                      onValueChange={(val) => setCaptureForm({ ...captureForm, captureType: val })}
+                    >
+                      <SelectTrigger className="bg-secondary/20">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="NOTE">Note / Decision</SelectItem>
+                        <SelectItem value="DOCUMENT">Document</SelectItem>
+                        <SelectItem value="LINK">Link / Reference</SelectItem>
+                        <SelectItem value="VOICE">Voice / Meeting Note</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold uppercase text-muted-foreground">Visibility</Label>
+                    <Select
+                      value={captureForm.visibility}
+                      onValueChange={(val) => setCaptureForm({ ...captureForm, visibility: val })}
+                    >
+                      <SelectTrigger className="bg-secondary/20">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="ORGANIZATIONAL">Organizational (Shared)</SelectItem>
+                        <SelectItem value="TEAM">Team Only</SelectItem>
+                        <SelectItem value="PERSONAL">Personal (Private)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {contextSessionsEnabled && (
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold uppercase text-muted-foreground">Attach to Active Session (Optional)</Label>
+                    <Select
+                      value={captureForm.contextSessionId}
+                      onValueChange={(val) => setCaptureForm({ ...captureForm, contextSessionId: val })}
+                    >
+                      <SelectTrigger className="bg-secondary/20">
+                        <SelectValue placeholder="No Session" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">None (Inbox Only)</SelectItem>
+                        {sessions.filter(s => s.status === 'ACTIVE').map(s => (
+                          <SelectItem key={s.id} value={s.id}>{s.title}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="cap-content" className="text-xs font-semibold uppercase text-muted-foreground">Content / Notes</Label>
+                  <Textarea
+                    id="cap-content"
+                    placeholder="Enter transcript, discussion notes, decision takeaways, or paste text..."
+                    rows={4}
+                    value={captureForm.content}
+                    onChange={(e) => setCaptureForm({ ...captureForm, content: e.target.value })}
+                    className="bg-secondary/20 resize-none text-sm"
+                  />
+                </div>
+              </div>
+
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => setIsCreateCaptureOpen(false)}>Cancel</Button>
+                <Button type="submit" disabled={isSubmittingCapture} className="font-semibold">
+                  {isSubmittingCapture ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Plus className="w-4 h-4 mr-2" />}
+                  Save & Ingest
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <Tabs defaultValue="captures" value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-3 max-w-md bg-secondary/50">
-          <TabsTrigger value="captures" className="font-semibold">Processing Inbox</TabsTrigger>
-          {contextSessionsEnabled && <TabsTrigger value="sessions" className="font-semibold">Live Sessions</TabsTrigger>}
+          <TabsTrigger value="captures" className="font-semibold">Processing Inbox ({captures.length})</TabsTrigger>
+          {contextSessionsEnabled && <TabsTrigger value="sessions" className="font-semibold">Live Sessions ({sessions.length})</TabsTrigger>}
           {browserCaptureEnabled && <TabsTrigger value="extension" className="font-semibold"><Settings2 className="w-4 h-4 mr-2"/> Settings</TabsTrigger>}
         </TabsList>
 

@@ -144,9 +144,20 @@ export default function SearchHub() {
 
   
 
-  // Load persistent chat history from Supabase on mount
+  // Load persistent search state on mount
   useEffect(() => {
     if (!user?.id) return;
+    const isNewSearchFlag = sessionStorage.getItem(`search_hub_new_search_${user.id}`);
+    if (isNewSearchFlag) {
+      sessionStorage.removeItem(`search_hub_new_search_${user.id}`);
+      return;
+    }
+
+    const savedQuery = localStorage.getItem(`search_hub_query_${user.id}`);
+    if (savedQuery) {
+      setQuery(savedQuery);
+    }
+
     const loadPersistentChat = async () => {
       try {
         const { data: sessions } = await supabase
@@ -176,15 +187,15 @@ export default function SearchHub() {
 
             // Re-run search matching records silently without restarting AI synthesis
             const firstUserMsg = msgs.find(m => m.role === 'user');
-            if (firstUserMsg) {
-              setQuery(firstUserMsg.content);
-              // Use the ref so we don't reference runSearch before it is initialized
-              if (runSearchRef.current) runSearchRef.current(firstUserMsg.content, true);
+            const queryToUse = savedQuery || firstUserMsg?.content;
+            if (queryToUse) {
+              setQuery(queryToUse);
+              if (runSearchRef.current) runSearchRef.current(queryToUse, true);
             }
           }
         }
       } catch (err) {
-        console.warn('Failed to load persistent search messages:', err);
+        console.warn('Failed to load persistent search history:', err);
       }
     };
     loadPersistentChat();
@@ -246,6 +257,7 @@ export default function SearchHub() {
     if (user?.id) {
       localStorage.removeItem(`search_hub_query_${user.id}`);
       localStorage.removeItem(`search_hub_followup_${user.id}`);
+      sessionStorage.setItem(`search_hub_new_search_${user.id}`, 'true');
     }
     setResults([]);
     setSelectedResult(null);
@@ -529,9 +541,8 @@ export default function SearchHub() {
           {/* Search Input Bar */}
           <div className="w-full max-w-2xl">
             <form onSubmit={(e) => { e.preventDefault(); setSearchParams({ q: query }); runSearch(); }}>
-              <div className="relative flex items-center bg-white dark:bg-card border-2 border-slate-200 dark:border-border rounded-2xl p-1.5 shadow-lg hover:border-[#006065] dark:border-border/50 focus-within:border-[#006065] dark:border-border focus-within:ring-4 focus-within:ring-[#006065]/10 transition-all w-full">
+              <div className="relative flex items-center bg-white dark:bg-card border border-slate-300 dark:border-border rounded-xl p-1.5 shadow-sm hover:border-[#006065] dark:hover:border-slate-500 focus-within:border-[#006065] focus-within:ring-2 focus-within:ring-[#006065]/15 transition-all w-full">
                 <input
-                  autoFocus
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search decisions, documents, action items, standups..."
@@ -547,7 +558,7 @@ export default function SearchHub() {
                 <button
                   type="submit"
                   disabled={!query.trim()}
-                  className="px-6 py-3 sm:py-2.5 bg-primary hover:bg-primary/90 disabled:opacity-40 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 shrink-0 shadow-md text-sm"
+                  className="px-6 py-2.5 bg-primary hover:bg-primary/90 disabled:opacity-40 text-white font-bold rounded-lg flex items-center justify-center gap-2 transition-all active:scale-95 shrink-0 shadow-sm text-sm"
                 >
                   {isSearching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                   <span className="hidden sm:inline">Search</span>
@@ -574,7 +585,7 @@ export default function SearchHub() {
           </div>
         </div>
       ) : (
-        /* â”€â”€ SEARCH STATE (Premium Split Layout) â”€â”€ */
+        /* ── SEARCH STATE (Premium Split Layout) ── */
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Header specific to search state */}
             {/* Removed top header search bar per user request */}
@@ -583,8 +594,8 @@ export default function SearchHub() {
             {/* FILTER TABS & SEARCH BAR */}
             <div className="shrink-0 bg-white dark:bg-card border-b border-slate-200 dark:border-border px-4 md:px-8 py-2 overflow-x-auto hide-scrollbar flex items-center gap-3">
               <button
-                onClick={() => { setHasPerformedSearch(false); setQuery(''); setResults([]); setAiAnswer(''); setSearchParams({}); }}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors bg-primary-foreground text-primary shadow-sm border border-[#fad503] hover:brightness-105"
+                onClick={handleNewSearch}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-colors bg-primary text-white shadow-sm hover:bg-primary/90"
               >
                 <ArrowLeft className="w-3.5 h-3.5" /> New Search
               </button>
@@ -595,15 +606,14 @@ export default function SearchHub() {
                 </div>
                 <input
                   type="text"
-                  autoFocus
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search memory..."
-                  className="block w-full pl-9 pr-8 py-1.5 border border-slate-200 dark:border-border rounded-full bg-slate-50 dark:bg-slate-800 text-xs focus:ring-2 focus:ring-[#006065] focus:border-[#006065] dark:focus:ring-[#006065] transition-all placeholder:text-slate-400 font-medium"
+                  className="block w-full pl-9 pr-8 py-1.5 border border-slate-300 dark:border-border rounded-lg bg-slate-50 dark:bg-slate-800 text-xs focus:ring-2 focus:ring-[#006065] focus:border-[#006065] dark:focus:ring-[#006065] transition-all placeholder:text-slate-400 font-medium"
                 />
                 {query && (
                   <div className="absolute inset-y-0 right-0 pr-1 flex items-center gap-1">
-                    <button type="button" onClick={() => { setQuery(''); setHasPerformedSearch(false); setSearchParams({}); }} className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-full">
+                    <button type="button" onClick={() => { setQuery(''); }} className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-full">
                       <X className="w-3 h-3" />
                     </button>
                   </div>
