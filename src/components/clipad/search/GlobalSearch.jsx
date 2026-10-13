@@ -621,35 +621,25 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
               placeholder="Search people, docs, tasks..."
               className="flex-1 bg-transparent text-slate-900 dark:text-foreground text-base font-medium placeholder:text-slate-400 min-w-0 border-0 outline-none ring-0 shadow-none focus:border-0 focus:outline-none focus:ring-0 focus:shadow-none p-0"
             />
-            {/* AI-only trigger hint */}
-            {query && !isSynthesizing && (
-              <button
-                onClick={() => handleSearch(undefined, false)}
-                title="Press Enter to ask AI"
-                className="shrink-0 flex items-center gap-1.5 text-xs font-bold text-[#006065] dark:text-teal-400 bg-[#006065]/5 dark:bg-[#006065]/10 px-2.5 py-1.5 rounded-md border border-[#006065]/20 dark:border-[#006065]/40 hover:bg-[#006065]/10 dark:hover:bg-[#006065]/20 transition-colors"
-              >
-                <Sparkles className="w-3.5 h-3.5" /> Ask AI
-              </button>
+            {isSynthesizing && (
+              <span className="shrink-0 flex items-center gap-1.5 text-xs font-bold text-[#006065] dark:text-teal-400 bg-[#006065]/5 dark:bg-[#006065]/10 px-2.5 py-1.5 rounded-full border border-[#006065]/20 dark:border-[#006065]/40 animate-pulse">
+                <Sparkles className="w-3.5 h-3.5 animate-spin" /> Thinking...
+              </span>
             )}
             <button
               onClick={() => { setIsOpen(false); navigate(`/search?q=${encodeURIComponent(query)}`); }}
               title="Expand to Full-Page Search Hub"
-              className="shrink-0 p-1.5 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-accent transition-colors"
+              className="shrink-0 p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-accent transition-colors"
             >
               <ExternalLink className="w-4 h-4" />
             </button>
-            {isSynthesizing && (
-              <span className="shrink-0 flex items-center gap-1.5 text-xs font-bold text-[#006065] dark:text-teal-400 bg-[#006065]/5 dark:bg-[#006065]/10 px-2.5 py-1.5 rounded-md border border-[#006065]/20 dark:border-[#006065]/40 animate-pulse">
-                <Sparkles className="w-3.5 h-3.5 animate-spin" /> Thinking...
-              </span>
-            )}
             {query || isSearching ? (
-              <button onClick={() => { setQuery(''); setResults([]); setAiAnswer(''); setHasSearched(false); setLastQuery(''); setLastAiQuery(''); inputRef.current?.focus(); }} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 shrink-0 p-1">
-                <X className="w-5 h-5" />
+              <button onClick={() => { setQuery(''); setResults([]); setAiAnswer(''); setHasSearched(false); setLastQuery(''); setLastAiQuery(''); inputRef.current?.focus(); }} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 shrink-0 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-accent">
+                <X className="w-4 h-4" />
               </button>
             ) : (
-              <button onClick={() => setIsOpen(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 shrink-0 p-1">
-                <X className="w-5 h-5" />
+              <button onClick={() => setIsOpen(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 shrink-0 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-accent">
+                <X className="w-4 h-4" />
               </button>
             )}
           </div>

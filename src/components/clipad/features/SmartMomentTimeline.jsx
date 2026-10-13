@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { getSmartMoments, confirmSmartMoment, dismissSmartMoment, updateSmartMoment, convertMomentToMemory, MOMENT_TYPES, MOMENT_STATUS } from '@/lib/clipadSmartMomentService';
 import { extractSmartMomentsFromTranscript } from '@/lib/clipadTranscriptIntelligence';
 import { Zap, CheckCircle2, XCircle, Edit3, Clock, Sparkles, AlertCircle, ArrowUpRight, Play, RefreshCw, Check, Shield, Brain, Plus } from 'lucide-react';
@@ -16,13 +17,16 @@ export default function SmartMomentTimeline({ companyId, meetingId, videoId, tra
   const [manualDesc, setManualDesc] = useState('');
   const [manualType, setManualType] = useState(MOMENT_TYPES.DECISION);
 
-  // Lock body scroll when modal is active
+  // Lock body & html scroll when modal is active
   useEffect(() => {
     if (showManualAdd || editingMoment) {
-      const originalStyle = window.getComputedStyle(document.body).overflow;
+      const origBodyOverflow = document.body.style.overflow;
+      const origHtmlOverflow = document.documentElement.style.overflow;
       document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
       return () => {
-        document.body.style.overflow = originalStyle;
+        document.body.style.overflow = origBodyOverflow;
+        document.documentElement.style.overflow = origHtmlOverflow;
       };
     }
   }, [showManualAdd, editingMoment]);
@@ -325,8 +329,8 @@ export default function SmartMomentTimeline({ companyId, meetingId, videoId, tra
       )}
 
       {/* Manual Add Moment Modal */}
-      {showManualAdd && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+      {showManualAdd && createPortal(
+        <div className="fixed inset-0 z-[99999] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
           <form onSubmit={handleCreateManualMoment} className="bg-white dark:bg-card rounded-2xl max-w-md w-full p-6 border border-slate-200 dark:border-border shadow-2xl space-y-4">
             <h4 className="text-base font-bold text-slate-900 dark:text-foreground flex items-center gap-2">
               <Plus className="w-4 h-4 text-[#006065] dark:text-[#fad503]" /> Add Smart Moment
@@ -387,12 +391,13 @@ export default function SmartMomentTimeline({ companyId, meetingId, videoId, tra
               </button>
             </div>
           </form>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Edit Moment Modal */}
-      {editingMoment && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+      {editingMoment && createPortal(
+        <div className="fixed inset-0 z-[99999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
           <form onSubmit={handleSaveEdit} className="bg-white dark:bg-card rounded-2xl max-w-md w-full p-6 border border-slate-200 dark:border-border shadow-2xl space-y-4">
             <h4 className="text-base font-bold text-slate-900 dark:text-foreground flex items-center gap-2">
               <Edit3 className="w-4 h-4 text-cyan-500" /> Edit Smart Moment
@@ -434,7 +439,8 @@ export default function SmartMomentTimeline({ companyId, meetingId, videoId, tra
               </button>
             </div>
           </form>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

@@ -129,14 +129,14 @@ export default function ClipadSidebar({ forceMobile }) {
   return (
     <aside 
       className={cn(
-        "hidden md:flex flex-col bg-[#006065] dark:bg-[#0D1626] text-white border-r border-white/10 transition-all duration-300 ease-in-out z-50 shrink-0 relative shadow-2xl",
+        "hidden md:flex flex-col bg-[#006065] dark:bg-[#091114] text-white border-r border-white/10 dark:border-white/5 transition-all duration-300 ease-in-out z-50 shrink-0 relative shadow-2xl",
         forceMobile && "hidden",
         isCollapsed ? "w-[72px]" : "w-[240px]",
         "h-full overflow-hidden"
       )}
     >
       {/* Header */}
-      <div className={cn("h-[72px] flex items-center shrink-0 transition-all border-b border-white/10 bg-[#006065] dark:bg-[#0D1626]", isCollapsed ? "px-0 justify-center" : "px-5 justify-between")}>
+      <div className={cn("h-[72px] flex items-center shrink-0 transition-all border-b border-white/10 dark:border-white/5 bg-[#006065] dark:bg-[#091114]", isCollapsed ? "px-0 justify-center" : "px-5 justify-between")}>
         {isCollapsed ? (
           <button 
             onClick={() => setIsCollapsed(false)} 
@@ -159,7 +159,7 @@ export default function ClipadSidebar({ forceMobile }) {
         )}
       </div>
 
-      <div className={cn("flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-white/20 hover:scrollbar-thumb-white/30 scrollbar-track-transparent py-4 bg-[#006065] dark:bg-[#0D1626]", isCollapsed ? "px-2" : "px-3")}>
+      <div className={cn("flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-white/20 hover:scrollbar-thumb-white/30 scrollbar-track-transparent py-4 bg-[#006065] dark:bg-[#091114]", isCollapsed ? "px-2" : "px-3")}>
         {/* Menu */}
         <div className="mb-4">
           {!isCollapsed && <div className="px-3 pb-2 text-[11px] font-bold text-white/40 tracking-widest uppercase">General</div>}
@@ -170,7 +170,7 @@ export default function ClipadSidebar({ forceMobile }) {
         <div className="mb-4">
           {!isCollapsed ? (
             <button 
-              onClick={() => toggleSection('intelligence')}
+              onClick={() => toggleSection('intelligence')} 
               className="w-full flex items-center justify-between px-3 pb-2 pt-4 text-[11px] font-bold text-white/40 hover:text-white tracking-widest uppercase transition-colors"
             >
               <span>Intelligence</span>
@@ -190,7 +190,7 @@ export default function ClipadSidebar({ forceMobile }) {
           <div className="mb-4">
             {!isCollapsed ? (
               <button 
-                onClick={() => toggleSection('admin')}
+                onClick={() => toggleSection('admin')} 
                 className="w-full flex items-center justify-between px-3 pb-2 pt-4 text-[11px] font-bold text-white/40 hover:text-white tracking-widest uppercase transition-colors"
               >
                 <span>Admin</span>
@@ -208,7 +208,7 @@ export default function ClipadSidebar({ forceMobile }) {
         )}
 
         {/* Bottom Preferences & Help inside scrollable area */}
-        <div className="pt-4 mt-4 border-t border-white/10 space-y-0.5">
+        <div className="pt-4 mt-4 border-t border-white/10 dark:border-white/5 space-y-0.5">
           <button 
             onClick={() => navigate('/settings')} 
             className={cn("w-full flex items-center rounded-lg text-[13px] text-white/70 hover:bg-white/10 hover:text-white font-medium group transition-colors", isCollapsed ? "justify-center p-2.5" : "gap-3 px-3 py-2")}
@@ -230,7 +230,7 @@ export default function ClipadSidebar({ forceMobile }) {
       </div>
 
       {/* User Profile Footer */}
-      <div className={cn("p-4 border-t border-white/10 bg-[#004e52] dark:bg-[#0A111F] text-white", isCollapsed ? "flex justify-center" : "")}>
+      <div className={cn("p-4 border-t border-white/10 dark:border-white/5 bg-[#004e52] dark:bg-[#060B0D] text-white", isCollapsed ? "flex justify-center" : "")}>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <div className="flex items-center gap-3 cursor-pointer group outline-none">
@@ -252,7 +252,7 @@ export default function ClipadSidebar({ forceMobile }) {
               )}
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align={isCollapsed ? "center" : "end"} className="w-56 font-sans bg-[#006065] dark:bg-[#0D1626] border-white/10 text-white shadow-2xl rounded-xl">
+          <DropdownMenuContent align={isCollapsed ? "center" : "end"} className="w-56 font-sans bg-[#006065] dark:bg-[#091114] border-white/10 text-white shadow-2xl rounded-xl">
             <DropdownMenuLabel className="font-semibold px-4 py-3 flex flex-col gap-0.5">
               <span className="text-white font-bold text-sm">{user?.full_name || 'User'}</span>
               <span className="text-xs text-white/60 font-medium truncate">{user?.email}</span>

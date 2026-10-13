@@ -541,16 +541,17 @@ export default function SearchHub() {
           {/* Search Input Bar */}
           <div className="w-full max-w-2xl">
             <form onSubmit={(e) => { e.preventDefault(); setSearchParams({ q: query }); runSearch(); }}>
-              <div className="relative flex items-center bg-white dark:bg-card border border-slate-300 dark:border-border rounded-xl p-1.5 shadow-sm hover:border-[#006065] dark:hover:border-slate-500 focus-within:border-[#006065] focus-within:shadow-md transition-all w-full">
+              <div className="relative flex items-center bg-white dark:bg-card border border-slate-300 dark:border-border rounded-full pl-5 pr-2 py-2 shadow-sm hover:border-slate-400 dark:hover:border-slate-600 focus-within:border-[#006065] dark:focus-within:border-teal-500 focus-within:shadow-md transition-all w-full">
+                <Search className="w-5 h-5 text-slate-400 shrink-0 mr-2" />
                 <input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search decisions, documents, action items, standups..."
-                  className="flex-1 bg-transparent border-0 outline-none ring-0 text-base font-medium placeholder:text-slate-400 text-slate-900 dark:text-foreground px-4 min-w-0 w-full"
+                  className="flex-1 bg-transparent border-0 outline-none ring-0 focus:ring-0 focus:outline-none text-base font-normal placeholder:text-slate-400 text-slate-900 dark:text-foreground px-1 min-w-0 w-full"
                 />
 
                 {query && (
-                  <button type="button" onClick={() => setQuery('')} className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 mr-1 shrink-0">
+                  <button type="button" onClick={() => setQuery('')} className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 mr-1 shrink-0 rounded-full hover:bg-slate-100 dark:hover:bg-accent transition-colors">
                     <X className="w-4 h-4" />
                   </button>
                 )}
@@ -558,10 +559,10 @@ export default function SearchHub() {
                 <button
                   type="submit"
                   disabled={!query.trim()}
-                  className="px-6 py-2.5 bg-[#006065] hover:bg-[#004e52] disabled:opacity-40 text-white font-bold rounded-lg flex items-center justify-center gap-2 transition-all active:scale-95 shrink-0 shadow-sm text-sm"
+                  className="w-10 h-10 bg-[#006065] hover:bg-[#004e52] disabled:opacity-30 disabled:hover:bg-[#006065] text-white rounded-full flex items-center justify-center transition-all active:scale-95 shrink-0 shadow-sm"
+                  title="Search"
                 >
                   {isSearching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                  <span className="hidden sm:inline">Search</span>
                 </button>
               </div>
             </form>

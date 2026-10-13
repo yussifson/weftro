@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
 import {
   Camera, Monitor, Mic, MicOff, CheckCircle,
@@ -399,22 +400,27 @@ export default function RecordVideo() {
 
   useEffect(() => {
     if (countdown === null) return;
-    const originalOverflow = window.getComputedStyle(document.body).overflow;
+    const origBodyOverflow = document.body.style.overflow;
+    const origHtmlOverflow = document.documentElement.style.overflow;
     document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
 
     if (countdown > 0) {
       const timer = setTimeout(() => setCountdown(c => c - 1), 1000);
       return () => {
         clearTimeout(timer);
-        document.body.style.overflow = originalOverflow;
+        document.body.style.overflow = origBodyOverflow;
+        document.documentElement.style.overflow = origHtmlOverflow;
       };
     } else if (countdown === 0) {
-      document.body.style.overflow = originalOverflow;
+      document.body.style.overflow = origBodyOverflow;
+      document.documentElement.style.overflow = origHtmlOverflow;
       startMediaRecorder();
       setCountdown(null);
     }
     return () => {
-      document.body.style.overflow = originalOverflow;
+      document.body.style.overflow = origBodyOverflow;
+      document.documentElement.style.overflow = origHtmlOverflow;
     };
   }, [countdown]);
 
@@ -1757,35 +1763,35 @@ export default function RecordVideo() {
           </div>
         )}
 
-        {/* ── PREMIUM COUNTDOWN OVERLAY ── */}
-        {countdown !== null && countdown > 0 && (
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-md">
+        {/* ── EXECUTIVE CORPORATE COUNTDOWN OVERLAY ── */}
+        {countdown !== null && countdown > 0 && createPortal(
+          <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-slate-950/85 backdrop-blur-xl">
             <motion.div 
               key={countdown}
-              initial={{ scale: 0.7, opacity: 0, y: 12 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 1.15, opacity: 0 }}
-              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              className="flex flex-col items-center gap-4 p-8 rounded-3xl bg-slate-900/90 border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.6)]"
+              initial={{ scale: 0.85, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 1.1, opacity: 0 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              className="flex flex-col items-center gap-6 p-10 rounded-3xl bg-[#091114]/95 border border-white/10 shadow-[0_25px_70px_rgba(0,0,0,0.8)]"
             >
-              {/* Big number */}
-              <div className="relative flex items-center justify-center w-32 h-32">
-                <div className="absolute inset-0 rounded-full border-2 border-[#00beac] opacity-50 animate-ping" style={{ animationDuration: '1s' }} />
-                <div className="absolute inset-0 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm" />
-                <span className="text-7xl font-black text-[#fad503] tabular-nums tracking-tight drop-shadow-[0_4px_24px_rgba(250,213,3,0.4)]">
+              {/* Executive Dial */}
+              <div className="relative flex items-center justify-center w-36 h-36">
+                <div className="absolute inset-0 rounded-full border border-teal-500/20" />
+                <div className="absolute inset-2 rounded-full border border-teal-500/40" />
+                <div className="absolute inset-0 rounded-full border-t-2 border-[#00beac] animate-spin" style={{ animationDuration: '2s' }} />
+                <span className="text-7xl font-extrabold text-white tabular-nums tracking-tighter drop-shadow-md">
                   {countdown}
                 </span>
               </div>
-              {/* Label */}
-              <div className="flex items-center gap-2 px-5 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/15 shadow-sm">
-                <span className="relative flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-rose-500" />
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500" />
-                </span>
-                <span className="text-xs font-bold uppercase tracking-[0.2em] text-white">Starting Recording</span>
+              
+              {/* Executive Status Indicator */}
+              <div className="flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/5 border border-white/10">
+                <span className="w-2 h-2 rounded-full bg-[#fad503] animate-pulse" />
+                <span className="text-xs font-semibold uppercase tracking-widest text-slate-300">Preparing Workspace</span>
               </div>
             </motion.div>
-          </div>
+          </div>,
+          document.body
         )}
 
         {/* RECORDING PHASE */}

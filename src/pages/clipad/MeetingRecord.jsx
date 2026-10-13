@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
@@ -138,10 +139,13 @@ export default function MeetingRecord() {
   // Prevent background scrolling when any modal is open
   useEffect(() => {
     if (showAddMemoryModal || showEdit || showDownloadModal) {
-      const originalStyle = window.getComputedStyle(document.body).overflow;
+      const origBodyOverflow = document.body.style.overflow;
+      const origHtmlOverflow = document.documentElement.style.overflow;
       document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
       return () => {
-        document.body.style.overflow = originalStyle;
+        document.body.style.overflow = origBodyOverflow;
+        document.documentElement.style.overflow = origHtmlOverflow;
       };
     }
   }, [showAddMemoryModal, showEdit, showDownloadModal]);
@@ -968,8 +972,8 @@ export default function MeetingRecord() {
       </div>
 
       {/* Add Memory Vault Modal */}
-      {showAddMemoryModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+      {showAddMemoryModal && createPortal(
+        <div className="fixed inset-0 z-[99999] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
           <form onSubmit={handleSaveToMemory} className="bg-white dark:bg-card rounded-3xl max-w-lg w-full p-6 sm:p-8 border border-slate-200 dark:border-border shadow-2xl space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-border">
               <h4 className="text-base font-bold text-slate-900 dark:text-foreground flex items-center gap-2">
@@ -1047,12 +1051,13 @@ export default function MeetingRecord() {
               </button>
             </div>
           </form>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Edit Meeting Modal */}
-      {showEdit && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+      {showEdit && createPortal(
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
           <div className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl">
             <h2 className="text-lg font-bold text-slate-900 dark:text-foreground mb-4">Edit Meeting Details</h2>
             <form onSubmit={handleEditMeeting} className="space-y-4">
@@ -1110,7 +1115,8 @@ export default function MeetingRecord() {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
