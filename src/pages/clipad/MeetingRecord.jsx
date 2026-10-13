@@ -135,6 +135,17 @@ export default function MeetingRecord() {
 
   const { toast } = useToast();
 
+  // Prevent background scrolling when any modal is open
+  useEffect(() => {
+    if (showAddMemoryModal || showEdit || showDownloadModal) {
+      const originalStyle = window.getComputedStyle(document.body).overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = originalStyle;
+      };
+    }
+  }, [showAddMemoryModal, showEdit, showDownloadModal]);
+
   useEffect(() => { if (meetingId) fetchMeeting(); }, [meetingId, isLoadingAuth, user]);
 
   const fetchMeeting = async () => {
@@ -205,10 +216,12 @@ export default function MeetingRecord() {
           setEditLockType('none');
         }
 
-        if (user) {
+        if (user && meetingId) {
           supabase.from('clipad_meeting_views')
-            .insert({ meeting_id: meetingId, viewer_id: user.id })
-            .select()
+            .upsert(
+              { meeting_id: meetingId, viewer_id: user.id, viewed_at: new Date().toISOString() },
+              { onConflict: 'meeting_id, viewer_id', ignoreDuplicates: true }
+            )
             .then(() => {})
             .catch(() => {});
         }
@@ -634,7 +647,7 @@ export default function MeetingRecord() {
             {/* Primary V3 Smart Moments Component */}
             <div className="bg-white dark:bg-card border border-slate-200/80 dark:border-border/80 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-xs">
               <SmartMomentTimeline
-                companyId={meeting.company_id}
+                companyId={meeting.company_id || user?.company_id || user?.user_metadata?.company_id}
                 meetingId={meeting.id}
                 transcript={transcript}
                 title={meeting.title}
@@ -956,7 +969,7 @@ export default function MeetingRecord() {
 
       {/* Add Memory Vault Modal */}
       {showAddMemoryModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
           <form onSubmit={handleSaveToMemory} className="bg-white dark:bg-card rounded-3xl max-w-lg w-full p-6 sm:p-8 border border-slate-200 dark:border-border shadow-2xl space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-border">
               <h4 className="text-base font-bold text-slate-900 dark:text-foreground flex items-center gap-2">

@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   Camera, Monitor, Mic, MicOff, CheckCircle,
@@ -399,13 +399,23 @@ export default function RecordVideo() {
 
   useEffect(() => {
     if (countdown === null) return;
+    const originalOverflow = window.getComputedStyle(document.body).overflow;
+    document.body.style.overflow = 'hidden';
+
     if (countdown > 0) {
       const timer = setTimeout(() => setCountdown(c => c - 1), 1000);
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(timer);
+        document.body.style.overflow = originalOverflow;
+      };
     } else if (countdown === 0) {
+      document.body.style.overflow = originalOverflow;
       startMediaRecorder();
       setCountdown(null);
     }
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
   }, [countdown]);
 
   const stopEverything = () => {
@@ -1747,34 +1757,32 @@ export default function RecordVideo() {
           </div>
         )}
 
-        {/* â”€â”€ PREMIUM COUNTDOWN OVERLAY â”€â”€ */}
+        {/* ── PREMIUM COUNTDOWN OVERLAY ── */}
         {countdown !== null && countdown > 0 && (
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-md">
             <motion.div 
               key={countdown}
-              initial={{ scale: 0.6, opacity: 0, y: 8 }}
+              initial={{ scale: 0.7, opacity: 0, y: 12 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 1.2, opacity: 0 }}
-              transition={{ duration: 0.3, ease: [0.34, 1.56, 0.64, 1] }}
-              className="flex flex-col items-center gap-3"
+              exit={{ scale: 1.15, opacity: 0 }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              className="flex flex-col items-center gap-4 p-8 rounded-3xl bg-slate-900/90 border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.6)]"
             >
               {/* Big number */}
-              <div className="relative flex items-center justify-center w-28 h-28">
-                {/* Outer ring pulse */}
-                <div className="absolute inset-0 rounded-full border-2 border-[#006065] dark:border-[#00beac]/30 animate-ping" style={{ animationDuration: '1s' }} />
-                <div className="absolute inset-0 rounded-full border border-[#006065] dark:border-[#00beac]/20" />
-                {/* Number */}
-                <span className="text-7xl font-black text-white tabular-nums tracking-tight" style={{ textShadow: '0 0 40px hsl(var(--primary) / 0.6)' }}>
+              <div className="relative flex items-center justify-center w-32 h-32">
+                <div className="absolute inset-0 rounded-full border-2 border-[#00beac] opacity-50 animate-ping" style={{ animationDuration: '1s' }} />
+                <div className="absolute inset-0 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm" />
+                <span className="text-7xl font-black text-[#fad503] tabular-nums tracking-tight drop-shadow-[0_4px_24px_rgba(250,213,3,0.4)]">
                   {countdown}
                 </span>
               </div>
               {/* Label */}
-              <div className="flex items-center gap-2 px-5 py-2 rounded-full bg-black/40 backdrop-blur border border-white/10">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ backgroundColor: 'hsl(var(--primary))' }} />
-                  <span className="relative inline-flex rounded-full h-2 w-2" style={{ backgroundColor: 'hsl(var(--primary))' }} />
+              <div className="flex items-center gap-2 px-5 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/15 shadow-sm">
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-rose-500" />
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500" />
                 </span>
-                <span className="text-xs font-bold uppercase tracking-[0.2em] text-white/70">Get Ready</span>
+                <span className="text-xs font-bold uppercase tracking-[0.2em] text-white">Starting Recording</span>
               </div>
             </motion.div>
           </div>

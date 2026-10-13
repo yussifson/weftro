@@ -32,25 +32,25 @@ export const MOMENT_STATUS = {
 /**
  * Create a new Smart Moment record.
  */
-export async function createSmartMoment({
-  companyId,
-  teamSpaceId = null,
-  meetingId = null,
-  videoId = null,
-  momentType = MOMENT_TYPES.INSIGHT,
-  title,
-  description = null,
-  content = null,
-  confidence = 0.90,
-  importance = 0.50,
-  timestampStart = null,
-  timestampEnd = null,
-  speakerId = null,
-  speakerName = null,
-  createdBy = null,
-  metadata = {},
-  status = MOMENT_STATUS.DETECTED,
-}) {
+export async function createSmartMoment(args = {}) {
+  const companyId = args.companyId || args.company_id;
+  const teamSpaceId = args.teamSpaceId || args.team_space_id || null;
+  const meetingId = args.meetingId || args.meeting_id || null;
+  const videoId = args.videoId || args.video_id || null;
+  const momentType = args.momentType || args.moment_type || MOMENT_TYPES.INSIGHT;
+  const title = args.title;
+  const description = args.description || null;
+  const content = args.content || null;
+  const confidence = args.confidence ?? 0.90;
+  const importance = args.importance ?? 0.50;
+  const timestampStart = args.timestampStart ?? args.timestamp_start ?? null;
+  const timestampEnd = args.timestampEnd ?? args.timestamp_end ?? null;
+  const speakerId = args.speakerId || args.speaker_id || null;
+  const speakerName = args.speakerName || args.speaker_name || null;
+  const createdBy = args.createdBy || args.created_by || null;
+  const metadata = args.metadata || {};
+  const status = args.status || MOMENT_STATUS.DETECTED;
+
   if (!companyId || (!meetingId && !videoId) || !title) {
     throw new Error('companyId, meetingId or videoId, and title are required to create a Smart Moment.');
   }
@@ -107,9 +107,13 @@ export async function getSmartMoments({
       .select('*')
       .order('created_at', { ascending: true });
 
-    if (companyId) q = q.eq('company_id', companyId);
-    if (meetingId) q = q.eq('meeting_id', meetingId);
-    if (videoId) q = q.eq('video_id', videoId);
+    if (meetingId) {
+      q = q.eq('meeting_id', meetingId);
+    } else if (videoId) {
+      q = q.eq('video_id', videoId);
+    } else if (companyId) {
+      q = q.eq('company_id', companyId);
+    }
     if (momentType) q = q.eq('moment_type', momentType);
     if (status) q = q.eq('status', status);
 

@@ -479,11 +479,12 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           : '';
           
         if (db) {
+          const companyId = user?.company_id || user?.user_metadata?.company_id || null;
           const meetingData = {
             title: meetingTitle,
             daily_room_name: roomUrl.split('/').pop().split('?')[0] || 'room',
             host_id: user?.id || null,
-            company_id: user?.company_id || null, // Fix #3 â€” needed for RLS and teammate visibility
+            company_id: companyId,
             ai_summary: rawTranscript ? 'Generating summary...' : 'No transcript recorded.',
             started_at: new Date(joinTimeRef.current).toISOString(),
             ended_at: new Date().toISOString(),
@@ -813,9 +814,9 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
     const sidebarParticipants = allParticipants.filter(id => id !== mainSpeakerId);
 
     return (
-      <div className="flex-1 flex flex-col lg:flex-row p-4 gap-4 overflow-hidden bg-white/30 dark:bg-black/20 backdrop-blur-sm">
+      <div className="flex-1 flex flex-col lg:flex-row p-3 sm:p-5 gap-4 overflow-hidden bg-slate-950/40 backdrop-blur-md">
         {/* Main Stage Area */}
-        <div className="flex-[3] relative rounded-2xl flex items-center justify-center overflow-hidden border border-slate-200 dark:border-white/10 shadow-inner bg-slate-900">
+        <div className="flex-[3] relative rounded-3xl flex items-center justify-center overflow-hidden border border-white/10 shadow-2xl bg-slate-950/90 ring-1 ring-white/5">
           {showWhiteboard && (
             <CanvasWhiteboard onClose={() => setShowWhiteboard(false)} />
           )}
@@ -1086,7 +1087,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
        </div>
      </div>
    )}
-   <div className={`bg-white/80 dark:bg-card/80 backdrop-blur-3xl border border-white/60 dark:border-white/10 flex items-center justify-start sm:justify-center transition-all shadow-2xl rounded-3xl sm:rounded-full overflow-x-auto no-scrollbar ${isPipMode ? 'h-14 px-3 gap-2' : 'h-[72px] sm:h-[80px] px-4 sm:px-6 gap-2 sm:gap-4'}`}>
+   <div className={`bg-slate-900/90 dark:bg-card/90 backdrop-blur-2xl border border-white/10 ring-1 ring-white/5 flex items-center justify-start sm:justify-center transition-all shadow-2xl rounded-3xl sm:rounded-full overflow-x-auto no-scrollbar ${isPipMode ? 'h-14 px-3 gap-2' : 'h-[72px] sm:h-[80px] px-4 sm:px-6 gap-2 sm:gap-4'}`}>
  <div className="relative">
    {showEmojis && (
      <div className="absolute bottom-full mb-4 left-1/2 -translate-x-1/2 bg-card border border-primary/20 shadow-xl rounded-full px-4 py-3 flex gap-3 animate-in fade-in slide-in-from-bottom-4 z-50">

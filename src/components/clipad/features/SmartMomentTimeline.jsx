@@ -16,6 +16,17 @@ export default function SmartMomentTimeline({ companyId, meetingId, videoId, tra
   const [manualDesc, setManualDesc] = useState('');
   const [manualType, setManualType] = useState(MOMENT_TYPES.DECISION);
 
+  // Lock body scroll when modal is active
+  useEffect(() => {
+    if (showManualAdd || editingMoment) {
+      const originalStyle = window.getComputedStyle(document.body).overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = originalStyle;
+      };
+    }
+  }, [showManualAdd, editingMoment]);
+
   const fetchMoments = async () => {
     setLoading(true);
     try {
@@ -29,7 +40,7 @@ export default function SmartMomentTimeline({ companyId, meetingId, videoId, tra
   };
 
   useEffect(() => {
-    if (companyId && (meetingId || videoId)) {
+    if (meetingId || videoId || companyId) {
       fetchMoments();
     }
   }, [companyId, meetingId, videoId]);
@@ -315,7 +326,7 @@ export default function SmartMomentTimeline({ companyId, meetingId, videoId, tra
 
       {/* Manual Add Moment Modal */}
       {showManualAdd && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
           <form onSubmit={handleCreateManualMoment} className="bg-white dark:bg-card rounded-2xl max-w-md w-full p-6 border border-slate-200 dark:border-border shadow-2xl space-y-4">
             <h4 className="text-base font-bold text-slate-900 dark:text-foreground flex items-center gap-2">
               <Plus className="w-4 h-4 text-[#006065] dark:text-[#fad503]" /> Add Smart Moment

@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/api/supabaseClient';
 import { getLimit } from '@/lib/clipadPricing';
@@ -31,17 +31,16 @@ export default function MeetingsList() {
     if (!user?.id) { setLoading(false); return; }
 
     try {
-      // Fetch meetings scoped to user's company
+      const companyId = user.company_id || user.user_metadata?.company_id;
+      // Fetch meetings scoped to user's company or hosted by user
       let query = supabase
         .from('clipad_meeting_records')
         .select('*, space:space_id(name, is_private)')
         .order('created_at', { ascending: false });
 
-      // If user has a company_id, filter by it (company isolation)
-      if (user.company_id) {
-        query = query.eq('company_id', user.company_id);
+      if (companyId) {
+        query = query.or(`company_id.eq.${companyId},host_id.eq.${user.id}`);
       } else {
-        // Fallback: only show meetings hosted by this user
         query = query.eq('host_id', user.id);
       }
 
@@ -61,10 +60,12 @@ export default function MeetingsList() {
         const isUserAdmin = isAdmin(user);
 
         const filtered = data.filter(m => {
+          // If the user hosted the meeting, ALWAYS show it!
+          if (m.host_id === user.id) return true;
           // Admins see all meetings in their company
           if (isUserAdmin) return true;
-          // Members see meetings they hosted
-          if (m.host_id === user.id) return true;
+          // Standalone meetings with no space are visible to company members
+          if (!m.space_id) return true;
           // Members see meetings in public spaces
           if (m.space?.is_private === false) return true;
           // Members see meetings in spaces they're members of
