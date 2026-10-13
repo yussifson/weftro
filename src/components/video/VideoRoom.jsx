@@ -748,22 +748,25 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
 };
 
  return (
-  <div className="flex flex-col h-screen w-screen overflow-hidden relative bg-slate-100 dark:bg-[#091114] text-slate-900 dark:text-white font-sans select-none transition-colors duration-200">
-   {/* Subtle ambient glow */}
-   <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
-     <div className="absolute -top-[15%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-[#006065]/10 dark:bg-[#006065]/20 blur-[140px]" />
-     <div className="absolute -bottom-[15%] -right-[10%] w-[50vw] h-[50vw] rounded-full bg-sky-500/10 dark:bg-sky-900/15 blur-[140px]" />
-   </div>
+  <div className="flex flex-col h-screen w-screen overflow-hidden relative bg-gradient-to-br from-slate-100 via-slate-50 to-slate-200/90 dark:bg-gradient-to-br dark:from-[#060b0e] dark:via-[#091217] dark:to-[#04080a] text-slate-900 dark:text-white font-sans select-none transition-colors duration-300">
+    {/* Refined ambient specular glow */}
+    <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+      <div className="absolute -top-[20%] left-[10%] w-[55vw] h-[55vw] rounded-full bg-teal-500/10 dark:bg-cyan-500/15 blur-[150px]" />
+      <div className="absolute -bottom-[20%] right-[10%] w-[55vw] h-[55vw] rounded-full bg-blue-500/10 dark:bg-blue-600/15 blur-[150px]" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-32 bg-gradient-to-b from-white/30 dark:from-cyan-400/10 to-transparent blur-3xl pointer-events-none" />
+    </div>
 
    {/* Main Layout Area - full height since top header bar is removed */}
  {/* Main Layout Area - Corporate Left Sidebar + Full-Height Video Stage */}
  <div className="relative z-10 flex-1 flex flex-row min-w-0 overflow-hidden">
 
    {/* Corporate Left Mission Control Sidebar */}
-    <aside className="w-16 sm:w-18 bg-white/95 dark:bg-[#0c141a]/95 backdrop-blur-2xl border-r border-slate-200/90 dark:border-white/10 flex flex-col items-center justify-between py-3 px-1.5 z-40 shrink-0 select-none shadow-lg transition-colors">
+    <aside className="w-16 sm:w-18 bg-white/80 dark:bg-[#0b141b]/85 backdrop-blur-3xl border-r border-slate-200/80 dark:border-white/10 flex flex-col items-center justify-between py-3 px-1.5 z-40 shrink-0 select-none shadow-[4px_0_30px_rgba(0,0,0,0.06)] dark:shadow-[4px_0_30px_rgba(0,0,0,0.4)] transition-all relative">
+      {/* Specular edge highlight line */}
+      <div className="absolute top-0 right-0 bottom-0 w-[1px] bg-gradient-to-b from-transparent via-white/50 dark:via-white/20 to-transparent pointer-events-none" />
       
       {/* Top Section: Safe Back / Home Navigation */}
-      <div className="flex flex-col items-center w-full pb-2.5 shrink-0 border-b border-slate-200/80 dark:border-white/10">
+      <div className="flex flex-col items-center w-full pb-2.5 shrink-0 border-b border-slate-200/70 dark:border-white/10">
         <button
           onClick={() => {
             if (window.confirm("Are you sure you want to leave this meeting and return to Dashboard?")) {
@@ -771,22 +774,22 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
               navigate('/dashboard');
             }
           }}
-          className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white border border-slate-200/80 dark:border-white/10 transition-all shadow-none hover:scale-105 active:scale-95 group"
+          className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-gradient-to-b from-white to-slate-100/90 dark:bg-gradient-to-b dark:from-white/[0.12] dark:to-white/[0.04] text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white border border-slate-200/90 dark:border-white/[0.12] shadow-[0_1px_3px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_2px_6px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.18)] hover:scale-105 active:scale-95 transition-all group"
           title="Exit to Dashboard"
         >
           <Home className="w-4.5 h-4.5 text-slate-600 dark:text-slate-300 group-hover:text-[#006065] dark:group-hover:text-[#fad503] transition-colors" />
         </button>
       </div>
 
-      {/* Center Section: Core Mission Controls (Flexible & scrollable so no button is ever lost) */}
+      {/* Center Section: Core Mission Controls with Specular Bevels */}
       <div className="flex-1 w-full flex flex-col items-center justify-center gap-1.5 sm:gap-2 my-1 overflow-y-auto no-scrollbar py-1">
         {/* Audio Toggle */}
         <button
           onClick={toggleAudio}
-          className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-all shadow-sm hover:scale-105 active:scale-95 ${
+          className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-all hover:scale-105 active:scale-95 ${
             isMuted
-              ? 'bg-red-500 hover:bg-red-600 text-white shadow-red-500/25'
-              : 'bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-emerald-600 dark:text-emerald-400 hover:bg-slate-200 dark:hover:bg-white/10'
+              ? 'bg-gradient-to-b from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 text-white shadow-[0_4px_14px_rgba(239,68,68,0.4),inset_0_1px_0_rgba(255,255,255,0.35)] border border-red-400/50'
+              : 'bg-gradient-to-b from-white to-slate-100/90 dark:bg-gradient-to-b dark:from-white/[0.12] dark:to-white/[0.04] border border-slate-200/90 dark:border-white/[0.12] text-emerald-600 dark:text-emerald-400 shadow-[0_1px_3px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_2px_6px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.18)] hover:border-emerald-500/40'
           }`}
           title={isMuted ? "Unmute Microphone" : "Mute Microphone"}
         >
@@ -796,10 +799,10 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
         {/* Video Toggle */}
         <button
           onClick={toggleVideo}
-          className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-all shadow-sm hover:scale-105 active:scale-95 ${
+          className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-all hover:scale-105 active:scale-95 ${
             isVideoOff
-              ? 'bg-red-500 hover:bg-red-600 text-white shadow-red-500/25'
-              : 'bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-emerald-600 dark:text-emerald-400 hover:bg-slate-200 dark:hover:bg-white/10'
+              ? 'bg-gradient-to-b from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 text-white shadow-[0_4px_14px_rgba(239,68,68,0.4),inset_0_1px_0_rgba(255,255,255,0.35)] border border-red-400/50'
+              : 'bg-gradient-to-b from-white to-slate-100/90 dark:bg-gradient-to-b dark:from-white/[0.12] dark:to-white/[0.04] border border-slate-200/90 dark:border-white/[0.12] text-emerald-600 dark:text-emerald-400 shadow-[0_1px_3px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_2px_6px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.18)] hover:border-emerald-500/40'
           }`}
           title={isVideoOff ? "Turn Camera On" : "Turn Camera Off"}
         >
@@ -812,10 +815,10 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
         {/* Share Screen */}
         <button
           onClick={toggleScreenShare}
-          className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-all shadow-sm hover:scale-105 active:scale-95 ${
+          className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-all hover:scale-105 active:scale-95 ${
             isSharingScreen
-              ? 'bg-[#006065] text-white shadow-[#006065]/25'
-              : 'bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
+              ? 'bg-gradient-to-b from-[#00828a] to-[#005a5f] text-white shadow-[0_4px_16px_rgba(0,130,138,0.45),inset_0_1px_0_rgba(255,255,255,0.35)] border border-teal-300/40'
+              : 'bg-gradient-to-b from-white to-slate-100/90 dark:bg-gradient-to-b dark:from-white/[0.12] dark:to-white/[0.04] border border-slate-200/90 dark:border-white/[0.12] text-slate-700 dark:text-slate-300 shadow-[0_1px_3px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_2px_6px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.18)] hover:from-white hover:to-white dark:hover:from-white/[0.18]'
           }`}
           title="Share Screen"
         >
@@ -825,10 +828,10 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
         {/* Whiteboard */}
         <button
           onClick={() => setShowWhiteboard(!showWhiteboard)}
-          className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-all shadow-sm hover:scale-105 active:scale-95 ${
+          className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-all hover:scale-105 active:scale-95 ${
             showWhiteboard
-              ? 'bg-[#006065] text-white'
-              : 'bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
+              ? 'bg-gradient-to-b from-[#00828a] to-[#005a5f] text-white shadow-[0_4px_16px_rgba(0,130,138,0.45),inset_0_1px_0_rgba(255,255,255,0.35)] border border-teal-300/40'
+              : 'bg-gradient-to-b from-white to-slate-100/90 dark:bg-gradient-to-b dark:from-white/[0.12] dark:to-white/[0.04] border border-slate-200/90 dark:border-white/[0.12] text-slate-700 dark:text-slate-300 shadow-[0_1px_3px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_2px_6px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.18)] hover:from-white hover:to-white dark:hover:from-white/[0.18]'
           }`}
           title="Interactive Whiteboard"
         >
@@ -866,10 +869,10 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
               }
             }
           }}
-          className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-all shadow-sm hover:scale-105 active:scale-95 ${
+          className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-all hover:scale-105 active:scale-95 ${
             isRecording
-              ? 'bg-red-500 text-white animate-pulse shadow-red-500/30'
-              : 'bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30'
+              ? 'bg-gradient-to-b from-red-500 to-red-600 text-white animate-pulse shadow-[0_4px_14px_rgba(239,68,68,0.5),inset_0_1px_0_rgba(255,255,255,0.35)] border border-red-400/50'
+              : 'bg-gradient-to-b from-white to-slate-100/90 dark:bg-gradient-to-b dark:from-white/[0.12] dark:to-white/[0.04] border border-slate-200/90 dark:border-white/[0.12] text-red-500 shadow-[0_1px_3px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_2px_6px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.18)] hover:bg-red-50 dark:hover:bg-red-950/30'
           }`}
           title={isRecording ? "Stop Recording" : "Record Meeting"}
         >
@@ -882,10 +885,10 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
         {/* Chat Button */}
         <button
           onClick={() => setShowChat(!showChat)}
-          className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl relative flex items-center justify-center transition-all shadow-sm hover:scale-105 active:scale-95 ${
+          className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl relative flex items-center justify-center transition-all hover:scale-105 active:scale-95 ${
             showChat
-              ? 'bg-[#006065] text-white'
-              : 'bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
+              ? 'bg-gradient-to-b from-[#00828a] to-[#005a5f] text-white shadow-[0_4px_16px_rgba(0,130,138,0.45),inset_0_1px_0_rgba(255,255,255,0.35)] border border-teal-300/40'
+              : 'bg-gradient-to-b from-white to-slate-100/90 dark:bg-gradient-to-b dark:from-white/[0.12] dark:to-white/[0.04] border border-slate-200/90 dark:border-white/[0.12] text-slate-700 dark:text-slate-300 shadow-[0_1px_3px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_2px_6px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.18)] hover:from-white hover:to-white dark:hover:from-white/[0.18]'
           }`}
           title="Chat"
         >
@@ -898,7 +901,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
         {/* Invite Participants */}
         <button
           onClick={() => setShowInvite(true)}
-          className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10 transition-all shadow-sm hover:scale-105 active:scale-95"
+          className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-gradient-to-b from-white to-slate-100/90 dark:bg-gradient-to-b dark:from-white/[0.12] dark:to-white/[0.04] border border-slate-200/90 dark:border-white/[0.12] text-slate-700 dark:text-slate-300 shadow-[0_1px_3px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_2px_6px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.18)] hover:scale-105 active:scale-95 transition-all"
           title="Invite Participants"
         >
           <UserPlus className="w-4.5 h-4.5" />
@@ -908,19 +911,19 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
         <button
           onClick={handleAiAssist}
           disabled={isAiLoading}
-          className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10 transition-all shadow-sm hover:scale-105 active:scale-95"
+          className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-gradient-to-b from-white to-slate-100/90 dark:bg-gradient-to-b dark:from-white/[0.12] dark:to-white/[0.04] border border-slate-200/90 dark:border-white/[0.12] text-slate-700 dark:text-slate-300 shadow-[0_1px_3px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_2px_6px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.18)] hover:scale-105 active:scale-95 transition-all"
           title="Generate AI Notes & Summary"
         >
           <Sparkles className="w-4.5 h-4.5 text-[#fad503]" />
         </button>
       </div>
 
-      {/* Pinned Bottom Section: Settings & Red Leave Call - ALWAYS PINNED & VISIBLE */}
-      <div className="flex flex-col items-center w-full gap-2 pt-2.5 shrink-0 border-t border-slate-200/80 dark:border-white/10">
+      {/* Pinned Bottom Section: Settings & Red Leave Call with Specular Highlight */}
+      <div className="flex flex-col items-center w-full gap-2 pt-2.5 shrink-0 border-t border-slate-200/70 dark:border-white/10">
         {/* Settings Button */}
         <button
           onClick={() => setShowSettings(true)}
-          className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-slate-300 transition-all shadow-sm hover:scale-105 active:scale-95"
+          className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-gradient-to-b from-white to-slate-100/90 dark:bg-gradient-to-b dark:from-white/[0.12] dark:to-white/[0.04] border border-slate-200/90 dark:border-white/[0.12] text-slate-700 dark:text-slate-300 shadow-[0_1px_3px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_2px_6px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.18)] hover:scale-105 active:scale-95 transition-all"
           title="Meeting Settings"
         >
           <Settings className="w-4.5 h-4.5" />
@@ -929,7 +932,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
         {/* Leave Meeting */}
         <button
           onClick={leaveCall}
-          className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-red-600 hover:bg-red-700 text-white shadow-md shadow-red-500/25 hover:shadow-red-500/40 transition-all hover:scale-105 active:scale-95"
+          className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-gradient-to-b from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white shadow-[0_4px_16px_rgba(220,38,38,0.45),inset_0_1px_0_rgba(255,255,255,0.35)] border border-red-500/60 hover:scale-105 active:scale-95 transition-all"
           title="Leave Meeting"
         >
           <PhoneOff className="w-4.5 h-4.5" />
@@ -942,9 +945,9 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
 
 
 
-  {/* Corporate Meeting Header Bar */}
-    <header className="h-12 px-4 sm:px-6 flex items-center justify-between border-b border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-[#0c141a]/80 backdrop-blur-xl z-30 shrink-0 transition-colors">
-      {/* Left: Recording Status (clean and distraction-free when not recording) */}
+  {/* Corporate Meeting Header Bar with Glass Luster */}
+    <header className="h-12 px-4 sm:px-6 flex items-center justify-between border-b border-slate-200/80 dark:border-white/[0.08] bg-white/75 dark:bg-[#0b141b]/80 backdrop-blur-2xl z-30 shrink-0 transition-colors shadow-[0_1px_0_rgba(255,255,255,0.8)] dark:shadow-[0_1px_0_rgba(255,255,255,0.05)]">
+      {/* Left: Recording Status */}
       <div className="flex items-center gap-2.5">
         {isRecording && (
           <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 px-3 py-1 rounded-full text-xs font-semibold shadow-sm">
@@ -960,26 +963,26 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
         )}
       </div>
 
-      {/* Right: Premium Corporate Copy Link Button */}
+      {/* Right: Shiny Corporate Copy Link Button */}
       <div className="flex items-center gap-2">
         <button
           onClick={handleCopyLink}
-          className={`h-8 px-3.5 text-xs font-medium rounded-lg border shadow-sm flex items-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] ${
+          className={`h-8.5 px-4 text-xs font-semibold rounded-xl border shadow-sm flex items-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] ${
             copiedLink
-              ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500/40 text-emerald-600 dark:text-emerald-400'
-              : 'bg-white hover:bg-slate-50 dark:bg-white/5 dark:hover:bg-white/10 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-white/10'
+              ? 'bg-gradient-to-b from-emerald-500 to-emerald-600 text-white border-emerald-400/50 shadow-[0_4px_12px_rgba(16,185,129,0.35),inset_0_1px_0_rgba(255,255,255,0.3)]'
+              : 'bg-gradient-to-b from-white to-slate-100/90 dark:bg-gradient-to-b dark:from-white/[0.14] dark:to-white/[0.04] text-slate-700 dark:text-slate-100 border-slate-200/90 dark:border-white/[0.16] shadow-[0_1px_3px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.95)] dark:shadow-[0_2px_6px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.2)] hover:from-white hover:to-white dark:hover:from-white/[0.2] dark:hover:to-white/[0.08]'
           }`}
           title="Copy Meeting Link to Clipboard"
         >
           {copiedLink ? (
             <>
-              <Check className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
-              <span className="font-semibold">Link Copied!</span>
+              <Check className="w-3.5 h-3.5 text-white" />
+              <span>Link Copied!</span>
             </>
           ) : (
             <>
-              <Copy className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
-              <span className="font-medium">Copy Link</span>
+              <Copy className="w-3.5 h-3.5 text-slate-500 dark:text-slate-300" />
+              <span>Copy Link</span>
             </>
           )}
         </button>
@@ -1025,9 +1028,11 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
     const sidebarParticipants = allParticipants.filter(id => id !== mainSpeakerId);
 
     return (
-      <div className="flex-1 flex flex-col lg:flex-row p-3 sm:p-5 gap-4 overflow-hidden bg-slate-200/40 dark:bg-slate-950/40 backdrop-blur-md">
-        {/* Main Stage Area */}
-        <div className="flex-[3] relative rounded-3xl flex items-center justify-center overflow-hidden border border-slate-200 dark:border-white/10 shadow-2xl bg-slate-900 dark:bg-slate-950/90 ring-1 ring-black/5 dark:ring-white/5">
+      <div className="flex-1 flex flex-col lg:flex-row p-3 sm:p-5 gap-4 overflow-hidden bg-slate-200/30 dark:bg-[#070d12]/50 backdrop-blur-xl">
+        {/* Main Stage Area with Specular Bevel & Cinematic Depth */}
+        <div className="flex-[3] relative rounded-3xl flex items-center justify-center overflow-hidden border border-slate-300/80 dark:border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.15),inset_0_1px_1px_rgba(255,255,255,0.9)] dark:shadow-[0_25px_60px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.22)] bg-gradient-to-b from-slate-900 via-[#0d161d] to-[#080e13] ring-1 ring-black/10 dark:ring-white/10 group">
+          {/* Top specular reflection line across stage */}
+          <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/40 dark:via-white/30 to-transparent pointer-events-none z-30" />
           {showWhiteboard && (
             <CanvasWhiteboard onClose={() => setShowWhiteboard(false)} />
           )}
@@ -1409,7 +1414,7 @@ function ParticipantTile({ id, isLocal, className }) {
  const activeSpeakerId = useActiveSpeakerId();
  const isSpeaking = activeSpeakerId === id;
  return (
- <div className={`relative bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 rounded-3xl overflow-hidden group flex items-center justify-center aspect-video shadow-xl border transition-all duration-300 ${isSpeaking ? 'border-primary ring-4 ring-primary/40 shadow-[0_0_30px_rgba(var(--primary),0.3)]' : 'border-white/50 dark:border-white/5'} ${className || 'w-full max-w-3xl min-w-[320px] m-2'}`}>
+ <div className={`relative bg-gradient-to-b from-white to-slate-100/90 dark:bg-gradient-to-b dark:from-slate-800/80 dark:to-slate-900/90 rounded-2xl overflow-hidden group flex items-center justify-center aspect-video shadow-[0_4px_16px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_8px_24px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.15)] border transition-all duration-300 ${isSpeaking ? 'border-cyan-500 dark:border-cyan-400 ring-2 ring-cyan-500/40 shadow-[0_0_24px_rgba(6,182,212,0.4),inset_0_1px_0_rgba(255,255,255,0.25)]' : 'border-slate-200/90 dark:border-white/10'} ${className || 'w-full max-w-3xl min-w-[320px] m-2'}`}>
  {videoState?.state === 'playable' ? (
  <video 
  ref={videoRef}
