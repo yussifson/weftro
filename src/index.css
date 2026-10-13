@@ -85,47 +85,47 @@ html, body {
   }
 
   .dark {
-    --bg-base-rgb-dark: 2, 38, 40;
+    --bg-base-rgb-dark: 11, 20, 24;
 
-    ::-webkit-scrollbar-thumb { background: rgba(0, 190, 172, 0.2); }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(0, 190, 172, 0.35); }
+    ::-webkit-scrollbar-thumb { background: rgba(0, 190, 172, 0.15); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(0, 190, 172, 0.3); }
 
-    /* Corporate Dark Brand Green - Main Background #022628 */
-    --background: 183 90% 8.2%;
+    /* Corporate Dark Brand Slate - Deep Charcoal with subtle Green/Teal Undertone #0B1418 */
+    --background: 196 37% 7%;
     
-    /* Primary Typography - Crisp Clean White */
+    /* Crisp Pristine White Typography #FFFFFF */
     --foreground: 0 0% 100%;
     
-    /* Secondary Surface / Card Background #053639 (Lighter tint of #006065) */
-    --card: 183 75% 12.5%;
+    /* Premium Surface / Card Background #101D22 */
+    --card: 197 36% 10%;
     --card-foreground: 0 0% 100%;
-    --popover: 183 80% 10%;
+    --popover: 197 36% 9%;
     --popover-foreground: 0 0% 100%;
     
-    /* Brand Accent #fad503 Yellow & #00beac Cyan */
-    --primary: 51 98% 50%; /* Yellow #fad503 */
-    --primary-foreground: 183 90% 8.2%; /* Dark green text on yellow primary button */
+    /* Brand Accent #fad503 Yellow */
+    --primary: 51 98% 50%;
+    --primary-foreground: 196 37% 7%;
     
-    /* Secondary Surface elements #074347 */
-    --secondary: 183 70% 15.5%;
+    /* Secondary Surface elements #15262D */
+    --secondary: 198 35% 13%;
     --secondary-foreground: 0 0% 100%;
     
-    /* Muted Text / Surfaces */
-    --muted: 183 65% 14%;
-    --muted-foreground: 180 18% 70%;
+    /* Soft Corporate Muted Text #95A9B0 */
+    --muted: 198 35% 13%;
+    --muted-foreground: 196 15% 64%;
     
-    /* Hover / Borders / Divider Color #0b4e52 */
-    --accent: 183 60% 18.5%;
+    /* Clean Borders & Hover States #1C333C */
+    --accent: 196 36% 17%;
     --accent-foreground: 0 0% 100%;
     
     /* Destructive Accents */
     --destructive: 0 62% 30%;
     --destructive-foreground: 0 0% 98%;
     
-    /* Border / Divider Color #0a4f53 */
-    --border: 183 65% 18%;
-    --input: 183 65% 18%;
-    --ring: 175 100% 37.3%; /* #00beac active ring */
+    /* Refined Hairline Borders #1A2F38 */
+    --border: 197 37% 16%;
+    --input: 197 37% 16%;
+    --ring: 175 100% 37.3%; /* Brand Cyan #00beac */
     
     --chart-1: 175 100% 37.3%;
     --chart-2: 51 98% 50%;
@@ -133,14 +133,14 @@ html, body {
     --chart-4: 160 60% 45%;
     --chart-5: 38 92% 50%;
     
-    /* Sidebar matching the Corporate Dark Green palette #011d1e */
-    --sidebar-background: 183 92% 6.2%;
-    --sidebar-foreground: 180 18% 70%;
+    /* Sidebar Palette #091114 */
+    --sidebar-background: 196 38% 5.5%;
+    --sidebar-foreground: 196 15% 64%;
     --sidebar-primary: 51 98% 50%;
-    --sidebar-primary-foreground: 183 90% 8.2%;
-    --sidebar-accent: 183 75% 12.5%;
+    --sidebar-primary-foreground: 196 37% 7%;
+    --sidebar-accent: 197 36% 10%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 183 65% 18%;
+    --sidebar-border: 197 37% 16%;
     --sidebar-ring: 175 100% 37.3%;
   }
 }

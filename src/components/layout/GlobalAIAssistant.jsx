@@ -547,7 +547,7 @@ export default function GlobalAIAssistant({ isOpen = false, onClose, injectedCon
 }
  break;
 }
- // ── CliPad-native search tools ───────────────────────────────────────────
+ // â”€â”€ CliPad-native search tools â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
  case 'search_meetings': {
   const q = (action.query || '').toLowerCase();
   const { data: meetings } = await supabase
@@ -617,7 +617,7 @@ export default function GlobalAIAssistant({ isOpen = false, onClose, injectedCon
   results.push(`Blocker search for "${q}":\n${JSON.stringify((blockers || []).map(b => ({ id: b.id, description: b.description, severity: b.severity, date: b.detected_at?.slice(0, 10) })))}`);
   break;
  }
- // ─────────────────────────────────────────────────────────────────────────
+ // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
  default:
  results.push(`Error: unknown tool ${action.tool}`);
  break;
@@ -720,7 +720,7 @@ To create an automation, use the \`create_record\` tool with recordType "automat
   }
 
   let orgContextSection = '';
-  // Always load org context — it's the brain of the system
+  // Always load org context â€” it's the brain of the system
   // 60-second TTL cache to avoid 14 parallel DB queries on every message send
   try {
     const accessibleIds = await fetchAccessibleSpaceIds(user);
@@ -738,7 +738,7 @@ To create an automation, use the \`create_record\` tool with recordType "automat
     if (contextText && contextText.length > 50) {
       orgContextSection = `
 
-ðŸ¢ LIVE ORGANIZATIONAL MEMORY — VERIFIED REAL DATA:
+ðŸ¢ LIVE ORGANIZATIONAL MEMORY â€” VERIFIED REAL DATA:
 You have FULL access to the following live data from ${accessibleIds.size} space(s) this user is authorized to see.
 This includes: standups, meetings, decisions, blockers, tasks, videos, commitments, team members, org events, and more.
 ALWAYS use this data to answer questions. If the data exists below, say so clearly with specifics.
@@ -749,14 +749,14 @@ ${contextText}
 `;
     }
 
-    // ── Integration Knowledge Search: query clipad_imported_knowledge ──────────
+    // â”€â”€ Integration Knowledge Search: query clipad_imported_knowledge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     try {
       const { data: knowledgeResults, error: kErr } = await supabase.functions.invoke('knowledge-search', {
         body: { query: text, company_id: companyId, match_count: 8, threshold: 0.4 }
       });
       if (!kErr && knowledgeResults?.results?.length > 0) {
         const kItems = knowledgeResults.results.slice(0, 8).map(r => {
-          const parts = [`[${r.provider?.toUpperCase() || 'INTEGRATION'} – ${r.content_type || 'item'}]`];
+          const parts = [`[${r.provider?.toUpperCase() || 'INTEGRATION'} â€“ ${r.content_type || 'item'}]`];
           if (r.title) parts.push(`Title: ${r.title}`);
           if (r.ai_summary) parts.push(`Summary: ${r.ai_summary}`);
           else if (r.content) parts.push(`Content: ${r.content.substring(0, 300)}`);
@@ -764,7 +764,7 @@ ${contextText}
           if (r.author) parts.push(`Author: ${r.author}`);
           if (r.imported_at) parts.push(`Indexed: ${new Date(r.imported_at).toLocaleDateString()}`);
           if (r.related_graph_items && r.related_graph_items.length > 0) {
-            const relStr = r.related_graph_items.map(rel => `• ${rel.relationship} → ${rel.provider?.toUpperCase()}: "${rel.title}"`).join('\n');
+            const relStr = r.related_graph_items.map(rel => `â€¢ ${rel.relationship} â†’ ${rel.provider?.toUpperCase()}: "${rel.title}"`).join('\n');
             parts.push(`Knowledge Graph Links:\n${relStr}`);
           }
           return parts.join('\n');
@@ -772,7 +772,7 @@ ${contextText}
 
         orgContextSection += `
 
-ðŸ”— INTEGRATION KNOWLEDGE BASE — CROSS-SYSTEM DATA:
+ðŸ”— INTEGRATION KNOWLEDGE BASE â€” CROSS-SYSTEM DATA:
 The following items were retrieved from connected integrations (Slack, Google Drive, GitHub, Jira, Notion, etc.) relevant to the user's query.
 Use these to answer questions about documents, messages, meetings, tasks, and more across all connected systems.
 Always cite the source provider and title when referencing these results.
@@ -802,8 +802,8 @@ ${kItems}
   const userDepartment = user?.department ? ` in the ${user.department} department` : '';
   const userIndustry = user?.company_industry ? ` in the ${user.company_industry} industry` : '';
 
-  const systemPrompt = `You are Orbit — a highly enthusiastic, intelligent, and entertaining AI assistant embedded in the ClipPad organizational memory and workspace.
-Your personality is that of a powerful but friendly AI companion—think of a hyper-intelligent digital lion/owl hybrid! Be cheerful, slightly playful, use emojis naturally, but remain highly capable and laser-focused on orchestrating the user's workflows flawlessly.
+  const systemPrompt = `You are Orbit â€” a highly enthusiastic, intelligent, and entertaining AI assistant embedded in the ClipPad organizational memory and workspace.
+Your personality is that of a powerful but friendly AI companionâ€”think of a hyper-intelligent digital lion/owl hybrid! Be cheerful, slightly playful, use emojis naturally, but remain highly capable and laser-focused on orchestrating the user's workflows flawlessly.
 Your current context is the ClipPad workspace, specifically the '${ctx?.title || 'Dashboard'}' page.
 
 CRITICAL SECURITY & ROLE RULES:
@@ -824,27 +824,27 @@ CRITICAL INSTRUCTIONS:
 - You have Long-Term Memory. You can remember facts about the user across sessions. Always check your memory or save important details when asked.
 - The user is currently on page: ${location.pathname}
 
-EXACT VERIFIED ROUTE MAP — ALWAYS USE THESE EXACT PATHS FOR navigate_to. NEVER GUESS OR INVENT PATHS:
-/dashboard → Dashboard
-/spaces → Spaces
-/meetings → Meetings
-/videos → Videos / Recordings
-/record → Record Video
-/health → Knowledge Health
-/timeline → Knowledge Timeline (chronological feed of all synced knowledge)
-/decisions → Decision Ledger (AI-detected decisions from meetings, docs, messages)
-/knowledge-graph → Knowledge Graph (interactive visual graph of cross-system relationships)
-/action-items → Action Items (AI-extracted tasks from all sources, exportable to Jira/ClickUp etc.)
-/journey → Knowledge Journey (trace how ideas flow across Slack → Notion → Jira → GitHub)
-/integrations → Integrations Hub (connect external apps)
-/integration-analytics → Integration Analytics
-/settings → Settings
-/support → Support
-/chat → Chat
+EXACT VERIFIED ROUTE MAP â€” ALWAYS USE THESE EXACT PATHS FOR navigate_to. NEVER GUESS OR INVENT PATHS:
+/dashboard â†’ Dashboard
+/spaces â†’ Spaces
+/meetings â†’ Meetings
+/videos â†’ Videos / Recordings
+/record â†’ Record Video
+/health â†’ Knowledge Health
+/timeline â†’ Knowledge Timeline (chronological feed of all synced knowledge)
+/decisions â†’ Decision Ledger (AI-detected decisions from meetings, docs, messages)
+/knowledge-graph â†’ Knowledge Graph (interactive visual graph of cross-system relationships)
+/action-items â†’ Action Items (AI-extracted tasks from all sources, exportable to Jira/ClickUp etc.)
+/journey â†’ Knowledge Journey (trace how ideas flow across Slack â†’ Notion â†’ Jira â†’ GitHub)
+/integrations â†’ Integrations Hub (connect external apps)
+/integration-analytics â†’ Integration Analytics
+/settings â†’ Settings
+/support â†’ Support
+/chat â†’ Chat
 
 CITATION RULES (MANDATORY when using INTEGRATION KNOWLEDGE BASE):
 - When answering from the ðŸ”— INTEGRATION KNOWLEDGE BASE section, you MUST cite the source.
-- Format citations inline like: [Source: {Provider} – "{Title}"]
+- Format citations inline like: [Source: {Provider} â€“ "{Title}"]
 - If a URL is available in the source data, format it as a markdown link: [View Source]({url})
 - Always cite, never omit the source when referencing integrated data.
 
@@ -1143,8 +1143,8 @@ RULES FOR MULTI-STEP REASONING & AUTOMATIONS:
  {/* Main Panel */}
  <div className="flex-1 flex flex-col min-w-0 relative">
 
-  {/* Header — Solid Sticky Controls */}
-  <div className="bg-[#006065] dark:bg-[#053639] text-white backdrop-blur-md px-4 py-3 flex justify-between items-center shrink-0 sticky top-0 z-[101] border-b border-[#006065] dark:border-border/50">
+  {/* Header â€” Solid Sticky Controls */}
+  <div className="bg-[#006065] dark:bg-[#131A2C] text-white backdrop-blur-md px-4 py-3 flex justify-between items-center shrink-0 sticky top-0 z-[101] border-b border-[#006065] dark:border-border/50">
     <div className="flex-1"></div>
     <div className="flex items-center gap-1.5 justify-end">
       <DropdownMenu>
@@ -1156,7 +1156,7 @@ RULES FOR MULTI-STEP REASONING & AUTOMATIONS:
             <LayoutGrid className="w-4 h-4" />
           </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-52 z-[100] shadow-2xl border border-slate-200 dark:border-border bg-white dark:bg-[#053639] p-1.5">
+        <DropdownMenuContent align="end" className="w-52 z-[100] shadow-2xl border border-slate-200 dark:border-border bg-white dark:bg-[#0D1117] p-1.5">
           <DropdownMenuItem onClick={() => setShowHistory(prev => !prev)} className="cursor-pointer font-semibold text-xs py-2.5 rounded-lg">
             <Clock className="w-4 h-4 mr-2 text-emerald-600 dark:text-emerald-400" /> 
             {showHistory ? t("hide_history", "Hide History") : t("chat_history", "Chat History")}
@@ -1196,7 +1196,7 @@ RULES FOR MULTI-STEP REASONING & AUTOMATIONS:
  return (
  <div key={i} className={`flex gap-3 max-w-full items-start ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
   {msg.role === 'user' ? (
-    <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm bg-[#006065] dark:bg-[#053639] text-[#fad503] font-bold border border-[#006065] dark:border-border/20 text-xs">
+    <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm bg-[#006065] dark:bg-[#131A2C] text-[#fad503] font-bold border border-[#006065] dark:border-border/20 text-xs">
       <User className="w-4 h-4" />
     </div>
   ) : (
@@ -1321,7 +1321,7 @@ RULES FOR MULTI-STEP REASONING & AUTOMATIONS:
              type="button"
              onClick={() => handleSend()}
              disabled={isLoading}
-             className="w-7 h-7 bg-[#006065] dark:bg-[#053639] hover:bg-[#004e52] disabled:opacity-50 text-white rounded-full flex items-center justify-center transition-all shadow-sm"
+             className="w-7 h-7 bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004e52] disabled:opacity-50 text-white rounded-full flex items-center justify-center transition-all shadow-sm"
            >
              <Send className="w-3.5 h-3.5 ml-0.5" />
            </button>

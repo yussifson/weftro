@@ -157,7 +157,7 @@ export default function PreJoinScreen({ roomName, onJoin, defaultName = '' }) {
   };
 
   return (
-    <div className="w-screen h-screen bg-slate-50 dark:bg-[#022628] flex flex-col md:flex-row items-center justify-center px-4 md:px-12 gap-8 md:gap-16 overflow-y-auto relative overflow-hidden">
+    <div className="w-screen h-screen bg-slate-50 dark:bg-[#0B1121] flex flex-col md:flex-row items-center justify-center px-4 md:px-12 gap-8 md:gap-16 overflow-y-auto relative overflow-hidden">
       {/* Realistic Background Layers */}
       <div className="absolute inset-0 pointer-events-none z-0">
         <div className="absolute -top-[20%] -left-[10%] w-[70vw] h-[70vw] rounded-full bg-primary/5 dark:bg-primary/10 blur-[120px]" />

@@ -97,12 +97,12 @@ export default function MeetingsList() {
       const payload = { instant: true, max_participants: getLimit(user, 'maxParticipants'), privacy: privacyType, companyId: user?.company_id || user?.user_metadata?.company_id };
       if (privacyType === 'public') payload.roomName = roomName;
 
-      // Attempt Edge Function — but never let it block meeting start
+      // Attempt Edge Function â€” but never let it block meeting start
       let roomData = null;
       try {
         const { data, error } = await supabase.functions.invoke('create-daily-room', { body: payload });
         if (!error && data && (data.name || data.roomName)) roomData = data;
-      } catch (_) { /* edge function unavailable — continue with local room */ }
+      } catch (_) { /* edge function unavailable â€” continue with local room */ }
 
       const targetRoomName = roomData?.name || roomData?.roomName || roomName;
 
@@ -118,11 +118,11 @@ export default function MeetingsList() {
           status: 'active',
           meeting_type: 'instant'
         });
-      } catch (_) { /* db insert failed — meeting still works */ }
+      } catch (_) { /* db insert failed â€” meeting still works */ }
 
       navigate(`/join/${targetRoomName}` + (spaceId ? `?spaceId=${spaceId}` : ''));
     } catch (err) {
-      // Ultimate fallback — always navigate to a meeting room
+      // Ultimate fallback â€” always navigate to a meeting room
       const fallbackRoom = generateShortId();
       console.error('Meeting creation error, using fallback:', err);
       navigate(`/join/${fallbackRoom}` + (spaceId ? `?spaceId=${spaceId}` : ''));
@@ -169,7 +169,7 @@ export default function MeetingsList() {
           <button
             onClick={startInstantMeeting}
             disabled={isCreating}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#006065] dark:bg-[#053639] hover:bg-[#004e52] text-[#fad503] font-bold text-sm shadow-md shadow-[#006065]/20 transition-all disabled:opacity-60 shrink-0 active:scale-95"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004e52] text-[#fad503] font-bold text-sm shadow-md shadow-[#006065]/20 transition-all disabled:opacity-60 shrink-0 active:scale-95"
           >
             {isCreating ? <div className="w-4 h-4 border-2 border-white/30 border-t-transparent rounded-full animate-spin" /> : <Video className="w-4 h-4" />}
             Start Instant Meeting
@@ -201,7 +201,7 @@ export default function MeetingsList() {
 
         {loading ? (
           <div className="space-y-4">
-            {[1,2,3,4].map(i => <div key={i} className="h-24 rounded-2xl bg-[#006065] dark:bg-[#053639] text-white dark:bg-card animate-pulse border border-white/15 dark:border-white/15" />)}
+            {[1,2,3,4].map(i => <div key={i} className="h-24 rounded-2xl bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-card animate-pulse border border-white/15 dark:border-white/15" />)}
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-24 border border-dashed border-slate-200 dark:border-border rounded-3xl">
@@ -213,7 +213,7 @@ export default function MeetingsList() {
           <div className="relative pl-6 border-l-2 border-[#006065] dark:border-border space-y-6">
             {filtered.map(m => (
               <div key={m.id} className="relative group">
-                <div className="absolute -left-[35px] w-6 h-6 rounded-full bg-[#006065] dark:bg-[#053639] border-2 border-[#fad503] flex items-center justify-center shadow-sm mt-5">
+                <div className="absolute -left-[35px] w-6 h-6 rounded-full bg-[#006065] dark:bg-[#131A2C] border-2 border-[#fad503] flex items-center justify-center shadow-sm mt-5">
                   <div className="w-2 h-2 rounded-full bg-[#fad503]" />
                 </div>
                 <div
@@ -249,7 +249,7 @@ export default function MeetingsList() {
 
                 <div className="flex items-center gap-3 md:w-48 justify-end shrink-0">
                   {m.actions_open > 0 ? (
-                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#006065] dark:bg-[#053639]/10 border border-[#006065] dark:border-border/20 text-[#006065] text-xs font-semibold">
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#006065] dark:bg-[#131A2C]/10 border border-[#006065] dark:border-border/20 text-[#006065] text-xs font-semibold">
                       <Target className="w-3.5 h-3.5" /> {m.actions_open} open tasks
                     </div>
                   ) : m.actions_total > 0 ? (

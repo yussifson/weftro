@@ -182,12 +182,12 @@ export default function PricingTags() {
       <div className="flex flex-col h-full bg-transparent  p-4 sm:p-6 md:p-8 animate-pulse">
         <div className="flex justify-between items-start mb-8">
           <div>
-            <div className="h-8 bg-[#006065] dark:bg-[#053639] text-white border border-white/15/15 dark:bg-slate-800 rounded w-48 mb-2"></div>
-            <div className="h-4 bg-[#006065] dark:bg-[#053639] text-white border border-white/15/15 dark:bg-slate-800 rounded w-32"></div>
+            <div className="h-8 bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/15 dark:bg-slate-800 rounded w-48 mb-2"></div>
+            <div className="h-4 bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/15 dark:bg-slate-800 rounded w-32"></div>
           </div>
-          <div className="h-10 bg-[#006065] dark:bg-[#053639] text-white border border-white/15/15 dark:bg-slate-800 rounded w-32"></div>
+          <div className="h-10 bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/15 dark:bg-slate-800 rounded w-32"></div>
         </div>
-        <div className="bg-[#006065] dark:bg-[#053639] text-white dark:bg-card p-6 rounded-2xl h-64 mb-8"></div>
+        <div className="bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-card p-6 rounded-2xl h-64 mb-8"></div>
       </div>
     );
   }
@@ -235,12 +235,12 @@ export default function PricingTags() {
                     )}
                   </TableCell>
                   <TableCell>
-                    <span className="capitalize px-3 py-1 bg-[#006065] dark:bg-[#053639] text-white border border-white/15/10 dark:bg-secondary text-white/70 dark:text-muted-foreground rounded-md text-xs font-medium">
+                    <span className="capitalize px-3 py-1 bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/10 dark:bg-secondary text-white/70 dark:text-muted-foreground rounded-md text-xs font-medium">
                       {company.subscription_plan || 'N/A'}
                     </span>
                   </TableCell>
                   <TableCell>
-                    <span className="capitalize px-3 py-1 bg-[#006065] dark:bg-[#053639]/10 text-[#006065] dark:text-[#00beac] rounded-md text-sm font-bold">
+                    <span className="capitalize px-3 py-1 bg-[#006065] dark:bg-[#131A2C]/10 text-[#006065] dark:text-[#00beac] rounded-md text-sm font-bold">
                       {company.clipad_pricing_tags?.name || 'Free Tier'}
                     </span>
                   </TableCell>
@@ -321,7 +321,7 @@ export default function PricingTags() {
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="font-bold text-lg text-primary">{tag.name}</h3>
                   <div className="flex gap-2">
-                    <button onClick={() => { setEditingTag(tag); setFormData(tag); setIsDialogOpen(true); }} className="p-1.5 bg-[#006065] dark:bg-[#053639] text-white border border-white/15/10 hover:bg-[#006065] dark:bg-[#053639] text-white border border-white/15/15 dark:bg-secondary dark:hover:bg-accent rounded text-white/80 dark:text-muted-foreground"><Pencil className="w-3.5 h-3.5"/></button>
+                    <button onClick={() => { setEditingTag(tag); setFormData(tag); setIsDialogOpen(true); }} className="p-1.5 bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/10 hover:bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15/15 dark:bg-secondary dark:hover:bg-accent rounded text-white/80 dark:text-muted-foreground"><Pencil className="w-3.5 h-3.5"/></button>
                     <button onClick={() => handleDeleteTag(tag.id)} className="p-1.5 bg-red-100 hover:bg-red-200 text-red-600 rounded"><Trash2 className="w-3.5 h-3.5"/></button>
                   </div>
                 </div>

@@ -186,7 +186,7 @@ export default function IntegrationAnalytics() {
           
           <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-[#006065] dark:bg-[#053639] text-[#fad503] flex items-center justify-center">
+              <div className="w-12 h-12 rounded-xl bg-[#006065] dark:bg-[#131A2C] text-[#fad503] flex items-center justify-center">
                 <Network className="w-6 h-6" />
               </div>
               <div>
@@ -330,8 +330,8 @@ export default function IntegrationAnalytics() {
                               <AlertTriangle className="w-3.5 h-3.5" /> Error
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-[#006065] dark:bg-[#053639]/20 text-[#004e52] dark:bg-card dark:text-[#006065]">
-                              <div className="w-2 h-2 rounded-full bg-[#006065] dark:bg-[#053639]" /> Active
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-[#006065] dark:bg-[#131A2C]/20 text-[#004e52] dark:bg-card dark:text-[#006065]">
+                              <div className="w-2 h-2 rounded-full bg-[#006065] dark:bg-[#131A2C]" /> Active
                             </span>
                           )}
                         </td>
@@ -347,7 +347,7 @@ export default function IntegrationAnalytics() {
                           {sync.error ? (
                             <span className="text-rose-500 text-xs" title={sync.error}>{sync.error}</span>
                           ) : (
-                            <span className="text-xs text-slate-400">—</span>
+                            <span className="text-xs text-slate-400">â€”</span>
                           )}
                         </td>
                       </tr>

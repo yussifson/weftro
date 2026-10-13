@@ -226,7 +226,7 @@ export default function KnowledgeJourney() {
   return (
     <div className="min-h-full bg-slate-50 dark:bg-background text-slate-900 dark:text-slate-100 pb-12 font-sans page-enter">
       {/* Header */}
-      <div className="relative overflow-hidden border-b border-slate-200 dark:border-border bg-[#006065] dark:bg-[#053639] text-white px-6 py-10">
+      <div className="relative overflow-hidden border-b border-slate-200 dark:border-border bg-[#006065] dark:bg-[#131A2C] text-white px-6 py-10">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(59,130,246,0.07),transparent_60%)] pointer-events-none" />
         <div className="max-w-5xl mx-auto relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
@@ -240,7 +240,7 @@ export default function KnowledgeJourney() {
               <h1 className="text-2xl font-bold text-white">Knowledge Journey</h1>
             </div>
             <p className="text-sm text-white/70 max-w-xl">
-              Trace how ideas, decisions, and work items flow across your organization — from a Slack message to a Notion doc to a GitHub release.
+              Trace how ideas, decisions, and work items flow across your organization â€” from a Slack message to a Notion doc to a GitHub release.
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -278,7 +278,7 @@ export default function KnowledgeJourney() {
             <GitBranch className="w-8 h-8 text-slate-500 dark:text-muted-foreground mx-auto mb-3 opacity-50" />
             <h3 className="font-semibold text-slate-900 dark:text-foreground mb-1">No knowledge journeys yet</h3>
             <p className="text-sm text-slate-500 dark:text-muted-foreground">
-              As the AI detects relationships between your synced knowledge items, cross-system knowledge journeys will appear here — showing how ideas flow from a Slack message to a decision to a code commit.
+              As the AI detects relationships between your synced knowledge items, cross-system knowledge journeys will appear here â€” showing how ideas flow from a Slack message to a decision to a code commit.
             </p>
           </div>
         ) : (
@@ -407,7 +407,7 @@ export default function KnowledgeJourney() {
   );
 }
 
-// ─── Journey Card ─────────────────────────────────────────────────────────────
+// â”€â”€â”€ Journey Card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function JourneyCard({ journey, onSelect, isSelected }) {
   return (
     <div
@@ -441,12 +441,12 @@ function JourneyCard({ journey, onSelect, isSelected }) {
   );
 }
 
-// ─── Inline horizontal chain preview ─────────────────────────────────────────
+// â”€â”€â”€ Inline horizontal chain preview â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function ChainPreview({ node, depth }) {
   const intg = INTEGRATIONS.find(i => i.id === node.item.provider || i.provider === node.item.provider);
   const color = getColor(node.item.provider);
 
-  if (depth > 3) return <span className="text-slate-500 dark:text-muted-foreground text-xs">…</span>;
+  if (depth > 3) return <span className="text-slate-500 dark:text-muted-foreground text-xs">â€¦</span>;
 
   return (
     <div className="flex items-center gap-2 flex-wrap">
@@ -472,7 +472,7 @@ function ChainPreview({ node, depth }) {
   );
 }
 
-// ─── Vertical detailed chain ──────────────────────────────────────────────────
+// â”€â”€â”€ Vertical detailed chain â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function DetailChain({ node, depth }) {
   const intg = INTEGRATIONS.find(i => i.id === node.item.provider || i.provider === node.item.provider);
   const color = getColor(node.item.provider);

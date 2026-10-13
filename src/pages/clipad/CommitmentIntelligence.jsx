@@ -13,7 +13,7 @@ import {
 
 const STATUS_CONFIG = {
   open: { label: 'Open', color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/30', icon: Clock },
-  completed: { label: 'Done', color: 'text-[#00beac]', bg: 'bg-[#006065] dark:bg-[#053639]/10 border-[#006065] dark:border-border/30', icon: CheckCircle2 },
+  completed: { label: 'Done', color: 'text-[#00beac]', bg: 'bg-[#006065] dark:bg-[#131A2C]/10 border-[#006065] dark:border-border/30', icon: CheckCircle2 },
   overdue: { label: 'Overdue', color: 'text-red-400', bg: 'bg-red-500/10 border-red-500/30', icon: AlertTriangle },
   at_risk: { label: 'At Risk', color: 'text-amber-400', bg: 'bg-amber-500/10 border-amber-500/30', icon: Flag },
 };
@@ -77,7 +77,7 @@ function CommitmentCard({ commitment, onStatusChange }) {
             <button
               onClick={() => markStatus('completed')}
               disabled={updating}
-              className="w-7 h-7 rounded-lg bg-[#006065] dark:bg-[#053639]/10 border border-[#006065] dark:border-border/20 flex items-center justify-center text-[#00beac] hover:bg-[#006065] dark:bg-[#053639]/20 transition-colors"
+              className="w-7 h-7 rounded-lg bg-[#006065] dark:bg-[#131A2C]/10 border border-[#006065] dark:border-border/20 flex items-center justify-center text-[#00beac] hover:bg-[#006065] dark:bg-[#131A2C]/20 transition-colors"
               title="Mark complete"
             >
               <Check className="w-3.5 h-3.5" />
@@ -257,7 +257,7 @@ Respond in valid JSON only:
           <div className="flex items-start justify-between flex-wrap gap-3">
             <div>
               <h1 className="text-2xl font-black text-foreground">Commitment Intelligence</h1>
-              <p className="text-sm text-muted-foreground mt-1">AI-powered accountability layer — every promise tracked, every drop-ball surfaced.</p>
+              <p className="text-sm text-muted-foreground mt-1">AI-powered accountability layer â€” every promise tracked, every drop-ball surfaced.</p>
             </div>
             <button
               onClick={runOrgInsight}
@@ -303,10 +303,10 @@ Respond in valid JSON only:
                   <span className="text-xs font-bold text-violet-300 uppercase tracking-wider">Orbit AI Health Analysis</span>
                   {aiInsight.velocity_trend && (
                     <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
-                      aiInsight.velocity_trend === 'improving' ? 'bg-[#006065] dark:bg-[#053639]/10 text-[#00beac]' :
+                      aiInsight.velocity_trend === 'improving' ? 'bg-[#006065] dark:bg-[#131A2C]/10 text-[#00beac]' :
                       aiInsight.velocity_trend === 'declining' ? 'bg-red-500/10 text-red-400' : 'bg-transparent0/10 text-white/60'
                     }`}>
-                      {aiInsight.velocity_trend === 'improving' ? 'â†‘' : aiInsight.velocity_trend === 'declining' ? 'â†“' : '→'} {aiInsight.velocity_trend}
+                      {aiInsight.velocity_trend === 'improving' ? 'â†‘' : aiInsight.velocity_trend === 'declining' ? 'â†“' : 'â†’'} {aiInsight.velocity_trend}
                     </span>
                   )}
                 </div>

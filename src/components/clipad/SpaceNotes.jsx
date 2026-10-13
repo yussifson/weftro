@@ -84,7 +84,7 @@ export default function SpaceNotes({ spaceId, workspaceId }) {
       </div>
       
       {/* Editor Content Area */}
-      <div className="p-4 md:p-6 overflow-y-auto max-h-[600px] bg-white dark:bg-[#022628]">
+      <div className="p-4 md:p-6 overflow-y-auto max-h-[600px] bg-white dark:bg-[#0B1121]">
         <EditorContent editor={editor} />
       </div>
     </div>

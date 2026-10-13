@@ -38,7 +38,7 @@ export default function ClipadMobileNav({ isMarketing = false, forceMobile = fal
     <>
       {/* Native Fixed Bottom Nav Bar */}
       <nav className={cn(
-        "fixed bottom-0 left-0 right-0 z-40 bg-[#006065] dark:bg-[#011d1e] border-t border-white/10",
+        "fixed bottom-0 left-0 right-0 z-40 bg-[#006065] dark:bg-[#0D1626] border-t border-white/10",
         "pb-[env(safe-area-inset-bottom,0px)]",
         forceMobile ? "flex" : "md:hidden"
       )}>
@@ -114,7 +114,7 @@ export default function ClipadMobileNav({ isMarketing = false, forceMobile = fal
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 10 }}
               transition={{ type: "spring", damping: 25, stiffness: 400 }}
-              className="lg:hidden fixed bottom-[72px] right-4 z-[60] w-[260px] overflow-hidden rounded-[20px] bg-[#006065] dark:bg-[#011d1e] shadow-[0_16px_40px_-8px_rgba(0,0,0,0.4)] border border-white/10"
+              className="lg:hidden fixed bottom-[72px] right-4 z-[60] w-[260px] overflow-hidden rounded-[20px] bg-[#006065] dark:bg-[#0D1626] shadow-[0_16px_40px_-8px_rgba(0,0,0,0.4)] border border-white/10"
               onClick={(e) => e.stopPropagation()}
             >
               {/* User Info */}

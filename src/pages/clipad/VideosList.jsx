@@ -116,7 +116,7 @@ export default function VideosList() {
           </div>
           <button
             onClick={() => navigate('/record')}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#006065] dark:bg-[#053639] hover:bg-[#004e52] text-[#fad503] font-bold text-sm shadow-md shadow-md shadow-[#006065]/20 transition-all shrink-0 active:scale-95"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004e52] text-[#fad503] font-bold text-sm shadow-md shadow-md shadow-[#006065]/20 transition-all shrink-0 active:scale-95"
           >
             <Video className="w-4 h-4" />
             Record Video
@@ -137,7 +137,7 @@ export default function VideosList() {
 
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {[1,2,3,4,5,6].map(i => <div key={i} className="aspect-video rounded-2xl bg-[#006065] dark:bg-[#053639] text-white dark:bg-card animate-pulse border border-white/15 dark:border-white/15" />)}
+            {[1,2,3,4,5,6].map(i => <div key={i} className="aspect-video rounded-2xl bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-card animate-pulse border border-white/15 dark:border-white/15" />)}
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-24 border border-dashed border-slate-200 dark:border-border rounded-3xl bg-white dark:bg-card">

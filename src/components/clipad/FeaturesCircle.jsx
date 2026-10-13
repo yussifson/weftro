@@ -15,7 +15,7 @@ const pillars = [
     icon: Camera,
     color: 'from-green-500 to-emerald-500',
     glow: 'shadow-green-500/20',
-    bg: 'bg-[#006065] dark:bg-[#053639]/10 dark:bg-emerald-900/10',
+    bg: 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-emerald-900/10',
     title: 'Async Video Messages',
     desc: 'Record camera, screen, or both in picture-in-picture. Share an instant link. Viewers leave timestamped comments and emoji reactions.'
   },
@@ -25,7 +25,7 @@ const pillars = [
     glow: 'shadow-yellow-500/20',
     bg: 'bg-amber-50 dark:bg-amber-900/10',
     title: 'AI Intelligence',
-    desc: 'Every meeting produces a full summary, key decisions, extracted action items with owners, open questions, and sentiment — instantly.'
+    desc: 'Every meeting produces a full summary, key decisions, extracted action items with owners, open questions, and sentiment â€” instantly.'
   },
   {
     icon: Layers,

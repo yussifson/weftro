@@ -292,7 +292,7 @@ export default function KnowledgeHealth() {
                   });
                   
                   if (error) throw error;
-                  toast.success("Detailed Health Report generated and sent to your email!", { duration: 5000, icon: '📊' });
+                  toast.success("Detailed Health Report generated and sent to your email!", { duration: 5000, icon: 'ðŸ“Š' });
                 } catch (err) {
                   console.error(err);
                   toast.error("Failed to send report. Please try again later.");
@@ -361,7 +361,7 @@ export default function KnowledgeHealth() {
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {risks.map((risk, idx) => (
-              <div key={idx} className="p-5 rounded-2xl bg-[#006065] dark:bg-[#053639] text-white dark:bg-card border border-rose-200 dark:border-rose-900/50 shadow-sm flex flex-col gap-3 hover:border-rose-300 transition-colors relative overflow-hidden">
+              <div key={idx} className="p-5 rounded-2xl bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-card border border-rose-200 dark:border-rose-900/50 shadow-sm flex flex-col gap-3 hover:border-rose-300 transition-colors relative overflow-hidden">
                 <div className={`absolute top-0 left-0 right-0 h-1 ${risk.severity === 'critical' ? 'bg-rose-600' : risk.severity === 'high' ? 'bg-rose-500' : 'bg-orange-400'}`} />
                 <div className="flex items-center gap-3">
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${risk.severity === 'critical' ? 'bg-rose-100 text-rose-700' : 'bg-orange-50 text-orange-600'}`}>

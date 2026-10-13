@@ -371,7 +371,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode}) {
 };
 
  return (
- <div className="flex flex-col h-full bg-slate-50 dark:bg-[#022628] rounded-xl overflow-hidden relative border-[0.5px] border-black/9 dark:border-white/8 border-primary/40 group">
+ <div className="flex flex-col h-full bg-slate-50 dark:bg-[#0B1121] rounded-xl overflow-hidden relative border-[0.5px] border-black/9 dark:border-white/8 border-primary/40 group">
   {/* Realistic Background Layers */}
   <div className="absolute inset-0 pointer-events-none z-0">
     <div className="absolute -top-[20%] -left-[10%] w-[70vw] h-[70vw] rounded-full bg-primary/5 dark:bg-primary/10 blur-[120px]" />

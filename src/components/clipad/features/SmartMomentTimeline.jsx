@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
 import { getSmartMoments, confirmSmartMoment, dismissSmartMoment, updateSmartMoment, convertMomentToMemory, MOMENT_TYPES, MOMENT_STATUS } from '@/lib/clipadSmartMomentService';
 import { extractSmartMomentsFromTranscript } from '@/lib/clipadTranscriptIntelligence';
 import { Zap, CheckCircle2, XCircle, Edit3, Clock, Sparkles, AlertCircle, ArrowUpRight, Play, RefreshCw, Check, Shield, Brain, Plus } from 'lucide-react';
@@ -326,135 +325,116 @@ export default function SmartMomentTimeline({ companyId, meetingId, videoId, tra
       )}
 
       {/* Manual Add Moment Modal */}
-      {showManualAdd && createPortal(
-        <div 
-          className="fixed inset-0 z-[9999] bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
-          onClick={(e) => { if (e.target === e.currentTarget) setShowManualAdd(false); }}
-        >
-          <div className="relative w-full max-w-lg my-auto">
-            <form onSubmit={handleCreateManualMoment} className="bg-white dark:bg-card rounded-3xl w-full p-6 sm:p-8 border border-slate-200 dark:border-border shadow-2xl space-y-5 animate-in fade-in zoom-in-95">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-border">
-                <h4 className="text-base font-bold text-slate-900 dark:text-foreground flex items-center gap-2">
-                  <Plus className="w-5 h-5 text-[#006065] dark:text-[#fad503]" /> Add Smart Moment
-                </h4>
-                <button type="button" onClick={() => setShowManualAdd(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-sm p-1">✕</button>
-              </div>
+      {showManualAdd && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <form onSubmit={handleCreateManualMoment} className="bg-white dark:bg-card rounded-2xl max-w-md w-full p-6 border border-slate-200 dark:border-border shadow-2xl space-y-4">
+            <h4 className="text-base font-bold text-slate-900 dark:text-foreground flex items-center gap-2">
+              <Plus className="w-4 h-4 text-[#006065] dark:text-[#fad503]" /> Add Smart Moment
+            </h4>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-muted-foreground mb-1">Moment Type</label>
-                <select
-                  value={manualType}
-                  onChange={e => setManualType(e.target.value)}
-                  className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-border bg-slate-50 dark:bg-background text-slate-900 dark:text-foreground focus:outline-none focus:ring-2 focus:ring-[#006065]"
-                >
-                  <option value={MOMENT_TYPES.DECISION}>Decision</option>
-                  <option value={MOMENT_TYPES.ACTION}>Action Item</option>
-                  <option value={MOMENT_TYPES.COMMITMENT}>Commitment</option>
-                  <option value={MOMENT_TYPES.RISK}>Risk / Blocker</option>
-                  <option value={MOMENT_TYPES.QUESTION}>Key Question</option>
-                  <option value={MOMENT_TYPES.TOPIC}>Key Topic</option>
-                </select>
-              </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-muted-foreground mb-1">Moment Type</label>
+              <select
+                value={manualType}
+                onChange={e => setManualType(e.target.value)}
+                className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-border bg-slate-50 dark:bg-background text-slate-900 dark:text-foreground focus:outline-none focus:ring-2 focus:ring-[#006065]"
+              >
+                <option value={MOMENT_TYPES.DECISION}>Decision</option>
+                <option value={MOMENT_TYPES.ACTION}>Action Item</option>
+                <option value={MOMENT_TYPES.COMMITMENT}>Commitment</option>
+                <option value={MOMENT_TYPES.RISK}>Risk / Blocker</option>
+                <option value={MOMENT_TYPES.QUESTION}>Key Question</option>
+                <option value={MOMENT_TYPES.TOPIC}>Key Topic</option>
+              </select>
+            </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-muted-foreground mb-1">Title *</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Migrating to Supabase Auth"
-                  value={manualTitle}
-                  onChange={e => setManualTitle(e.target.value)}
-                  className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-border bg-slate-50 dark:bg-background text-slate-900 dark:text-foreground focus:outline-none focus:ring-2 focus:ring-[#006065]"
-                  required
-                />
-              </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-muted-foreground mb-1">Title</label>
+              <input
+                type="text"
+                placeholder="e.g. Migrating to Supabase Auth"
+                value={manualTitle}
+                onChange={e => setManualTitle(e.target.value)}
+                className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-border bg-slate-50 dark:bg-background text-slate-900 dark:text-foreground focus:outline-none focus:ring-2 focus:ring-[#006065]"
+                required
+              />
+            </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-muted-foreground mb-1">Context / Details</label>
-                <textarea
-                  placeholder="Details of the discussion, rationale, or owners..."
-                  value={manualDesc}
-                  onChange={e => setManualDesc(e.target.value)}
-                  rows={4}
-                  className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-border bg-slate-50 dark:bg-background text-slate-900 dark:text-foreground focus:outline-none focus:ring-2 focus:ring-[#006065] resize-none"
-                />
-              </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-muted-foreground mb-1">Context / Details</label>
+              <textarea
+                placeholder="Details of the discussion, rationale, or owners..."
+                value={manualDesc}
+                onChange={e => setManualDesc(e.target.value)}
+                rows={3}
+                className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-border bg-slate-50 dark:bg-background text-slate-900 dark:text-foreground focus:outline-none focus:ring-2 focus:ring-[#006065]"
+              />
+            </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-border">
-                <button
-                  type="button"
-                  onClick={() => setShowManualAdd(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-medium text-slate-500 hover:bg-slate-100 dark:hover:bg-accent"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 bg-[#006065] text-white rounded-xl text-xs font-bold hover:bg-[#004e52] shadow-sm transition-all"
-                >
-                  Save Moment
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>,
-        document.body
+            <div className="flex items-center justify-end gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowManualAdd(false)}
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 dark:text-muted-foreground hover:bg-slate-100 dark:bg-secondary"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-1.5 bg-[#006065] text-white rounded-lg text-xs font-bold hover:bg-[#004e52] shadow-sm"
+              >
+                Save Moment
+              </button>
+            </div>
+          </form>
+        </div>
       )}
 
       {/* Edit Moment Modal */}
-      {editingMoment && createPortal(
-        <div 
-          className="fixed inset-0 z-[9999] bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
-          onClick={(e) => { if (e.target === e.currentTarget) setEditingMoment(null); }}
-        >
-          <div className="relative w-full max-w-lg my-auto">
-            <form onSubmit={handleSaveEdit} className="bg-white dark:bg-card rounded-3xl w-full p-6 sm:p-8 border border-slate-200 dark:border-border shadow-2xl space-y-5 animate-in fade-in zoom-in-95">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-border">
-                <h4 className="text-base font-bold text-slate-900 dark:text-foreground flex items-center gap-2">
-                  <Edit3 className="w-5 h-5 text-[#006065] dark:text-[#fad503]" /> Edit Smart Moment
-                </h4>
-                <button type="button" onClick={() => setEditingMoment(null)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-sm p-1">✕</button>
-              </div>
+      {editingMoment && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <form onSubmit={handleSaveEdit} className="bg-white dark:bg-card rounded-2xl max-w-md w-full p-6 border border-slate-200 dark:border-border shadow-2xl space-y-4">
+            <h4 className="text-base font-bold text-slate-900 dark:text-foreground flex items-center gap-2">
+              <Edit3 className="w-4 h-4 text-cyan-500" /> Edit Smart Moment
+            </h4>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-muted-foreground mb-1">Title *</label>
-                <input
-                  type="text"
-                  value={editTitle}
-                  onChange={e => setEditTitle(e.target.value)}
-                  className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-border bg-slate-50 dark:bg-background text-slate-900 dark:text-foreground focus:outline-none focus:ring-2 focus:ring-[#006065]"
-                  required
-                />
-              </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-muted-foreground mb-1">Title</label>
+              <input
+                type="text"
+                value={editTitle}
+                onChange={e => setEditTitle(e.target.value)}
+                className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-border bg-slate-50 dark:bg-background focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              />
+            </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-muted-foreground mb-1">Description / Context</label>
-                <textarea
-                  value={editDesc}
-                  onChange={e => setEditDesc(e.target.value)}
-                  rows={4}
-                  className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-border bg-slate-50 dark:bg-background text-slate-900 dark:text-foreground focus:outline-none focus:ring-2 focus:ring-[#006065] resize-none"
-                />
-              </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-muted-foreground mb-1">Description / Context</label>
+              <textarea
+                value={editDesc}
+                onChange={e => setEditDesc(e.target.value)}
+                rows={3}
+                className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-border bg-slate-50 dark:bg-background focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              />
+            </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-border">
-                <button
-                  type="button"
-                  onClick={() => setEditingMoment(null)}
-                  className="px-4 py-2 rounded-xl text-xs font-medium text-slate-500 hover:bg-slate-100 dark:hover:bg-accent"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 bg-[#006065] text-white rounded-xl text-xs font-bold hover:bg-[#004e52] shadow-sm transition-all"
-                >
-                  Save Changes
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>,
-        document.body
+            <div className="flex items-center justify-end gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setEditingMoment(null)}
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 dark:text-muted-foreground hover:bg-slate-100 dark:bg-secondary"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-1.5 bg-cyan-500 text-white rounded-lg text-xs font-semibold hover:bg-cyan-600 shadow-sm"
+              >
+                Save Changes
+              </button>
+            </div>
+          </form>
+        </div>
       )}
     </div>
   );

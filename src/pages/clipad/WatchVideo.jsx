@@ -13,7 +13,7 @@ import { Download } from 'lucide-react';
 import DictationButton from '@/components/ui/DictationButton';
 import LockWall from '@/components/clipad/LockWall';
 
-const EMOJIS = ['ðŸ‘','ï¸','🔥','😂','🎉','ðŸ¤¯'];
+const EMOJIS = ['ðŸ‘','â¤ï¸','ðŸ”¥','ðŸ˜‚','ðŸŽ‰','ðŸ¤¯'];
 
 function formatTime(s) {
   if (!s && s !== 0) return '0:00';
@@ -696,7 +696,7 @@ return <LockWall type={accessDenied.type} unlockAt={accessDenied.unlockAt || nul
                               <div className="w-5 h-5 rounded-full border-2 border-white/20 dark:border-white/15 shrink-0" />
                               <div className="flex-1 min-w-0">
                                 <p className="text-sm text-white dark:text-foreground font-medium">{a.task}</p>
-                                <p className="text-xs text-slate-500 dark:text-muted-foreground mt-0.5">Assignee: {a.assignee} {a.deadline && `• Due: ${a.deadline}`}</p>
+                                <p className="text-xs text-slate-500 dark:text-muted-foreground mt-0.5">Assignee: {a.assignee} {a.deadline && `â€¢ Due: ${a.deadline}`}</p>
                               </div>
                             </div>
                           ))}
@@ -732,12 +732,12 @@ return <LockWall type={accessDenied.type} unlockAt={accessDenied.unlockAt || nul
                   <input
                     value={commentText}
                     onChange={e => setCommentText(e.target.value)}
-                    placeholder={`Comment at ${formatTime(currentTime)}…`}
+                    placeholder={`Comment at ${formatTime(currentTime)}â€¦`}
                     className="w-full pl-4 pr-12 py-3 rounded-xl bg-white/95 dark:bg-[#202c33]/95 border border-black/5 dark:border-white/5 text-white dark:text-foreground text-sm placeholder-slate-400 dark:placeholder-muted-foreground focus:outline-none focus:border-primary/50 shadow-[0_2px_10px_rgba(0,0,0,0.04)] transition-all"
                   />
                   <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
                     <DictationButton onResult={txt => setCommentText(prev => (prev + ' ' + txt).trim())} isRecording={isRecording} setIsRecording={setIsRecording} />
-                    <button type="submit" disabled={submitting || !commentText.trim()} className="p-2 bg-[#006065] dark:bg-[#053639] hover:bg-[#004e52] text-white rounded-lg disabled:opacity-50 transition-colors shadow-sm">
+                    <button type="submit" disabled={submitting || !commentText.trim()} className="p-2 bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004e52] text-white rounded-lg disabled:opacity-50 transition-colors shadow-sm">
                       <Send className="w-4 h-4" />
                     </button>
                   </div>

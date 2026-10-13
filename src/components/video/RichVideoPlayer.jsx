@@ -7,7 +7,7 @@ import DictationButton from '@/components/ui/DictationButton';
 import { Download } from 'lucide-react';
 import VideoDownloadModal from '@/components/clipad/VideoDownloadModal';
 
-const EMOJIS = ['ðŸ‘', 'ðŸ‘Ž', 'ï¸', '😂', '🔥', '🎉', '💡', 'ðŸ¤”'];
+const EMOJIS = ['ðŸ‘', 'ðŸ‘Ž', 'â¤ï¸', 'ðŸ˜‚', 'ðŸ”¥', 'ðŸŽ‰', 'ðŸ’¡', 'ðŸ¤”'];
 
 function formatTime(seconds) {
   if (isNaN(seconds) || !isFinite(seconds)) return '0:00';
@@ -70,7 +70,7 @@ export default function RichVideoPlayer({ videoUrl, recordType = 'video', entity
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [chapters, setChapters] = useState([]);
   const [isGeneratingChapters, setIsGeneratingChapters] = useState(false);
-  // ── Missing refs and state declarations (critical fix) ──────────────────
+  // â”€â”€ Missing refs and state declarations (critical fix) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const videoRef = useRef(null);
   const playerRef = useRef(null);
@@ -549,7 +549,7 @@ Do not wrap in markdown or backticks.`
                   />
                   <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
                     <DictationButton onResult={txt => setCommentText(prev => (prev + ' ' + txt).trim())} isRecording={isRecording} setIsRecording={setIsRecording} />
-                    <button type="submit" disabled={submitting || !commentText.trim()} className="p-2 bg-[#006065] dark:bg-[#053639] hover:bg-[#004e52] text-white rounded-lg disabled:opacity-50 transition-colors shadow-sm">
+                    <button type="submit" disabled={submitting || !commentText.trim()} className="p-2 bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004e52] text-white rounded-lg disabled:opacity-50 transition-colors shadow-sm">
                       <Send className="w-4 h-4" />
                     </button>
                   </div>

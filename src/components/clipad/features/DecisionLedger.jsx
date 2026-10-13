@@ -130,7 +130,7 @@ export default function DecisionLedger({ workspaceId, spaceId, hasFullIntelligen
   // Use teamColor for the active badge, defaulting to emerald if none provided
   const badgeColorClass = teamColor 
     ? `bg-gradient-to-br ${teamColor} text-white border-transparent` 
-    : 'bg-[#006065] dark:bg-[#053639]/20 dark:bg-emerald-400/10 text-[#004e52] dark:text-[#00beac] border-emerald-200 dark:border-transparent';
+    : 'bg-[#006065] dark:bg-[#131A2C]/20 dark:bg-emerald-400/10 text-[#004e52] dark:text-[#00beac] border-emerald-200 dark:border-transparent';
 
   return (
     <div className="space-y-6">

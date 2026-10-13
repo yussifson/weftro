@@ -24,7 +24,7 @@ function StatCard({ icon: Icon, color, value, label, trend }) {
           <Icon className="w-6 h-6" />
         </div>
         {trend !== undefined && trend !== null && (
-          <span className={`text-xs font-bold px-2.5 py-1 rounded-full border ${trend > 0 ? 'text-[#006065] bg-[#006065] dark:bg-[#053639]/10 border-emerald-100 dark:text-[#00beac] dark:bg-card dark:border-border/20' : trend < 0 ? 'text-red-600 bg-red-50 border-red-100 dark:text-red-400 dark:bg-red-500/10 dark:border-red-500/20' : 'text-slate-500 dark:text-muted-foreground bg-slate-100 dark:bg-secondary border-slate-200 dark:bg-slate-800 dark:border-border dark:text-muted-foreground'}`}>
+          <span className={`text-xs font-bold px-2.5 py-1 rounded-full border ${trend > 0 ? 'text-[#006065] bg-[#006065] dark:bg-[#131A2C]/10 border-emerald-100 dark:text-[#00beac] dark:bg-card dark:border-border/20' : trend < 0 ? 'text-red-600 bg-red-50 border-red-100 dark:text-red-400 dark:bg-red-500/10 dark:border-red-500/20' : 'text-slate-500 dark:text-muted-foreground bg-slate-100 dark:bg-secondary border-slate-200 dark:bg-slate-800 dark:border-border dark:text-muted-foreground'}`}>
             {trend > 0 ? '+' : ''}{trend}%
           </span>
         )}
@@ -297,7 +297,7 @@ export default function VideoAnalytics() {
                 </div>
               </div>
               
-              <div className="p-6 rounded-3xl bg-[#006065] dark:bg-[#053639] text-white shadow-sm flex flex-col justify-between">
+              <div className="p-6 rounded-3xl bg-[#006065] dark:bg-[#131A2C] text-white shadow-sm flex flex-col justify-between">
                 <div>
                   <h3 className="text-lg font-bold mb-2 opacity-90">Engagement Score</h3>
                   <p className="text-sm opacity-80 mb-6">Based on completion rates and interactions</p>
@@ -324,9 +324,9 @@ export default function VideoAnalytics() {
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 relative z-10 gap-4">
                 <h3 className="text-xl font-bold flex items-center gap-2"><Video className="w-5 h-5 text-primary" /> Video Performance</h3>
                 <div className="flex overflow-x-auto no-scrollbar bg-slate-100 dark:bg-slate-800 p-1 rounded-xl w-full sm:w-auto shadow-inner">
-                  <button onClick={() => setVideoFilter('top')} className={`whitespace-nowrap flex-1 sm:flex-none px-5 py-1.5 text-sm font-semibold rounded-lg transition-all active:scale-95 ${videoFilter === 'top' ? 'bg-[#006065] dark:bg-[#053639] text-white dark:bg-slate-700 text-slate-900 dark:text-foreground shadow-sm' : 'text-slate-500 dark:text-muted-foreground hover:text-slate-900 dark:text-muted-foreground dark:hover:text-slate-200'}`}>Top 5</button>
-                  <button onClick={() => setVideoFilter('latest')} className={`whitespace-nowrap flex-1 sm:flex-none px-5 py-1.5 text-sm font-semibold rounded-lg transition-all active:scale-95 ${videoFilter === 'latest' ? 'bg-[#006065] dark:bg-[#053639] text-white dark:bg-slate-700 text-slate-900 dark:text-foreground shadow-sm' : 'text-slate-500 dark:text-muted-foreground hover:text-slate-900 dark:text-muted-foreground dark:hover:text-slate-200'}`}>Latest</button>
-                  <button onClick={() => setVideoFilter('all')} className={`whitespace-nowrap flex-1 sm:flex-none px-5 py-1.5 text-sm font-semibold rounded-lg transition-all active:scale-95 ${videoFilter === 'all' ? 'bg-[#006065] dark:bg-[#053639] text-white dark:bg-slate-700 text-slate-900 dark:text-foreground shadow-sm' : 'text-slate-500 dark:text-muted-foreground hover:text-slate-900 dark:text-muted-foreground dark:hover:text-slate-200'}`}>All Videos</button>
+                  <button onClick={() => setVideoFilter('top')} className={`whitespace-nowrap flex-1 sm:flex-none px-5 py-1.5 text-sm font-semibold rounded-lg transition-all active:scale-95 ${videoFilter === 'top' ? 'bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-slate-700 text-slate-900 dark:text-foreground shadow-sm' : 'text-slate-500 dark:text-muted-foreground hover:text-slate-900 dark:text-muted-foreground dark:hover:text-slate-200'}`}>Top 5</button>
+                  <button onClick={() => setVideoFilter('latest')} className={`whitespace-nowrap flex-1 sm:flex-none px-5 py-1.5 text-sm font-semibold rounded-lg transition-all active:scale-95 ${videoFilter === 'latest' ? 'bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-slate-700 text-slate-900 dark:text-foreground shadow-sm' : 'text-slate-500 dark:text-muted-foreground hover:text-slate-900 dark:text-muted-foreground dark:hover:text-slate-200'}`}>Latest</button>
+                  <button onClick={() => setVideoFilter('all')} className={`whitespace-nowrap flex-1 sm:flex-none px-5 py-1.5 text-sm font-semibold rounded-lg transition-all active:scale-95 ${videoFilter === 'all' ? 'bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-slate-700 text-slate-900 dark:text-foreground shadow-sm' : 'text-slate-500 dark:text-muted-foreground hover:text-slate-900 dark:text-muted-foreground dark:hover:text-slate-200'}`}>All Videos</button>
                 </div>
               </div>
               
@@ -344,7 +344,7 @@ export default function VideoAnalytics() {
                   <div className="space-y-4 relative z-10">
                     {displayVideos.map((v, i) => (
                       <div key={v.id} className="flex items-center gap-4 p-5 rounded-2xl bg-white dark:bg-card hover:bg-slate-50 dark:bg-background text-slate-900 dark:text-foreground dark:hover:bg-accent/80 backdrop-blur-md transition-all duration-300 border border-slate-200 dark:border-border hover:border-primary/30 cursor-pointer shadow-sm hover:shadow-md hover:-translate-y-1 group" onClick={() => setSelectedVideo(v)}>
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm shrink-0 transition-colors ${i === 0 && videoFilter === 'top' ? 'bg-[#fad503]/20 text-[#006065] dark:text-[#fad503]' : i === 1 && videoFilter === 'top' ? 'bg-slate-100 dark:bg-secondary text-slate-600 dark:bg-slate-700 dark:text-muted-foreground' : i === 2 && videoFilter === 'top' ? 'bg-[#006065] dark:bg-[#053639]/10 text-[#006065] dark:text-[#fad503]' : 'bg-slate-50 dark:bg-background text-slate-500 dark:bg-slate-800 dark:text-muted-foreground'}`}>
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm shrink-0 transition-colors ${i === 0 && videoFilter === 'top' ? 'bg-[#fad503]/20 text-[#006065] dark:text-[#fad503]' : i === 1 && videoFilter === 'top' ? 'bg-slate-100 dark:bg-secondary text-slate-600 dark:bg-slate-700 dark:text-muted-foreground' : i === 2 && videoFilter === 'top' ? 'bg-[#006065] dark:bg-[#131A2C]/10 text-[#006065] dark:text-[#fad503]' : 'bg-slate-50 dark:bg-background text-slate-500 dark:bg-slate-800 dark:text-muted-foreground'}`}>
                           {videoFilter === 'top' ? `#${i + 1}` : <Video className="w-4 h-4" />}
                         </div>
                       <div className="flex-1 min-w-0">
@@ -410,7 +410,7 @@ export default function VideoAnalytics() {
                 </p>
                 <button 
                   onClick={() => navigate('/clipad/billing')}
-                  className="relative z-10 px-6 py-2.5 rounded-full bg-[#006065] dark:bg-[#053639] hover:bg-[#004e52] text-[#fad503] font-bold text-sm shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all"
+                  className="relative z-10 px-6 py-2.5 rounded-full bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004e52] text-[#fad503] font-bold text-sm shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all"
                 >
                   Upgrade to Pro
                 </button>
@@ -421,7 +421,7 @@ export default function VideoAnalytics() {
 
         {/* Viewer Modal */}
         {selectedVideo && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#006065] dark:bg-[#053639]/50 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#006065] dark:bg-[#131A2C]/50 backdrop-blur-sm animate-in fade-in duration-200">
             <div className="bg-white dark:bg-card text-slate-900 dark:text-foreground rounded-3xl max-w-md w-full shadow-2xl border border-slate-200 dark:border-border overflow-hidden flex flex-col max-h-[80vh]">
               <div className="p-6 border-b border-slate-200 dark:border-border flex items-center justify-between shrink-0">
                 <div>

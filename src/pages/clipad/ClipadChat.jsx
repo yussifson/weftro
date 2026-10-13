@@ -487,7 +487,7 @@ export default function ClipadChat({ isDockedMode = false }) {
  <div className="flex-1 flex items-center gap-3 min-w-0 cursor-pointer" onClick={() => setActiveRoomId(room.id)}>
  <div className="relative flex-shrink-0" title={isSidebarCollapsed ? roomName : undefined}>
  {room.room_type === "group" ? (
- <div className={cn("w-12 h-12 rounded-full flex items-center justify-center overflow-hidden", isActive ? "bg-[#006065] dark:bg-[#053639] text-white" : "bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-muted-foreground")}>
+ <div className={cn("w-12 h-12 rounded-full flex items-center justify-center overflow-hidden", isActive ? "bg-[#006065] dark:bg-[#131A2C] text-white" : "bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-muted-foreground")}>
  <Users className="w-6 h-6" />
  </div>
  ) : (
@@ -750,7 +750,7 @@ export default function ClipadChat({ isDockedMode = false }) {
  <div className={cn(
  "relative px-4 py-2.5 text-[14.5px] leading-relaxed rounded-2xl shadow-sm",
  isMe 
- ? "bg-[#006065] dark:bg-[#053639] text-white font-medium rounded-br-sm shadow-[0_2px_10px_rgba(0,96,101,0.2)]" 
+ ? "bg-[#006065] dark:bg-[#131A2C] text-white font-medium rounded-br-sm shadow-[0_2px_10px_rgba(0,96,101,0.2)]" 
  : "bg-white dark:bg-card text-slate-900 dark:text-foreground border border-slate-200 dark:border-border rounded-bl-sm"
  )}>
  {msg.reply_to_id && (
@@ -818,7 +818,7 @@ export default function ClipadChat({ isDockedMode = false }) {
  <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="p-0.5 bg-white/70 dark:bg-background/80 hover:bg-[#006065] dark:bg-[#053639] text-white dark:bg-black/40 dark:hover:bg-black/80 rounded-full text-slate-500 dark:text-muted-foreground dark:text-foreground backdrop-blur-sm shadow-sm transition-all" title="Message Options">
+        <button className="p-0.5 bg-white/70 dark:bg-background/80 hover:bg-[#006065] dark:bg-[#131A2C] text-white dark:bg-black/40 dark:hover:bg-black/80 rounded-full text-slate-500 dark:text-muted-foreground dark:text-foreground backdrop-blur-sm shadow-sm transition-all" title="Message Options">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </button>
       </DropdownMenuTrigger>
@@ -922,7 +922,7 @@ export default function ClipadChat({ isDockedMode = false }) {
  onClick={handleSend}
  disabled={!inputValue.trim()}
  size="icon" 
- className="w-11 h-11 rounded-full bg-[#006065] dark:bg-[#053639] text-white hover:bg-[#004e52] shrink-0 shadow-lg transition-all hover:scale-105 active:scale-95 flex items-center justify-center"
+ className="w-11 h-11 rounded-full bg-[#006065] dark:bg-[#131A2C] text-white hover:bg-[#004e52] shrink-0 shadow-lg transition-all hover:scale-105 active:scale-95 flex items-center justify-center"
  >
  <Send className="w-4 h-4 ml-0.5" />
  </Button>
