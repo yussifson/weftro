@@ -15,7 +15,7 @@ import {
  useActiveSpeakerId,
  useWaitingParticipants
 } from '@daily-co/daily-react';
-import { Home, ArrowLeft, Mic, MicOff, Video as VideoIcon, VideoOff, PhoneOff, MonitorUp, Sparkles, ExternalLink, MessageSquare, Send, UserPlus, Mail, Settings, Smile, PanelRightClose, PenTool, MoreHorizontal, Wifi, WifiOff, Users, Shield, Lock, Copy, Check } from 'lucide-react';
+import { Home, ArrowLeft, Mic, MicOff, Video as VideoIcon, VideoOff, PhoneOff, MonitorUp, Sparkles, ExternalLink, MessageSquare, Send, UserPlus, Mail, Settings, Smile, PanelRightClose, PenTool, MoreHorizontal, Wifi, WifiOff, Users, Shield, Lock, Copy, Check, Sun, Moon } from 'lucide-react';
 import { Button} from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -93,6 +93,13 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
  const [isInviteLoading, setIsInviteLoading] = useState(false);
  const [copiedLink, setCopiedLink] = useState(false);
  const { theme, changeTheme } = useTheme();
+
+  // Default meeting interface to dark theme on enter
+  useEffect(() => {
+    if (theme !== 'dark') {
+      changeTheme('dark');
+    }
+  }, []);
  const [showEmojis, setShowEmojis] = useState(false);
  const [floatingEmojis, setFloatingEmojis] = useState([]);
   // Fix #3: Network reconnection state
@@ -753,216 +760,231 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
  <div className="relative z-10 flex-1 flex flex-row min-w-0 overflow-hidden">
 
    {/* Corporate Left Mission Control Sidebar */}
-   <aside className="w-16 sm:w-20 bg-white/90 dark:bg-[#0c141a]/95 backdrop-blur-2xl border-r border-slate-200/90 dark:border-white/10 flex flex-col items-center justify-between py-4 px-2 z-40 shrink-0 select-none shadow-lg transition-colors">
-     
-     {/* Top Section: Safe Back / Home Navigation */}
-     <div className="flex flex-col items-center gap-2 w-full pb-3 mb-1 border-b border-slate-200/80 dark:border-white/10">
-       <button
-         onClick={() => {
-           if (window.confirm("Are you sure you want to leave this meeting and return to Dashboard?")) {
-             leaveCall();
-             navigate('/dashboard');
-           }
-         }}
-         className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white border border-slate-200/80 dark:border-white/10 transition-all shadow-none hover:scale-105 active:scale-95 group"
-         title="Exit to Dashboard"
-       >
-         <Home className="w-4 h-4 text-slate-600 dark:text-slate-300 group-hover:text-[#006065] dark:group-hover:text-[#fad503] transition-colors" />
-       </button>
-     </div>
+    <aside className="w-16 sm:w-18 bg-white/95 dark:bg-[#0c141a]/95 backdrop-blur-2xl border-r border-slate-200/90 dark:border-white/10 flex flex-col items-center justify-between py-3 px-1.5 z-40 shrink-0 select-none shadow-lg transition-colors">
+      
+      {/* Top Section: Safe Back / Home Navigation */}
+      <div className="flex flex-col items-center w-full pb-2.5 shrink-0 border-b border-slate-200/80 dark:border-white/10">
+        <button
+          onClick={() => {
+            if (window.confirm("Are you sure you want to leave this meeting and return to Dashboard?")) {
+              leaveCall();
+              navigate('/dashboard');
+            }
+          }}
+          className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white border border-slate-200/80 dark:border-white/10 transition-all shadow-none hover:scale-105 active:scale-95 group"
+          title="Exit to Dashboard"
+        >
+          <Home className="w-4.5 h-4.5 text-slate-600 dark:text-slate-300 group-hover:text-[#006065] dark:group-hover:text-[#fad503] transition-colors" />
+        </button>
+      </div>
 
-     {/* Center Section: Core Mission Controls */}
-     <div className="flex flex-col items-center gap-2.5 w-full">
-       {/* Audio Toggle */}
-       <button
-         onClick={toggleAudio}
-         className={`w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center transition-all shadow-sm hover:scale-105 active:scale-95 ${
-           isMuted
-             ? 'bg-red-500 hover:bg-red-600 text-white shadow-red-500/25'
-             : 'bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-emerald-600 dark:text-emerald-400 hover:bg-slate-200 dark:hover:bg-white/10'
-         }`}
-         title={isMuted ? "Unmute Microphone" : "Mute Microphone"}
-       >
-         {isMuted ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-       </button>
+      {/* Center Section: Core Mission Controls (Flexible & scrollable so no button is ever lost) */}
+      <div className="flex-1 w-full flex flex-col items-center justify-center gap-1.5 sm:gap-2 my-1 overflow-y-auto no-scrollbar py-1">
+        {/* Audio Toggle */}
+        <button
+          onClick={toggleAudio}
+          className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-all shadow-sm hover:scale-105 active:scale-95 ${
+            isMuted
+              ? 'bg-red-500 hover:bg-red-600 text-white shadow-red-500/25'
+              : 'bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-emerald-600 dark:text-emerald-400 hover:bg-slate-200 dark:hover:bg-white/10'
+          }`}
+          title={isMuted ? "Unmute Microphone" : "Mute Microphone"}
+        >
+          {isMuted ? <MicOff className="w-4.5 h-4.5" /> : <Mic className="w-4.5 h-4.5" />}
+        </button>
 
-       {/* Video Toggle */}
-       <button
-         onClick={toggleVideo}
-         className={`w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center transition-all shadow-sm hover:scale-105 active:scale-95 ${
-           isVideoOff
-             ? 'bg-red-500 hover:bg-red-600 text-white shadow-red-500/25'
-             : 'bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-emerald-600 dark:text-emerald-400 hover:bg-slate-200 dark:hover:bg-white/10'
-         }`}
-         title={isVideoOff ? "Turn Camera On" : "Turn Camera Off"}
-       >
-         {isVideoOff ? <VideoOff className="w-5 h-5" /> : <VideoIcon className="w-5 h-5" />}
-       </button>
+        {/* Video Toggle */}
+        <button
+          onClick={toggleVideo}
+          className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-all shadow-sm hover:scale-105 active:scale-95 ${
+            isVideoOff
+              ? 'bg-red-500 hover:bg-red-600 text-white shadow-red-500/25'
+              : 'bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-emerald-600 dark:text-emerald-400 hover:bg-slate-200 dark:hover:bg-white/10'
+          }`}
+          title={isVideoOff ? "Turn Camera On" : "Turn Camera Off"}
+        >
+          {isVideoOff ? <VideoOff className="w-4.5 h-4.5" /> : <VideoIcon className="w-4.5 h-4.5" />}
+        </button>
 
-       {/* Share Screen */}
-       <button
-         onClick={toggleScreenShare}
-         className={`w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center transition-all shadow-sm hover:scale-105 active:scale-95 ${
-           isSharingScreen
-             ? 'bg-[#006065] text-white shadow-[#006065]/25'
-             : 'bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
-         }`}
-         title="Share Screen"
-       >
-         <MonitorUp className="w-5 h-5" />
-       </button>
+        {/* Subtle Separator */}
+        <div className="w-5 h-px bg-slate-200/80 dark:bg-white/10 my-0.5" />
 
-       {/* Whiteboard */}
-       <button
-         onClick={() => setShowWhiteboard(!showWhiteboard)}
-         className={`w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center transition-all shadow-sm hover:scale-105 active:scale-95 ${
-           showWhiteboard
-             ? 'bg-[#006065] text-white'
-             : 'bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
-         }`}
-         title="Interactive Whiteboard"
-       >
-         <PenTool className="w-5 h-5" />
-       </button>
+        {/* Share Screen */}
+        <button
+          onClick={toggleScreenShare}
+          className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-all shadow-sm hover:scale-105 active:scale-95 ${
+            isSharingScreen
+              ? 'bg-[#006065] text-white shadow-[#006065]/25'
+              : 'bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
+          }`}
+          title="Share Screen"
+        >
+          <MonitorUp className="w-4.5 h-4.5" />
+        </button>
 
-       {/* Record Meeting */}
-       <button
-         onClick={async () => {
-           if (isRecording) {
-             if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-               mediaRecorderRef.current.stop();
-             }
-             setIsRecording(false);
-           } else {
-             try {
-               const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
-               const mr = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
-               recordedChunksRef.current = [];
-               mr.ondataavailable = (e) => { if (e.data.size > 0) recordedChunksRef.current.push(e.data); };
-               mr.onstop = () => {
-                 const blob = new Blob(recordedChunksRef.current, { type: 'video/webm' });
-                 const url = URL.createObjectURL(blob);
-                 const a = document.createElement('a');
-                 a.href = url;
-                 a.download = `meeting-${new Date().toISOString().slice(0, 10)}.webm`;
-                 a.click();
-                 stream.getTracks().forEach(t => t.stop());
-               };
-               mr.start(1000);
-               mediaRecorderRef.current = mr;
-               setIsRecording(true);
-             } catch (err) {
-               console.error('Failed to start recording:', err);
-             }
-           }
-         }}
-         className={`w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center transition-all shadow-sm hover:scale-105 active:scale-95 ${
-           isRecording
-             ? 'bg-red-500 text-white animate-pulse shadow-red-500/30'
-             : 'bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30'
-         }`}
-         title={isRecording ? "Stop Recording" : "Record Meeting"}
-       >
-         <div className={`w-3 h-3 rounded-full ${isRecording ? 'bg-white' : 'bg-red-500'}`} />
-       </button>
+        {/* Whiteboard */}
+        <button
+          onClick={() => setShowWhiteboard(!showWhiteboard)}
+          className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-all shadow-sm hover:scale-105 active:scale-95 ${
+            showWhiteboard
+              ? 'bg-[#006065] text-white'
+              : 'bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
+          }`}
+          title="Interactive Whiteboard"
+        >
+          <PenTool className="w-4.5 h-4.5" />
+        </button>
 
-       {/* Chat Button */}
-       <button
-         onClick={() => setShowChat(!showChat)}
-         className={`w-10 h-10 sm:w-11 sm:h-11 rounded-2xl relative flex items-center justify-center transition-all shadow-sm hover:scale-105 active:scale-95 ${
-           showChat
-             ? 'bg-[#006065] text-white'
-             : 'bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
-         }`}
-         title="Chat"
-       >
-         <MessageSquare className="w-5 h-5" />
-         {chatMessages.length > 0 && !showChat && (
-           <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-white dark:ring-black" />
-         )}
-       </button>
+        {/* Record Meeting */}
+        <button
+          onClick={async () => {
+            if (isRecording) {
+              if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+                mediaRecorderRef.current.stop();
+              }
+              setIsRecording(false);
+            } else {
+              try {
+                const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+                const mr = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
+                recordedChunksRef.current = [];
+                mr.ondataavailable = (e) => { if (e.data.size > 0) recordedChunksRef.current.push(e.data); };
+                mr.onstop = () => {
+                  const blob = new Blob(recordedChunksRef.current, { type: 'video/webm' });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `meeting-${new Date().toISOString().slice(0, 10)}.webm`;
+                  a.click();
+                  stream.getTracks().forEach(t => t.stop());
+                };
+                mr.start(1000);
+                mediaRecorderRef.current = mr;
+                setIsRecording(true);
+              } catch (err) {
+                console.error('Failed to start recording:', err);
+              }
+            }
+          }}
+          className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-all shadow-sm hover:scale-105 active:scale-95 ${
+            isRecording
+              ? 'bg-red-500 text-white animate-pulse shadow-red-500/30'
+              : 'bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30'
+          }`}
+          title={isRecording ? "Stop Recording" : "Record Meeting"}
+        >
+          <div className={`w-3 h-3 rounded-full ${isRecording ? 'bg-white' : 'bg-red-500'}`} />
+        </button>
 
-       {/* Invite Participants */}
-       <button
-         onClick={() => setShowInvite(true)}
-         className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10 transition-all shadow-sm hover:scale-105 active:scale-95"
-         title="Invite Participants"
-       >
-         <UserPlus className="w-5 h-5" />
-       </button>
+        {/* Subtle Separator */}
+        <div className="w-5 h-px bg-slate-200/80 dark:bg-white/10 my-0.5" />
 
-       {/* AI Notes */}
-       <button
-         onClick={handleAiAssist}
-         disabled={isAiLoading}
-         className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10 transition-all shadow-sm hover:scale-105 active:scale-95"
-         title="Generate AI Notes & Summary"
-       >
-         <Sparkles className="w-5 h-5 text-[#fad503]" />
-       </button>
+        {/* Chat Button */}
+        <button
+          onClick={() => setShowChat(!showChat)}
+          className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl relative flex items-center justify-center transition-all shadow-sm hover:scale-105 active:scale-95 ${
+            showChat
+              ? 'bg-[#006065] text-white'
+              : 'bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
+          }`}
+          title="Chat"
+        >
+          <MessageSquare className="w-4.5 h-4.5" />
+          {chatMessages.length > 0 && !showChat && (
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-white dark:ring-black" />
+          )}
+        </button>
 
-       {/* Settings */}
-       <button
-         onClick={() => setShowSettings(true)}
-         className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10 transition-all shadow-sm hover:scale-105 active:scale-95"
-         title="Settings"
-       >
-         <Settings className="w-5 h-5" />
-       </button>
-     </div>
+        {/* Invite Participants */}
+        <button
+          onClick={() => setShowInvite(true)}
+          className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10 transition-all shadow-sm hover:scale-105 active:scale-95"
+          title="Invite Participants"
+        >
+          <UserPlus className="w-4.5 h-4.5" />
+        </button>
 
-     {/* Bottom Section: Red Leave Call */}
-     <div className="flex flex-col items-center w-full gap-2">
-       <button
-         onClick={leaveCall}
-         className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-500/25 hover:shadow-red-500/40 transition-all hover:scale-105 active:scale-95"
-         title="Leave Meeting"
-       >
-         <PhoneOff className="w-5 h-5" />
-       </button>
-     </div>
-   </aside>
+        {/* AI Notes */}
+        <button
+          onClick={handleAiAssist}
+          disabled={isAiLoading}
+          className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10 transition-all shadow-sm hover:scale-105 active:scale-95"
+          title="Generate AI Notes & Summary"
+        >
+          <Sparkles className="w-4.5 h-4.5 text-[#fad503]" />
+        </button>
+      </div>
+
+      {/* Pinned Bottom Section: Settings & Red Leave Call - ALWAYS PINNED & VISIBLE */}
+      <div className="flex flex-col items-center w-full gap-2 pt-2.5 shrink-0 border-t border-slate-200/80 dark:border-white/10">
+        {/* Settings Button */}
+        <button
+          onClick={() => setShowSettings(true)}
+          className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-slate-300 transition-all shadow-sm hover:scale-105 active:scale-95"
+          title="Meeting Settings"
+        >
+          <Settings className="w-4.5 h-4.5" />
+        </button>
+
+        {/* Leave Meeting */}
+        <button
+          onClick={leaveCall}
+          className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-red-600 hover:bg-red-700 text-white shadow-md shadow-red-500/25 hover:shadow-red-500/40 transition-all hover:scale-105 active:scale-95"
+          title="Leave Meeting"
+        >
+          <PhoneOff className="w-4.5 h-4.5" />
+        </button>
+      </div>
+    </aside>
 
    {/* Video Content Area - Takes Full Remaining Width and 100% Height */}
    <div className="flex-1 flex flex-col relative min-w-0 h-full">
 
 
 
-  {/* Floating Status & Quick Action Badges */}
-   <div className="absolute top-4 left-4 right-4 z-40 flex items-center justify-between pointer-events-none">
-     {/* Left: Meeting Status & Recording */}
-     <div className="flex items-center gap-2 pointer-events-auto">
-       {isRecording ? (
-         <div className="flex items-center gap-2.5 bg-black/75 backdrop-blur-xl border border-red-500/30 text-white px-3.5 py-1.5 rounded-full shadow-lg">
-           <span className="relative flex h-2 w-2">
-             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
-             <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
-           </span>
-           <span className="font-mono text-xs font-semibold tabular-nums text-red-400">
-             {Math.floor(recordingSeconds / 60).toString().padStart(2, '0')}:{(recordingSeconds % 60).toString().padStart(2, '0')}
-           </span>
-           <span className="text-[10px] font-bold text-red-400 uppercase tracking-wider">REC</span>
-         </div>
-       ) : (
-         <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/80 dark:bg-black/60 backdrop-blur-md border border-slate-200/80 dark:border-white/10 text-xs font-medium text-slate-700 dark:text-slate-300 shadow-sm">
-           <Lock className="w-3.5 h-3.5 text-emerald-500" />
-           <span className="font-mono font-medium">"Secure Meeting Room"</span>
-         </div>
-       )}
-     </div>
+  {/* Corporate Meeting Header Bar */}
+    <header className="h-12 px-4 sm:px-6 flex items-center justify-between border-b border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-[#0c141a]/80 backdrop-blur-xl z-30 shrink-0 transition-colors">
+      {/* Left: Recording Status (clean and distraction-free when not recording) */}
+      <div className="flex items-center gap-2.5">
+        {isRecording && (
+          <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 px-3 py-1 rounded-full text-xs font-semibold shadow-sm">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
+            </span>
+            <span className="font-mono tabular-nums text-xs font-bold">
+              {Math.floor(recordingSeconds / 60).toString().padStart(2, '0')}:{(recordingSeconds % 60).toString().padStart(2, '0')}
+            </span>
+            <span className="text-[10px] font-extrabold uppercase tracking-wider">REC</span>
+          </div>
+        )}
+      </div>
 
-           {/* Right: Copy Meeting Link Button */}
-      <div className="flex items-center gap-2 pointer-events-auto">
+      {/* Right: Premium Corporate Copy Link Button */}
+      <div className="flex items-center gap-2">
         <button
           onClick={handleCopyLink}
-          className="h-8 px-3.5 text-xs font-medium rounded-full bg-white/90 dark:bg-[#131d24]/90 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 shadow-sm flex items-center gap-1.5 transition-all hover:scale-[1.02] active:scale-[0.98]"
-          title="Copy Meeting Link"
+          className={`h-8 px-3.5 text-xs font-medium rounded-lg border shadow-sm flex items-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] ${
+            copiedLink
+              ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500/40 text-emerald-600 dark:text-emerald-400'
+              : 'bg-white hover:bg-slate-50 dark:bg-white/5 dark:hover:bg-white/10 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-white/10'
+          }`}
+          title="Copy Meeting Link to Clipboard"
         >
-          {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5 text-[#006065] dark:text-[#fad503]" />}
-          <span className="font-medium">{copiedLink ? "Copied!" : "Copy Meeting Link"}</span>
+          {copiedLink ? (
+            <>
+              <Check className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
+              <span className="font-semibold">Link Copied!</span>
+            </>
+          ) : (
+            <>
+              <Copy className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
+              <span className="font-medium">Copy Link</span>
+            </>
+          )}
         </button>
       </div>
-   </div>
+    </header>
 
   {/* Waiting Room UI */}
   {waitingIds.length > 0 && (
@@ -1009,11 +1031,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           {showWhiteboard && (
             <CanvasWhiteboard onClose={() => setShowWhiteboard(false)} />
           )}
-          {true && (
-            <div className="absolute top-6 left-6 z-40 flex items-center gap-2 opacity-80 select-none pointer-events-none bg-black/30 px-3 py-1.5 rounded-xl backdrop-blur-md border border-white/10">
-              <CliPadLogo size={18} className="text-white drop-shadow-md" />
-            </div>
-          )}
+          {/* Logo removed for clean presentation */}
           {/* Reconnecting overlay */}
           {isReconnecting && (
             <div className="absolute inset-0 z-50 bg-black/70 backdrop-blur-sm flex flex-col items-center justify-center gap-4">
@@ -1188,10 +1206,24 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
       </DialogHeader>
       <div className="flex flex-col gap-6 py-4">
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium">Theme Preference</label>
-          <div className="grid grid-cols-2 gap-4">
-            <Button variant={theme === 'light' ? 'default' : 'outline'} onClick={() => changeTheme('light')}>Light Mode</Button>
-            <Button variant={theme === 'dark' ? 'default' : 'outline'} onClick={() => changeTheme('dark')}>Dark Mode</Button>
+          <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Theme Preference</label>
+          <div className="grid grid-cols-2 gap-3">
+            <Button 
+              variant={theme === 'light' ? 'default' : 'outline'} 
+              onClick={() => changeTheme('light')}
+              className="flex items-center justify-center gap-2"
+            >
+              <Sun className="w-4 h-4" />
+              <span>Light Mode</span>
+            </Button>
+            <Button 
+              variant={theme === 'dark' ? 'default' : 'outline'} 
+              onClick={() => changeTheme('dark')}
+              className="flex items-center justify-center gap-2"
+            >
+              <Moon className="w-4 h-4" />
+              <span>Dark Mode</span>
+            </Button>
           </div>
         </div>
         <div className="flex flex-col gap-2">
