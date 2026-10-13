@@ -7,7 +7,7 @@ const PM_TOOLS = [
   { id: 'linear', name: 'Linear', color: 'bg-purple-600 text-white', icon: 'ðŸ“' },
   { id: 'clickup', name: 'ClickUp', color: 'bg-pink-600 text-white', icon: 'ðŸŽ¯' },
   { id: 'asana', name: 'Asana', color: 'bg-rose-500 text-white', icon: 'ðŸ”´' },
-  { id: 'trello', name: 'Trello', color: 'bg-sky-600 text-white', icon: 'ðŸ“Š' },
+  { id: 'trello', name: 'Trello', color: 'bg-sky-600 text-white', icon: '📊' },
 ];
 
 export default function ExportTaskModal({ isOpen, onClose, task, meetingTitle, meetingId }) {
@@ -40,7 +40,7 @@ export default function ExportTaskModal({ isOpen, onClose, task, meetingTitle, m
       <div className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-[#006065] dark:bg-[#131A2C]/10 border border-[#006065] dark:border-border/20 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-[#006065] dark:bg-[#053639]/10 border border-[#006065] dark:border-border/20 flex items-center justify-center">
               <Share2 className="w-4 h-4 text-[#006065]" />
             </div>
             <h3 className="text-base font-bold text-slate-900 dark:text-foreground">Export to PM Tool</h3>
@@ -69,7 +69,7 @@ export default function ExportTaskModal({ isOpen, onClose, task, meetingTitle, m
                 onClick={() => setSelectedTool(tool.id)}
                 className={`p-2.5 rounded-xl border flex flex-col items-center gap-1 transition-all ${
                   selectedTool === tool.id
-                    ? 'border-[#006065] dark:border-border bg-[#006065] dark:bg-[#131A2C]/10 text-[#006065] dark:text-[#00beac] font-bold scale-105'
+                    ? 'border-[#006065] dark:border-border bg-[#006065] dark:bg-[#053639]/10 text-[#006065] dark:text-[#00beac] font-bold scale-105'
                     : 'border-slate-200 dark:border-border hover:bg-slate-50 dark:hover:bg-accent text-slate-600 dark:text-muted-foreground'
                 }`}
               >
@@ -89,7 +89,7 @@ export default function ExportTaskModal({ isOpen, onClose, task, meetingTitle, m
           </button>
           <button
             onClick={handleExport}
-            className="flex-1 py-2.5 rounded-xl text-xs font-bold bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004e52] text-white shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 transition-transform active:scale-95"
+            className="flex-1 py-2.5 rounded-xl text-xs font-bold bg-[#006065] dark:bg-[#053639] hover:bg-[#004e52] text-white shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 transition-transform active:scale-95"
           >
             {exported ? <CheckCircle className="w-4 h-4" /> : <ExternalLink className="w-4 h-4" />}
             {exported ? 'Exported!' : `Export Task`}

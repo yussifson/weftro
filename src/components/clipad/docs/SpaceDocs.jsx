@@ -224,7 +224,7 @@ function DocEditor({ doc, onSave, isSaving, onBack }) {
               <span className="text-xs font-medium hidden sm:inline">Summarize</span>
             </Button>
           </div>
-          <Button size="sm" onClick={() => onSave(title, editor.getHTML())} disabled={isSaving} className="shadow-sm h-8 shrink-0 bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004e52] text-white">
+          <Button size="sm" onClick={() => onSave(title, editor.getHTML())} disabled={isSaving} className="shadow-sm h-8 shrink-0 bg-[#006065] dark:bg-[#053639] hover:bg-[#004e52] text-white">
             {isSaving ? <Loader2 className="w-4 h-4 animate-spin sm:mr-2" /> : <Save className="w-4 h-4 sm:mr-2" />}
             <span className="hidden sm:inline">Save Document</span>
           </Button>
@@ -265,7 +265,7 @@ function DocEditor({ doc, onSave, isSaving, onBack }) {
       </div>
 
       {/* Editor Area */}
-      <div className="flex-1 overflow-y-auto p-8 bg-white dark:bg-[#0B1121]">
+      <div className="flex-1 overflow-y-auto p-8 bg-white dark:bg-[#022628]">
         <EditorContent editor={editor} className="max-w-3xl mx-auto min-h-[500px]" />
       </div>
     </div>

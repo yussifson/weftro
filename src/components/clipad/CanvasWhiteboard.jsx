@@ -2,7 +2,7 @@
 import { Sparkles, Brain, Loader2, X, MousePointer2, Pen, Eraser, Minus, ArrowRight, Square, Circle, StickyNote, Type, Image as ImageIcon, Grid, ZoomIn, Undo, Redo, ChevronDown, ChevronUp } from 'lucide-react';
 import { generateText } from '@/lib/cloudflareAI';
 
-// â”€â”€ Tool definitions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Tool definitions ──────────────────────────────────────────────────────────
 const TOOLS = [
   { id: 'select',  label: 'Select',       icon: <MousePointer2 size={16} />, shortcut: 'V' },
   { id: 'pen',     label: 'Pen',          icon: <Pen size={16} />, shortcut: 'P' },
@@ -26,7 +26,7 @@ const PALETTE = [
 const stICKY_COLORS = ['#fef08a','#bbf7d0','#bfdbfe','#fecaca','#e9d5ff','#fed7aa'];
 const SIZES = [2, 4, 8, 16];
 
-// â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Helpers ───────────────────────────────────────────────────────────────────
 function getClientPos(e) {
   if (e.touches && e.touches[0]) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
   return { x: e.clientX, y: e.clientY };
@@ -64,7 +64,7 @@ function drawShape(ctx, start, end, tool, color, size) {
   }
 }
 
-// â”€â”€ Main Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Main Component ────────────────────────────────────────────────────────────
 export default function CanvasWhiteboard({ onClose }) {
   const canvasRef  = useRef(null);
   const ctxRef     = useRef(null);
@@ -159,7 +159,7 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
     }
   };
 
-  // â”€â”€ Canvas init / resize â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Canvas init / resize ────────────────────────────────────────────────────
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -182,14 +182,14 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
     return () => ro.disconnect();
   }, []);
 
-  // â”€â”€ Grid overlay â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Grid overlay ────────────────────────────────────────────────────────────
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas || !showGrid) return;
-    // grid is purely visual via CSS background on parent â€” no canvas needed
+    // grid is purely visual via CSS background on parent — no canvas needed
   }, [showGrid]);
 
-  // â”€â”€ Pointer helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Pointer helpers ─────────────────────────────────────────────────────────
   const toCanvas = useCallback((clientX, clientY) => {
     const canvas = canvasRef.current;
     const rect   = canvas.getBoundingClientRect();
@@ -215,7 +215,7 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
     ctx.lineJoin    = 'round';
   }, [color, size]);
 
-  // â”€â”€ Undo / Redo â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Undo / Redo ─────────────────────────────────────────────────────────────
   const undo = useCallback(() => {
     const canvas = canvasRef.current, ctx = ctxRef.current;
     if (!canvas || !ctx || !history.current.length) return;
@@ -254,7 +254,7 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
     link.click();
   }, []);
 
-  // â”€â”€ Image import â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Image import ────────────────────────────────────────────────────────────
   const onFileChange = useCallback((e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -277,12 +277,12 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
     e.target.value = '';
   }, [saveHistory]);
 
-  // â”€â”€ Pointer events â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Pointer events ──────────────────────────────────────────────────────────
   const onPointerDown = useCallback((e) => {
     e.preventDefault();
     const { x: cx, y: cy } = getClientPos(e);
 
-    // Middle mouse or space+drag â†’ pan
+    // Middle mouse or space+drag → pan
     if (e.button === 1 || (e.button === 0 && e.altKey)) {
       isPanning.current = true;
       lastPan.current = { x: cx, y: cy };
@@ -294,7 +294,7 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
     if (tool === 'sticky') {
       const pos = toCanvas(cx, cy);
       setstickies(prev => [...prev, { id: Date.now(), x: pos.x, y: pos.y, text: '', bg: stickyColor }]);
-      setEditsticky(Date.now()); // will not match yet â€” set after State update
+      setEditsticky(Date.now()); // will not match yet — set after State update
       return;
     }
 
@@ -399,7 +399,7 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
     snapshot.current = null;
   }, [tool, toCanvas, applyCtxstyle, pan, zoom, color, size]);
 
-  // â”€â”€ Text submit â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Text submit ─────────────────────────────────────────────────────────────
   const submitText = useCallback(() => {
     const ctx = ctxRef.current;
     if (!ctx || !textInput?.val?.trim()) { setTextInput(null); return; }
@@ -413,14 +413,14 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
     setTextInput(null);
   }, [textInput, color, size, pan, zoom]);
 
-  // â”€â”€ Zoom â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Zoom ────────────────────────────────────────────────────────────────────
   const onWheel = useCallback((e) => {
     e.preventDefault();
     const delta = e.deltaY < 0 ? 0.1 : -0.1;
     setZoom(z => Math.max(0.2, Math.min(5, z + delta)));
   }, []);
 
-  // â”€â”€ Keyboard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Keyboard ─────────────────────────────────────────────────────────────────
   useEffect(() => {
     const fn = (e) => {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
@@ -442,24 +442,24 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
 
   return (
     <div className="absolute inset-0 z-[9999] flex flex-col bg-white dark:bg-card select-none" style={{ touchAction: 'none', fontFamily: "'Inter', sans-serif" }}>
-      {/* â”€â”€ Mobile Toolbar Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Mobile Toolbar Header ────────────────────────────────────────────── */}
       <div className="flex md:hidden items-center justify-between px-3 py-2 bg-slate-50 dark:bg-background border-b border-slate-200 dark:border-border flex-shrink-0 shadow-sm relative z-[10000]">
         <button onClick={() => setShowMobileTools(!showMobileTools)} className="px-3 py-1.5 bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl text-sm font-semibold flex items-center gap-2 shadow-sm text-slate-700 dark:text-foreground">
           Tools {showMobileTools ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
         </button>
-        <button onClick={onClose} className="px-4 py-1.5 rounded-xl bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004e52] text-white text-xs font-bold shadow-sm flex items-center gap-1.5">
-          âœ• Close
+        <button onClick={onClose} className="px-4 py-1.5 rounded-xl bg-[#006065] dark:bg-[#053639] hover:bg-[#004e52] text-white text-xs font-bold shadow-sm flex items-center gap-1.5">
+          ✕ Close
         </button>
       </div>
 
-      {/* â”€â”€ Toolbar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Toolbar ─────────────────────────────────────────────────────── */}
       <div className={`${showMobileTools ? 'flex absolute top-[53px] left-0 right-0 bg-slate-50 dark:bg-background border-b p-3 z-[9999] shadow-xl flex-wrap' : 'hidden'} md:flex items-center gap-1.5 md:px-3 md:py-1.5 md:bg-slate-50 dark:bg-background md:border-b border-slate-200 dark:border-border flex-shrink-0 flex-wrap md:shadow-sm md:static`}>
 
         {/* Tool group */}
         <div className="flex items-center gap-0.5 bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl p-1 shadow-sm">
           {TOOLS.map(t => (
             <button key={t.id} onClick={() => setTool(t.id)} title={`${t.label} (${t.shortcut})`}
-              className={`w-8 h-8 rounded-lg text-sm font-medium flex items-center justify-center transition-all ${tool === t.id ? 'bg-[#006065] dark:bg-[#131A2C] text-white shadow-sm' : 'hover:bg-slate-100 dark:bg-secondary text-slate-600 dark:text-muted-foreground'}`}>
+              className={`w-8 h-8 rounded-lg text-sm font-medium flex items-center justify-center transition-all ${tool === t.id ? 'bg-[#006065] dark:bg-[#053639] text-white shadow-sm' : 'hover:bg-slate-100 dark:bg-secondary text-slate-600 dark:text-muted-foreground'}`}>
               {t.icon}
             </button>
           ))}
@@ -489,7 +489,7 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
         <div className="flex items-center gap-0.5 bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl p-1 shadow-sm">
           {SIZES.map(s => (
             <button key={s} onClick={() => setSize(s)}
-              className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all ${size === s ? 'bg-[#006065] dark:bg-[#131A2C]' : 'hover:bg-slate-100 dark:bg-secondary'}`}>
+              className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all ${size === s ? 'bg-[#006065] dark:bg-[#053639]' : 'hover:bg-slate-100 dark:bg-secondary'}`}>
               <div className="rounded-full bg-current" style={{ width: Math.min(s + 2, 16), height: Math.min(s + 2, 16), color: size === s ? 'white' : '#334155' }} />
             </button>
           ))}
@@ -512,7 +512,7 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
           <button onClick={undo} title="Undo (Ctrl+Z)" className="w-8 h-8 rounded-lg hover:bg-slate-100 dark:bg-secondary flex items-center justify-center text-slate-600 dark:text-muted-foreground font-bold text-sm">â†©</button>
           <button onClick={redo} title="Redo (Ctrl+Y)" className="w-8 h-8 rounded-lg hover:bg-slate-100 dark:bg-secondary flex items-center justify-center text-slate-600 dark:text-muted-foreground font-bold text-sm">â†ª</button>
           <button onClick={() => setShowGrid(g => !g)} title="Toggle grid"
-            className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold transition-all ${showGrid ? 'bg-[#006065] dark:bg-[#131A2C] text-white' : 'hover:bg-slate-100 dark:bg-secondary text-slate-600 dark:text-muted-foreground'}`}>âŠž</button>
+            className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold transition-all ${showGrid ? 'bg-[#006065] dark:bg-[#053639] text-white' : 'hover:bg-slate-100 dark:bg-secondary text-slate-600 dark:text-muted-foreground'}`}>âŠž</button>
           <button onClick={download} title="Export PNG" className="w-8 h-8 rounded-lg hover:bg-slate-100 dark:bg-secondary flex items-center justify-center text-slate-600 dark:text-muted-foreground text-sm">ðŸ’¾</button>
           <button onClick={clearBoard} title="Clear" className="w-8 h-8 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-500 text-sm">ðŸ—‘</button>
         </div>
@@ -541,14 +541,14 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
 
         {/* Close */}
         <button onClick={onClose}
-          className="ml-auto px-4 py-1.5 rounded-xl bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004e52] text-white text-xs font-bold shadow-sm transition-all hidden md:flex items-center gap-1.5">
-          âœ• Close
+          className="ml-auto px-4 py-1.5 rounded-xl bg-[#006065] dark:bg-[#053639] hover:bg-[#004e52] text-white text-xs font-bold shadow-sm transition-all hidden md:flex items-center gap-1.5">
+          ✕ Close
         </button>
       </div>
 
 
 
-      {/* â”€â”€ Canvas area â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Canvas area ────────────────────────────────────────────────────── */}
       <div
         className="flex-1 relative overflow-hidden"
         style={{ background: showGrid ? 'radial-gradient(circle, #cbd5e1 1px, transparent 1px)' : '#ffffff', backgroundSize: showGrid ? '24px 24px' : undefined }}
@@ -588,7 +588,7 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
             <div className="flex items-center justify-between mb-1">
               <span className="text-[10px] font-bold text-black/40 uppercase tracking-wide">Note</span>
               <button onClick={() => setstickies(prev => prev.filter(n => n.id !== s.id))}
-                className="opacity-0 group-hover:opacity-100 transition-opacity w-4 h-4 rounded flex items-center justify-center text-black/40 hover:text-red-500 text-xs">âœ•</button>
+                className="opacity-0 group-hover:opacity-100 transition-opacity w-4 h-4 rounded flex items-center justify-center text-black/40 hover:text-red-500 text-xs">✕</button>
             </div>
             <textarea
               value={s.text}

@@ -56,7 +56,7 @@ function SpaceCard({ space, onClick }) {
       className="group p-5 rounded-2xl bg-white dark:bg-card border border-slate-200 dark:border-border hover:border-[#006065] dark:border-border/40 dark:hover:border-[#006065] dark:border-border/80 cursor-pointer transition-all duration-300 hover:-translate-y-1 shadow-sm hover:shadow-md"
     >
       <div className="flex items-start gap-3 mb-5">
-        <div className="w-10 h-10 rounded-xl flex items-center justify-center text-[#fad503] bg-[#006065] dark:bg-[#131A2C] shadow-sm">
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center text-[#fad503] bg-[#006065] dark:bg-[#053639] shadow-sm">
           <SpaceIcon className="w-5 h-5" />
         </div>
         <div className="flex-1 min-w-0">
@@ -69,7 +69,7 @@ function SpaceCard({ space, onClick }) {
         <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-bold border ${
           space.is_private
             ? 'bg-slate-50 dark:bg-background text-slate-600 dark:text-muted-foreground border-slate-200 dark:border-border'
-            : 'bg-[#006065] dark:bg-[#131A2C]/5 text-[#006065] border-[#006065] dark:border-border/10'
+            : 'bg-[#006065] dark:bg-[#053639]/5 text-[#006065] border-[#006065] dark:border-border/10'
         }`}>
           {space.is_private ? <Lock className="w-3 h-3" /> : <Globe className="w-3 h-3" />}
           {space.is_private ? 'Private' : 'Public'}
@@ -109,7 +109,7 @@ function VideoCard({ video, onClick }) {
         {video.thumbnail_url ? (
           <img src={video.thumbnail_url} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={video.title} />
         ) : (
-          <div className="absolute inset-0 w-full h-full bg-[#006065] dark:bg-[#131A2C] group-hover:scale-105 transition-transform duration-500 opacity-90">
+          <div className="absolute inset-0 w-full h-full bg-[#006065] dark:bg-[#053639] group-hover:scale-105 transition-transform duration-500 opacity-90">
           </div>
         )}
         <div className="absolute inset-0 bg-slate-900/10 group-hover:bg-slate-900/30 transition-all duration-300 flex items-center justify-center">
@@ -150,7 +150,7 @@ function ActionItemRow({ item }) {
   };
   return (
     <div className="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-accent/50 transition-colors group">
-      <button onClick={toggle} className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-300 ${done ? 'bg-[#006065] dark:bg-[#131A2C] border-[#006065] dark:border-border' : 'border-slate-300 dark:border-slate-600 hover:border-[#006065] dark:border-border/50'}`}>
+      <button onClick={toggle} className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-300 ${done ? 'bg-[#006065] dark:bg-[#053639] border-[#006065] dark:border-border' : 'border-slate-300 dark:border-slate-600 hover:border-[#006065] dark:border-border/50'}`}>
         {done && <CheckCircle className="w-3 h-3 text-white" />}
       </button>
       <div className="flex-1 min-w-0">
@@ -279,7 +279,7 @@ export default function CliPadDashboard() {
           status: 'active',
           meeting_type: 'instant'
         });
-      } catch (_) { /* db insert failed â€” meeting still works */ }
+      } catch (_) { /* db insert failed — meeting still works */ }
 
       navigate(`/join/${targetRoomName}` + (spaceId ? `?spaceId=${spaceId}` : ''));
     } catch (err) {
@@ -446,7 +446,7 @@ export default function CliPadDashboard() {
             disabled={isCreatingMeeting}
             className="flex items-center gap-4 p-5 rounded-2xl bg-white dark:bg-card border border-slate-200 dark:border-border shadow-sm hover:shadow-md hover:border-[#006065] dark:border-border/30 active:scale-[0.98] transition-all duration-200 group text-left"
           >
-            <div className="w-12 h-12 rounded-xl bg-[#006065] dark:bg-[#131A2C] text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+            <div className="w-12 h-12 rounded-xl bg-[#006065] dark:bg-[#053639] text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
               {isCreatingMeeting
                 ? <div className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
                 : <Video className="w-5 h-5 text-[#fad503]" />}
@@ -462,7 +462,7 @@ export default function CliPadDashboard() {
             onClick={() => navigate('/record')}
             className="flex items-center gap-4 p-5 rounded-2xl bg-white dark:bg-card border border-slate-200 dark:border-border shadow-sm hover:shadow-md hover:border-[#006065] dark:border-border/30 active:scale-[0.98] transition-all duration-200 group text-left"
           >
-            <div className="w-12 h-12 rounded-xl bg-[#006065] dark:bg-[#131A2C] text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+            <div className="w-12 h-12 rounded-xl bg-[#006065] dark:bg-[#053639] text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
               <Camera className="w-5 h-5 text-[#fad503]" />
             </div>
             <div>
@@ -489,7 +489,7 @@ export default function CliPadDashboard() {
         {/* Main content grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-10 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-300">
 
-          {/* Left â€” Spaces + Videos */}
+          {/* Left — Spaces + Videos */}
           <div className="lg:col-span-2 space-y-10">
 
             {/* Spaces */}
@@ -511,7 +511,7 @@ export default function CliPadDashboard() {
                 <div className="p-10 rounded-2xl border border-dashed border-black/10 dark:border-white/10 bg-white/50 dark:bg-white/5 backdrop-blur-sm text-center">
                   <Layers className="w-12 h-12 text-slate-500 dark:text-muted-foreground mx-auto mb-4" />
                   <p className="text-sm font-medium text-slate-500 dark:text-muted-foreground dark:text-muted-foreground">No spaces yet.</p>
-                  <button onClick={() => navigate('/spaces')} className="mt-4 text-sm font-semibold text-[#006065] dark:text-[#006065] hover:text-[#006065] dark:text-[#006065]/80 transition-colors">Create your first space â†’</button>
+                  <button onClick={() => navigate('/spaces')} className="mt-4 text-sm font-semibold text-[#006065] dark:text-[#006065] hover:text-[#006065] dark:text-[#006065]/80 transition-colors">Create your first space →</button>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
@@ -533,7 +533,7 @@ export default function CliPadDashboard() {
                 <div className="p-10 rounded-2xl border border-dashed border-black/10 dark:border-white/10 bg-white/50 dark:bg-white/5 backdrop-blur-sm text-center">
                   <Camera className="w-12 h-12 text-slate-500 dark:text-muted-foreground mx-auto mb-4" />
                   <p className="text-sm font-medium text-slate-500 dark:text-muted-foreground dark:text-muted-foreground">No recordings yet.</p>
-                  <button onClick={() => navigate('/record')} className="mt-4 text-sm font-semibold text-[#006065] dark:text-[#006065] hover:text-[#006065] dark:text-[#006065]/80 transition-colors">Record your first async video â†’</button>
+                  <button onClick={() => navigate('/record')} className="mt-4 text-sm font-semibold text-[#006065] dark:text-[#006065] hover:text-[#006065] dark:text-[#006065]/80 transition-colors">Record your first async video →</button>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
@@ -543,7 +543,7 @@ export default function CliPadDashboard() {
             </div>
           </div>
 
-          {/* Right â€” Action Items + AI Insight + Recent Meetings */}
+          {/* Right — Action Items + AI Insight + Recent Meetings */}
           <div className="space-y-8">
 
             {/* My Action Items */}
@@ -567,7 +567,7 @@ export default function CliPadDashboard() {
             {/* AI Intelligence Insight */}
             <div className="bg-white dark:bg-card text-slate-900 dark:text-foreground border border-slate-200 dark:border-border rounded-3xl  shadow-[0_2px_16px_rgba(0,0,0,0.03)] p-4 md:p-6 shadow-sm">
               <div className="flex items-center gap-2.5 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-[#006065] dark:bg-[#131A2C]/10 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-lg bg-[#006065] dark:bg-[#053639]/10 flex items-center justify-center">
                   <Brain className="w-4.5 h-4.5 text-[#006065] dark:text-[#006065]" />
                 </div>
                 <span className="text-sm font-bold text-[#006065] dark:text-[#006065] font-extrabold uppercase tracking-widest">AI Insight</span>

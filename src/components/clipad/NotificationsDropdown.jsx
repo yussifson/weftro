@@ -181,7 +181,7 @@ export default function NotificationsDropdown() {
                         <Button 
                           size="sm" 
                           onClick={(e) => handleGroupRequest(notification, 'accept', e)} 
-                          className="h-7 text-[10px] px-2.5 rounded bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004e52] text-white"
+                          className="h-7 text-[10px] px-2.5 rounded bg-[#006065] dark:bg-[#053639] hover:bg-[#004e52] text-white"
                         >
                           <Check className="w-3 h-3 mr-1"/> Accept
                         </Button>

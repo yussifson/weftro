@@ -120,7 +120,7 @@ export default function DailyBriefingWidget() {
     return (
       <div className="p-5 rounded-2xl bg-white dark:bg-card border border-slate-200 dark:border-border shadow-sm animate-pulse flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-[#006065] dark:bg-[#131A2C]/10 border border-[#006065] dark:border-border/20 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-xl bg-[#006065] dark:bg-[#053639]/10 border border-[#006065] dark:border-border/20 flex items-center justify-center">
             <Sparkles className="w-4.5 h-4.5 text-[#006065] animate-spin" />
           </div>
           <span className="text-sm font-medium text-slate-600 dark:text-muted-foreground">Synthesizing your Executive Daily Briefing...</span>
@@ -182,7 +182,7 @@ export default function DailyBriefingWidget() {
                 <ul className="space-y-1.5 text-xs text-slate-700 dark:text-muted-foreground leading-relaxed">
                   {briefing.highlights.map((h, i) => (
                     <li key={i} className="flex items-start gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#006065] dark:bg-[#131A2C] shrink-0 mt-1.5" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#006065] dark:bg-[#053639] shrink-0 mt-1.5" />
                       <span>{h}</span>
                     </li>
                   ))}
@@ -212,7 +212,7 @@ export default function DailyBriefingWidget() {
                   <ul className="space-y-1 text-xs text-red-600 dark:text-red-300">
                     {briefing.risks.map((r, i) => (
                       <li key={i} className="flex items-start gap-1.5">
-                        <span className="text-red-500 font-bold">â€¢</span>
+                        <span className="text-red-500 font-bold">•</span>
                         <span>{r}</span>
                       </li>
                     ))}
@@ -234,7 +234,7 @@ export default function DailyBriefingWidget() {
                 // Delay sending the prompt slightly to allow side drawer animation to initialize
                 setTimeout(() => {
                   window.dispatchEvent(new CustomEvent('orbit:inject', {
-                    detail: { query: 'Give me a deeper breakdown of my teamâ€™s active blockers and commitments' }
+                    detail: { query: 'Give me a deeper breakdown of my team’s active blockers and commitments' }
                   }));
                 }, 150);
               }}

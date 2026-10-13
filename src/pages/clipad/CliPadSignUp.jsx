@@ -141,7 +141,7 @@ export default function CliPadSignUp() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full h-11 bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004d52] text-white font-bold rounded-xl text-sm shadow-md transition-all active:scale-[0.99] disabled:opacity-60 flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full h-11 bg-[#006065] dark:bg-[#053639] hover:bg-[#004d52] text-white font-bold rounded-xl text-sm shadow-md transition-all active:scale-[0.99] disabled:opacity-60 flex items-center justify-center gap-2 cursor-pointer"
               >
                 {loading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : 'Get Started'}
               </button>
@@ -225,7 +225,7 @@ export default function CliPadSignUp() {
               {/* Inner Device Screen */}
               <div className="w-full h-full bg-[#f8fafc] dark:bg-background rounded-[22px] overflow-hidden flex flex-row text-[10px] text-slate-800 font-sans shadow-inner">
                 {/* Sidebar */}
-                <div className="w-44 bg-[#006065] dark:bg-[#131A2C] text-white p-3 flex flex-col justify-between shrink-0">
+                <div className="w-44 bg-[#006065] dark:bg-[#053639] text-white p-3 flex flex-col justify-between shrink-0">
                   <div>
                     <div className="flex items-center gap-1.5 mb-4">
                       <CliPadLogo height={16} white={true} iconOnly={true} />
@@ -235,7 +235,7 @@ export default function CliPadSignUp() {
                     <div className="text-[9px] uppercase font-bold text-white/40 tracking-wider mb-1.5">General</div>
                     <div className="space-y-1 mb-3">
                       <div className="bg-[#fad503] text-[#006065] font-bold px-2 py-1 rounded-md flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#006065] dark:bg-[#131A2C]"></span> Home
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#006065] dark:bg-[#053639]"></span> Home
                       </div>
                       <div className="text-white/70 hover:text-white px-2 py-1">Search</div>
                       <div className="text-white/70 hover:text-white px-2 py-1">Spaces</div>
@@ -292,7 +292,7 @@ export default function CliPadSignUp() {
                       <div className="divide-y divide-slate-100 text-[8px]">
                         <div className="px-2.5 py-1 flex justify-between items-center">
                           <span className="font-semibold text-slate-800">Q4 Product Architecture</span>
-                          <span className="bg-[#006065] dark:bg-[#131A2C]/10 text-[#006065] font-bold px-1.5 py-0.5 rounded text-[7px]">Processed</span>
+                          <span className="bg-[#006065] dark:bg-[#053639]/10 text-[#006065] font-bold px-1.5 py-0.5 rounded text-[7px]">Processed</span>
                         </div>
                         <div className="px-2.5 py-1 flex justify-between items-center">
                           <span className="font-semibold text-slate-800">Sprint Review Recording</span>

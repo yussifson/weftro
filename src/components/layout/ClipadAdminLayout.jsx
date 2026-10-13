@@ -40,7 +40,7 @@ export default function ClipadAdminLayout() {
     <div className="flex h-[100dvh] w-full overflow-hidden bg-[#f8fafc] dark:bg-background text-[#0f172a] dark:text-foreground">
       
       {/* Sidebar */}
-      <aside className="w-64 border-r border-slate-800 bg-[#006065] dark:bg-[#0A0F1C] text-white flex flex-col hidden md:flex shadow-xl">
+      <aside className="w-64 border-r border-slate-800 bg-[#006065] dark:bg-[#011d1e] text-white flex flex-col hidden md:flex shadow-xl">
         <div className="p-6 border-b border-slate-800">
           <h2 className="text-xl font-black text-white">CliPad Super Admin</h2>
           <p className="text-xs text-[#fad503] font-bold uppercase tracking-wider mt-1">Management Console</p>
@@ -89,7 +89,7 @@ export default function ClipadAdminLayout() {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col h-full overflow-y-auto relative z-30 page-enter bg-[#f8fafc] dark:bg-background text-[#0f172a] dark:text-foreground scrollbar-thin">
-        <div className="md:hidden p-4 border-b border-slate-800 bg-[#006065] dark:bg-[#0A0F1C] text-white flex items-center justify-between">
+        <div className="md:hidden p-4 border-b border-slate-800 bg-[#006065] dark:bg-[#011d1e] text-white flex items-center justify-between">
             <h2 className="text-lg font-black text-white">KERINT Admin</h2>
             <button onClick={() => navigate('/dashboard')}><ArrowLeft className="w-5 h-5 text-white"/></button>
         </div>

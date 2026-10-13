@@ -18,7 +18,7 @@ const EVENT_ICONS = {
 const EVENT_COLORS = {
   meeting_saved: 'bg-indigo-100 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400',
   decision_created: 'bg-amber-100 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400',
-  task_completed: 'bg-[#006065] dark:bg-[#131A2C]/20 text-[#006065] dark:bg-card dark:text-[#00beac]',
+  task_completed: 'bg-[#006065] dark:bg-[#053639]/20 text-[#006065] dark:bg-card dark:text-[#00beac]',
   video_uploaded: 'bg-rose-100 text-rose-600 dark:bg-rose-500/20 dark:text-rose-400',
   blocker_raised: 'bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-400',
   default: 'bg-slate-100 dark:bg-secondary text-slate-600 dark:bg-slate-50 dark:bg-background0/20 dark:text-muted-foreground'
@@ -142,7 +142,7 @@ export default function OrgTimeline({ workspaceId, spaceId }) {
         <div className="p-4 rounded-2xl bg-gradient-to-r from-cyan-500/10 via-teal-500/10 to-emerald-500/10 border border-cyan-500/20 text-slate-800 dark:text-slate-200 text-xs leading-relaxed space-y-2 relative">
           <div className="flex items-center justify-between font-bold text-cyan-700 dark:text-cyan-400">
             <span className="flex items-center gap-1.5"><BrainCircuit className="w-4 h-4" /> AI Velocity & Health Synthesis</span>
-            <button onClick={() => setAiBriefing(null)} className="text-slate-400 hover:text-slate-600 dark:hover:text-white font-bold">âœ•</button>
+            <button onClick={() => setAiBriefing(null)} className="text-slate-400 hover:text-slate-600 dark:hover:text-white font-bold">✕</button>
           </div>
           <p className="whitespace-pre-wrap">{aiBriefing}</p>
         </div>

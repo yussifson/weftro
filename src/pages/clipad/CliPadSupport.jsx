@@ -51,7 +51,7 @@ export default function CliPadSupport() {
         </p>
         <button 
           onClick={() => navigate('/dashboard')} 
-          className="px-6 py-3 rounded-full bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004e52] text-[#fad503] font-bold transition-all hover:-translate-y-0.5 shadow-md hover:shadow-lg"
+          className="px-6 py-3 rounded-full bg-[#006065] dark:bg-[#053639] hover:bg-[#004e52] text-[#fad503] font-bold transition-all hover:-translate-y-0.5 shadow-md hover:shadow-lg"
         >
           Return to Dashboard
         </button>
@@ -99,7 +99,7 @@ export default function CliPadSupport() {
             <button 
               type="submit" 
               disabled={loading || !subject.trim() || !message.trim()}
-              className="w-full py-4 rounded-xl bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004e52] text-[#fad503] font-bold transition-all shadow-md hover:shadow-lg disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full py-4 rounded-xl bg-[#006065] dark:bg-[#053639] hover:bg-[#004e52] text-[#fad503] font-bold transition-all shadow-md hover:shadow-lg disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

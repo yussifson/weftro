@@ -289,7 +289,7 @@ export default function SearchHub() {
     }));
   };
 
-  // Ref to track the current synthesis session â€” prevents double-firing
+  // Ref to track the current synthesis session — prevents double-firing
   const synthSessionRef = React.useRef(0);
   const lastQueryRef = React.useRef('');
 
@@ -340,7 +340,7 @@ export default function SearchHub() {
       ...(decisions || []).map(d => ({ type: 'decision', id: d.id, space_id: d.team_space_id, label: 'Decision', snippet: d.decision_text, created_at: d.created_at })),
       ...(videos || []).map(v => ({ type: 'video', id: v.id, space_id: v.space_id, label: v.title || 'Video', snippet: v.ai_summary, created_at: v.created_at })),
       ...(blockers || []).map(b => ({ type: 'blocker', id: b.id, space_id: b.team_space_id, label: 'Blocker', snippet: b.description, created_at: b.detected_at })),
-      ...(standups || []).map(s => ({ type: 'standup', id: s.id, space_id: s.space_id, label: `Standup â€” ${s.user_name || 'Team member'} (${s.created_at?.slice(0, 10)})`, snippet: s.today, created_at: s.created_at })),
+      ...(standups || []).map(s => ({ type: 'standup', id: s.id, space_id: s.space_id, label: `Standup — ${s.user_name || 'Team member'} (${s.created_at?.slice(0, 10)})`, snippet: s.today, created_at: s.created_at })),
       ...(integrations || []).map(i => ({ type: 'integration', id: i.id, space_id: null, label: `[${i.provider}] ${i.title}`, snippet: i.content, created_at: i.updated_at, provider: i.provider })),
     ];
 
@@ -349,7 +349,7 @@ export default function SearchHub() {
     if (raw.length > 0) setSelectedResult(raw[0]);
 
     if (!skipAISynthesis) {
-      // AI Executive Synthesis â€” bump session id to prevent stale callbacks
+      // AI Executive Synthesis — bump session id to prevent stale callbacks
       runAISynthesis(q, raw, spaceIdArr);
     }
   }, [query, companyId, user]);
@@ -530,7 +530,7 @@ export default function SearchHub() {
     <div className="flex flex-col h-screen bg-slate-50 dark:bg-background font-sans text-slate-900 dark:text-slate-100 overflow-hidden">
       
       {!hasPerformedSearch ? (
-        /* â”€â”€ ZERO STATE (Original Centered Layout) â”€â”€ */
+        /* ── ZERO STATE (Original Centered Layout) ── */
         <div className="flex-1 flex flex-col items-center justify-center px-4 py-12 overflow-y-auto">
           {/* Greeting heading */}
           <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-foreground text-center mb-2 tracking-tight">

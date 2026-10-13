@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
@@ -24,7 +25,7 @@ function CopyButton({ text }) {
     setTimeout(() => setCopied(false), 2000);
   };
   return (
-    <button onClick={copy} className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg transition-all ${copied ? 'text-[#006065] bg-[#006065] dark:bg-[#131A2C]/10' : 'text-muted-foreground hover:text-slate-600 dark:text-muted-foreground bg-secondary hover:bg-secondary'}`}>
+    <button onClick={copy} className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg transition-all ${copied ? 'text-[#006065] bg-[#006065] dark:bg-[#053639]/10' : 'text-muted-foreground hover:text-slate-600 dark:text-muted-foreground bg-secondary hover:bg-secondary'}`}>
       {copied ? <><Check className="w-3 h-3" /> Copied</> : <><Copy className="w-3 h-3" /> Copy</>}
     </button>
   );
@@ -68,7 +69,7 @@ function ActionItemRow({ item, onUpdate }) {
     <div className="flex items-start gap-3 py-3">
       <button
         onClick={toggle}
-        className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${done ? 'bg-[#006065] dark:bg-[#131A2C] border-[#006065] dark:border-border' : 'border-gray-600 hover:border-primary'}`}
+        className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${done ? 'bg-[#006065] dark:bg-[#053639] border-[#006065] dark:border-border' : 'border-gray-600 hover:border-primary'}`}
       >
         {done && <Check className="w-3 h-3 text-foreground" strokeWidth={3} />}
       </button>
@@ -968,149 +969,162 @@ export default function MeetingRecord() {
       </div>
 
       {/* Add Memory Vault Modal */}
-      {showAddMemoryModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <form onSubmit={handleSaveToMemory} className="bg-white dark:bg-card rounded-3xl max-w-lg w-full p-6 sm:p-8 border border-slate-200 dark:border-border shadow-2xl space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-border">
-              <h4 className="text-base font-bold text-slate-900 dark:text-foreground flex items-center gap-2">
-                <Brain className="w-5 h-5 text-[#006065] dark:text-[#fad503]" /> Commit to Organizational Memory
-              </h4>
-              <button type="button" onClick={() => setShowAddMemoryModal(false)} className="text-slate-400 hover:text-slate-600 text-sm">✕</button>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Tier</label>
-                <select
-                  value={memTier}
-                  onChange={e => setMemTier(e.target.value)}
-                  className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-border bg-slate-50 dark:bg-background text-slate-900 dark:text-foreground focus:outline-none focus:ring-2 focus:ring-[#006065]"
-                >
-                  <option value="organizational">Organizational (Company-wide)</option>
-                  <option value="team">Team / Space Specific</option>
-                  <option value="personal">Personal Memory</option>
-                </select>
+      {/* Add Memory Vault Modal */}
+      {showAddMemoryModal && createPortal(
+        <div 
+          className="fixed inset-0 z-[9999] bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
+          onClick={(e) => { if (e.target === e.currentTarget) setShowAddMemoryModal(false); }}
+        >
+          <div className="relative w-full max-w-lg my-auto">
+            <form onSubmit={handleSaveToMemory} className="bg-white dark:bg-card rounded-3xl w-full p-6 sm:p-8 border border-slate-200 dark:border-border shadow-2xl space-y-4 animate-in fade-in zoom-in-95">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-border">
+                <h4 className="text-base font-bold text-slate-900 dark:text-foreground flex items-center gap-2">
+                  <Brain className="w-5 h-5 text-[#006065] dark:text-[#fad503]" /> Commit to Organizational Memory
+                </h4>
+                <button type="button" onClick={() => setShowAddMemoryModal(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-sm p-1">✕</button>
               </div>
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Type</label>
-                <select
-                  value={memType}
-                  onChange={e => setMemType(e.target.value)}
-                  className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-border bg-slate-50 dark:bg-background text-slate-900 dark:text-foreground focus:outline-none focus:ring-2 focus:ring-[#006065]"
-                >
-                  <option value="DECISION">Key Decision</option>
-                  <option value="POLICY">Policy / Standard</option>
-                  <option value="FACT">Verified Fact</option>
-                  <option value="LESSON">Lesson Learned</option>
-                </select>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Tier</label>
+                  <select
+                    value={memTier}
+                    onChange={e => setMemTier(e.target.value)}
+                    className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-border bg-slate-50 dark:bg-background text-slate-900 dark:text-foreground focus:outline-none focus:ring-2 focus:ring-[#006065]"
+                  >
+                    <option value="organizational">Organizational (Company-wide)</option>
+                    <option value="team">Team / Space Specific</option>
+                    <option value="personal">Personal Memory</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Type</label>
+                  <select
+                    value={memType}
+                    onChange={e => setMemType(e.target.value)}
+                    className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-border bg-slate-50 dark:bg-background text-slate-900 dark:text-foreground focus:outline-none focus:ring-2 focus:ring-[#006065]"
+                  >
+                    <option value="DECISION">Key Decision</option>
+                    <option value="POLICY">Policy / Standard</option>
+                    <option value="FACT">Verified Fact</option>
+                    <option value="LESSON">Lesson Learned</option>
+                  </select>
+                </div>
               </div>
-            </div>
 
-            <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Memory Title</label>
-              <input
-                type="text"
-                value={memTitle}
-                onChange={e => setMemTitle(e.target.value)}
-                placeholder="e.g. Database schema migration decision"
-                className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-border bg-slate-50 dark:bg-background text-slate-900 dark:text-foreground focus:outline-none focus:ring-2 focus:ring-[#006065]"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Content / Context</label>
-              <textarea
-                value={memContent}
-                onChange={e => setMemContent(e.target.value)}
-                rows={4}
-                placeholder="Details, rationale, criteria, or context to preserve..."
-                className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-border bg-slate-50 dark:bg-background text-slate-900 dark:text-foreground focus:outline-none focus:ring-2 focus:ring-[#006065]"
-                required
-              />
-            </div>
-
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-border">
-              <button
-                type="button"
-                onClick={() => setShowAddMemoryModal(false)}
-                className="px-4 py-2 rounded-xl text-xs font-medium text-slate-500 hover:bg-slate-100 dark:hover:bg-accent"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={savingMemory}
-                className="px-5 py-2 rounded-xl bg-[#006065] hover:bg-[#004e52] text-white text-xs font-bold shadow-sm transition-all disabled:opacity-50"
-              >
-                {savingMemory ? 'Saving...' : 'Commit Memory'}
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
-
-      {/* Edit Meeting Modal */}
-      {showEdit && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
-          <div className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl">
-            <h2 className="text-lg font-bold text-slate-900 dark:text-foreground mb-4">Edit Meeting Details</h2>
-            <form onSubmit={handleEditMeeting} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Meeting Title *</label>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Memory Title</label>
                 <input
-                  value={editTitle}
-                  onChange={e => setEditTitle(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-border text-slate-900 dark:text-foreground text-xs focus:outline-none focus:ring-2 focus:ring-[#006065]"
+                  type="text"
+                  value={memTitle}
+                  onChange={e => setMemTitle(e.target.value)}
+                  placeholder="e.g. Database schema migration decision"
+                  className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-border bg-slate-50 dark:bg-background text-slate-900 dark:text-foreground focus:outline-none focus:ring-2 focus:ring-[#006065]"
                   required
                 />
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Visibility</label>
-                  <select
-                    value={editVisibility}
-                    onChange={e => setEditVisibility(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-border text-slate-900 dark:text-foreground text-xs"
-                  >
-                    <option value="internal">Internal</option>
-                    <option value="external">External</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Access Lock</label>
-                  <select
-                    value={editLockType}
-                    onChange={e => setEditLockType(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-border text-slate-900 dark:text-foreground text-xs"
-                  >
-                    <option value="none">Unlocked</option>
-                    <option value="manual">Locked</option>
-                    <option value="scheduled">Scheduled</option>
-                  </select>
-                </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Content / Context</label>
+                <textarea
+                  value={memContent}
+                  onChange={e => setMemContent(e.target.value)}
+                  rows={4}
+                  placeholder="Details, rationale, criteria, or context to preserve..."
+                  className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-border bg-slate-50 dark:bg-background text-slate-900 dark:text-foreground focus:outline-none focus:ring-2 focus:ring-[#006065] resize-none"
+                  required
+                />
               </div>
-              {editLockType === 'scheduled' && (
-                <div className="grid grid-cols-2 gap-3 p-3 bg-amber-50 dark:bg-amber-950/20 rounded-xl border border-amber-200 dark:border-amber-900/30">
-                  <div>
-                    <label className="block text-[11px] font-bold text-amber-800 dark:text-amber-400 mb-1">Date</label>
-                    <input type="date" value={editUnlockDate} onChange={e => setEditUnlockDate(e.target.value)} className="w-full p-2 text-xs rounded bg-white dark:bg-card border border-slate-200 dark:border-border" />
-                  </div>
-                  <div>
-                    <label className="block text-[11px] font-bold text-amber-800 dark:text-amber-400 mb-1">Time</label>
-                    <input type="time" value={editUnlockTime} onChange={e => setEditUnlockTime(e.target.value)} className="w-full p-2 text-xs rounded bg-white dark:bg-card border border-slate-200 dark:border-border" />
-                  </div>
-                </div>
-              )}
-              <div className="flex gap-2 pt-2 border-t border-slate-100 dark:border-border">
-                <button type="button" onClick={() => setShowEdit(false)} className="flex-1 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-semibold">Cancel</button>
-                <button type="submit" disabled={savingEdit} className="flex-1 py-2 rounded-xl bg-[#006065] text-white text-xs font-bold shadow-sm">
-                  {savingEdit ? 'Saving...' : 'Save Changes'}
+
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-border">
+                <button
+                  type="button"
+                  onClick={() => setShowAddMemoryModal(false)}
+                  className="px-4 py-2 rounded-xl text-xs font-medium text-slate-500 hover:bg-slate-100 dark:hover:bg-accent"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingMemory}
+                  className="px-5 py-2 rounded-xl bg-[#006065] hover:bg-[#004e52] text-white text-xs font-bold shadow-sm transition-all disabled:opacity-50"
+                >
+                  {savingMemory ? 'Saving...' : 'Commit Memory'}
                 </button>
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
+      )}
+
+      {/* Edit Meeting Modal */}
+      {showEdit && createPortal(
+        <div 
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/85 backdrop-blur-md p-4 sm:p-6 overflow-y-auto"
+          onClick={(e) => { if (e.target === e.currentTarget) setShowEdit(false); }}
+        >
+          <div className="relative w-full max-w-md my-auto">
+            <div className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-3xl p-6 sm:p-8 w-full shadow-2xl animate-in fade-in zoom-in-95">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-foreground mb-4">Edit Meeting Details</h2>
+              <form onSubmit={handleEditMeeting} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Meeting Title *</label>
+                  <input
+                    value={editTitle}
+                    onChange={e => setEditTitle(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-border text-slate-900 dark:text-foreground text-xs focus:outline-none focus:ring-2 focus:ring-[#006065]"
+                    required
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Visibility</label>
+                    <select
+                      value={editVisibility}
+                      onChange={e => setEditVisibility(e.target.value)}
+                      className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-border text-slate-900 dark:text-foreground text-xs"
+                    >
+                      <option value="internal">Internal</option>
+                      <option value="external">External</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Access Lock</label>
+                    <select
+                      value={editLockType}
+                      onChange={e => setEditLockType(e.target.value)}
+                      className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-border text-slate-900 dark:text-foreground text-xs"
+                    >
+                      <option value="none">Unlocked</option>
+                      <option value="manual">Locked</option>
+                      <option value="scheduled">Scheduled</option>
+                    </select>
+                  </div>
+                </div>
+                {editLockType === 'scheduled' && (
+                  <div className="grid grid-cols-2 gap-3 p-3 bg-amber-50 dark:bg-amber-950/20 rounded-xl border border-amber-200 dark:border-amber-900/30">
+                    <div>
+                      <label className="block text-[11px] font-bold text-amber-800 dark:text-amber-400 mb-1">Date</label>
+                      <input type="date" value={editUnlockDate} onChange={e => setEditUnlockDate(e.target.value)} className="w-full p-2 text-xs rounded bg-white dark:bg-card border border-slate-200 dark:border-border" />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-bold text-amber-800 dark:text-amber-400 mb-1">Time</label>
+                      <input type="time" value={editUnlockTime} onChange={e => setEditUnlockTime(e.target.value)} className="w-full p-2 text-xs rounded bg-white dark:bg-card border border-slate-200 dark:border-border" />
+                    </div>
+                  </div>
+                )}
+                <div className="flex gap-2 pt-2 border-t border-slate-100 dark:border-border">
+                  <button type="button" onClick={() => setShowEdit(false)} className="flex-1 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-semibold">Cancel</button>
+                  <button type="submit" disabled={savingEdit} className="flex-1 py-2 rounded-xl bg-[#006065] text-white text-xs font-bold shadow-sm">
+                    {savingEdit ? 'Saving...' : 'Save Changes'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>,
+        document.body
       )}
     </div>
   );

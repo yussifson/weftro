@@ -85,63 +85,63 @@ html, body {
   }
 
   .dark {
-    --bg-base-rgb-dark: 15, 20, 32;
+    --bg-base-rgb-dark: 2, 38, 40;
 
-    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+    ::-webkit-scrollbar-thumb { background: rgba(0, 190, 172, 0.2); }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(0, 190, 172, 0.35); }
 
-    /* SaaSPO Style - Main Background #0F1420 */
-    --background: 222 36% 9.2%;
+    /* Corporate Dark Brand Green - Main Background #022628 */
+    --background: 183 90% 8.2%;
     
-    /* Primary White Typography #FFFFFF */
+    /* Primary Typography - Crisp Clean White */
     --foreground: 0 0% 100%;
     
-    /* Secondary Surface / Card Background #151c2d */
-    --card: 222 30% 13%;
+    /* Secondary Surface / Card Background #053639 (Lighter tint of #006065) */
+    --card: 183 75% 12.5%;
     --card-foreground: 0 0% 100%;
-    --popover: 222 36% 9.2%;
+    --popover: 183 80% 10%;
     --popover-foreground: 0 0% 100%;
     
-    /* Brand Green Accent #0AF395 */
+    /* Brand Accent #fad503 Yellow & #00beac Cyan */
     --primary: 51 98% 50%; /* Yellow #fad503 */
-    --primary-foreground: 222 36% 9.2%; /* Dark text on bright green */
+    --primary-foreground: 183 90% 8.2%; /* Dark green text on yellow primary button */
     
-    /* Secondary Surface elements */
-    --secondary: 222 30% 13%;
+    /* Secondary Surface elements #074347 */
+    --secondary: 183 70% 15.5%;
     --secondary-foreground: 0 0% 100%;
     
-    /* Secondary Text #A7B0BA */
-    --muted: 222 30% 13%;
-    --muted-foreground: 212 11% 69%;
+    /* Muted Text / Surfaces */
+    --muted: 183 65% 14%;
+    --muted-foreground: 180 18% 70%;
     
-    /* Hover / Borders / Divider Color #222b3e */
-    --accent: 222 25% 18%;
+    /* Hover / Borders / Divider Color #0b4e52 */
+    --accent: 183 60% 18.5%;
     --accent-foreground: 0 0% 100%;
     
     /* Destructive Accents */
     --destructive: 0 62% 30%;
     --destructive-foreground: 0 0% 98%;
     
-    /* Border / Divider Color #222b3e */
-    --border: 222 25% 18%;
-    --input: 222 25% 18%;
-    --ring: 156 92% 50%;
+    /* Border / Divider Color #0a4f53 */
+    --border: 183 65% 18%;
+    --input: 183 65% 18%;
+    --ring: 175 100% 37.3%; /* #00beac active ring */
     
-    --chart-1: 156 92% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 38 92% 50%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --chart-1: 175 100% 37.3%;
+    --chart-2: 51 98% 50%;
+    --chart-3: 183 100% 20%;
+    --chart-4: 160 60% 45%;
+    --chart-5: 38 92% 50%;
     
-    /* Sidebar matching the SaaSPO palette */
-    --sidebar-background: 222 36% 9.2%;
-    --sidebar-foreground: 212 11% 69%;
-    --sidebar-primary: 156 92% 50%;
-    --sidebar-primary-foreground: 213 29% 6%;
-    --sidebar-accent: 209 31% 16%;
+    /* Sidebar matching the Corporate Dark Green palette #011d1e */
+    --sidebar-background: 183 92% 6.2%;
+    --sidebar-foreground: 180 18% 70%;
+    --sidebar-primary: 51 98% 50%;
+    --sidebar-primary-foreground: 183 90% 8.2%;
+    --sidebar-accent: 183 75% 12.5%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 209 31% 16%;
-    --sidebar-ring: 156 92% 50%;
+    --sidebar-border: 183 65% 18%;
+    --sidebar-ring: 175 100% 37.3%;
   }
 }
 

@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils';
 
 const ACTION_COLORS = {
   login:           { bg: 'bg-blue-500/10',   text: 'text-blue-500',   label: 'Login' },
-  plan_upgrade:    { bg: 'bg-[#006065] dark:bg-[#131A2C]/10', text: 'text-[#006065]',label: 'Plan Upgrade' },
+  plan_upgrade:    { bg: 'bg-[#006065] dark:bg-[#053639]/10', text: 'text-[#006065]',label: 'Plan Upgrade' },
   meeting_created: { bg: 'bg-violet-500/10',  text: 'text-violet-500', label: 'Meeting' },
   video_recorded:  { bg: 'bg-orange-500/10',  text: 'text-orange-500', label: 'Recording' },
   impersonate:     { bg: 'bg-purple-500/10',  text: 'text-purple-500', label: 'Impersonate' },
@@ -71,7 +71,7 @@ export default function AuditMonitor() {
 
   useEffect(() => { fetchLogs(); }, [fetchLogs]);
 
-  // Real-time subscription â€” auto-refresh when new rows arrive
+  // Real-time subscription — auto-refresh when new rows arrive
   useEffect(() => {
     const channel = supabase
       .channel('realtime:audit_logs')
@@ -101,7 +101,7 @@ export default function AuditMonitor() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Audit Monitor</h1>
           <p className="text-muted-foreground mt-1">
-            Real-time system activity â€” logins, upgrades, meetings, and recordings.
+            Real-time system activity — logins, upgrades, meetings, and recordings.
           </p>
         </div>
         <div className="text-xs text-muted-foreground flex items-center gap-1.5 mt-1">
@@ -219,13 +219,13 @@ export default function AuditMonitor() {
                       {log.user_name || 'Unknown User'}
                     </div>
                     <div className="text-xs text-muted-foreground font-mono mt-0.5">
-                      {log.user_email || (log.user_id ? `uid:${log.user_id.slice(0,8)}` : 'â€”')}
+                      {log.user_email || (log.user_id ? `uid:${log.user_id.slice(0,8)}` : '—')}
                     </div>
                   </TableCell>
                   <TableCell className="align-top pt-4 text-sm text-white/70 font-mono text-xs">
                     {log.company_id
-                      ? <span title={log.company_id}>{log.company_id.substring(0, 8)}â€¦</span>
-                      : <span className="text-white/50 dark:text-foreground/80">â€”</span>
+                      ? <span title={log.company_id}>{log.company_id.substring(0, 8)}…</span>
+                      : <span className="text-white/50 dark:text-foreground/80">—</span>
                     }
                   </TableCell>
                   <TableCell className="align-top pt-4">
@@ -233,12 +233,12 @@ export default function AuditMonitor() {
                   </TableCell>
                   <TableCell className="align-top pt-4 max-w-[200px]">
                     <div className="text-xs text-white/80 dark:text-muted-foreground line-clamp-2">
-                      {log.details || 'â€”'}
+                      {log.details || '—'}
                     </div>
                   </TableCell>
                   <TableCell className="align-top pt-4">
                     <div className="text-xs font-mono text-white/80 dark:text-muted-foreground">
-                      {log.ip_address || <span className="text-white/50 dark:text-foreground/80">â€”</span>}
+                      {log.ip_address || <span className="text-white/50 dark:text-foreground/80">—</span>}
                     </div>
                     {log.location && (
                       <div className="text-[11px] text-muted-foreground mt-0.5">{log.location}</div>

@@ -52,8 +52,8 @@ export default function ClipadLayout() {
     };
   }, []);
 
-  // Never hide nav
-  const isImmersive = false;
+  // Hide top nav on live video calls so the meeting stage gets full height with sidebar intact
+  const isImmersive = location.pathname.startsWith('/join/') || location.pathname.startsWith('/record/');
 
   return (
     <div data-theme="brand" className="flex flex-row h-[100dvh] w-full overflow-hidden bg-[#f8fafc] dark:bg-background text-[#0f172a] dark:text-foreground pt-[var(--sat)] pb-[var(--sab)] pl-[var(--sal)] pr-[var(--sar)]">
@@ -90,7 +90,7 @@ export default function ClipadLayout() {
       {isChatDocked && location.pathname !== '/chat' && (
         <div 
           style={{ width: `${dockWidth}px` }} 
-          className="hidden md:flex flex-col h-full bg-[#006065] dark:bg-[#0A0F1C] border-l border-white/15 shrink-0 relative z-30 shadow-2xl transition-all"
+          className="hidden md:flex flex-col h-full bg-[#006065] dark:bg-[#011d1e] border-l border-white/15 shrink-0 relative z-30 shadow-2xl transition-all"
         >
           <DockResizer />
           <React.Suspense fallback={<div className="p-4 text-white">Loading chat...</div>}>

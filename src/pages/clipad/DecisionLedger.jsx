@@ -150,7 +150,7 @@ export default function DecisionLedger() {
   return (
     <div className="min-h-full bg-slate-50 dark:bg-background text-slate-900 dark:text-slate-100 font-sans page-enter pb-12">
       {/* Header */}
-      <div className="relative overflow-hidden border-b border-slate-200 dark:border-border bg-[#006065] dark:bg-[#131A2C] text-white px-6 py-10">
+      <div className="relative overflow-hidden border-b border-slate-200 dark:border-border bg-[#006065] dark:bg-[#053639] text-white px-6 py-10">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(245,158,11,0.08),transparent_60%)] pointer-events-none" />
         <div className="max-w-5xl mx-auto relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
@@ -259,7 +259,7 @@ export default function DecisionLedger() {
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-2 mb-2">
                         <span className="text-xs font-bold text-[#006065] dark:text-[#fad503] uppercase tracking-wider bg-[#006065] dark:bg-card px-2 py-0.5 rounded-md">
-                          {item._type === 'native' ? 'Ã°Å¸Â¤â€“ AI-Detected' : 'Ã°Å¸â€œâ€ž Knowledge Source'}
+                          {item._type === 'native' ? 'Ã°Å¸Â¤– AI-Detected' : 'Ã°Å¸“ž Knowledge Source'}
                         </span>
                         <span className="text-xs text-slate-500 dark:text-muted-foreground flex items-center gap-1">
                           <Calendar className="w-3 h-3" /> {format(new Date(item.imported_at), 'MMM d, yyyy')}

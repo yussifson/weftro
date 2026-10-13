@@ -96,7 +96,7 @@ export default function KnowledgeTimeline() {
   return (
     <div className="min-h-full bg-slate-50 dark:bg-background text-slate-900 dark:text-slate-100 font-sans page-enter pb-12">
       {/* Header */}
-      <div className="relative overflow-hidden border-b border-white/15/80 bg-[#006065] dark:bg-[#131A2C] text-white border-b border-white/15/80 px-6 py-8">
+      <div className="relative overflow-hidden border-b border-white/15/80 bg-[#006065] dark:bg-[#053639] text-white border-b border-white/15/80 px-6 py-8">
         <div className="max-w-5xl mx-auto relative z-10 flex items-start justify-between">
           <div>
             <div className="flex items-center gap-3 mb-2">
@@ -144,7 +144,7 @@ export default function KnowledgeTimeline() {
             <div className="p-2 space-y-1">
               <button
                 onClick={() => setActiveFilter('all')}
-                className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors ${activeFilter === 'all' ? 'bg-[#006065] dark:bg-[#131A2C]/10 text-[#006065] dark:bg-card dark:text-[#fad503] font-bold' : 'text-slate-600 dark:text-muted-foreground hover:bg-slate-100 dark:hover:bg-accent hover:text-slate-900 dark:hover:text-white'}`}
+                className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors ${activeFilter === 'all' ? 'bg-[#006065] dark:bg-[#053639]/10 text-[#006065] dark:bg-card dark:text-[#fad503] font-bold' : 'text-slate-600 dark:text-muted-foreground hover:bg-slate-100 dark:hover:bg-accent hover:text-slate-900 dark:hover:text-white'}`}
               >
                 <div className="flex items-center gap-2"><Database className="w-4 h-4" /> All Sources</div>
                 <span className="text-xs bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded-md text-slate-500 dark:text-muted-foreground">{events.length}</span>
@@ -156,7 +156,7 @@ export default function KnowledgeTimeline() {
                   <button
                     key={p}
                     onClick={() => setActiveFilter(p)}
-                    className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors ${activeFilter === p ? 'bg-[#006065] dark:bg-[#131A2C]/10 text-[#006065] dark:bg-card dark:text-[#fad503] font-bold' : 'text-slate-600 dark:text-muted-foreground hover:bg-slate-100 dark:hover:bg-accent hover:text-slate-900 dark:hover:text-white'}`}
+                    className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors ${activeFilter === p ? 'bg-[#006065] dark:bg-[#053639]/10 text-[#006065] dark:bg-card dark:text-[#fad503] font-bold' : 'text-slate-600 dark:text-muted-foreground hover:bg-slate-100 dark:hover:bg-accent hover:text-slate-900 dark:hover:text-white'}`}
                   >
                     <div className="flex items-center gap-2"><span className="text-base">{intg?.icon || '📄'}</span> {intg?.name || p}</div>
                     <span className="text-xs bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded-md text-slate-500 dark:text-muted-foreground">{count}</span>
@@ -192,7 +192,7 @@ export default function KnowledgeTimeline() {
                 return (
                   <div key={item.id} className="relative group">
                     {/* Timeline node */}
-                    <div className="absolute -left-[35px] w-6 h-6 rounded-full bg-[#006065] dark:bg-[#131A2C] border-2 border-[#fad503] flex items-center justify-center shadow-sm">
+                    <div className="absolute -left-[35px] w-6 h-6 rounded-full bg-[#006065] dark:bg-[#053639] border-2 border-[#fad503] flex items-center justify-center shadow-sm">
                       <div className="w-2 h-2 rounded-full bg-[#fad503]" />
                     </div>
                     

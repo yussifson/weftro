@@ -303,7 +303,7 @@ export default function CliPadBilling() {
                 const percentage = Math.max(0, Math.min(100, (elapsed / total) * 100));
                 if (percentage > 90) return 'bg-red-500';
                 if (percentage > 70) return 'bg-amber-500';
-                return 'bg-[#006065] dark:bg-[#131A2C]';
+                return 'bg-[#006065] dark:bg-[#053639]';
               })()}`}
               style={{ width: `${(() => {
                 const start = new Date(subscriptionData.updated_at || Date.now());
@@ -335,7 +335,7 @@ export default function CliPadBilling() {
         </div>
         <div className="w-full bg-white/10 dark:bg-secondary rounded-full h-3 mb-1 overflow-hidden">
           <div 
-            className={`h-3 rounded-full transition-all duration-500 ${PLAN_LIMITS[currentPlan]?.maxStorageGB !== Infinity && (usedStorageGB / PLAN_LIMITS[currentPlan]?.maxStorageGB) > 0.9 ? 'bg-red-500' : 'bg-[#006065] dark:bg-[#131A2C]'}`}
+            className={`h-3 rounded-full transition-all duration-500 ${PLAN_LIMITS[currentPlan]?.maxStorageGB !== Infinity && (usedStorageGB / PLAN_LIMITS[currentPlan]?.maxStorageGB) > 0.9 ? 'bg-red-500' : 'bg-[#006065] dark:bg-[#053639]'}`}
             style={{ width: `${PLAN_LIMITS[currentPlan]?.maxStorageGB === Infinity ? (usedStorageGB > 0 ? 5 : 0) : Math.min(100, (usedStorageGB / PLAN_LIMITS[currentPlan]?.maxStorageGB) * 100)}%` }}
           ></div>
         </div>
@@ -365,7 +365,7 @@ export default function CliPadBilling() {
         {/* PRO PLAN */}
         <div className={`relative p-6 flex flex-col rounded-2xl border ${currentPlan === 'pro' ? 'border-[#006065] dark:border-border bg-[#006065] dark:bg-card shadow-md ring-1 ring-[#006065]' : 'border-[#006065] dark:border-border/30 dark:border-[#fad503]/30 bg-white dark:bg-card shadow-md hover:shadow-lg transition-all'}`}>
           {currentPlan !== 'pro' && (
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-[#006065] dark:bg-[#131A2C] text-white text-xs font-bold rounded-full flex items-center gap-1">
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-[#006065] dark:bg-[#053639] text-white text-xs font-bold rounded-full flex items-center gap-1">
               <Sparkles className="w-3 h-3" /> Recommended
             </div>
           )}
@@ -382,7 +382,7 @@ export default function CliPadBilling() {
           <button 
             onClick={() => handlePlanClick('pro')}
             disabled={currentPlan === 'pro' || loading}
-            className={`w-full mt-8 py-2 rounded-xl font-semibold transition-all ${currentPlan === 'pro' ? 'bg-secondary text-foreground border border-border' : 'bg-[#006065] dark:bg-[#131A2C] text-white hover:bg-[#006065] dark:bg-[#131A2C]/90'}`}>
+            className={`w-full mt-8 py-2 rounded-xl font-semibold transition-all ${currentPlan === 'pro' ? 'bg-secondary text-foreground border border-border' : 'bg-[#006065] dark:bg-[#053639] text-white hover:bg-[#006065] dark:bg-[#053639]/90'}`}>
             {getButtonText('pro')}
           </button>
         </div>
@@ -424,7 +424,7 @@ export default function CliPadBilling() {
           <button 
             onClick={() => handlePlanClick('custom')}
             disabled={currentPlan === 'custom' || loading}
-            className={`w-full mt-auto py-2.5 rounded-lg text-sm font-semibold border ${currentPlan === 'custom' ? 'bg-secondary text-foreground border-border' : 'bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004e52] text-white shadow-md'}`}>
+            className={`w-full mt-auto py-2.5 rounded-lg text-sm font-semibold border ${currentPlan === 'custom' ? 'bg-secondary text-foreground border-border' : 'bg-[#006065] dark:bg-[#053639] hover:bg-[#004e52] text-white shadow-md'}`}>
             {getButtonText('custom')}
           </button>
         </div>
@@ -456,7 +456,7 @@ export default function CliPadBilling() {
                   try { rDetails = JSON.parse(tx.description); } catch(e){}
                   
                   return (
-                    <tr key={tx.id} className="hover:bg-transparent dark:hover:bg-[#006065] dark:bg-[#131A2C]/50 transition-colors">
+                    <tr key={tx.id} className="hover:bg-transparent dark:hover:bg-[#006065] dark:bg-[#053639]/50 transition-colors">
                       <td className="px-6 py-4 text-white/80 dark:text-muted-foreground">
                         {new Date(tx.created_at).toLocaleDateString()}
                       </td>

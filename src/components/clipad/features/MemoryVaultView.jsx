@@ -166,7 +166,7 @@ export default function MemoryVaultView({ companyId, userId, spaceId }) {
                             ? 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300'
                             : isTeam
                             ? 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300'
-                            : 'bg-[#006065] dark:bg-[#131A2C]/20 text-[#004e52] dark:bg-emerald-950 dark:text-emerald-300'
+                            : 'bg-[#006065] dark:bg-[#053639]/20 text-[#004e52] dark:bg-emerald-950 dark:text-emerald-300'
                         }`}
                       >
                         {mem.memory_tier}

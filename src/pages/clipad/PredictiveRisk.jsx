@@ -15,8 +15,8 @@ const RISK_LEVELS = {
   critical: { label: 'Critical', color: 'text-red-400', bg: 'bg-red-500/10 border-red-500/40', dot: 'bg-red-500', pulse: 'animate-pulse' },
   high: { label: 'High', color: 'text-orange-400', bg: 'bg-orange-500/10 border-orange-500/30', dot: 'bg-orange-500', pulse: '' },
   medium: { label: 'Medium', color: 'text-amber-400', bg: 'bg-amber-500/10 border-amber-500/30', dot: 'bg-amber-500', pulse: '' },
-  low: { label: 'Low', color: 'text-[#00beac]', bg: 'bg-[#006065] dark:bg-[#131A2C]/10 border-[#006065] dark:border-border/30', dot: 'bg-[#006065] dark:bg-[#131A2C]', pulse: '' },
-  healthy: { label: 'Healthy', color: 'text-[#00beac]', bg: 'bg-[#006065] dark:bg-[#131A2C]/10 border-[#006065] dark:border-border/20', dot: 'bg-emerald-400', pulse: '' },
+  low: { label: 'Low', color: 'text-[#00beac]', bg: 'bg-[#006065] dark:bg-[#053639]/10 border-[#006065] dark:border-border/30', dot: 'bg-[#006065] dark:bg-[#053639]', pulse: '' },
+  healthy: { label: 'Healthy', color: 'text-[#00beac]', bg: 'bg-[#006065] dark:bg-[#053639]/10 border-[#006065] dark:border-border/20', dot: 'bg-emerald-400', pulse: '' },
 };
 
 function RiskSignalBar({ label, value, max, color = 'red', tooltip }) {
@@ -98,7 +98,7 @@ function computeRisk(signals) {
   if (signals.recentKnowledge < 2) score += 5;
   // Low decision velocity
   if (signals.recentDecisions === 0) score += 8;
-  // No recent meetings â†’ isolation
+  // No recent meetings → isolation
   if (signals.recentMeetings === 0) score += 12;
   // Clamp to 100
   score = Math.min(100, score);
@@ -112,8 +112,8 @@ function computeRisk(signals) {
   // Top risk factor
   let topRiskFactor = null;
   if (signals.openBlockers >= 3) topRiskFactor = `${signals.openBlockers} unresolved blockers are stalling progress`;
-  else if (signals.overdueCommitments >= 3) topRiskFactor = `${signals.overdueCommitments} commitments are past due â€” accountability breakdown`;
-  else if (signals.recentMeetings === 0) topRiskFactor = 'No recent activity â€” team may be siloed or disengaged';
+  else if (signals.overdueCommitments >= 3) topRiskFactor = `${signals.overdueCommitments} commitments are past due — accountability breakdown`;
+  else if (signals.recentMeetings === 0) topRiskFactor = 'No recent activity — team may be siloed or disengaged';
   else if (signals.atRiskCommitments >= 2) topRiskFactor = `${signals.atRiskCommitments} commitments flagged at risk`;
 
   return { ...signals, riskScore: score, riskLevel, topRiskFactor };
@@ -231,7 +231,7 @@ ORG RISK SUMMARY (${orgRisk.totalSpaces} spaces analyzed):
 - Total overdue commitments: ${orgRisk.totalOverdue}
 
 TOP RISK SPACES:
-${topRiskySpaces.map(s => `- ${s.name}: Risk ${s.signals.riskScore}/100 (${s.signals.riskLevel}) â€” ${s.signals.openBlockers} blockers, ${s.signals.overdueCommitments} overdue`).join('\n')}
+${topRiskySpaces.map(s => `- ${s.name}: Risk ${s.signals.riskScore}/100 (${s.signals.riskLevel}) — ${s.signals.openBlockers} blockers, ${s.signals.overdueCommitments} overdue`).join('\n')}
 
 Analyze patterns that historically precede project failures and org dysfunction. Respond in valid JSON only:
 {
@@ -289,7 +289,7 @@ Analyze patterns that historically precede project failures and org dysfunction.
                   </span>
                 )}
               </div>
-              <p className="text-sm text-muted-foreground">Orbit detects failure patterns 2 weeks before they happen â€” act before it's too late.</p>
+              <p className="text-sm text-muted-foreground">Orbit detects failure patterns 2 weeks before they happen — act before it's too late.</p>
             </div>
             <div className="flex items-center gap-2">
               <button
@@ -333,7 +333,7 @@ Analyze patterns that historically precede project failures and org dysfunction.
         {aiReport && !aiReport.error && (
           <div className={`rounded-2xl border p-5 ${
             aiReport.risk_trajectory === 'escalating' ? 'border-red-500/40 bg-red-500/5' :
-            aiReport.risk_trajectory === 'improving' ? 'border-[#006065] dark:border-border/30 bg-[#006065] dark:bg-[#131A2C]/5' :
+            aiReport.risk_trajectory === 'improving' ? 'border-[#006065] dark:border-border/30 bg-[#006065] dark:bg-[#053639]/5' :
             'border-amber-500/30 bg-amber-500/5'
           }`}>
             <div className="flex items-center gap-2 mb-4">
@@ -342,10 +342,10 @@ Analyze patterns that historically precede project failures and org dysfunction.
               {aiReport.risk_trajectory && (
                 <span className={`ml-auto text-xs font-bold px-2 py-0.5 rounded-full ${
                   aiReport.risk_trajectory === 'escalating' ? 'bg-red-500/10 text-red-400' :
-                  aiReport.risk_trajectory === 'improving' ? 'bg-[#006065] dark:bg-[#131A2C]/10 text-[#00beac]' :
+                  aiReport.risk_trajectory === 'improving' ? 'bg-[#006065] dark:bg-[#053639]/10 text-[#00beac]' :
                   'bg-amber-500/10 text-amber-400'
                 }`}>
-                  {aiReport.risk_trajectory === 'escalating' ? 'â†‘ Escalating' : aiReport.risk_trajectory === 'improving' ? 'â†“ Improving' : 'â†’ Stable'}
+                  {aiReport.risk_trajectory === 'escalating' ? 'â†‘ Escalating' : aiReport.risk_trajectory === 'improving' ? 'â†“ Improving' : '→ Stable'}
                 </span>
               )}
             </div>
@@ -371,7 +371,7 @@ Analyze patterns that historically precede project failures and org dysfunction.
                 </div>
               )}
               {aiReport.silver_lining && (
-                <div className="p-3 rounded-xl bg-[#006065] dark:bg-[#131A2C]/5 border border-[#006065] dark:border-border/20">
+                <div className="p-3 rounded-xl bg-[#006065] dark:bg-[#053639]/5 border border-[#006065] dark:border-border/20">
                   <p className="text-[10px] font-bold text-[#00beac] uppercase tracking-wider mb-1">Silver Lining</p>
                   <p className="text-xs text-foreground/90">{aiReport.silver_lining}</p>
                 </div>
@@ -396,7 +396,7 @@ Analyze patterns that historically precede project failures and org dysfunction.
             <div className="flex items-center gap-2">
               <Activity className="w-4 h-4 text-primary" />
               <h2 className="font-semibold text-foreground text-sm">Space Risk Breakdown</h2>
-              <span className="text-xs text-muted-foreground ml-1">â€” sorted by risk score</span>
+              <span className="text-xs text-muted-foreground ml-1">— sorted by risk score</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {sortedSpaces.map(({ space, signals }) => (

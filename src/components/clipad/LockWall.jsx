@@ -3,7 +3,7 @@ import { Lock, Clock, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 /**
- * LockWall â€” displayed when content is locked (manually or scheduled).
+ * LockWall — displayed when content is locked (manually or scheduled).
  * Props:
  *   type: 'manual' | 'scheduled' | 'private' | 'not-found'
  *   unlockAt: Date | null  (for scheduled locks)
@@ -113,7 +113,7 @@ export default function LockWall({ type = 'manual', unlockAt = null, title = 'th
 
           {/* Private space note */}
           {isPrivate && (
-            <div className="w-full bg-[#006065] dark:bg-[#131A2C]/10/50 dark:bg-card border border-emerald-100 dark:border-border/20 rounded-2xl p-5 mb-8 text-left">
+            <div className="w-full bg-[#006065] dark:bg-[#053639]/10/50 dark:bg-card border border-emerald-100 dark:border-border/20 rounded-2xl p-5 mb-8 text-left">
               <p className="text-[10px] text-[#006065] dark:text-[#00beac] uppercase tracking-[0.2em] font-bold mb-3">How to get access</p>
               <ul className="text-sm text-emerald-900/80 dark:text-emerald-200 space-y-2.5 font-medium">
                 <li className="flex items-start gap-2.5">
@@ -158,7 +158,7 @@ export default function LockWall({ type = 'manual', unlockAt = null, title = 'th
             className={`group flex items-center gap-2 px-6 py-3 rounded-xl text-white text-sm font-bold transition-all hover:-translate-y-0.5 active:translate-y-0 ${
               isNotFound 
                 ? 'bg-rose-500 hover:bg-rose-600 shadow-md shadow-rose-500/20 hover:shadow-xl' 
-                : 'bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004e52] shadow-md shadow-emerald-500/20 hover:shadow-xl'
+                : 'bg-[#006065] dark:bg-[#053639] hover:bg-[#004e52] shadow-md shadow-emerald-500/20 hover:shadow-xl'
             }`}
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />

@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 import { INTEGRATIONS } from '@/config/integrationsList';
 
-// â”€â”€â”€ Provider color palette â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Provider color palette ───────────────────────────────────────────────────
 const PROVIDER_COLORS = {
   slack: '#fad503',
   github: '#fad503',
@@ -61,14 +61,14 @@ const RELATIONSHIP_COLORS = {
   related: '#006065',
 };
 
-// â”€â”€â”€ Custom Node Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Custom Node Component ─────────────────────────────────────────────────────
 function KnowledgeNode({ data, selected }) {
   const intg = INTEGRATIONS.find(i => i.id === data.provider || i.provider === data.provider);
   const color = getProviderColor(data.provider);
 
   return (
     <div
-      className="relative rounded-2xl border-2 transition-all cursor-pointer bg-[#006065] dark:bg-[#131A2C] text-white shadow-md p-3"
+      className="relative rounded-2xl border-2 transition-all cursor-pointer bg-[#006065] dark:bg-[#053639] text-white shadow-md p-3"
       style={{
         borderColor: selected ? '#fad503' : color,
         boxShadow: selected ? '0 0 0 3px #00beac, 0 4px 24px rgba(0,0,0,0.3)' : '0 4px 12px rgba(0,0,0,0.15)',
@@ -108,7 +108,7 @@ function KnowledgeNode({ data, selected }) {
 
 const nodeTypes = { knowledge: KnowledgeNode };
 
-// â”€â”€â”€ Layout: simple force-style grid placement â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Layout: simple force-style grid placement ────────────────────────────────
 function layoutNodes(nodes) {
   const COLS = Math.ceil(Math.sqrt(nodes.length)) || 1;
   const W = 240, H = 160;
@@ -121,7 +121,7 @@ function layoutNodes(nodes) {
   }));
 }
 
-// â”€â”€â”€ Main Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Main Component ───────────────────────────────────────────────────────────
 export default function KnowledgeGraph() {
   const { user } = useAuth();
   const companyId = useCompanyId();
@@ -223,7 +223,7 @@ export default function KnowledgeGraph() {
       }));
       const positionedNodes = layoutNodes(rawNodes);
 
-      // Build edges â€” only for items we have as nodes
+      // Build edges — only for items we have as nodes
       const rawEdges = (relationships || [])
         .filter(r => itemSet.has(r.source_id) && itemSet.has(r.target_id))
         .map(r => ({
@@ -275,7 +275,7 @@ export default function KnowledgeGraph() {
   return (
     <div className="flex flex-col h-full min-h-screen bg-slate-50 dark:bg-background text-slate-900 dark:text-slate-100 font-sans page-enter">
       {/* Header */}
-      <div className="relative border-b border-white/15 bg-[#006065] dark:bg-[#131A2C] px-6 py-6 shrink-0">
+      <div className="relative border-b border-white/15 bg-[#006065] dark:bg-[#053639] px-6 py-6 shrink-0">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <button onClick={() => navigate('/capture')} className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors shrink-0">
@@ -369,7 +369,7 @@ export default function KnowledgeGraph() {
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="flex flex-col items-center gap-3">
               <Loader2 className="w-8 h-8 text-[#fad503] animate-spin" />
-              <p className="text-sm text-muted-foreground">Building knowledge graphâ€¦</p>
+              <p className="text-sm text-muted-foreground">Building knowledge graph…</p>
             </div>
           </div>
         ) : filteredNodes.length === 0 ? (
@@ -407,7 +407,7 @@ export default function KnowledgeGraph() {
 
         {/* AI Insights Panel */}
         {aiInsightsOpen && (
-          <div className="absolute top-4 left-4 w-80 bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15 rounded-2xl shadow-2xl p-5 z-20 animate-in fade-in slide-in-from-left-4 max-h-[80vh] overflow-y-auto">
+          <div className="absolute top-4 left-4 w-80 bg-[#006065] dark:bg-[#053639] text-white border border-white/15 rounded-2xl shadow-2xl p-5 z-20 animate-in fade-in slide-in-from-left-4 max-h-[80vh] overflow-y-auto">
             <div className="flex items-start justify-between gap-2 mb-3">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-black/20 flex items-center justify-center">
@@ -425,7 +425,7 @@ export default function KnowledgeGraph() {
             {aiInsightsLoading && !aiInsights ? (
               <div className="flex items-center gap-2 text-sm text-muted-foreground py-4">
                 <Loader2 className="w-4 h-4 animate-spin text-[#fad503]" />
-                Analyzing your knowledge graphâ€¦
+                Analyzing your knowledge graph…
               </div>
             ) : (
               <div className="prose prose-sm dark:prose-invert max-w-none text-xs leading-relaxed">
@@ -437,7 +437,7 @@ export default function KnowledgeGraph() {
 
         {/* Node detail panel */}
         {selectedNode && (
-          <div className="absolute top-4 right-4 w-72 bg-[#006065] dark:bg-[#131A2C] text-white border border-white/15 rounded-2xl shadow-2xl p-5 z-10 animate-in fade-in slide-in-from-right-4">
+          <div className="absolute top-4 right-4 w-72 bg-[#006065] dark:bg-[#053639] text-white border border-white/15 rounded-2xl shadow-2xl p-5 z-10 animate-in fade-in slide-in-from-right-4">
             <div className="flex items-start justify-between gap-2 mb-3">
               <div className="flex items-center gap-2">
                 <div

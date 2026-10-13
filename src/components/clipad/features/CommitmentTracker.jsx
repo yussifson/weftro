@@ -29,7 +29,7 @@ export default function CommitmentTracker({ spaceId }) {
 
   const fetchCommitments = async () => {
     setLoading(true);
-    // Removed the clipad_meeting_records join â€” that FK doesn't exist yet.
+    // Removed the clipad_meeting_records join — that FK doesn't exist yet.
     // Pull commitment data flat and display meeting_id info where available.
     const { data, error } = await supabase
       .from('clipad_commitments')
@@ -148,7 +148,7 @@ export default function CommitmentTracker({ spaceId }) {
               key={c.id}
               className={`p-3 rounded-lg border ${
                 c.status === 'met'
-                  ? 'bg-[#006065] dark:bg-[#131A2C]/10/50 border-emerald-100 dark:bg-emerald-900/10 dark:border-emerald-900/30'
+                  ? 'bg-[#006065] dark:bg-[#053639]/10/50 border-emerald-100 dark:bg-emerald-900/10 dark:border-emerald-900/30'
                   : c.status === 'missed'
                   ? 'bg-red-50/50 border-red-100 dark:bg-red-900/10 dark:border-red-900/30'
                   : 'bg-slate-50 dark:bg-background border-slate-100 dark:bg-secondary/50 dark:border-border/50'
@@ -175,7 +175,7 @@ export default function CommitmentTracker({ spaceId }) {
                     <>
                       <button
                         onClick={() => updateStatus(c.id, 'met')}
-                        className="p-1 text-slate-400 hover:text-[#006065] hover:bg-[#006065] dark:bg-[#131A2C]/10 dark:hover:bg-[#004e52]/30 rounded transition-colors"
+                        className="p-1 text-slate-400 hover:text-[#006065] hover:bg-[#006065] dark:bg-[#053639]/10 dark:hover:bg-[#004e52]/30 rounded transition-colors"
                         title="Mark Met"
                       >
                         <CheckCircle2 className="w-4 h-4" />
@@ -192,7 +192,7 @@ export default function CommitmentTracker({ spaceId }) {
                   {c.status !== 'pending' && (
                     <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
                       c.status === 'met'
-                        ? 'bg-[#006065] dark:bg-[#131A2C]/20 text-[#004e52] dark:bg-[#004e52]/30 dark:text-[#00beac]'
+                        ? 'bg-[#006065] dark:bg-[#053639]/20 text-[#004e52] dark:bg-[#004e52]/30 dark:text-[#00beac]'
                         : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
                     }`}>
                       {c.status}

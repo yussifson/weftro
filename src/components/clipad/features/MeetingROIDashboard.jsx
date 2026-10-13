@@ -82,7 +82,7 @@ export default function MeetingROIDashboard({ workspaceId, spaceId }) {
   return (
     <div className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-2xl p-6 shadow-sm relative overflow-hidden group">
       {/* Subtle background glow */}
-      <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#006065] dark:bg-[#131A2C]/10 rounded-full blur-3xl group-hover:bg-[#006065] dark:bg-[#131A2C]/20 transition-colors"></div>
+      <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#006065] dark:bg-[#053639]/10 rounded-full blur-3xl group-hover:bg-[#006065] dark:bg-[#053639]/20 transition-colors"></div>
       
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-6">
@@ -122,7 +122,7 @@ export default function MeetingROIDashboard({ workspaceId, spaceId }) {
             </div>
 
             {/* Metric 2: Hours Saved */}
-            <div className="bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-emerald-900/10 rounded-xl p-4 border border-emerald-100 dark:border-emerald-800/30">
+            <div className="bg-[#006065] dark:bg-[#053639]/10 dark:bg-emerald-900/10 rounded-xl p-4 border border-emerald-100 dark:border-emerald-800/30">
               <div className="flex items-center gap-2 mb-2 text-[#004e52] dark:text-[#00beac]">
                 <Clock className="w-4 h-4" />
                 <span className="text-xs font-semibold uppercase tracking-wider">Time Saved</span>
@@ -135,7 +135,7 @@ export default function MeetingROIDashboard({ workspaceId, spaceId }) {
             </div>
 
             {/* Metric 3: Money Saved */}
-            <div className="bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-emerald-900/10 rounded-xl p-4 border border-emerald-100 dark:border-emerald-800/30">
+            <div className="bg-[#006065] dark:bg-[#053639]/10 dark:bg-emerald-900/10 rounded-xl p-4 border border-emerald-100 dark:border-emerald-800/30">
               <div className="flex items-center gap-2 mb-2 text-[#004e52] dark:text-[#00beac]">
                 <DollarSign className="w-4 h-4" />
                 <span className="text-xs font-semibold uppercase tracking-wider">Cost Saved</span>
