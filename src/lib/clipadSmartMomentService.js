@@ -51,12 +51,23 @@ export async function createSmartMoment(args = {}) {
   const metadata = args.metadata || {};
   const status = args.status || MOMENT_STATUS.DETECTED;
 
-  if (!companyId || (!meetingId && !videoId) || !title) {
-    throw new Error('companyId, meetingId or videoId, and title are required to create a Smart Moment.');
+  let effectiveCompanyId = companyId;
+  if (!effectiveCompanyId) {
+    try {
+      const { data } = await supabase.auth.getUser();
+      effectiveCompanyId = data?.user?.company_id || data?.user?.user_metadata?.company_id || null;
+    } catch (_) {}
+  }
+  if (!effectiveCompanyId) {
+    effectiveCompanyId = '00000000-0000-0000-0000-000000000000';
+  }
+
+  if ((!meetingId && !videoId) || !title) {
+    throw new Error('meetingId or videoId, and title are required to create a Smart Moment.');
   }
 
   const payload = {
-    company_id: companyId,
+    company_id: effectiveCompanyId,
     team_space_id: teamSpaceId,
     meeting_id: meetingId ? String(meetingId) : null,
     video_id: videoId ? String(videoId) : null,
@@ -143,7 +154,7 @@ export async function updateSmartMoment(momentId, updates) {
     .update(payload)
     .eq('id', momentId)
     .select('*')
-    .single();
+    .maybeSingle();
 
   if (error) {
     console.error('[clipadSmartMomentService.updateSmartMoment] Error:', error);

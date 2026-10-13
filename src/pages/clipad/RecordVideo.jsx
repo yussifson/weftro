@@ -1283,7 +1283,8 @@ export default function RecordVideo() {
               { role: 'system', content: 'You are an AI assistant. Summarize the following video transcript. Return ONLY valid JSON with two keys: "summary" (a string summarizing the video concisely) and "action_items" (an array of objects, each with "title", "owner", and "context"). Do not wrap the JSON in markdown blocks.' },
               { role: 'user', content: transcript.trim() }
             ]).then(async (aiResult) => {
-              let text = typeof aiResult === 'string' ? aiResult : aiResult?.response;
+              try {
+                let text = typeof aiResult === 'string' ? aiResult : aiResult?.response;
               if (!text) return;
               
               let jsonStr = text;
@@ -1472,6 +1473,7 @@ export default function RecordVideo() {
             { role: 'system', content: 'You are an AI assistant. Summarize the following video transcript. Return ONLY valid JSON with two keys: "summary" (a string summarizing the video concisely) and "action_items" (an array of objects, each with "title", "owner", and "context"). Do not wrap the JSON in markdown blocks.' },
             { role: 'user', content: transcript.trim() }
           ]).then(async (aiResult) => {
+            try {
               let text = typeof aiResult === 'string' ? aiResult : aiResult?.response;
               if (!text) return;
               
