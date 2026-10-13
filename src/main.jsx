@@ -2,6 +2,8 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from '@/App.jsx'
 import '@/index.css'
+import { initPostHog } from '@/lib/posthog'
+import { initClarity } from '@/lib/clarity'
 import { ErrorBoundary } from '@/components/ErrorBoundary.jsx'
 import { registerSW } from 'virtual:pwa-register'
 import i18n from '@/i18n/config.js'
@@ -71,6 +73,10 @@ window.addEventListener('unhandledrejection', async (event) => {
     return;
   }
 });
+
+// Initialize privacy-conscious analytics safely
+initPostHog();
+initClarity();
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <ErrorBoundary>

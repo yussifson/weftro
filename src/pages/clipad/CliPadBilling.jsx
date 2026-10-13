@@ -5,6 +5,7 @@ import { useCompanyId } from '@/hooks/useCompanyId';
 import { supabase } from '@/api/supabaseClient';
 import { logAuditEvent } from '@/lib/auditLogger';
 import { PLAN_LIMITS } from '@/lib/clipadPricing';
+import { trackEvent } from '@/lib/posthog';
 import { Check, Loader2, Sparkles, FileText, ArrowUpRight } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import ContactSalesModal from '@/components/clipad/ContactSalesModal';
@@ -44,6 +45,7 @@ export default function CliPadBilling() {
   const fetchSubscription = async () => {
     if (!companyId) {
       setInitializing(false);
+        trackEvent('pricing_viewed', { location: 'billing_dashboard' });
       return;
     }
     try {
@@ -128,6 +130,7 @@ export default function CliPadBilling() {
   const handleUpgrade = async (planType) => {
     setLoading(true);
     try {
+      trackEvent('upgrade_clicked', { target_plan: planType });
       const isPro = planType === 'pro';
       const amountInGhs = isPro ? Math.ceil(15 * exchangeRate) : Math.ceil(39 * exchangeRate);
       const amountInPesewas = amountInGhs * 100;
@@ -215,6 +218,7 @@ export default function CliPadBilling() {
           toast({ title: 'Payment Cancelled', description: 'Window closed.' });
         },
       });
+      trackEvent('checkout_started', { target_plan: planType, currency: 'GHS' });
       handler.openIframe();
     } catch (err) {
       toast({ title: 'Error', description: 'Could not initialize Paystack', variant: 'destructive' });
@@ -241,6 +245,7 @@ export default function CliPadBilling() {
       title: 'Downgrade Requested',
       description: `Your request to downgrade to the ${planType.toUpperCase()} plan has been received. Our team will process this before your next billing cycle.`,
     });
+    trackEvent('subscription_cancelled', { requested_downgrade_plan: planType });
     if (companyId) {
       supabase.from('optavel_transactions').insert({
         id: crypto.randomUUID(),

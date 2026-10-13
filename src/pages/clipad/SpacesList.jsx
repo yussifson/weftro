@@ -1,6 +1,7 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/api/supabaseClient';
+import { trackEvent } from '@/lib/posthog';
 import { useAuth } from '@/lib/AuthContext';
 import { getPlanLimits, getUserPlan } from '@/lib/clipadPricing';
 import { useToast } from '@/components/ui/use-toast';

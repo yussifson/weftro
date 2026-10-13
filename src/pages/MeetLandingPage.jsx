@@ -430,7 +430,8 @@ export default function MeetLandingPage() {
         <div className="absolute -bottom-[20%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-[#fad503]/5 blur-[120px]" />
       </div>
       <SEO 
-        title="KERINT - #1 Enterprise AI-Powered Organizational Memory Layer" 
+        title="KERINT by Clipad — #1 Enterprise AI-Powered Collaborative Workspace & Memory Platform"
+          url="https://clipad.com/" 
         description="KERINT is a free, secure, enterprise-grade collaborative productivity workspace. Connect your team with chat, spaces, and HD video meetings instantly. Trusted by teams worldwide." 
         type="website"
       />

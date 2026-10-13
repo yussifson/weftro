@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SEO from '@/components/seo/SEO';
+import { trackEvent } from '@/lib/posthog';
 import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
 import { CliPadLogo } from '@/components/ui/CliPadLogo';
@@ -37,6 +38,7 @@ export default function PricingPage() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    trackEvent('pricing_viewed', { location: 'public_pricing_page' });
     const root = window.document.documentElement;
     root.classList.remove('dark');
     root.classList.add('light');
@@ -45,7 +47,7 @@ export default function PricingPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
-      <SEO title="KERINT Pricing" description="Transparent pricing for teams of all sizes." type="website" />
+      <SEO title="Pricing & Plans — KERINT by Clipad" description="Simple, transparent pricing for teams of all sizes. From free collaborative spaces to enterprise knowledge intelligence." url="https://clipad.com/pricing" />
       
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200">
@@ -99,7 +101,7 @@ export default function PricingPage() {
               <div className="text-4xl font-extrabold text-slate-900 mb-2">{plan.price}</div>
               <p className="text-slate-500 text-sm mb-6 min-h-[40px]">{plan.desc}</p>
               <Button
-                onClick={() => navigate(plan.name === 'Enterprise' ? '/custom-pricing' : '/signup')}
+                onClick={() => { trackEvent('upgrade_clicked', { plan_selected: plan.name, location: 'public_pricing' }); navigate(plan.name === 'Enterprise' ? '/custom-pricing' : '/signup'); }}
                 className={[
                   'w-full rounded-full font-bold h-12 mb-8',
                   plan.highlight

@@ -1,16 +1,35 @@
-User-agent: *
+﻿User-agent: *
 Allow: /
 Allow: /login
 Allow: /signup
 Allow: /features
 Allow: /pricing
+Allow: /security
+Allow: /custom-pricing
 Allow: /about
 
 # Disallow authenticated app routes from being crawled
 Disallow: /dashboard
-Disallow: /admin
-Disallow: /app/*
-Disallow: /settings
+Disallow: /admin/*
+Disallow: /spaces/*
+Disallow: /health
+Disallow: /timeline
+Disallow: /decisions
+Disallow: /decision-replay
+Disallow: /graph
+Disallow: /action-items
+Disallow: /knowledge
+Disallow: /analytics
+Disallow: /integration-analytics
+Disallow: /record/*
+Disallow: /watch/*
+Disallow: /meetings/*
+Disallow: /join/*
+Disallow: /save-meeting/*
+Disallow: /capture/*
+Disallow: /search/*
+Disallow: /settings/*
+Disallow: /chat/*
 Disallow: /api/*
 
-Sitemap: https://optavel.com/sitemap.xml
+Sitemap: https://clipad.com/sitemap.xml

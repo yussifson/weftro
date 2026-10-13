@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
+import AnalyticsTracker from '@/components/analytics/AnalyticsTracker';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "@/components/ui/sonner";
 import { Toaster as HotToaster } from "react-hot-toast";
@@ -98,6 +99,7 @@ function App() {
                 <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
                   <VideoProvider>
                   <BrowserRouter>
+                    <AnalyticsTracker />
                     <React.Suspense fallback={<div>Loading...</div>}>
                       <Routes>
                         <Route path="/login" element={<CliPadLogin />} />

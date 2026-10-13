@@ -2,6 +2,7 @@ import React, { createContext, useState, useContext, useEffect, useRef, useCallb
 import { powerSync } from "@/api/PowerSyncConnector";
 import { supabase } from "@/api/supabaseClient";
 import { isDesktopApp } from '@/lib/domainUtils';
+import { identifyUser, resetUser } from '@/lib/posthog';
 import { getSubdomainAndBase } from './domainUtils';
 import { useImpersonation } from './ImpersonationContext';
 import { saveAccount, removeAccount, getSavedAccounts, markAccountLoggedOut } from './multiAccountUtils';
@@ -690,6 +691,7 @@ export const AuthProvider = ({ children }) => {
         setAuthStep("Setting user...");
         setUser(newUser);
         saveAccount(sessionVal, newUser);
+        identifyUser(newUser);
       }
       
       // Cache the fully constructed user profile for offline fallback

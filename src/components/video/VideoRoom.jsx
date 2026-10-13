@@ -755,21 +755,20 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
    {/* Corporate Left Mission Control Sidebar */}
    <aside className="w-16 sm:w-20 bg-white/90 dark:bg-[#0c141a]/95 backdrop-blur-2xl border-r border-slate-200/90 dark:border-white/10 flex flex-col items-center justify-between py-4 px-2 z-40 shrink-0 select-none shadow-lg transition-colors">
      
-     {/* Top Section: Back / Home & System Brand */}
-     <div className="flex flex-col items-center gap-3 w-full">
+     {/* Top Section: Safe Back / Home Navigation */}
+     <div className="flex flex-col items-center gap-2 w-full pb-3 mb-1 border-b border-slate-200/80 dark:border-white/10">
        <button
          onClick={() => {
-           if (window.confirm("Leave meeting and return to Dashboard?")) {
+           if (window.confirm("Are you sure you want to leave this meeting and return to Dashboard?")) {
              leaveCall();
              navigate('/dashboard');
            }
          }}
-         className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-700 dark:text-slate-200 border border-slate-200/80 dark:border-white/10 transition-all shadow-sm hover:scale-105 active:scale-95"
-         title="Go to Dashboard / Home"
+         className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white border border-slate-200/80 dark:border-white/10 transition-all shadow-none hover:scale-105 active:scale-95 group"
+         title="Exit to Dashboard"
        >
-         <Home className="w-5 h-5 text-[#006065] dark:text-[#fad503]" />
+         <Home className="w-4 h-4 text-slate-600 dark:text-slate-300 group-hover:text-[#006065] dark:group-hover:text-[#fad503] transition-colors" />
        </button>
-       <div className="w-8 h-px bg-slate-200 dark:bg-white/10 my-0.5" />
      </div>
 
      {/* Center Section: Core Mission Controls */}
@@ -952,19 +951,17 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
        )}
      </div>
 
-     {/* Right: Copy Meeting Link Button */}
-     <div className="flex items-center gap-2 pointer-events-auto">
-       <Button
-         size="sm"
-         variant="secondary"
-         onClick={handleCopyLink}
-         className="h-8 px-3 text-xs rounded-full font-semibold bg-white/90 dark:bg-slate-900/80 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-white/10 hover:bg-white dark:hover:bg-slate-800 shadow-md flex items-center gap-1.5 transition-all"
-         title="Copy Meeting Link"
-       >
-         {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5 text-[#006065] dark:text-[#fad503]" />}
-         <span>{copiedLink ? "Copied" : "Copy Link"}</span>
-       </Button>
-     </div>
+           {/* Right: Copy Meeting Link Button */}
+      <div className="flex items-center gap-2 pointer-events-auto">
+        <button
+          onClick={handleCopyLink}
+          className="h-8 px-3.5 text-xs font-medium rounded-full bg-white/90 dark:bg-[#131d24]/90 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 shadow-sm flex items-center gap-1.5 transition-all hover:scale-[1.02] active:scale-[0.98]"
+          title="Copy Meeting Link"
+        >
+          {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5 text-[#006065] dark:text-[#fad503]" />}
+          <span className="font-medium">{copiedLink ? "Copied!" : "Copy Meeting Link"}</span>
+        </button>
+      </div>
    </div>
 
   {/* Waiting Room UI */}
@@ -1316,8 +1313,12 @@ function ParticipantTile({ id, isLocal, className }) {
  const videoRef = useRef(null);
  const audioRef = useRef(null);
  
- const displayName = participant?.user_name || (isLocal ? "You" : "Participant");
- const initials = displayName.substring(0, 2).toUpperCase();
+ const rawName = participant?.user_name || (isLocal ? "You" : "Participant");
+ const displayName = rawName
+   .replace(/^optavel\//i, '')
+   .replace(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i, isLocal ? 'You' : 'Participant')
+   .replace(/^[a-z0-9]{10,}$/i, isLocal ? 'You' : 'Participant');
+ const initials = (displayName || 'P').substring(0, 2).toUpperCase();
  
  const avatarColor = React.useMemo(() => {
   let hash = 0;

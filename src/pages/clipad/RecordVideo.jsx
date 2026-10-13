@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/api/supabaseClient';
+import { trackEvent } from '@/lib/posthog';
 import { createCapture } from '@/lib/clipadCaptureService';
 import { contextualizeCapture } from '@/lib/clipadContextualizationService';
 import { generateText } from '@/lib/cloudflareAI';
@@ -116,9 +117,7 @@ export default function RecordVideo() {
 
   // Fix #2 — Pre-warm the Render server the moment the page loads so it's
   // awake by the time the user clicks Record (avoids cold-start during upload).
-  useEffect(() => {
-    fetch('https://slate-gcph.onrender.com/health', { mode: 'no-cors' }).catch(() => {});
-  }, []);
+
   
   useEffect(() => {
     const initDraft = async () => {
@@ -998,163 +997,13 @@ export default function RecordVideo() {
       wsEndRequestedRef.current = false;
       wsServerConfigErrorRef.current = false;
 
-      // WebSocket live streamer (Render) with HTTP keep-alive wake-up ping
-      const wsUrl = 'wss://slate-gcph.onrender.com';
-      fetch('https://slate-gcph.onrender.com/health', { mode: 'no-cors' }).catch(() => {});
-
-      // ── Application-level heartbeat to keep Render from sleeping ──
-      let wsPingInterval = null;
-      const startPingInterval = (socket) => {
-        wsPingInterval = setInterval(() => {
-          if (socket.readyState === WebSocket.OPEN) {
-            socket.send(JSON.stringify({ type: 'PING' }));
-          }
-        }, 20000);
-      };
-      const stopPingInterval = () => clearInterval(wsPingInterval);
-
-      // ── Backpressure-safe chunk sending ──
-      const pendingChunks = [];
-      let isFlushing = false;
-      const flushChunks = (socket) => {
-        if (isFlushing) return;
-        isFlushing = true;
-        while (pendingChunks.length > 0) {
-          if (socket.readyState !== WebSocket.OPEN) {
-            isFlushing = false; // Fix #8 — reset flag so next call isn't stuck
-            break;
-          }
-          if (socket.bufferedAmount > 5 * 1024 * 1024) {
-            setTimeout(() => flushChunks(socket), 200);
-            isFlushing = false;
-            return;
-          }
-          const chunk = pendingChunks.shift();
-          socket.send(chunk);
-        }
-        isFlushing = false;
-      };
-
-      const connectWS = async (isReconnect = false) => {
-        const ws = new WebSocket(wsUrl);
-        wsRef.current = ws;
-
-        ws.onopen = async () => {
-          wsIsReconnectingRef.current = false;
-          wsReconnectAttemptsRef.current = 0;
-          const { data: { session } } = await supabase.auth.getSession();
-          ws.send(JSON.stringify({ type: 'START', userId: user.id, token: session?.access_token }));
-          if (!isReconnect) {
-            // First connection — recorder already started below
-          } else {
-            // Reconnected — replay buffered chunks first
-            toast({ title: 'ðŸ”„ Reconnected', description: 'Uploading buffered recording data...' });
-            for (const bufferedChunk of wsBufferedChunksRef.current) {
-              if (ws.readyState === WebSocket.OPEN) ws.send(bufferedChunk);
-            }
-            wsBufferedChunksRef.current = [];
-            // If user already stopped, send END now
-            if (wsEndRequestedRef.current) {
-              ws.send(JSON.stringify({ type: 'END' }));
-            }
-          }
-          startPingInterval(ws);
-        };
-
-        ws.onmessage = async (event) => {
-          const msg = JSON.parse(event.data);
-          if (msg.type === 'PROGRESS') {
-            setUploadProgress(Math.max(msg.percent || 0, uploadProgress));
-          } else if (msg.type === 'SUCCESS') {
-            stopPingInterval();
-            const publicUrl = supabase.storage.from('clipad_videos').getPublicUrl(msg.fileName).data.publicUrl;
-            setRecordingUrl(publicUrl);
-
-            const videoTitle = title.trim() || `Recording - ${new Date().toLocaleDateString()}`;
-            const { data: videoRecord, error: dbError } = await supabase.from('clipad_videos').insert({
-              id: id, // FIX: Map the cloud ID to the route ID
-              creator_id: user.id,
-              company_id: user?.company_id || null, // Fix #4 — needed for RLS and teammate visibility
-              video_url: publicUrl,
-              title: videoTitle,
-              space_id: selectedSpace || null,
-              duration_seconds: recordingSecondsRef.current,
-            }).select().single();
-
-            if (!dbError) {
-              setActiveVideoId(videoRecord.id);
-              toast({ title: 'Recording Saved!', description: 'Your video is securely saved in the cloud. Review details below.', variant: 'default' });
-              setUploadProgress(100);
-              setPhase('review');
-              // REMOVED deleteRecordingState(id) to ensure IDB persists until user explicitly discards or navigates away!
-            } else {
-              console.error('DB insert error:', dbError);
-              toast({ title: 'Save Error', description: dbError.message, variant: 'destructive' });
-              setPhase('review');
-            }
-          } else if (msg.type === 'ERROR') {
-            stopPingInterval();
-            const errorStr = (msg.error || '').toString();
-            const isConfigError = errorStr.includes('SUPABASE_URL') || errorStr.includes('misconfiguration') || errorStr.includes('Server misconfiguration');
-            if (isConfigError) {
-              console.warn('WebSocket relay server misconfigured, falling back silently to local recording:', errorStr);
-              wsServerConfigErrorRef.current = true;
-              try { ws.close(); } catch (e) {}
-              if (!isRecordingRef.current || wsEndRequestedRef.current) {
-                if (chunksRef.current.length > 0 && !videoBlob) {
-                  const blob = new Blob(chunksRef.current, { type: 'video/webm' });
-                  setVideoBlob(blob);
-                  setRecordingUrl(URL.createObjectURL(blob));
-                }
-                setPhase('review');
-              }
-            } else {
-              toast({ title: 'Upload Error', description: msg.error, variant: 'destructive' });
-              setPhase('review');
-            }
-          }
-          // PONG — no-op, keepalive confirmed
-        };
-
-        ws.onerror = (err) => {
-          // Silently ignore websocket errors as local recording handles it seamlessly
-          stopPingInterval();
-        };
-
-        ws.onclose = (evt) => {
-          stopPingInterval();
-          if (wsServerConfigErrorRef.current) return;
-          // Normal close (code 1000 / 1001) — do nothing
-          if (evt.code === 1000 || evt.code === 1001) return;
-
-          if (!isRecordingRef.current && !wsEndRequestedRef.current) return;
-
-          const attemptsLeft = wsMaxReconnects - wsReconnectAttemptsRef.current;
-          if (attemptsLeft > 0 && (isRecordingRef.current || wsEndRequestedRef.current)) {
-            wsIsReconnectingRef.current = true;
-            wsReconnectAttemptsRef.current++;
-            const delay = Math.min(1000 * Math.pow(2, wsReconnectAttemptsRef.current - 1), 15000);
-            setTimeout(() => connectWS(true), delay);
-          }
-        };
-      };
-
       recorder.ondataavailable = e => {
         if (e.data.size > 0) {
-          // Always save to IndexedDB for crash recovery
           chunksRef.current.push(e.data);
           saveRecordingState(id, chunksRef.current);
-
-          if (wsRef.current?.readyState === WebSocket.OPEN) {
-            pendingChunks.push(e.data);
-            flushChunks(wsRef.current);
-          } else {
-            // WS not ready — buffer the chunk for later replay on reconnect
-            wsBufferedChunksRef.current.push(e.data);
-          }
         }
       };
-      
+
       recorder.onstop = async () => {
         stopEverything();
         if (chunksRef.current.length > 0) {
@@ -1363,6 +1212,7 @@ export default function RecordVideo() {
           });
         }
         
+        trackEvent('core_value_achieved', { action: 'video_recorded_and_finalized' });
         toast({ title: '✓ Details updated!', description: 'Your recording has been finalized.' });
         deleteRecordingState(id);
         setTimeout(() => navigate(`/spaces/${selectedSpace || ''}`), 1000);

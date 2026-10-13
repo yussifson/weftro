@@ -2,6 +2,7 @@
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
+import SEO from '@/components/seo/SEO';
 import { useCompanyId } from '@/hooks/useCompanyId';
 import { useToast } from '@/components/ui/use-toast';
 import {
@@ -224,6 +225,8 @@ export default function CliPadCustomPricing() {
   };
 
   return (
+    <>
+      <SEO title="Enterprise Custom Pricing & SLA — KERINT by Clipad" description="Tailored deployment options, custom data retention policies, and dedicated SLA contracts for enterprise organizations." url="https://clipad.com/custom-pricing" />
     <div className="min-h-screen bg-[#fafbfc] dark:bg-[#090d16] text-white dark:text-slate-100 flex flex-col selection:bg-orange-500 selection:text-white">
       {/* Top Header */}
       <header className="sticky top-0 z-50 backdrop-blur-md bg-white/95 dark:bg-[#090d16]/95 border-b border-white/15/80 dark:border-white/10 px-6 md:px-12 py-3.5">
@@ -608,6 +611,6 @@ export default function CliPadCustomPricing() {
         )}
       </main>
     </div>
+    </>
   );
 }
-
