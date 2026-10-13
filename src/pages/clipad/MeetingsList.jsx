@@ -39,12 +39,13 @@ export default function MeetingsList() {
         .order('created_at', { ascending: false });
 
       if (companyId) {
-        query = query.or(`company_id.eq.${companyId},host_id.eq.${user.id}`);
+        query = query.or(`host_id.eq.${user.id},company_id.eq.${companyId}`);
       } else {
         query = query.eq('host_id', user.id);
       }
 
-      const { data } = await query;
+      const { data, error } = await query;
+      if (error) console.warn('fetchMeetings query error:', error);
 
       // Fetch action items count for each meeting
       const { data: actions } = await supabase
@@ -59,16 +60,18 @@ export default function MeetingsList() {
         const memberSpaceIds = new Set(membershipRes.data?.map(m => m.space_id) || []);
         const isUserAdmin = isAdmin(user);
 
-        const filtered = data.filter(m => {
-          // If the user hosted the meeting, ALWAYS show it!
+        const filtered = (data || []).filter(m => {
+          // Always show meetings hosted by current user
           if (m.host_id === user.id) return true;
-          // Admins see all meetings in their company
+          // Always show meetings belonging to current user's company
+          if (companyId && m.company_id === companyId) return true;
+          // Admins see all company meetings
           if (isUserAdmin) return true;
-          // Standalone meetings with no space are visible to company members
+          // Standalone meetings with no space are visible
           if (!m.space_id) return true;
-          // Members see meetings in public spaces
+          // Public space meetings are visible
           if (m.space?.is_private === false) return true;
-          // Members see meetings in spaces they're members of
+          // Space members see space meetings
           if (m.space_id && memberSpaceIds.has(m.space_id)) return true;
           return false;
         });
@@ -110,6 +113,7 @@ export default function MeetingsList() {
       try {
         await supabase.from('video_rooms').upsert({
           id: crypto.randomUUID(),
+          title: `Meeting ${targetRoomName}`,
           company_id: user?.company_id || user?.user_metadata?.company_id || null,
           daily_room_name: targetRoomName,
           daily_room_url: roomData?.url || `https://optavel.daily.co/${targetRoomName}`,

@@ -695,14 +695,8 @@ export default function RecordVideo() {
     
     setIsPreparingStream(true);
 
-    // IMMEDIATELY request PiP window to consume the synchronous user gesture
+    // PiP is strictly manual or window-switch only (never auto-popped immediately)
     let pipPromise = null;
-    if (('documentPictureInPicture' in window) && (mode === 'screen_camera' || mode === 'camera_only')) {
-      pipPromise = window.documentPictureInPicture.requestWindow({ width: 320, height: 180 }).catch(e => {
-        console.warn('PiP auto-start failed:', e);
-        return null;
-      });
-    }
 
     // Plan Limit Check: Check if user has exceeded storage or monthly recordings
     try {
@@ -765,7 +759,7 @@ export default function RecordVideo() {
     setIsPreparingStream(false);
     if (success) {
       setPhase('recording');
-      if (pipPromise) startPip(pipPromise);
+      // pip only opened via user controls or explicit trigger
       setCountdown(5);
     }
   };
@@ -1765,26 +1759,26 @@ export default function RecordVideo() {
 
         {/* ── EXECUTIVE CORPORATE COUNTDOWN OVERLAY ── */}
         {countdown !== null && countdown > 0 && createPortal(
-          <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50 dark:bg-slate-950/85 backdrop-blur-md">
+          <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-slate-900/40 dark:bg-black/75 backdrop-blur-md transition-all">
             <motion.div 
               key={countdown}
-              initial={{ scale: 0.85, opacity: 0 }}
+              initial={{ scale: 0.88, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 1.1, opacity: 0 }}
-              transition={{ duration: 0.25, ease: "easeOut" }}
-              className="flex flex-col items-center gap-6 p-10 rounded-3xl bg-white/95 dark:bg-[#091114]/95 border border-slate-200 dark:border-white/10 shadow-[0_25px_70px_rgba(0,0,0,0.2)] dark:shadow-[0_25px_70px_rgba(0,0,0,0.8)]"
+              exit={{ scale: 1.08, opacity: 0 }}
+              transition={{ duration: 0.22, ease: "easeOut" }}
+              className="flex flex-col items-center gap-6 p-10 rounded-3xl bg-white dark:bg-[#0c1319] border border-slate-200/90 dark:border-white/10 shadow-2xl dark:shadow-[0_25px_70px_rgba(0,0,0,0.85)] max-w-sm w-full mx-4"
             >
-              {/* Executive Dial */}
+              {/* Theme-Adaptive Circular Dial */}
               <div className="relative flex items-center justify-center w-36 h-36">
-                <div className="absolute inset-0 rounded-full border border-[#006065]/20 dark:border-teal-500/20" />
-                <div className="absolute inset-2 rounded-full border border-[#006065]/40 dark:border-teal-500/40" />
+                <div className="absolute inset-0 rounded-full border border-[#006065]/15 dark:border-teal-500/20" />
+                <div className="absolute inset-2 rounded-full border border-[#006065]/30 dark:border-teal-500/40" />
                 <div className="absolute inset-0 rounded-full border-t-2 border-[#006065] dark:border-[#00beac] animate-spin" style={{ animationDuration: '2s' }} />
-                <span className="text-7xl font-extrabold text-slate-900 dark:text-white tabular-nums tracking-tighter drop-shadow-sm">
+                <span className="text-7xl font-extrabold text-[#006065] dark:text-[#fad503] tabular-nums tracking-tighter drop-shadow-sm font-sans">
                   {countdown}
                 </span>
               </div>
               
-              {/* Executive Status Indicator */}
+              {/* Executive Status Badge */}
               <div className="flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10">
                 <span className="w-2 h-2 rounded-full bg-[#006065] dark:bg-[#fad503] animate-pulse" />
                 <span className="text-xs font-semibold uppercase tracking-widest text-slate-700 dark:text-slate-300">Preparing Recording</span>

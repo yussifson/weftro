@@ -741,83 +741,14 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
 };
 
  return (
- <div className="flex flex-col h-screen w-screen overflow-hidden relative bg-[#091114] text-white font-sans select-none">
-  {/* Subtle corporate ambient glow */}
-  <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
-    <div className="absolute -top-[15%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-[#006065]/15 blur-[140px]" />
-    <div className="absolute -bottom-[15%] -right-[10%] w-[50vw] h-[50vw] rounded-full bg-sky-900/10 blur-[140px]" />
-  </div>
+  <div className="flex flex-col h-screen w-screen overflow-hidden relative bg-slate-100 dark:bg-[#091114] text-slate-900 dark:text-white font-sans select-none transition-colors duration-200">
+   {/* Subtle ambient glow */}
+   <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+     <div className="absolute -top-[15%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-[#006065]/10 dark:bg-[#006065]/20 blur-[140px]" />
+     <div className="absolute -bottom-[15%] -right-[10%] w-[50vw] h-[50vw] rounded-full bg-sky-500/10 dark:bg-sky-900/15 blur-[140px]" />
+   </div>
 
-  {/* Top Executive Header Bar */}
-  {!isPipMode && (
-    <header className="relative z-20 h-14 px-4 sm:px-6 bg-[#091114]/90 backdrop-blur-xl border-b border-white/10 flex items-center justify-between shrink-0">
-      <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2.5">
-          <CliPadLogo size={22} className="text-[#006065] dark:text-[#fad503]" />
-          <div className="hidden sm:flex flex-col">
-            <span className="text-[10px] font-bold tracking-wider uppercase text-slate-400">Secure Live Meeting</span>
-            <span className="text-sm font-semibold text-white truncate max-w-[240px]">
-              {roomUrl.split("/").pop().split("?")[0] || "Executive Room"}
-            </span>
-          </div>
-        </div>
-        <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-medium">
-          <Shield className="w-3 h-3 text-emerald-400" />
-          <span>E2EE Encrypted</span>
-        </div>
-      </div>
-
-      {/* Center Call Duration / Recording Status */}
-      <div className="flex items-center gap-2">
-        {isRecording ? (
-          <div className="flex items-center gap-2 bg-red-500/15 border border-red-500/30 text-red-400 px-3 py-1 rounded-full text-xs font-mono font-semibold tracking-wider shadow-inner">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
-            </span>
-            <span>{Math.floor(recordingSeconds / 60).toString().padStart(2, "0")}:{(recordingSeconds % 60).toString().padStart(2, "0")}</span>
-            <span className="text-[10px] font-bold text-red-300">REC</span>
-          </div>
-        ) : (
-          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-slate-300 text-xs font-medium">
-            <Lock className="w-3 h-3 text-emerald-400" />
-            <span>Active Session</span>
-          </div>
-        )}
-      </div>
-
-      {/* Right Header: Participants count + Network Quality + Fast Copy */}
-      <div className="flex items-center gap-2 sm:gap-3">
-        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-slate-300">
-          {networkQuality === "very-low" ? (
-            <WifiOff className="w-3.5 h-3.5 text-red-400" />
-          ) : networkQuality === "low" ? (
-            <Wifi className="w-3.5 h-3.5 text-yellow-400" />
-          ) : (
-            <Wifi className="w-3.5 h-3.5 text-emerald-400" />
-          )}
-          <span className="hidden sm:inline">
-            {networkQuality === "very-low" ? "Poor" : networkQuality === "low" ? "Fair" : "HD"}
-          </span>
-        </div>
-        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-slate-300">
-          <Users className="w-3.5 h-3.5 text-[#006065] dark:text-[#fad503]" />
-          <span>{participantIds.length + 1}</span>
-        </div>
-        <Button 
-          size="sm" 
-          variant="ghost" 
-          onClick={handleCopyLink} 
-          className="h-8 px-2.5 text-xs text-slate-300 hover:text-white hover:bg-white/10 rounded-full" 
-          title="Copy Meeting Link"
-        >
-          {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-        </Button>
-      </div>
-    </header>
-  )}
-
- {/* Main Layout Area */}
+   {/* Main Layout Area - full height since top header bar is removed */}
  <div className="relative z-10 flex-1 flex flex-row relative min-w-0 overflow-hidden">
  
  {/* Video Content Area */}
@@ -825,24 +756,43 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
 
 
 
-  {/* Recording Status Indicator */}
-  {isRecording && (
-    <div className="absolute top-4 left-4 z-50 flex items-center gap-2">
-      {/* Premium minimalist recording indicator */}
-      <div className="flex items-center gap-2.5 bg-black/60 backdrop-blur-xl border border-white/10 text-white px-4 py-2 rounded-full shadow-2xl">
-        {/* Pulsing dot */}
-        <span className="relative flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
-        </span>
-        {/* Timer */}
-        <span className="font-mono text-sm font-medium tracking-widest tabular-nums">
-          {Math.floor(recordingSeconds / 60).toString().padStart(2, '0')}:{(recordingSeconds % 60).toString().padStart(2, '0')}
-        </span>
-        <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-red-400 opacity-90">REC</span>
-      </div>
-    </div>
-  )}
+  {/* Floating Status & Quick Action Badges */}
+   <div className="absolute top-4 left-4 right-4 z-40 flex items-center justify-between pointer-events-none">
+     {/* Left: Meeting Status & Recording */}
+     <div className="flex items-center gap-2 pointer-events-auto">
+       {isRecording ? (
+         <div className="flex items-center gap-2.5 bg-black/75 backdrop-blur-xl border border-red-500/30 text-white px-3.5 py-1.5 rounded-full shadow-lg">
+           <span className="relative flex h-2 w-2">
+             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
+             <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
+           </span>
+           <span className="font-mono text-xs font-semibold tabular-nums text-red-400">
+             {Math.floor(recordingSeconds / 60).toString().padStart(2, '0')}:{(recordingSeconds % 60).toString().padStart(2, '0')}
+           </span>
+           <span className="text-[10px] font-bold text-red-400 uppercase tracking-wider">REC</span>
+         </div>
+       ) : (
+         <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/80 dark:bg-black/60 backdrop-blur-md border border-slate-200/80 dark:border-white/10 text-xs font-medium text-slate-700 dark:text-slate-300 shadow-sm">
+           <Lock className="w-3.5 h-3.5 text-emerald-500" />
+           <span className="font-mono font-medium">{roomUrl.split("/").pop().split("?")[0]}</span>
+         </div>
+       )}
+     </div>
+
+     {/* Right: Copy Meeting Link Button */}
+     <div className="flex items-center gap-2 pointer-events-auto">
+       <Button
+         size="sm"
+         variant="secondary"
+         onClick={handleCopyLink}
+         className="h-8 px-3 text-xs rounded-full font-semibold bg-white/90 dark:bg-slate-900/80 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-white/10 hover:bg-white dark:hover:bg-slate-800 shadow-md flex items-center gap-1.5 transition-all"
+         title="Copy Meeting Link"
+       >
+         {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5 text-[#006065] dark:text-[#fad503]" />}
+         <span>{copiedLink ? "Copied" : "Copy Link"}</span>
+       </Button>
+     </div>
+   </div>
 
   {/* Waiting Room UI */}
   {waitingIds.length > 0 && (
@@ -883,9 +833,9 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
     const sidebarParticipants = allParticipants.filter(id => id !== mainSpeakerId);
 
     return (
-      <div className="flex-1 flex flex-col lg:flex-row p-3 sm:p-5 gap-4 overflow-hidden bg-slate-950/40 backdrop-blur-md">
+      <div className="flex-1 flex flex-col lg:flex-row p-3 sm:p-5 gap-4 overflow-hidden bg-slate-200/40 dark:bg-slate-950/40 backdrop-blur-md">
         {/* Main Stage Area */}
-        <div className="flex-[3] relative rounded-3xl flex items-center justify-center overflow-hidden border border-white/10 shadow-2xl bg-slate-950/90 ring-1 ring-white/5">
+        <div className="flex-[3] relative rounded-3xl flex items-center justify-center overflow-hidden border border-slate-200 dark:border-white/10 shadow-2xl bg-slate-900 dark:bg-slate-950/90 ring-1 ring-black/5 dark:ring-white/5">
           {showWhiteboard && (
             <CanvasWhiteboard onClose={() => setShowWhiteboard(false)} />
           )}
@@ -947,7 +897,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
 
  {/* Chat Sidebar */}
  {showChat && (
- <div className="w-80 border-l border-primary/40 bg-card flex flex-col shrink-0 animate-in slide-in-from-right hover:shadow-[0_2px_8px_rgba(0,0,0,0.07)] transition-shadow duration-200 z-40">
+ <div className="w-80 border-l border-slate-200 dark:border-white/10 bg-white dark:bg-[#0d151c] flex flex-col shrink-0 animate-in slide-in-from-right shadow-2xl z-40 transition-colors">
  <div className="h-14 border-b border-primary/40 flex items-center justify-between px-4">
  <h3 className="font-semibold flex items-center gap-2"><MessageSquare className="w-4 h-4" /> Meeting Chat</h3>
  <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500 dark:text-muted-foreground hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-accent rounded-full" onClick={() => setShowChat(false)}>
@@ -1134,11 +1084,11 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
  `}</style>
 
    {/* Executive Microsoft Teams / Google Meet Style Control Dock */}
-  <div className="relative z-30 w-full px-3 py-3 sm:py-4 flex items-center justify-center pointer-events-auto shrink-0 bg-[#091114]/70 backdrop-blur-2xl border-t border-white/10">
+  <div className="relative z-30 w-full px-3 py-3 sm:py-4 flex items-center justify-center pointer-events-auto shrink-0 bg-white/80 dark:bg-[#091114]/80 backdrop-blur-2xl border-t border-slate-200 dark:border-white/10 transition-colors">
     <div className="flex items-center justify-between sm:justify-center gap-2 sm:gap-6 max-w-5xl w-full">
       
       {/* Group 1: Core AV Controls */}
-      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-xl">
+      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-slate-100/80 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 backdrop-blur-xl shadow-md dark:shadow-xl">
         <Button 
           onClick={toggleAudio}
           variant={isMuted ? "destructive" : "secondary"}
@@ -1160,12 +1110,12 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
       </div>
 
       {/* Group 2: Collaboration & Sharing */}
-      <div className="hidden sm:flex items-center gap-2 p-1.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-xl">
+      <div className="hidden sm:flex items-center gap-2 p-1.5 rounded-2xl bg-slate-100/80 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 backdrop-blur-xl shadow-md dark:shadow-xl">
         <Button 
           onClick={toggleScreenShare}
           variant={isSharingScreen ? "default" : "ghost"}
           size="icon"
-          className={`w-11 h-11 rounded-xl transition-all ${isSharingScreen ? 'bg-[#006065] text-white hover:bg-[#006065]/90' : 'text-slate-200 hover:text-white hover:bg-white/10'}`}
+          className={`w-11 h-11 rounded-xl transition-all ${isSharingScreen ? 'bg-[#006065] text-white hover:bg-[#006065]/90' : 'text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-white/10'}`}
           title="Share Screen"
         >
           <MonitorUp className="w-5 h-5" />
@@ -1174,7 +1124,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           onClick={() => setShowWhiteboard(!showWhiteboard)}
           variant={showWhiteboard ? "default" : "ghost"}
           size="icon"
-          className={`w-11 h-11 rounded-xl transition-all ${showWhiteboard ? 'bg-[#006065] text-white hover:bg-[#006065]/90' : 'text-slate-200 hover:text-white hover:bg-white/10'}`}
+          className={`w-11 h-11 rounded-xl transition-all ${showWhiteboard ? 'bg-[#006065] text-white hover:bg-[#006065]/90' : 'text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-white/10'}`}
           title="Interactive Whiteboard"
         >
           <PenTool className="w-5 h-5" />
@@ -1197,7 +1147,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
             onClick={() => setShowEmojis(!showEmojis)}
             variant={showEmojis ? "default" : "ghost"}
             size="icon"
-            className={`w-11 h-11 rounded-xl transition-all ${showEmojis ? 'bg-[#006065] text-white' : 'text-slate-200 hover:text-white hover:bg-white/10'}`}
+            className={`w-11 h-11 rounded-xl transition-all ${showEmojis ? 'bg-[#006065] text-white' : 'text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-white/10'}`}
             title="Reactions"
           >
             <Smile className="w-5 h-5" />
@@ -1206,12 +1156,12 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
       </div>
 
       {/* Group 3: Intelligence & Meeting Tools */}
-      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-xl">
+      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-slate-100/80 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 backdrop-blur-xl shadow-md dark:shadow-xl">
         <Button 
           onClick={() => setShowChat(!showChat)}
           variant={showChat ? "default" : "ghost"}
           size="icon"
-          className={`w-11 h-11 sm:w-11 sm:h-11 rounded-xl relative transition-all ${showChat ? 'bg-[#006065] text-white hover:bg-[#006065]/90' : 'text-slate-200 hover:text-white hover:bg-white/10'}`}
+          className={`w-11 h-11 sm:w-11 sm:h-11 rounded-xl relative transition-all ${showChat ? 'bg-[#006065] text-white hover:bg-[#006065]/90' : 'text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-white/10'}`}
           title="Chat"
         >
           <MessageSquare className="w-5 h-5" />
@@ -1223,7 +1173,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           onClick={() => setShowInvite(true)}
           variant="ghost"
           size="icon"
-          className="w-11 h-11 rounded-xl text-slate-200 hover:text-white hover:bg-white/10 transition-all"
+          className="w-11 h-11 rounded-xl text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-white/10 transition-all"
           title="Invite Participants"
         >
           <UserPlus className="w-5 h-5" />
@@ -1232,7 +1182,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           variant="ghost"
           onClick={handleAiAssist}
           disabled={isAiLoading}
-          className="h-11 px-3 rounded-xl font-medium text-xs sm:text-sm flex items-center gap-2 text-slate-200 hover:text-white hover:bg-white/10 transition-all"
+          className="h-11 px-3 rounded-xl font-medium text-xs sm:text-sm flex items-center gap-2 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-white/10 transition-all"
           title="Generate AI Notes & Summary"
         >
           <Sparkles className="w-4 h-4 text-[#fad503]" />
@@ -1242,7 +1192,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           onClick={() => setShowSettings(true)}
           variant="ghost"
           size="icon"
-          className="w-11 h-11 rounded-xl text-slate-200 hover:text-white hover:bg-white/10 transition-all"
+          className="w-11 h-11 rounded-xl text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-white/10 transition-all"
           title="Settings"
         >
           <Settings className="w-5 h-5" />
@@ -1424,7 +1374,8 @@ function ParticipantTile({ id, isLocal, className }) {
 // Wrapper to initialize Daily provider
 export default function VideoRoom({ roomUrl, userName, token, initialAudio = true, initialVideo = true, initialBackground, onLeave, isPipMode, togglePipMode, spaceId }) {
  const { id: routeId } = useParams();
- const finalRoomUrl = roomUrl || (routeId ? `https://optavel.daily.co/${routeId}` : null);
+ const cleanRoomId = routeId ? routeId.replace(/^optavel\//i, '') : '';
+ const finalRoomUrl = roomUrl || (cleanRoomId ? `https://optavel.daily.co/${cleanRoomId}` : null);
  const { user } = useAuth();
  const [daily, setDaily] = useState(null);
  // Keep a ref so the cleanup closure always has access to the latest callObject
