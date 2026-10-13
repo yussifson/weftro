@@ -141,7 +141,7 @@ export default function InstitutionalMemoryVault({ workspaceId }) {
       const aiResponse = await generateText([
         {
           role: 'system',
-          content: `You are an Enterprise Knowledge Graph AI assistant with access to this organization's FULL knowledge base â€” including internal meetings, decisions, blockers, action items, AND documents/files imported from external integrations (Google Drive, Slack, GitHub, Zoom, Notion, etc.).
+          content: `You are an Enterprise Knowledge Graph AI assistant with access to this organization's FULL knowledge base — including internal meetings, decisions, blockers, action items, AND documents/files imported from external integrations (Google Drive, Slack, GitHub, Zoom, Notion, etc.).
 
 Answer questions based ONLY on the real data provided. Do NOT make up facts. If the data doesn't contain the answer, say "I don't have enough recorded data to answer that yet."
 CRITICAL INSTRUCTION: DO NOT mention internal IDs (e.g. I-123, M-456, or UUIDs) in your natural text response. Use titles instead. IDs should ONLY appear inside the strictly formatted JSON at the bottom.

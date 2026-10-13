@@ -206,12 +206,9 @@ export default function ClipadSidebar({ forceMobile }) {
             )}
           </div>
         )}
-      </div>
 
-      {/* Bottom Nav */}
-      <div className={cn("shrink-0 pb-2 bg-[#006065] dark:bg-[#0D1626]", isCollapsed ? "px-2" : "px-3")}>
-        <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mb-3" />
-        <div className="space-y-0.5 mb-2">
+        {/* Bottom Preferences & Help inside scrollable area */}
+        <div className="pt-4 mt-4 border-t border-white/10 space-y-0.5">
           <button 
             onClick={() => navigate('/settings')} 
             className={cn("w-full flex items-center rounded-lg text-[13px] text-white/70 hover:bg-white/10 hover:text-white font-medium group transition-colors", isCollapsed ? "justify-center p-2.5" : "gap-3 px-3 py-2")}

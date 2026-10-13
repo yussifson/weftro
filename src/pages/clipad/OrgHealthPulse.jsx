@@ -9,10 +9,10 @@ import { RefreshCw,
 } from 'lucide-react';
 
 const GRADE_CONFIG = {
-  A: { color: 'emerald', label: 'Excellent', emoji: 'Ã°Å¸Ââ€ ' },
-  B: { color: 'green', label: 'Good', emoji: 'Ã¢Å“â€¦' },
+  A: { color: 'emerald', label: 'Excellent', emoji: 'Ã°Å¸Â' },
+  B: { color: 'green', label: 'Good', emoji: 'Ã¢Å“…' },
   C: { color: 'amber', label: 'Fair', emoji: 'Ã¢Å¡Â Ã¯Â¸Â' },
-  D: { color: 'orange', label: 'Poor', emoji: 'Ã°Å¸â€Â»' },
+  D: { color: 'orange', label: 'Poor', emoji: 'Ã°Å¸”Â»' },
   F: { color: 'red', label: 'Critical', emoji: 'Ã°Å¸Å¡Â¨' },
 };
 

@@ -3,7 +3,7 @@ import { Lock, Clock, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 /**
- * LockWall â€” displayed when content is locked (manually or scheduled).
+ * LockWall — displayed when content is locked (manually or scheduled).
  * Props:
  *   type: 'manual' | 'scheduled' | 'private' | 'not-found'
  *   unlockAt: Date | null  (for scheduled locks)

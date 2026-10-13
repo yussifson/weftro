@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import {
   Search, Sparkles, FileText, CheckCircle, MessageSquare, Calendar, Video,
@@ -15,7 +15,7 @@ import { isAdmin, isSpaceman } from '@/lib/constants';
 import { useToast } from '@/components/ui/use-toast';
 import ThinkingAccordion, { parseThinking } from '@/components/chat/ThinkingAccordion';
 
-// â”€â”€â”€ Type metadata â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Type metadata ─────────────────────────────────────────────────────────────
 const TYPE_META = {
   meeting:     { icon: Calendar,      label: 'Meeting',   color: 'text-slate-600 dark:text-slate-400 group-hover:text-[#006065]', bg: 'bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800',     route: (id) => `/meetings/${id}` },
   video:       { icon: Video,         label: 'Video',     color: 'text-slate-600 dark:text-slate-400 group-hover:text-[#006065]', bg: 'bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800', route: (id) => `/watch/${id}` },
@@ -55,7 +55,7 @@ const matchesFilter = (itemType, filterId) => {
   return allowed ? allowed.includes(itemType) : itemType === filterId;
 };
 
-// â”€â”€â”€ Smart relevance scoring â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Smart relevance scoring ─────────────────────────────────────────────────
 function scoreResult(result, query) {
   const q = query.toLowerCase();
   const label = (result.label || '').toLowerCase();
@@ -79,7 +79,7 @@ function scoreResult(result, query) {
   return score;
 }
 
-// â”€â”€â”€ Module-level cache for space ID lookups (60s TTL) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Module-level cache for space ID lookups (60s TTL) ──────────────────────
 const _spaceIdCache = new Map();
 
 async function fetchAccessibleSpaceIds(user) {
@@ -102,7 +102,7 @@ async function fetchAccessibleSpaceIds(user) {
   return ids;
 }
 
-// â”€â”€â”€ People search â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── People search ─────────────────────────────────────────────────────────
 async function searchPeople(query, companyId) {
   const term = `%${query}%`;
   const { data } = await supabase
@@ -123,7 +123,7 @@ async function searchPeople(query, companyId) {
   }));
 }
 
-// â”€â”€â”€ Suggestion config â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Suggestion config ───────────────────────────────────────────────────────
 const DEFAULT_SUGGESTIONS = [
   { key: '1', text: 'What decisions were made last week?',   type: 'decision', icon: ShieldAlert,   color: 'text-slate-600 dark:text-slate-400 group-hover:text-[#006065]', bg: 'bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800' },
   { key: '2', text: 'Show me overdue tasks across spaces',   type: 'task',     icon: CheckCircle,   color: 'text-slate-600 dark:text-slate-400 group-hover:text-[#006065]', bg: 'bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800' },
@@ -133,7 +133,7 @@ const DEFAULT_SUGGESTIONS = [
   { key: '6', text: 'Summarize key updates from standups',   type: 'standup',  icon: Zap,           color: 'text-slate-600 dark:text-slate-400 group-hover:text-[#006065]', bg: 'bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800' },
 ];
 
-// â”€â”€â”€ Highlight matched text â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Highlight matched text ──────────────────────────────────────────────────
 function Highlight({ text, query }) {
   if (!text || !query) return <span>{text}</span>;
   const idx = text.toLowerCase().indexOf(query.toLowerCase());
@@ -147,7 +147,7 @@ function Highlight({ text, query }) {
   );
 }
 
-// â”€â”€â”€ Person activity card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Person activity card ─────────────────────────────────────────────────────
 function PersonCard({ person, navigate, setIsOpen }) {
   const [activity, setActivity] = useState(null);
   useEffect(() => {
@@ -178,7 +178,7 @@ function PersonCard({ person, navigate, setIsOpen }) {
         </div>
         <span className="ml-auto text-[10px] font-bold text-violet-600 dark:text-violet-400 bg-violet-100 dark:bg-violet-900/50 px-2 py-0.5 rounded-full border border-violet-200 dark:border-violet-700">Person</span>
       </div>
-      {!activity && <div className="text-[11px] text-slate-400 animate-pulse">Loading activityâ€¦</div>}
+      {!activity && <div className="text-[11px] text-slate-400 animate-pulse">Loading activity…</div>}
       {activity && (
         <div className="grid grid-cols-3 gap-2 text-[11px]">
           <div>
@@ -199,7 +199,7 @@ function PersonCard({ person, navigate, setIsOpen }) {
   );
 }
 
-// â”€â”€â”€ Main Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Main Component ───────────────────────────────────────────────────────────
 export default function GlobalSearch() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -238,7 +238,7 @@ export default function GlobalSearch() {
     if (route) { navigate(route); setIsOpen(false); }
   }, [navigate]);
 
-  // â”€â”€ Load space names + integration suggestions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Load space names + integration suggestions ─────────────────────────────
   useEffect(() => {
     if (!user?.company_id) return;
     supabase.from('clipad_spaces').select('id, name').eq('company_id', user.company_id).then(({ data }) => {
@@ -264,7 +264,7 @@ export default function GlobalSearch() {
       });
   }, [user]);
 
-  // â”€â”€ Global Keyboard (âŒ˜K, Esc, arrows) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Global Keyboard (âŒ˜K, Esc, arrows) ────────────────────────────────────
   useEffect(() => {
     const onKey = (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
@@ -308,7 +308,7 @@ export default function GlobalSearch() {
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
-  // â”€â”€ Core DB search (no AI) â€” called on debounce â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Core DB search (no AI) — called on debounce ────────────────────────────
   const runDbSearch = useCallback(async (q, limit = 6) => {
     if (!q.trim() || !user?.company_id) return [];
     const accessibleSpaceIds = await fetchAccessibleSpaceIds(user);
@@ -389,7 +389,7 @@ export default function GlobalSearch() {
       ...(decisions || []).map(d => ({ type: 'decision', id: d.id, space_id: d.team_space_id, label: 'Decision', snippet: d.decision_text?.substring(0, 200), created_at: d.created_at })),
       ...(videos || []).map(v => ({ type: 'video', id: v.id, space_id: v.space_id, label: v.title || 'Video', snippet: v.ai_summary?.substring(0, 200), created_at: v.created_at })),
       ...(blockers || []).map(b => ({ type: 'blocker', id: b.id, space_id: b.team_space_id, label: 'Blocker', snippet: b.description?.substring(0, 200), created_at: b.detected_at })),
-      ...(standups || []).map(s => ({ type: 'standup', id: s.id, space_id: s.space_id, label: `Standup â€” ${s.user_name || 'Team member'} (${s.created_at?.slice(0, 10)})`, snippet: s.today?.substring(0, 200), created_at: s.created_at })),
+      ...(standups || []).map(s => ({ type: 'standup', id: s.id, space_id: s.space_id, label: `Standup — ${s.user_name || 'Team member'} (${s.created_at?.slice(0, 10)})`, snippet: s.today?.substring(0, 200), created_at: s.created_at })),
       ...(integrations || []).map(i => ({ type: 'integration', id: i.id, space_id: null, label: `[${i.provider}] ${i.title}`, snippet: i.content?.substring(0, 200), created_at: i.updated_at })),
     ];
 
@@ -397,7 +397,7 @@ export default function GlobalSearch() {
     return raw.sort((a, b) => scoreResult(b, q) - scoreResult(a, q));
   }, [user]);
 
-  // â”€â”€ Live debounced search (fires 300ms after typing) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Live debounced search (fires 300ms after typing) ──────────────────────
   useEffect(() => {
     if (!isOpen) return;
     const q = query.trim();
@@ -427,7 +427,7 @@ export default function GlobalSearch() {
     return () => clearTimeout(debounceRef.current);
   }, [query, isOpen, lastQuery, runDbSearch]);
 
-  // â”€â”€ AI Synthesis â€” only fires on explicit Enter â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── AI Synthesis — only fires on explicit Enter ────────────────────────────
   const handleSearch = useCallback(async (forcedQuery, aiOnly = false) => {
     const q = (forcedQuery || query).trim();
     if (!q) return;
@@ -476,7 +476,7 @@ export default function GlobalSearch() {
       const keywordResultsContext = currentResults.length > 0
         ? `\n\nKEYWORD SEARCH RESULTS (${currentResults.length} records matched "${q}"):\n` +
           currentResults.map(r => `[${r.type.toUpperCase()} ID:${r.id}] ${r.label}: ${r.snippet || ''}`).join('\n')
-        : `\n\nKEYWORD SEARCH: No records matched "${q}" directly â€” check org context.`;
+        : `\n\nKEYWORD SEARCH: No records matched "${q}" directly — check org context.`;
 
       const now = new Date();
       const timeContext = `CURRENT DATE & TIME: ${now.toLocaleDateString()} ${now.toLocaleTimeString()} (${Intl.DateTimeFormat().resolvedOptions().timeZone})`;
@@ -527,7 +527,7 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
     }
   }, [query, user, lastAiQuery, aiAnswer, isSynthesizing, results, runDbSearch]);
 
-  // â”€â”€ Load More â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Load More ─────────────────────────────────────────────────────────────
   const handleLoadMore = useCallback(async () => {
     const q = query.trim();
     if (!q) return;
@@ -544,7 +544,7 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
   const filteredResults = useMemo(() => results.filter(r => matchesFilter(r.type, selectedFilter)), [results, selectedFilter]);
   const peopleResults = useMemo(() => results.filter(r => r.type === 'person'), [results]);
 
-  // â”€â”€ Keyboard handler inside input â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Keyboard handler inside input ────────────────────────────────────────
   const handleKeyDown = (e) => {
     if (!hasSearched && !query && ['1','2','3','4','5','6'].includes(e.key)) {
       const idx = parseInt(e.key, 10) - 1;
@@ -575,7 +575,7 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
   if (!isOpen) {
     return (
       <>
-        <div className="hidden md:block w-full max-w-sm rounded-full p-[1.5px] bg-gradient-to-r from-blue-500 to-pink-500 hover:shadow-md transition-shadow cursor-text group">
+        <div className="hidden md:block w-full max-w-sm rounded-full p-[1px] bg-white/20 hover:bg-white/30 transition-all cursor-text group">
           <button
             onClick={() => setIsOpen(true)}
             className="flex items-center h-10 w-full bg-[#006065] dark:bg-[#131A2C] rounded-full px-4 text-white/60 hover:text-white transition-colors"
@@ -583,9 +583,9 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
             <Search className="w-[18px] h-[18px] shrink-0 text-white/60" />
             <div className="w-[1px] h-5 bg-white/20 mx-3 shrink-0" />
             <span className="text-[14px] font-medium flex-1 text-left whitespace-nowrap overflow-hidden text-ellipsis tracking-tight text-white/50 group-hover:text-white/70">
-              Search people, docs, tasksâ€¦
+              Search people, docs, tasks...
             </span>
-            <kbd className="text-[10px] font-mono bg-white/10 px-1.5 py-0.5 rounded text-white/50 border border-white/15 shrink-0 hidden lg:block tracking-wider font-bold shadow-sm">âŒ˜K</kbd>
+            <kbd className="text-[10px] font-mono bg-white/10 px-1.5 py-0.5 rounded text-white/50 border border-white/15 shrink-0 hidden lg:block tracking-wider font-bold shadow-sm">⌘K</kbd>
           </button>
         </div>
         <button onClick={() => setIsOpen(true)} className="md:hidden p-2 text-white/60 hover:text-white transition-colors active:scale-95 rounded-lg hover:bg-white/10" title="Search">
@@ -618,7 +618,7 @@ After your answer, list source IDs as JSON: SOURCES:[{"id":"<id>","type":"<type>
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Search people, docs, tasks, meetings... (Enter for AI)"
+              placeholder="Search people, docs, tasks..."
               className="flex-1 bg-transparent text-slate-900 dark:text-foreground text-base font-medium placeholder:text-slate-400 min-w-0 border-0 outline-none ring-0 shadow-none focus:border-0 focus:outline-none focus:ring-0 focus:shadow-none p-0"
             />
             {/* AI-only trigger hint */}

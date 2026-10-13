@@ -257,7 +257,7 @@ Respond in valid JSON only:
           <div className="flex items-start justify-between flex-wrap gap-3">
             <div>
               <h1 className="text-2xl font-black text-foreground">Commitment Intelligence</h1>
-              <p className="text-sm text-muted-foreground mt-1">AI-powered accountability layer â€” every promise tracked, every drop-ball surfaced.</p>
+              <p className="text-sm text-muted-foreground mt-1">AI-powered accountability layer — every promise tracked, every drop-ball surfaced.</p>
             </div>
             <button
               onClick={runOrgInsight}
@@ -306,7 +306,7 @@ Respond in valid JSON only:
                       aiInsight.velocity_trend === 'improving' ? 'bg-[#006065] dark:bg-[#131A2C]/10 text-[#00beac]' :
                       aiInsight.velocity_trend === 'declining' ? 'bg-red-500/10 text-red-400' : 'bg-transparent0/10 text-white/60'
                     }`}>
-                      {aiInsight.velocity_trend === 'improving' ? 'â†‘' : aiInsight.velocity_trend === 'declining' ? 'â†“' : 'â†’'} {aiInsight.velocity_trend}
+                      {aiInsight.velocity_trend === 'improving' ? 'â†‘' : aiInsight.velocity_trend === 'declining' ? 'â†“' : '→'} {aiInsight.velocity_trend}
                     </span>
                   )}
                 </div>

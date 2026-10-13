@@ -7,7 +7,7 @@ import DictationButton from '@/components/ui/DictationButton';
 import { Download } from 'lucide-react';
 import VideoDownloadModal from '@/components/clipad/VideoDownloadModal';
 
-const EMOJIS = ['ðŸ‘', 'ðŸ‘Ž', 'â¤ï¸', 'ðŸ˜‚', 'ðŸ”¥', 'ðŸŽ‰', 'ðŸ’¡', 'ðŸ¤”'];
+const EMOJIS = ['ðŸ‘', 'ðŸ‘Ž', 'ï¸', '😂', '🔥', '🎉', '💡', 'ðŸ¤”'];
 
 function formatTime(seconds) {
   if (isNaN(seconds) || !isFinite(seconds)) return '0:00';
@@ -70,7 +70,7 @@ export default function RichVideoPlayer({ videoUrl, recordType = 'video', entity
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [chapters, setChapters] = useState([]);
   const [isGeneratingChapters, setIsGeneratingChapters] = useState(false);
-  // â”€â”€ Missing refs and state declarations (critical fix) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Missing refs and state declarations (critical fix) ──────────────────
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const videoRef = useRef(null);
   const playerRef = useRef(null);

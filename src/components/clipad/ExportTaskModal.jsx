@@ -7,7 +7,7 @@ const PM_TOOLS = [
   { id: 'linear', name: 'Linear', color: 'bg-purple-600 text-white', icon: 'ðŸ“' },
   { id: 'clickup', name: 'ClickUp', color: 'bg-pink-600 text-white', icon: 'ðŸŽ¯' },
   { id: 'asana', name: 'Asana', color: 'bg-rose-500 text-white', icon: 'ðŸ”´' },
-  { id: 'trello', name: 'Trello', color: 'bg-sky-600 text-white', icon: 'ðŸ“Š' },
+  { id: 'trello', name: 'Trello', color: 'bg-sky-600 text-white', icon: '📊' },
 ];
 
 export default function ExportTaskModal({ isOpen, onClose, task, meetingTitle, meetingId }) {

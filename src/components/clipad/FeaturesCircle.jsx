@@ -25,7 +25,7 @@ const pillars = [
     glow: 'shadow-yellow-500/20',
     bg: 'bg-amber-50 dark:bg-amber-900/10',
     title: 'AI Intelligence',
-    desc: 'Every meeting produces a full summary, key decisions, extracted action items with owners, open questions, and sentiment â€” instantly.'
+    desc: 'Every meeting produces a full summary, key decisions, extracted action items with owners, open questions, and sentiment — instantly.'
   },
   {
     icon: Layers,

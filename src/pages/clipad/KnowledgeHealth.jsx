@@ -292,7 +292,7 @@ export default function KnowledgeHealth() {
                   });
                   
                   if (error) throw error;
-                  toast.success("Detailed Health Report generated and sent to your email!", { duration: 5000, icon: 'ðŸ“Š' });
+                  toast.success("Detailed Health Report generated and sent to your email!", { duration: 5000, icon: '📊' });
                 } catch (err) {
                   console.error(err);
                   toast.error("Failed to send report. Please try again later.");

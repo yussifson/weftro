@@ -137,7 +137,7 @@ export default function ActionItems() {
         return;
       }
 
-      // For Slack â€” just post a message; for task tools â€” create a task
+      // For Slack — just post a message; for task tools — create a task
       const { data: result, error } = await supabase.functions.invoke('integration-sync', {
         body: {
           integrationId: intg.id,
@@ -145,7 +145,7 @@ export default function ActionItems() {
           action: 'create_task',
           payload: {
             title: actionItem.text,
-            description: `Action item extracted from ${actionItem.provider} â€” "${actionItem.sourceTitle}"\n\nContext: ${actionItem.ai_summary || ''}`.substring(0, 500),
+            description: `Action item extracted from ${actionItem.provider} — "${actionItem.sourceTitle}"\n\nContext: ${actionItem.ai_summary || ''}`.substring(0, 500),
             source_url: actionItem.sourceUrl,
           },
         },

@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 import { INTEGRATIONS } from '@/config/integrationsList';
 
-// â”€â”€â”€ Provider color palette â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Provider color palette ───────────────────────────────────────────────────
 const PROVIDER_COLORS = {
   slack: '#fad503',
   github: '#fad503',
@@ -61,7 +61,7 @@ const RELATIONSHIP_COLORS = {
   related: '#006065',
 };
 
-// â”€â”€â”€ Custom Node Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Custom Node Component ─────────────────────────────────────────────────────
 function KnowledgeNode({ data, selected }) {
   const intg = INTEGRATIONS.find(i => i.id === data.provider || i.provider === data.provider);
   const color = getProviderColor(data.provider);
@@ -108,7 +108,7 @@ function KnowledgeNode({ data, selected }) {
 
 const nodeTypes = { knowledge: KnowledgeNode };
 
-// â”€â”€â”€ Layout: simple force-style grid placement â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Layout: simple force-style grid placement ────────────────────────────────
 function layoutNodes(nodes) {
   const COLS = Math.ceil(Math.sqrt(nodes.length)) || 1;
   const W = 240, H = 160;
@@ -121,7 +121,7 @@ function layoutNodes(nodes) {
   }));
 }
 
-// â”€â”€â”€ Main Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Main Component ───────────────────────────────────────────────────────────
 export default function KnowledgeGraph() {
   const { user } = useAuth();
   const companyId = useCompanyId();
@@ -223,7 +223,7 @@ export default function KnowledgeGraph() {
       }));
       const positionedNodes = layoutNodes(rawNodes);
 
-      // Build edges â€” only for items we have as nodes
+      // Build edges — only for items we have as nodes
       const rawEdges = (relationships || [])
         .filter(r => itemSet.has(r.source_id) && itemSet.has(r.target_id))
         .map(r => ({
@@ -369,7 +369,7 @@ export default function KnowledgeGraph() {
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="flex flex-col items-center gap-3">
               <Loader2 className="w-8 h-8 text-[#fad503] animate-spin" />
-              <p className="text-sm text-muted-foreground">Building knowledge graphâ€¦</p>
+              <p className="text-sm text-muted-foreground">Building knowledge graph…</p>
             </div>
           </div>
         ) : filteredNodes.length === 0 ? (
@@ -425,7 +425,7 @@ export default function KnowledgeGraph() {
             {aiInsightsLoading && !aiInsights ? (
               <div className="flex items-center gap-2 text-sm text-muted-foreground py-4">
                 <Loader2 className="w-4 h-4 animate-spin text-[#fad503]" />
-                Analyzing your knowledge graphâ€¦
+                Analyzing your knowledge graph…
               </div>
             ) : (
               <div className="prose prose-sm dark:prose-invert max-w-none text-xs leading-relaxed">

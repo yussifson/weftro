@@ -142,7 +142,7 @@ export default function OrgTimeline({ workspaceId, spaceId }) {
         <div className="p-4 rounded-2xl bg-gradient-to-r from-cyan-500/10 via-teal-500/10 to-emerald-500/10 border border-cyan-500/20 text-slate-800 dark:text-slate-200 text-xs leading-relaxed space-y-2 relative">
           <div className="flex items-center justify-between font-bold text-cyan-700 dark:text-cyan-400">
             <span className="flex items-center gap-1.5"><BrainCircuit className="w-4 h-4" /> AI Velocity & Health Synthesis</span>
-            <button onClick={() => setAiBriefing(null)} className="text-slate-400 hover:text-slate-600 dark:hover:text-white font-bold">âœ•</button>
+            <button onClick={() => setAiBriefing(null)} className="text-slate-400 hover:text-slate-600 dark:hover:text-white font-bold">✕</button>
           </div>
           <p className="whitespace-pre-wrap">{aiBriefing}</p>
         </div>

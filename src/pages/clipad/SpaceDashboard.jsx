@@ -419,9 +419,9 @@ export default function SpaceDashboard() {
 
   const getDailyNatureElement = () => {
     const nature = [
-      'Ã°Å¸Å’Â¿', 'Ã°Å¸Å’Â¸', 'Ã°Å¸Ââ€Ã¯Â¸Â', 'Ã°Å¸ÂÂ', 'Ã°Å¸ÂÆ’', 'Ã°Å¸Å’Â²', 'Ã°Å¸Å’Â´', 'Ã°Å¸Å’Â¾', 'Ã°Å¸Å’Âµ', 'Ã°Å¸Å’Â»',
-      'Ã°Å¸Å’Â¼', 'Ã°Å¸Ââ€ž', 'Ã°Å¸Å’Â³', 'Ã°Å¸Ââ€š', 'Ã¢â€ºâ€¦', 'Ã°Å¸Å’Ë†', 'Ã°Å¸ÂªÂ´', 'Ã°Å¸Å’Å ', 'Ã¢Ââ€žÃ¯Â¸Â', 'Ã°Å¸ÂªÂµ',
-      'Ã°Å¸Å’Âº', 'Ã°Å¸Ââ‚¬', 'Ã°Å¸Å’Â·', 'Ã°Å¸Å’Â±', 'Ã°Å¸ÂÂµÃ¯Â¸Â', 'Ã°Å¸â€™Â', 'Ã°Å¸Å½â€¹', 'Ã°Å¸ÂªÂ´', 'Ã°Å¸Å’â€¦', 'Ã°Å¸Å’Å’', 'Ã°Å¸Å’Â '
+      'Ã°Å¸Å’Â¿', 'Ã°Å¸Å’Â¸', 'Ã°Å¸Â”Ã¯Â¸Â', 'Ã°Å¸ÂÂ', 'Ã°Å¸ÂÆ’', 'Ã°Å¸Å’Â²', 'Ã°Å¸Å’Â´', 'Ã°Å¸Å’Â¾', 'Ã°Å¸Å’Âµ', 'Ã°Å¸Å’Â»',
+      'Ã°Å¸Å’Â¼', 'Ã°Å¸Âž', 'Ã°Å¸Å’Â³', 'Ã°Å¸Âš', 'Ã¢…', 'Ã°Å¸Å’Ë†', 'Ã°Å¸ÂªÂ´', 'Ã°Å¸Å’Å ', 'Ã¢ÂžÃ¯Â¸Â', 'Ã°Å¸ÂªÂµ',
+      'Ã°Å¸Å’Âº', 'Ã°Å¸Â€', 'Ã°Å¸Å’Â·', 'Ã°Å¸Å’Â±', 'Ã°Å¸ÂÂµÃ¯Â¸Â', 'Ã°Å¸’Â', 'Ã°Å¸Å½', 'Ã°Å¸ÂªÂ´', 'Ã°Å¸Å’…', 'Ã°Å¸Å’Å’', 'Ã°Å¸Å’Â '
     ];
     const day = new Date().getDate(); // 1-31
     return nature[(day - 1) % nature.length];
@@ -441,7 +441,7 @@ export default function SpaceDashboard() {
         <div className="text-center">
           <Layers className="w-12 h-12 text-gray-700 mx-auto mb-3" />
           <p className="text-muted-foreground">Space not found.</p>
-          <button onClick={() => navigate('/spaces')} className="mt-4 text-primary hover:text-primary/80 text-sm transition-colors">Ã¢â€ Â Back to Spaces</button>
+          <button onClick={() => navigate('/spaces')} className="mt-4 text-primary hover:text-primary/80 text-sm transition-colors">Ã¢Â Back to Spaces</button>
         </div>
       </div>
     );

@@ -240,7 +240,7 @@ export default function KnowledgeJourney() {
               <h1 className="text-2xl font-bold text-white">Knowledge Journey</h1>
             </div>
             <p className="text-sm text-white/70 max-w-xl">
-              Trace how ideas, decisions, and work items flow across your organization â€” from a Slack message to a Notion doc to a GitHub release.
+              Trace how ideas, decisions, and work items flow across your organization — from a Slack message to a Notion doc to a GitHub release.
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -278,7 +278,7 @@ export default function KnowledgeJourney() {
             <GitBranch className="w-8 h-8 text-slate-500 dark:text-muted-foreground mx-auto mb-3 opacity-50" />
             <h3 className="font-semibold text-slate-900 dark:text-foreground mb-1">No knowledge journeys yet</h3>
             <p className="text-sm text-slate-500 dark:text-muted-foreground">
-              As the AI detects relationships between your synced knowledge items, cross-system knowledge journeys will appear here â€” showing how ideas flow from a Slack message to a decision to a code commit.
+              As the AI detects relationships between your synced knowledge items, cross-system knowledge journeys will appear here — showing how ideas flow from a Slack message to a decision to a code commit.
             </p>
           </div>
         ) : (
@@ -407,7 +407,7 @@ export default function KnowledgeJourney() {
   );
 }
 
-// â”€â”€â”€ Journey Card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Journey Card ─────────────────────────────────────────────────────────────
 function JourneyCard({ journey, onSelect, isSelected }) {
   return (
     <div
@@ -441,12 +441,12 @@ function JourneyCard({ journey, onSelect, isSelected }) {
   );
 }
 
-// â”€â”€â”€ Inline horizontal chain preview â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Inline horizontal chain preview ─────────────────────────────────────────
 function ChainPreview({ node, depth }) {
   const intg = INTEGRATIONS.find(i => i.id === node.item.provider || i.provider === node.item.provider);
   const color = getColor(node.item.provider);
 
-  if (depth > 3) return <span className="text-slate-500 dark:text-muted-foreground text-xs">â€¦</span>;
+  if (depth > 3) return <span className="text-slate-500 dark:text-muted-foreground text-xs">…</span>;
 
   return (
     <div className="flex items-center gap-2 flex-wrap">
@@ -472,7 +472,7 @@ function ChainPreview({ node, depth }) {
   );
 }
 
-// â”€â”€â”€ Vertical detailed chain â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Vertical detailed chain ──────────────────────────────────────────────────
 function DetailChain({ node, depth }) {
   const intg = INTEGRATIONS.find(i => i.id === node.item.provider || i.provider === node.item.provider);
   const color = getColor(node.item.provider);

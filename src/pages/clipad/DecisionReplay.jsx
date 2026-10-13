@@ -245,7 +245,7 @@ Respond in valid JSON only:
               </div>
               <div>
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Decision Replay</p>
-                <p className="text-xs text-muted-foreground">{format(new Date(decision.created_at), 'MMMM d, yyyy â€¢ h:mm a')}</p>
+                <p className="text-xs text-muted-foreground">{format(new Date(decision.created_at), 'MMMM d, yyyy • h:mm a')}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -261,7 +261,7 @@ Respond in valid JSON only:
           </div>
         </div>
 
-        {/* The Decision â€” Hero Card */}
+        {/* The Decision — Hero Card */}
         <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-sm">
           <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-indigo-500 via-violet-500 to-purple-500 rounded-t-2xl" />
           <h1 className="text-xl md:text-2xl font-bold text-foreground leading-snug mb-4">

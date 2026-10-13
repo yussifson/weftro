@@ -129,58 +129,81 @@ export default function ConnectSettings() {
         <p className="text-muted-foreground text-lg">Securely integrate Clipad\'s Intelligence Graph into your custom applications and workflows.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="border-blue-500/20 bg-blue-500/5">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <Card className="border border-border bg-card shadow-xs rounded-2xl">
           <CardContent className="p-6 flex items-center justify-between">
-            <div className="flex flex-col gap-1">
-              <span className="text-sm font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5"><TerminalSquare className="w-4 h-4"/> REST API</span>
-              <span className="text-2xl font-bold text-foreground">Active</span>
+            <div className="flex flex-col gap-1.5">
+              <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5">
+                <TerminalSquare className="w-3.5 h-3.5 text-primary"/> REST API
+              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-xl font-extrabold text-foreground tracking-tight">Active</span>
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                  Online
+                </span>
+              </div>
             </div>
-            <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-600">
-              <Code2 className="w-6 h-6" />
+            <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800/80 flex items-center justify-center text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-border">
+              <Code2 className="w-5 h-5 text-primary" />
             </div>
           </CardContent>
         </Card>
         
-        <Card className={isMcpEnabled ? "border-emerald-500/20 bg-emerald-500/5" : "border-border bg-secondary/20 opacity-70"}>
+        <Card className="border border-border bg-card shadow-xs rounded-2xl">
           <CardContent className="p-6 flex items-center justify-between">
-            <div className="flex flex-col gap-1">
-              <span className="text-sm font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5"><Cpu className="w-4 h-4"/> MCP Protocol</span>
-              <span className="text-2xl font-bold text-foreground">{isMcpEnabled ? 'Active' : 'Disabled'}</span>
+            <div className="flex flex-col gap-1.5">
+              <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5">
+                <Cpu className="w-3.5 h-3.5 text-primary"/> MCP Protocol
+              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-xl font-extrabold text-foreground tracking-tight">{isMcpEnabled ? 'Operational' : 'Disabled'}</span>
+                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${isMcpEnabled ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-slate-100 dark:bg-slate-800 text-muted-foreground'}`}>
+                  {isMcpEnabled ? 'Ready' : 'Off'}
+                </span>
+              </div>
             </div>
-            <div className={`w-12 h-12 rounded-full flex items-center justify-center ${isMcpEnabled ? 'bg-emerald-500/10 text-emerald-600' : 'bg-secondary text-muted-foreground'}`}>
-              <Cpu className="w-6 h-6" />
+            <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800/80 flex items-center justify-center text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-border">
+              <Cpu className="w-5 h-5 text-primary" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className={isWebhooksEnabled ? "border-purple-500/20 bg-purple-500/5" : "border-border bg-secondary/20 opacity-70"}>
+        <Card className="border border-border bg-card shadow-xs rounded-2xl">
           <CardContent className="p-6 flex items-center justify-between">
-            <div className="flex flex-col gap-1">
-              <span className="text-sm font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5"><Webhook className="w-4 h-4"/> Webhooks</span>
-              <span className="text-2xl font-bold text-foreground">{isWebhooksEnabled ? 'Active' : 'Disabled'}</span>
+            <div className="flex flex-col gap-1.5">
+              <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5">
+                <Webhook className="w-3.5 h-3.5 text-primary"/> Event Webhooks
+              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-xl font-extrabold text-foreground tracking-tight">{isWebhooksEnabled ? 'Streaming' : 'Disabled'}</span>
+                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${isWebhooksEnabled ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-slate-100 dark:bg-slate-800 text-muted-foreground'}`}>
+                  {isWebhooksEnabled ? 'Live' : 'Off'}
+                </span>
+              </div>
             </div>
-            <div className={`w-12 h-12 rounded-full flex items-center justify-center ${isWebhooksEnabled ? 'bg-purple-500/10 text-purple-600' : 'bg-secondary text-muted-foreground'}`}>
-              <Webhook className="w-6 h-6" />
+            <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800/80 flex items-center justify-center text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-border">
+              <Webhook className="w-5 h-5 text-primary" />
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* MCP Quickstart Card */}
-      <Card className="border border-emerald-500/30 bg-emerald-500/5 shadow-sm">
-        <CardHeader className="pb-3">
+      <Card className="border border-border bg-card shadow-xs rounded-2xl overflow-hidden">
+        <CardHeader className="pb-3 border-b border-border/60 bg-muted/20">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg flex items-center gap-2 text-foreground">
-              <Cpu className="w-5 h-5 text-emerald-500" />
+            <CardTitle className="text-base font-bold flex items-center gap-2.5 text-foreground">
+              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                <Cpu className="w-4 h-4" />
+              </div>
               Model Context Protocol (MCP) Server
             </CardTitle>
-            <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/30 font-mono text-xs">
-              mcp-v1.0 active
+            <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 font-mono text-[11px] font-semibold px-2.5 py-0.5">
+              Protocol v1.0
             </Badge>
           </div>
-          <CardDescription>
-            Connect Cursor, Claude Desktop, Windsurf, or custom AI agents directly to your Clipad Knowledge Graph.
+          <CardDescription className="text-xs text-muted-foreground mt-1">
+            Enterprise adapter connecting Cursor, Claude Desktop, Windsurf, or custom AI agents directly to your organizational knowledge graph.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

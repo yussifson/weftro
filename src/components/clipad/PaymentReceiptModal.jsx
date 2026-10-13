@@ -316,7 +316,7 @@ export default function PaymentReceiptModal({ isOpen, onClose, transactionDetail
                   <div>
                     <div className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Reference ID</div>
                     <div className="font-mono text-xs font-semibold text-slate-900 dark:text-foreground truncate pr-2">
-                      {isAdminAssigned ? 'ADMIN-UPGRADE' : transactionDetails.reference || 'â€”'}
+                      {isAdminAssigned ? 'ADMIN-UPGRADE' : transactionDetails.reference || '—'}
                     </div>
                   </div>
                 </div>

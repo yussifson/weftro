@@ -98,7 +98,7 @@ export default function CliPadLogin() {
   return (
     <>
       <Helmet>
-        <title>Log In â€” KERINT Collaborative Workspace</title>
+        <title>Log In — KERINT Collaborative Workspace</title>
         <meta name="description" content="Log in to your enterprise-grade collaborative productivity workspace." />
         <link rel="icon" type="image/svg+xml" href="/clipad-logo.svg" />
       </Helmet>
@@ -150,7 +150,7 @@ export default function CliPadLogin() {
                       type={showPassword ? 'text' : 'password'}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                      placeholder="••••••••"
                       className="w-full pl-10 pr-10 h-11 text-sm bg-white dark:bg-card border border-slate-200 dark:border-border text-slate-900 dark:text-foreground rounded-xl focus:border-[#006065] dark:border-border focus:ring-2 focus:ring-[#006065]/15 transition-all outline-none shadow-sm placeholder:text-slate-400"
                       required
                     />

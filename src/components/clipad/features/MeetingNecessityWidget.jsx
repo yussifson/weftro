@@ -39,7 +39,7 @@ export default function MeetingNecessityWidget({ workspaceId }) {
       return;
     }
 
-    // No metrics yet â€” auto-analyze from raw meetings
+    // No metrics yet — auto-analyze from raw meetings
     await analyzeFromMeetings();
   };
 
@@ -155,7 +155,7 @@ export default function MeetingNecessityWidget({ workspaceId }) {
         </div>
         <div className="flex items-center gap-3 py-6 justify-center text-slate-400 dark:text-slate-500 dark:text-muted-foreground">
           <Loader2 className="w-5 h-5 animate-spin" />
-          <span className="text-sm">{analyzing ? 'AI is analyzing your meetingsâ€¦' : 'Loadingâ€¦'}</span>
+          <span className="text-sm">{analyzing ? 'AI is analyzing your meetings…' : 'Loading…'}</span>
         </div>
       </div>
     );

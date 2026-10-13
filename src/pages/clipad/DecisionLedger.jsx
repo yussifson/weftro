@@ -259,7 +259,7 @@ export default function DecisionLedger() {
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-2 mb-2">
                         <span className="text-xs font-bold text-[#006065] dark:text-[#fad503] uppercase tracking-wider bg-[#006065] dark:bg-card px-2 py-0.5 rounded-md">
-                          {item._type === 'native' ? 'Ã°Å¸Â¤â€“ AI-Detected' : 'Ã°Å¸â€œâ€ž Knowledge Source'}
+                          {item._type === 'native' ? 'Ã°Å¸Â¤– AI-Detected' : 'Ã°Å¸“ž Knowledge Source'}
                         </span>
                         <span className="text-xs text-slate-500 dark:text-muted-foreground flex items-center gap-1">
                           <Calendar className="w-3 h-3" /> {format(new Date(item.imported_at), 'MMM d, yyyy')}

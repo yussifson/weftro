@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 const MOOD_OPTIONS = [
-  { value: 'great',      label: 'Great',      emoji: 'ðŸš€', color: 'text-[#006065] bg-[#006065] dark:bg-card border-emerald-200 dark:border-border/20' },
+  { value: 'great',      label: 'Great',      emoji: '🚀', color: 'text-[#006065] bg-[#006065] dark:bg-card border-emerald-200 dark:border-border/20' },
   { value: 'good',       label: 'Good',       emoji: 'ðŸ˜Š', color: 'text-blue-500 bg-blue-50 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20' },
   { value: 'neutral',    label: 'Neutral',    emoji: 'ðŸ˜', color: 'text-slate-500 dark:text-muted-foreground bg-slate-100 dark:bg-secondary border-slate-200 dark:border-border' },
   { value: 'struggling', label: 'Struggling', emoji: 'ðŸ˜“', color: 'text-amber-500 bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20' },

@@ -97,12 +97,12 @@ export default function MeetingsList() {
       const payload = { instant: true, max_participants: getLimit(user, 'maxParticipants'), privacy: privacyType, companyId: user?.company_id || user?.user_metadata?.company_id };
       if (privacyType === 'public') payload.roomName = roomName;
 
-      // Attempt Edge Function â€” but never let it block meeting start
+      // Attempt Edge Function — but never let it block meeting start
       let roomData = null;
       try {
         const { data, error } = await supabase.functions.invoke('create-daily-room', { body: payload });
         if (!error && data && (data.name || data.roomName)) roomData = data;
-      } catch (_) { /* edge function unavailable â€” continue with local room */ }
+      } catch (_) { /* edge function unavailable — continue with local room */ }
 
       const targetRoomName = roomData?.name || roomData?.roomName || roomName;
 
@@ -118,11 +118,11 @@ export default function MeetingsList() {
           status: 'active',
           meeting_type: 'instant'
         });
-      } catch (_) { /* db insert failed â€” meeting still works */ }
+      } catch (_) { /* db insert failed — meeting still works */ }
 
       navigate(`/join/${targetRoomName}` + (spaceId ? `?spaceId=${spaceId}` : ''));
     } catch (err) {
-      // Ultimate fallback â€” always navigate to a meeting room
+      // Ultimate fallback — always navigate to a meeting room
       const fallbackRoom = generateShortId();
       console.error('Meeting creation error, using fallback:', err);
       navigate(`/join/${fallbackRoom}` + (spaceId ? `?spaceId=${spaceId}` : ''));

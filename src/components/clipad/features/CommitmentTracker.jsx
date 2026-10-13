@@ -29,7 +29,7 @@ export default function CommitmentTracker({ spaceId }) {
 
   const fetchCommitments = async () => {
     setLoading(true);
-    // Removed the clipad_meeting_records join â€” that FK doesn't exist yet.
+    // Removed the clipad_meeting_records join — that FK doesn't exist yet.
     // Pull commitment data flat and display meeting_id info where available.
     const { data, error } = await supabase
       .from('clipad_commitments')

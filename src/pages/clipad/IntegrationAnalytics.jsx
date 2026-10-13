@@ -347,7 +347,7 @@ export default function IntegrationAnalytics() {
                           {sync.error ? (
                             <span className="text-rose-500 text-xs" title={sync.error}>{sync.error}</span>
                           ) : (
-                            <span className="text-xs text-slate-400">â€”</span>
+                            <span className="text-xs text-slate-400">—</span>
                           )}
                         </td>
                       </tr>

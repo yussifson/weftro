@@ -212,7 +212,7 @@ export default function DailyBriefingWidget() {
                   <ul className="space-y-1 text-xs text-red-600 dark:text-red-300">
                     {briefing.risks.map((r, i) => (
                       <li key={i} className="flex items-start gap-1.5">
-                        <span className="text-red-500 font-bold">â€¢</span>
+                        <span className="text-red-500 font-bold">•</span>
                         <span>{r}</span>
                       </li>
                     ))}
@@ -234,7 +234,7 @@ export default function DailyBriefingWidget() {
                 // Delay sending the prompt slightly to allow side drawer animation to initialize
                 setTimeout(() => {
                   window.dispatchEvent(new CustomEvent('orbit:inject', {
-                    detail: { query: 'Give me a deeper breakdown of my teamâ€™s active blockers and commitments' }
+                    detail: { query: 'Give me a deeper breakdown of my team’s active blockers and commitments' }
                   }));
                 }, 150);
               }}

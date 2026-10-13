@@ -134,7 +134,7 @@ export default function Overview() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        {/* Recent System Activity â€” real data from audit_logs */}
+        {/* Recent System Activity — real data from audit_logs */}
         <Card className="flex flex-col">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="flex items-center gap-2 text-base">
@@ -162,7 +162,7 @@ export default function Overview() {
                           <span className="font-normal text-muted-foreground"> Â· {log.user_name}</span>
                         )}
                       </p>
-                      <p className="text-xs text-muted-foreground truncate">{log.details || log.user_email || 'â€”'}</p>
+                      <p className="text-xs text-muted-foreground truncate">{log.details || log.user_email || '—'}</p>
                       <p className="text-[10px] text-white/60 mt-0.5 flex items-center gap-1">
                         <Clock className="w-3 h-3" />
                         {formatDistanceToNow(new Date(log.created_at), { addSuffix: true })}

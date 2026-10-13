@@ -48,7 +48,7 @@ const openDB = () => new Promise((resolve, reject) => {
 
 let lastIDBSaveMap = new Map();
 
-// Fix #7 â€” expose a toast callback so the IDB saver can warn the user
+// Fix #7 — expose a toast callback so the IDB saver can warn the user
 let _idbQuotaToastFn = null;
 export function _setIdbQuotaToast(fn) { _idbQuotaToastFn = fn; }
 
@@ -65,10 +65,10 @@ const saveRecordingState = async (id, chunks, force = false) => {
     return new Promise(resolve => tx.oncomplete = resolve);
   } catch (err) {
     if (err?.name === 'QuotaExceededError') {
-      // Fix #7 â€” inform the user that crash-recovery is disabled
+      // Fix #7 — inform the user that crash-recovery is disabled
       _idbQuotaToastFn?.({
-        title: 'âš ï¸ Local backup disabled',
-        description: 'Storage quota reached â€” recording continues, but do NOT close this tab.',
+        title: '⚠️ï¸ Local backup disabled',
+        description: 'Storage quota reached — recording continues, but do NOT close this tab.',
       });
     } else if (err?.name !== 'UnknownError') {
       console.warn('IDB Save Warning:', err?.message || err);
@@ -102,7 +102,7 @@ export default function RecordVideo() {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  // Fix #7 â€” wire the module-level IDB error notifier to this component's toast
+  // Fix #7 — wire the module-level IDB error notifier to this component's toast
   useEffect(() => { _setIdbQuotaToast(toast); return () => _setIdbQuotaToast(null); }, [toast]);
 
   const { id } = useParams();
@@ -113,7 +113,7 @@ export default function RecordVideo() {
     }
   }, [id, navigate]);
 
-  // Fix #2 â€” Pre-warm the Render server the moment the page loads so it's
+  // Fix #2 — Pre-warm the Render server the moment the page loads so it's
   // awake by the time the user clicks Record (avoids cold-start during upload).
   useEffect(() => {
     fetch('https://slate-gcph.onrender.com/health', { mode: 'no-cors' }).catch(() => {});
@@ -328,7 +328,7 @@ export default function RecordVideo() {
     const handleOffline = () => {
       if (mediaRecorderRef.current?.state === 'recording') {
         handlersRef.current.togglePause();
-        toast({ title: 'âš ï¸ Network Disconnected', description: 'Recording paused automatically.', variant: 'destructive' });
+        toast({ title: '⚠️ï¸ Network Disconnected', description: 'Recording paused automatically.', variant: 'destructive' });
       }
     };
     window.addEventListener('offline', handleOffline);
@@ -440,7 +440,7 @@ export default function RecordVideo() {
       mediaRecorderRef.current.resume();
       setIsPaused(false);
       
-      // Use ref (not state) to avoid stale closure â€” ref is always kept in sync by the interval
+      // Use ref (not state) to avoid stale closure — ref is always kept in sync by the interval
       const resumedAtSeconds = recordingSecondsRef.current;
       const resumeWallTime = Date.now();
       const planLimits = getPlanLimits(user);
@@ -777,7 +777,7 @@ export default function RecordVideo() {
       if (mode === 'screen_camera' || mode === 'screen_only') {
         if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
           toast({ title: 'Screen Recording Unavailable', description: 'Screen recording is not supported on this device. Switching to Camera Only.', variant: 'default' });
-          // fall through â€” screenStream stays null, camera branch will handle it
+          // fall through — screenStream stays null, camera branch will handle it
         } else {
           screenStream = await navigator.mediaDevices.getDisplayMedia({ video: { frameRate: { ideal: 60 } }, audio: { echoCancellation: true, noiseSuppression: true } });
           streamsRef.current.screen = screenStream;
@@ -902,7 +902,7 @@ export default function RecordVideo() {
           micSource.connect(dest);
           micSource.connect(analyser);
         } else if (screenStream.getAudioTracks().length === 0 && micEnabled) {
-          // No system audio AND no camera â€” try to get mic directly
+          // No system audio AND no camera — try to get mic directly
           try {
             const micOnly = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true, sampleRate: 48000, channelCount: 2 }, video: false });
             streamsRef.current.mic = micOnly;
@@ -1002,7 +1002,7 @@ export default function RecordVideo() {
       const wsUrl = 'wss://slate-gcph.onrender.com';
       fetch('https://slate-gcph.onrender.com/health', { mode: 'no-cors' }).catch(() => {});
 
-      // â”€â”€ Application-level heartbeat to keep Render from sleeping â”€â”€
+      // ── Application-level heartbeat to keep Render from sleeping ──
       let wsPingInterval = null;
       const startPingInterval = (socket) => {
         wsPingInterval = setInterval(() => {
@@ -1013,7 +1013,7 @@ export default function RecordVideo() {
       };
       const stopPingInterval = () => clearInterval(wsPingInterval);
 
-      // â”€â”€ Backpressure-safe chunk sending â”€â”€
+      // ── Backpressure-safe chunk sending ──
       const pendingChunks = [];
       let isFlushing = false;
       const flushChunks = (socket) => {
@@ -1021,7 +1021,7 @@ export default function RecordVideo() {
         isFlushing = true;
         while (pendingChunks.length > 0) {
           if (socket.readyState !== WebSocket.OPEN) {
-            isFlushing = false; // Fix #8 â€” reset flag so next call isn't stuck
+            isFlushing = false; // Fix #8 — reset flag so next call isn't stuck
             break;
           }
           if (socket.bufferedAmount > 5 * 1024 * 1024) {
@@ -1045,9 +1045,9 @@ export default function RecordVideo() {
           const { data: { session } } = await supabase.auth.getSession();
           ws.send(JSON.stringify({ type: 'START', userId: user.id, token: session?.access_token }));
           if (!isReconnect) {
-            // First connection â€” recorder already started below
+            // First connection — recorder already started below
           } else {
-            // Reconnected â€” replay buffered chunks first
+            // Reconnected — replay buffered chunks first
             toast({ title: 'ðŸ”„ Reconnected', description: 'Uploading buffered recording data...' });
             for (const bufferedChunk of wsBufferedChunksRef.current) {
               if (ws.readyState === WebSocket.OPEN) ws.send(bufferedChunk);
@@ -1074,7 +1074,7 @@ export default function RecordVideo() {
             const { data: videoRecord, error: dbError } = await supabase.from('clipad_videos').insert({
               id: id, // FIX: Map the cloud ID to the route ID
               creator_id: user.id,
-              company_id: user?.company_id || null, // Fix #4 â€” needed for RLS and teammate visibility
+              company_id: user?.company_id || null, // Fix #4 — needed for RLS and teammate visibility
               video_url: publicUrl,
               title: videoTitle,
               space_id: selectedSpace || null,
@@ -1113,7 +1113,7 @@ export default function RecordVideo() {
               setPhase('review');
             }
           }
-          // PONG â€” no-op, keepalive confirmed
+          // PONG — no-op, keepalive confirmed
         };
 
         ws.onerror = (err) => {
@@ -1124,7 +1124,7 @@ export default function RecordVideo() {
         ws.onclose = (evt) => {
           stopPingInterval();
           if (wsServerConfigErrorRef.current) return;
-          // Normal close (code 1000 / 1001) â€” do nothing
+          // Normal close (code 1000 / 1001) — do nothing
           if (evt.code === 1000 || evt.code === 1001) return;
 
           if (!isRecordingRef.current && !wsEndRequestedRef.current) return;
@@ -1149,7 +1149,7 @@ export default function RecordVideo() {
             pendingChunks.push(e.data);
             flushChunks(wsRef.current);
           } else {
-            // WS not ready â€” buffer the chunk for later replay on reconnect
+            // WS not ready — buffer the chunk for later replay on reconnect
             wsBufferedChunksRef.current.push(e.data);
           }
         }
@@ -1363,7 +1363,7 @@ export default function RecordVideo() {
           });
         }
         
-        toast({ title: 'âœ“ Details updated!', description: 'Your recording has been finalized.' });
+        toast({ title: '✓ Details updated!', description: 'Your recording has been finalized.' });
         deleteRecordingState(id);
         setTimeout(() => navigate(`/spaces/${selectedSpace || ''}`), 1000);
       } catch (err) {
@@ -1440,7 +1440,7 @@ export default function RecordVideo() {
       const { data: videoRecord, error: dbError } = await supabase.from('clipad_videos').insert({
         id: id, // FIX: Map the cloud ID to the route ID
         creator_id: user.id,
-        company_id: user?.company_id || null, // Fix #4 â€” needed for RLS and teammate visibility
+        company_id: user?.company_id || null, // Fix #4 — needed for RLS and teammate visibility
         video_url: publicUrl,
         title: videoTitle,
         space_id: selectedSpace || null,
@@ -1541,7 +1541,7 @@ export default function RecordVideo() {
 
       setUploadProgress(100);
       setPhase('done');
-      toast({ title: 'âœ“ Video saved!', description: 'Your recording is ready to share.' });
+      toast({ title: '✓ Video saved!', description: 'Your recording is ready to share.' });
       deleteRecordingState(id);
 
       // Navigate to the watch page after a brief pause
@@ -1855,7 +1855,7 @@ export default function RecordVideo() {
                 <div className="w-full h-full flex items-center justify-center bg-slate-50 dark:bg-background">
                   <div className="text-center text-slate-500 dark:text-muted-foreground">
                     <Monitor className="w-16 h-16 mx-auto mb-3 opacity-50" />
-                    <p className="text-sm">Recording your screenâ€¦</p>
+                    <p className="text-sm">Recording your screen…</p>
                   </div>
                 </div>
               )}
@@ -2055,7 +2055,7 @@ export default function RecordVideo() {
             <div className="w-20 h-20 rounded-full bg-[#006065] dark:bg-[#131A2C]/10 border-2 border-indigo-500/20 flex items-center justify-center mb-2">
               <Upload className="w-8 h-8 text-[#006065] dark:text-[#00beac] animate-bounce" />
             </div>
-            <h2 className="text-xl font-bold text-foreground">Uploading your videoâ€¦</h2>
+            <h2 className="text-xl font-bold text-foreground">Uploading your video…</h2>
             <p className="text-sm text-slate-500 dark:text-muted-foreground">This may take a moment depending on your connection speed.</p>
             <div className="w-80">
               <div className="flex justify-between text-xs text-slate-500 dark:text-muted-foreground mb-2">
@@ -2095,7 +2095,7 @@ export default function RecordVideo() {
               <CheckCircle className="w-10 h-10 text-[#006065]" />
             </div>
             <h2 className="text-xl font-bold text-foreground">Video saved!</h2>
-            <p className="text-slate-500 dark:text-muted-foreground text-sm">Redirecting to your videoâ€¦</p>
+            <p className="text-slate-500 dark:text-muted-foreground text-sm">Redirecting to your video…</p>
           </div>
         )}
       </div>

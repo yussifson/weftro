@@ -68,9 +68,9 @@ export default function SpacesList() {
         .select('space_id')
         .eq('user_id', user.id);
 
-      // 401 check on membership query â€” try session recovery
+      // 401 check on membership query — try session recovery
       if (membershipRes.status === 401 || membershipRes.error?.status === 401) {
-        console.warn('[SpacesList] 401 on membership query â€” attempting session recovery...');
+        console.warn('[SpacesList] 401 on membership query — attempting session recovery...');
         const recovered = await trySessionRecovery();
         if (recovered) {
           await refreshUser();
@@ -92,7 +92,7 @@ export default function SpacesList() {
         .order('created_at', { ascending: false });
 
       if (mySpacesError?.status === 401) {
-        console.warn('[SpacesList] 401 on own spaces query â€” attempting session recovery...');
+        console.warn('[SpacesList] 401 on own spaces query — attempting session recovery...');
         const recovered = await trySessionRecovery();
         if (recovered) { await refreshUser(); setLoading(false); return; }
         setAuthError(true);
@@ -156,9 +156,9 @@ export default function SpacesList() {
       }).select().single();
 
       if (error) {
-        // Handle 401 specifically â€” attempt session recovery then retry once
+        // Handle 401 specifically — attempt session recovery then retry once
         if (error.status === 401 || error.code === 'PGRST301') {
-          console.warn('[SpacesList] 401 on createSpace â€” attempting session recovery...');
+          console.warn('[SpacesList] 401 on createSpace — attempting session recovery...');
           const recovered = await trySessionRecovery();
           if (recovered) {
             // Retry the insert with the refreshed session
