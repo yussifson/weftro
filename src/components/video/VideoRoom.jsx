@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import DailyIframe from '@daily-co/daily-js';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation} from "react-i18next";
@@ -591,13 +591,21 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
         console.error('Failed to save meeting record:', e);
         // On unexpected error, still call onLeave so the UI isn't stuck
         daily.leave();
-        if (onLeave) onLeave(null);
+        if (onLeave) {
+          onLeave(null);
+        } else {
+          navigate(spaceId ? `/spaces/${spaceId}` : '/meetings');
+        }
         return;
       }
     }
     
     daily.leave();
-    if (onLeave) onLeave(null);
+    if (onLeave) {
+      onLeave(null);
+    } else {
+      navigate(spaceId ? `/spaces/${spaceId}` : '/meetings');
+    }
   };
 
  // Fix #7: Real-time transcription â€” cross-browser (Chrome + Firefox fallback)

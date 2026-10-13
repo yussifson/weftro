@@ -183,7 +183,7 @@ export default function SaveMeetingPage() {
 
       toast({ title: 'Meeting Saved ✓', description: 'Your meeting record has been published.' });
       // Navigate to meetings list — always works regardless of whether id is a UUID or short room name
-      navigate('/clipad/meetings');
+      navigate('/meetings');
     } catch (err) {
       console.error('SaveMeetingPage handleSave error:', err);
       toast({

@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
@@ -7,8 +7,10 @@ import { format } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   GitBranch, ChevronRight, Calendar, Search, RefreshCw,
-  Loader2, AlertCircle, Users, ExternalLink, Sparkles, Zap, ArrowLeft
+  Loader2, AlertCircle, Users, ExternalLink, Sparkles, Zap, ArrowLeft,
+  Brain, Plus, Check, X
 } from 'lucide-react';
+import { createMemory, MEMORY_TIERS, MEMORY_TYPES } from '@/lib/clipadMemoryService';
 import { INTEGRATIONS } from '@/config/integrationsList';
 
 const PROVIDER_COLORS = {
@@ -41,6 +43,41 @@ export default function KnowledgeJourney() {
   const [loading, setLoading] = useState(true);
   const [selectedJourney, setSelectedJourney] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showAddMemory, setShowAddMemory] = useState(false);
+  const [memTitle, setMemTitle] = useState('');
+  const [memContent, setMemContent] = useState('');
+  const [memTier, setMemTier] = useState(MEMORY_TIERS.ORGANIZATIONAL);
+  const [memType, setMemType] = useState(MEMORY_TYPES.FACT);
+  const [savingMemory, setSavingMemory] = useState(false);
+  const [memorySuccess, setMemorySuccess] = useState(false);
+
+  const handleCreateMemory = async (e) => {
+    e.preventDefault();
+    if (!memTitle.trim() || !memContent.trim() || !companyId) return;
+    setSavingMemory(true);
+    try {
+      await createMemory({
+        companyId,
+        userId: user?.id,
+        memoryTier: memTier,
+        memoryType: memType,
+        title: memTitle.trim(),
+        content: memContent.trim(),
+        summary: memContent.trim().substring(0, 160),
+      });
+      setMemorySuccess(true);
+      setTimeout(() => {
+        setMemorySuccess(false);
+        setShowAddMemory(false);
+        setMemTitle('');
+        setMemContent('');
+      }, 1500);
+    } catch (err) {
+      console.error('Failed to create memory:', err);
+    } finally {
+      setSavingMemory(false);
+    }
+  };
 
   const loadJourneys = useCallback(async () => {
     if (companyId === undefined) return;
@@ -216,7 +253,13 @@ export default function KnowledgeJourney() {
                 className="pl-8 pr-3 py-1.5 text-xs bg-white/10 text-white border border-white/20 rounded-xl focus:outline-none focus:border-[#fad503] w-52 placeholder:text-white/50"
               />
             </div>
-            <button onClick={loadJourneys} className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/10/80 text-white rounded-xl text-sm font-medium transition-colors">
+            <button 
+              onClick={() => setShowAddMemory(true)}
+              className="flex items-center gap-1.5 px-4 py-2 bg-[#fad503] hover:bg-[#fad503]/90 text-[#006065] rounded-xl text-sm font-bold shadow-md shadow-black/10 transition-all hover:-translate-y-0.5 active:scale-95 shrink-0"
+            >
+              <Brain className="w-4 h-4" /> Add Memory
+            </button>
+            <button onClick={loadJourneys} className="flex items-center gap-2 px-3 py-2 bg-white/10 hover:bg-white/10/80 text-white rounded-xl text-sm font-medium transition-colors">
               <RefreshCw className="w-4 h-4" />
             </button>
           </div>
@@ -252,6 +295,114 @@ export default function KnowledgeJourney() {
           </div>
         )}
       </div>
+
+      {/* Add Memory Modal */}
+      {showAddMemory && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <form onSubmit={handleCreateMemory} className="bg-white dark:bg-card rounded-2xl max-w-lg w-full p-6 border border-slate-200 dark:border-border shadow-2xl space-y-4 animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-border">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-[#006065]/10 dark:bg-[#fad503]/10 flex items-center justify-center text-[#006065] dark:text-[#fad503]">
+                  <Brain className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-slate-900 dark:text-foreground">Add New Memory</h3>
+                  <p className="text-xs text-slate-500 dark:text-muted-foreground">Store institutional knowledge, decisions, or company context.</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowAddMemory(false)}
+                className="w-8 h-8 rounded-lg hover:bg-slate-100 dark:hover:bg-accent flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-foreground"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-muted-foreground mb-1">Title *</label>
+              <input
+                type="text"
+                required
+                value={memTitle}
+                onChange={e => setMemTitle(e.target.value)}
+                placeholder="e.g., Q4 Engineering Strategy, Remote Work Policy"
+                className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 dark:border-border bg-slate-50 dark:bg-background text-slate-900 dark:text-foreground focus:outline-none focus:ring-2 focus:ring-[#006065]/20 focus:border-[#006065]"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-muted-foreground mb-1">Memory Tier</label>
+                <select
+                  value={memTier}
+                  onChange={e => setMemTier(e.target.value)}
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-border bg-slate-50 dark:bg-background text-slate-900 dark:text-foreground focus:outline-none focus:border-[#006065]"
+                >
+                  <option value={MEMORY_TIERS.ORGANIZATIONAL}>Organizational (Company-wide)</option>
+                  <option value={MEMORY_TIERS.TEAM}>Team (Space level)</option>
+                  <option value={MEMORY_TIERS.PERSONAL}>Personal (Private)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-muted-foreground mb-1">Memory Type</label>
+                <select
+                  value={memType}
+                  onChange={e => setMemType(e.target.value)}
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-border bg-slate-50 dark:bg-background text-slate-900 dark:text-foreground focus:outline-none focus:border-[#006065]"
+                >
+                  <option value={MEMORY_TYPES.FACT}>Fact / Knowledge</option>
+                  <option value={MEMORY_TYPES.DECISION}>Decision</option>
+                  <option value={MEMORY_TYPES.POLICY}>Policy</option>
+                  <option value={MEMORY_TYPES.PROCESS}>Process</option>
+                  <option value={MEMORY_TYPES.COMMITMENT}>Commitment</option>
+                  <option value={MEMORY_TYPES.INSIGHT}>Insight</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-muted-foreground mb-1">Knowledge Content *</label>
+              <textarea
+                required
+                rows={4}
+                value={memContent}
+                onChange={e => setMemContent(e.target.value)}
+                placeholder="Describe the context, policy, agreement, or institutional fact..."
+                className="w-full p-3 text-xs rounded-xl border border-slate-200 dark:border-border bg-slate-50 dark:bg-background text-slate-900 dark:text-foreground focus:outline-none focus:ring-2 focus:ring-[#006065]/20 focus:border-[#006065]"
+              />
+            </div>
+
+            <div className="flex items-center justify-between pt-2">
+              {memorySuccess ? (
+                <span className="text-xs font-bold text-[#006065] dark:text-[#00beac] flex items-center gap-1.5">
+                  <Check className="w-4 h-4" /> Memory saved to vault!
+                </span>
+              ) : (
+                <span className="text-[11px] text-slate-400">Indexed for AI retrieval and search</span>
+              )}
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowAddMemory(false)}
+                  className="px-4 py-2 text-xs font-semibold rounded-xl hover:bg-slate-100 dark:hover:bg-accent text-slate-600 dark:text-muted-foreground transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingMemory}
+                  className="px-5 py-2 text-xs font-bold rounded-xl bg-[#006065] hover:bg-[#004e52] text-white shadow-md transition-all flex items-center gap-1.5 disabled:opacity-60"
+                >
+                  {savingMemory ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
+                  Save Memory
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 }

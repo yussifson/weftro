@@ -131,6 +131,7 @@ function App() {
                           <Route path="/meetings/:id" element={<MeetingRecord />} />
                           <Route path="/join/:id" element={<VideoRoom />} />
                           <Route path="/save-meeting" element={<SaveMeetingPage />} />
+                          <Route path="/save-meeting/:id" element={<SaveMeetingPage />} />
                           <Route path="/meetings" element={<MeetingsList />} />
                           <Route path="/videos" element={<VideosList />} />
                           <Route path="/support" element={<CliPadSupport />} />

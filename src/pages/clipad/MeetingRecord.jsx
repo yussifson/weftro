@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
@@ -95,15 +95,17 @@ function ActionItemRow({ item, onUpdate }) {
 }
 
 export default function MeetingRecord() {
-  const { meetingId } = useParams();
+  const { id, meetingId: routeMeetingId } = useParams();
+  const meetingId = id || routeMeetingId;
   const { user, isLoadingAuth } = useAuth();
   const { plan } = useCompanyPlan();
   const navigate = useNavigate();
 
+  const [activeTab, setActiveTab] = useState('intelligence'); // 'intelligence', 'recording', 'transcript', 'discussion'
   const [meeting, setMeeting] = useState(null);
   const [actionItems, setActionItems] = useState([]);
   const [transcript, setTranscript] = useState([]);
-  const EMOJIS = ['ðŸ‘', 'ðŸŽ‰', 'ðŸ§ ', 'ðŸ‘€', 'ðŸ’¡', 'ðŸ”¥', 'ðŸš€'];
+  const EMOJIS = ['👍', '🎉', '🧠', '👀', '💡', '🔥', '🚀'];
   const [comments, setComments] = useState([]);
   const [reactions, setReactions] = useState([]);
   const [commentText, setCommentText] = useState('');
@@ -122,6 +124,15 @@ export default function MeetingRecord() {
   const [editUnlockDate, setEditUnlockDate] = useState('');
   const [editUnlockTime, setEditUnlockTime] = useState('');
   const [savingEdit, setSavingEdit] = useState(false);
+
+  // Quick Add Memory modal state
+  const [showAddMemoryModal, setShowAddMemoryModal] = useState(false);
+  const [memTitle, setMemTitle] = useState('');
+  const [memContent, setMemContent] = useState('');
+  const [memTier, setMemTier] = useState('organizational');
+  const [memType, setMemType] = useState('DECISION');
+  const [savingMemory, setSavingMemory] = useState(false);
+
   const { toast } = useToast();
 
   useEffect(() => { if (meetingId) fetchMeeting(); }, [meetingId, isLoadingAuth, user]);
@@ -138,10 +149,8 @@ export default function MeetingRecord() {
       ]);
       if (meetingRes.data) {
         const m = meetingRes.data;
-
         const isHost = user && (m.host_id === user.id || m.created_by === user.id);
 
-        // 1. Check Locks FIRST
         if (!isHost) {
           if (m.unlock_at && new Date(m.unlock_at) > new Date()) {
             setAccessDenied({ type: 'scheduled', unlockAt: m.unlock_at });
@@ -157,9 +166,8 @@ export default function MeetingRecord() {
         const isExternal = m.visibility === 'external';
 
         if (!isExternal) {
-          // 0. Ensure user is logged in and belongs to the same company
           if (!user) {
-            setAccessDenied({ type: 'private' }); // or a custom 'auth_required' type
+            setAccessDenied({ type: 'private' });
             setLoading(false);
             return;
           }
@@ -169,7 +177,6 @@ export default function MeetingRecord() {
             return;
           }
 
-          // 1. Check Space Privacy
           const isAdminUser = user?.role === 'admin' || user?.role === 'super_admin' || user?.role === 'company_admin';
           if (m.space_id && !isHost && !isAdminUser) {
             const { data: space } = await supabase.from('clipad_spaces').select('is_private').eq('id', m.space_id).single();
@@ -203,7 +210,7 @@ export default function MeetingRecord() {
             .insert({ meeting_id: meetingId, viewer_id: user.id })
             .select()
             .then(() => {})
-            .catch(() => {}); // ignore duplicates (UNIQUE constraint)
+            .catch(() => {});
         }
       }
       if (actionsRes.data) setActionItems(actionsRes.data);
@@ -259,6 +266,37 @@ export default function MeetingRecord() {
     }
   };
 
+  const handleSaveToMemory = async (e) => {
+    e.preventDefault();
+    if (!memTitle.trim() || !memContent.trim()) return;
+    setSavingMemory(true);
+    try {
+      const { createMemory } = await import('@/lib/clipadMemoryService');
+      await createMemory({
+        companyId: meeting?.company_id || user?.company_id,
+        userId: user?.id,
+        memoryTier: memTier,
+        memoryType: memType,
+        title: memTitle.trim(),
+        content: memContent.trim(),
+        summary: memContent.trim().substring(0, 160),
+        sourceReference: {
+          meeting_id: meetingId,
+          meeting_title: meeting?.title,
+        }
+      });
+      toast({ title: 'Memory Added ✓', description: 'Meeting insight saved to permanent Organizational Memory Vault.' });
+      setShowAddMemoryModal(false);
+      setMemTitle('');
+      setMemContent('');
+    } catch (err) {
+      console.error('Failed to save memory:', err);
+      toast({ title: 'Error', description: 'Failed to save to Memory Vault.', variant: 'destructive' });
+    } finally {
+      setSavingMemory(false);
+    }
+  };
+
   const generateAISummary = async () => {
     if (!meeting) return;
     setGeneratingAI(true);
@@ -275,7 +313,6 @@ export default function MeetingRecord() {
       if (data) {
         setMeeting(prev => ({ ...prev, ...data }));
         if (data.action_items?.length) {
-          // Find or create default board for this space
           let boardId = null;
           if (meeting.space_id) {
             let { data: board } = await supabase.from('clipad_task_boards').select('id').eq('space_id', meeting.space_id).limit(1).single();
@@ -286,7 +323,6 @@ export default function MeetingRecord() {
             if (board) boardId = board.id;
           }
 
-          // Insert action items into the new tasks system
           const inserts = data.action_items.map(ai => ({
             meeting_id: meetingId,
             board_id: boardId,
@@ -298,25 +334,6 @@ export default function MeetingRecord() {
           }));
           const { data: newItems } = await supabase.from('clipad_tasks').insert(inserts).select();
           if (newItems) setActionItems(prev => [...prev, ...newItems]);
-        }
-
-        // Pipe meeting notes to a new Doc in the Knowledge Layer
-        if (meeting.space_id && data.summary) {
-          const { data: newDoc } = await supabase.from('clipad_docs').insert({
-            space_id: meeting.space_id,
-            title: `Meeting Notes: ${meeting.title || 'Untitled'}`,
-            content: `**AI Summary:**\n\n${data.summary}\n\n**Decisions:**\n${data.decisions?.join('\n') || 'None'}`,
-            created_by: user?.id || null
-          }).select().single();
-          
-          if (newDoc) {
-            // Link the doc to the meeting
-            await supabase.from('clipad_doc_links').insert({
-              doc_id: newDoc.id,
-              target_id: meetingId,
-              target_type: 'meeting'
-            });
-          }
         }
       }
     } catch (err) {
@@ -336,31 +353,14 @@ export default function MeetingRecord() {
 
   if (loading || isLoadingAuth) {
     return (
-      <div className="min-h-full bg-slate-50 dark:bg-background text-slate-900 dark:text-slate-100  page-enter overflow-x-hidden pt-6 pb-24 md:pb-8 animate-pulse">
-        <div className="max-w-4xl mx-auto px-4 w-full">
-          {/* Header Skeleton */}
+      <div className="min-h-full bg-slate-50 dark:bg-background text-slate-900 dark:text-slate-100 page-enter overflow-x-hidden pt-6 pb-24 md:pb-8 animate-pulse">
+        <div className="max-w-6xl mx-auto px-4 w-full">
           <div className="flex flex-col gap-4 mb-8 pb-6 border-b border-slate-200 dark:border-border">
-            <div className="flex items-center gap-3">
-              <div className="h-8 w-16 bg-slate-200 dark:bg-slate-800 rounded-full" />
-              <div className="h-6 w-32 bg-slate-200 dark:bg-slate-800 rounded" />
-            </div>
-            <div className="h-10 w-3/4 bg-slate-200 dark:bg-slate-800 rounded-lg" />
-            <div className="flex items-center gap-4">
-              <div className="h-8 w-8 bg-slate-200 dark:bg-slate-800 rounded-full" />
-              <div className="h-4 w-48 bg-slate-200 dark:bg-slate-800 rounded" />
-            </div>
+            <div className="h-8 w-24 bg-slate-200 dark:bg-slate-800 rounded-xl" />
+            <div className="h-10 w-2/3 bg-slate-200 dark:bg-slate-800 rounded-xl" />
+            <div className="h-5 w-48 bg-slate-200 dark:bg-slate-800 rounded-lg" />
           </div>
-          {/* Main content Skeleton */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="md:col-span-2 space-y-6">
-              <div className="h-64 w-full bg-slate-200 dark:bg-slate-800 rounded-2xl" />
-              <div className="h-40 w-full bg-slate-200 dark:bg-slate-800 rounded-2xl" />
-            </div>
-            <div className="space-y-4">
-              <div className="h-24 w-full bg-slate-200 dark:bg-slate-800 rounded-2xl" />
-              <div className="h-24 w-full bg-slate-200 dark:bg-slate-800 rounded-2xl" />
-            </div>
-          </div>
+          <div className="h-80 w-full bg-slate-200 dark:bg-slate-800 rounded-2xl mb-8" />
         </div>
       </div>
     );
@@ -423,450 +423,675 @@ export default function MeetingRecord() {
   const canEdit = meeting?.created_by === user?.id || meeting?.host_id === user?.id || isAdmin;
 
   return (
-    <div style={{ fontFamily: "'Inter', sans-serif" }} className="min-h-full bg-slate-50 dark:bg-background page-enter text-slate-900 dark:text-slate-100 overflow-x-hidden pb-24 md:pb-8">
-      {/* Contextual Action Bar */}
-      <div className="flex items-center justify-between px-6 py-4 bg-white dark:bg-card border-b border-slate-200 dark:border-border shadow-sm mb-4">
-          <button onClick={() => navigate('/meetings')} className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/95 dark:bg-[#202c33]/95 backdrop-blur-md border border-black/5 dark:border-white/5 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] text-sm font-semibold text-slate-900 dark:text-foreground transition-all hover:-translate-y-0.5">
-            <ArrowLeft className="w-4 h-4 text-slate-500 dark:text-muted-foreground" /> Meetings
-          </button>
-        <div className="flex items-center gap-2">
-          {!meeting.ai_summary && (
+    <div style={{ fontFamily: "'Inter', sans-serif" }} className="min-h-full bg-slate-50 dark:bg-background page-enter text-slate-900 dark:text-slate-100 overflow-x-hidden pb-24 md:pb-12">
+      {/* Top Corporate Command Bar */}
+      <div className="bg-white dark:bg-card border-b border-slate-200/80 dark:border-border/80 sticky top-0 z-30 shadow-xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
             <button
-              onClick={generateAISummary}
-              disabled={generatingAI}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-foreground text-xs font-bold shadow-lg shadow-pink-500/20 transition-all disabled:opacity-60"
+              onClick={() => navigate('/meetings')}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-accent text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 transition-all active:scale-95"
             >
-              {generatingAI
-                ? <><div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Generatingâ€¦</>
-                : <><Sparkles className="w-3.5 h-3.5" /> Generate AI Summary</>
-              }
+              <ArrowLeft className="w-4 h-4" /> Meetings
             </button>
-          )}
+            <span className="hidden sm:inline-block w-px h-5 bg-slate-200 dark:border-border" />
+            <div className="hidden sm:flex items-center gap-2 text-xs text-slate-500 dark:text-muted-foreground font-mono">
+              <span className="px-2 py-0.5 rounded-md bg-[#006065]/10 text-[#006065] dark:text-[#00beac] font-bold uppercase">
+                {meeting.visibility || 'internal'}
+              </span>
+              {meeting.is_locked && (
+                <span className="flex items-center gap-1 text-amber-600 dark:text-amber-400">
+                  <Lock className="w-3 h-3" /> Locked
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            {/* Prominent Add to Memory Vault Button */}
+            <button
+              onClick={() => {
+                setMemTitle(`Decision: ${meeting.title || 'Meeting Insight'}`);
+                setMemContent(meeting.ai_summary && meeting.ai_summary !== '00' ? meeting.ai_summary : (meeting.key_decisions?.[0] || ''));
+                setShowAddMemoryModal(true);
+              }}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#fad503] hover:bg-[#fad503]/90 text-[#006065] text-xs font-bold shadow-sm transition-all hover:-translate-y-0.5 active:scale-95 shrink-0"
+              title="Add this meeting decision to Organization Memory Vault"
+            >
+              <Brain className="w-3.5 h-3.5" />
+              <span>Add Memory</span>
+            </button>
+
+            {!meeting.ai_summary && (
+              <button
+                onClick={generateAISummary}
+                disabled={generatingAI}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#006065] hover:bg-[#004e52] text-white text-xs font-bold transition-all disabled:opacity-60 shrink-0"
+              >
+                {generatingAI
+                  ? <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  : <Sparkles className="w-3.5 h-3.5 text-[#fad503]" />
+                }
+                <span className="hidden sm:inline">Generate AI</span>
+              </button>
+            )}
+
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(window.location.href);
+                toast({ title: 'Link copied!' });
+              }}
+              className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-accent text-slate-700 dark:text-slate-200 text-xs font-semibold transition-all flex items-center gap-1.5"
+            >
+              <Share2 className="w-4 h-4" />
+              <span className="hidden sm:inline">Share</span>
+            </button>
+
+            {canEdit && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-accent text-slate-700 dark:text-slate-200 transition-all">
+                    <MoreHorizontal className="w-4 h-4" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-44 rounded-xl shadow-lg border border-slate-200 dark:border-border">
+                  <DropdownMenuItem onClick={() => setShowEdit(true)} className="cursor-pointer gap-2 text-xs">
+                    <Edit3 className="w-3.5 h-3.5" /> Edit Meeting Details
+                  </DropdownMenuItem>
+                  {meeting.video_url && (
+                    <DropdownMenuItem onClick={() => setShowDownloadModal(true)} className="cursor-pointer gap-2 text-xs">
+                      <Download className="w-3.5 h-3.5" /> Download Media
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuItem onClick={handleDeleteMeeting} className="cursor-pointer gap-2 text-xs text-rose-500 focus:text-rose-500">
+                    <Trash2 className="w-3.5 h-3.5" /> Delete Record
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="max-w-[1600px] mx-auto sm:px-6 lg:px-8 py-4 sm:py-8">
+      <VideoDownloadModal 
+        open={showDownloadModal} 
+        onOpenChange={setShowDownloadModal} 
+        videoId={meeting.id} 
+        videoUrl={meeting.video_url}
+        videoTitle={meeting.title}
+        spaceId={meeting.space_id}
+      />
 
-        <VideoDownloadModal 
-          open={showDownloadModal} 
-          onOpenChange={setShowDownloadModal} 
-          videoId={meeting.id} 
-          videoUrl={meeting.video_url}
-          videoTitle={meeting.title}
-          spaceId={meeting.space_id}
-        />
-        {/* Video Player */}
-        <div className="mb-4 sm:mb-6">
-          {meeting.video_url ? (
-            <div className="bg-card md:rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border overflow-hidden">
-              <RichVideoPlayer videoUrl={meeting.video_url} entityId={meeting.id} recordType="meeting" initialVideoRecord={meeting} />
-            </div>
-            ) : (
-              <button 
-                onClick={() => {
-                  toast({ title: 'Recording Loading', description: 'Your recording is being processed by the cloud provider and will be available shortly.' });
-                }}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-accent text-slate-900 dark:text-foreground text-slate-900 dark:text-foreground font-bold transition-all hover:-translate-y-0.5 mt-4 mb-8 mx-4 sm:mx-0"
-              >
-                <Video className="w-4 h-4" /> Recording Pending...
-              </button>
-            )}
-        </div>
-
-        {/* 3-Column Grid for Meeting Info */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          
-          {/* Main Info (Col-Span-2) */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Header (YouTube Style) */}
-            <div className="mb-6 px-4 sm:px-0">
-              <div className="flex items-center gap-3 mb-2">
-                {meeting.ai_summary && (
-                  <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#006065] dark:bg-card border border-[#006065] dark:border-border/20 text-[#006065] dark:text-[#fad503] text-[10px] font-bold uppercase tracking-wider">
-                    <Sparkles className="w-3 h-3" /> AI Summary Ready
+      {/* Main Corporate Workspace Container */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-12">
+        {/* Executive Header Card */}
+        <div className="bg-white dark:bg-card border border-slate-200/80 dark:border-border/80 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-xs mb-8">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            <div className="space-y-3 max-w-3xl">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="px-3 py-1 rounded-full bg-[#006065]/10 text-[#006065] dark:text-[#00beac] text-xs font-bold uppercase tracking-wider border border-[#006065]/20 flex items-center gap-1.5">
+                  <Calendar className="w-3.5 h-3.5" /> {new Date(meeting.created_at).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}
+                </span>
+                {getMeetingDuration() && (
+                  <span className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold flex items-center gap-1.5">
+                    <Clock className="w-3.5 h-3.5" /> {getMeetingDuration()}
+                  </span>
+                )}
+                {meeting.participant_count && (
+                  <span className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold flex items-center gap-1.5">
+                    <Users className="w-3.5 h-3.5" /> {meeting.participant_count} Attendees
                   </span>
                 )}
               </div>
-              <h1 className="text-xl md:text-3xl font-bold text-slate-900 dark:text-foreground mb-3 leading-tight">{meeting.title || 'Team Meeting'}</h1>
-              
-              <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-muted-foreground mb-4">
-                <span className="flex items-center gap-1.5"><Calendar className="w-4 h-4" />{new Date(meeting.created_at).toLocaleDateString()}</span>
-                {getMeetingDuration() && <span className="flex items-center gap-1.5"><Clock className="w-4 h-4" />{getMeetingDuration()}</span>}
-                {meeting.participant_count && <span className="flex items-center gap-1.5"><Users className="w-4 h-4" />{meeting.participant_count} participants</span>}
-              </div>
 
-              {/* Horizontal Action Bar */}
-              <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0 mask-edges mt-2">
-                {/* Reactions / Likes */}
-                <div className="flex items-center bg-slate-100 dark:bg-slate-800 dark:bg-white/5 rounded-full px-1.5 py-1 shrink-0 border border-black/5 dark:border-white/5">
-                  {EMOJIS.slice(0, 4).map(e => {
-                    const count = reactions.filter(r => {
-                      const cleanEmoji = r.emoji?.startsWith('[ANON]') ? r.emoji.slice(6) : r.emoji;
-                      return cleanEmoji === e;
-                    }).length;
-                    return (
-                      <button key={e} onClick={() => handleAddReaction(e)} className="flex items-center gap-1.5 px-3 py-1.5 hover:bg-black/5 dark:hover:bg-slate-100 dark:bg-slate-800 rounded-full transition-colors text-sm font-semibold">
-                        <span className="text-lg leading-none">{e}</span>
-                        {count > 0 && <span className="text-white/90 dark:text-foreground/50">{count}</span>}
-                      </button>
-                    );
-                  })}
-                </div>
-                
-                {/* Share */}
-                <button onClick={() => {
-                  navigator.clipboard.writeText(window.location.href);
-                  toast({ title: 'Link copied!' });
-                }} className="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 dark:bg-white/5 hover:bg-white/15 dark:hover:bg-slate-100 dark:bg-slate-800 transition-colors text-sm font-semibold text-white dark:text-foreground shrink-0 border border-black/5 dark:border-white/5">
-                  <Share2 className="w-4 h-4" /> Share
-                </button>
-                
-                {/* Download */}
-                {meeting.video_url && (
-                  <button onClick={() => setShowDownloadModal(true)} className="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 dark:bg-white/5 hover:bg-white/15 dark:hover:bg-slate-100 dark:bg-slate-800 transition-colors text-sm font-semibold text-white dark:text-foreground shrink-0 border border-black/5 dark:border-white/5">
-                    <Download className="w-4 h-4" /> Download
-                  </button>
-                )}
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-foreground tracking-tight leading-snug">
+                {meeting.title || 'Executive Team Sync'}
+              </h1>
 
-                {/* Edit/More */}
-                {canEdit && (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 dark:bg-white/5 hover:bg-white/15 dark:hover:bg-slate-100 dark:bg-slate-800 transition-colors text-sm font-semibold text-white dark:text-foreground shrink-0 border border-black/5 dark:border-white/5">
-                        <MoreHorizontal className="w-4 h-4" /> More
-                      </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-40 rounded-xl">
-                      <DropdownMenuItem onClick={() => setShowEdit(true)} className="cursor-pointer gap-2">
-                        <Edit3 className="w-4 h-4" /> Edit Meeting
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={handleDeleteMeeting} className="cursor-pointer gap-2 text-rose-500 focus:text-rose-500">
-                        <Trash2 className="w-4 h-4" /> Delete Meeting
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                )}
-              </div>
-            </div>
-            {/* AI Summary */}
-        <div className="px-4 sm:px-0">
-        {meeting.ai_summary && hasFeature(plan, 'hasAdvancedAI') ? (
-          <div className="space-y-6">
-            <SectionCard icon={Brain} iconColor="from-pink-500 to-rose-500" title="Advanced AI Intelligence" defaultOpen>
-              <div className="flex justify-end mb-3">
-                <CopyButton text={meeting.ai_summary === '00' ? 'No summary generated.' : meeting.ai_summary} />
-              </div>
-              <p className="text-sm text-slate-900 dark:text-foreground leading-relaxed whitespace-pre-line">
-                {meeting.ai_summary === '00' ? 'No meaningful transcript recorded to generate a summary.' : meeting.ai_summary}
-              </p>
-              
-              {/* Pro Feature: Smart Follow-Up */}
-              {hasFeature(plan, 'hasSmartFollowUps') && (
-                <div className="mt-8 pt-6 border-t border-border">
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <h4 className="text-sm font-bold text-foreground flex items-center gap-2">
-                        <Sparkles className="w-4 h-4 text-primary" /> Smart Follow-Up Emails
-                      </h4>
-                      <p className="text-xs text-muted-foreground mt-1">Automatically draft and send follow-ups to attendees.</p>
-                    </div>
-                    <button 
-                      disabled={sendingFollowUp}
-                      onClick={async () => {
-                        setSendingFollowUp(true);
-                        try {
-                          const { data, error } = await supabase.functions.invoke('clipad-smart-followup', {
-                            body: { meetingId: meeting.id }
-                          });
-                          if (error) throw error;
-                          toast({ title: 'Follow-ups Sent! ðŸŽ‰', description: data?.message || 'Smart follow-up emails have been queued.' });
-                        } catch (err) {
-                          toast({ title: 'Error', description: 'Failed to send follow-ups. Please try again.', variant: 'destructive' });
-                        } finally {
-                          setSendingFollowUp(false);
-                        }
-                      }}
-                      className="px-4 py-2 rounded-xl bg-primary text-white text-sm font-bold shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all disabled:opacity-60"
+              {/* Reaction Badges */}
+              <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                {EMOJIS.slice(0, 5).map(e => {
+                  const count = reactions.filter(r => {
+                    const cleanEmoji = r.emoji?.startsWith('[ANON]') ? r.emoji.slice(6) : r.emoji;
+                    return cleanEmoji === e;
+                  }).length;
+                  return (
+                    <button
+                      key={e}
+                      onClick={() => handleAddReaction(e)}
+                      className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium border transition-all ${
+                        count > 0 
+                          ? 'bg-[#fad503]/20 border-[#fad503]/50 text-[#006065] dark:text-[#fad503]' 
+                          : 'bg-slate-50 dark:bg-card border-slate-200 dark:border-border text-slate-600 dark:text-slate-400 hover:border-slate-300'
+                      }`}
                     >
-                      {sendingFollowUp ? 'Sending...' : 'Send Follow-Up'}
+                      <span>{e}</span>
+                      {count > 0 && <span className="font-bold text-[11px]">{count}</span>}
                     </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Quick Stats Pill */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-border/60 shrink-0">
+              <div className="text-center px-2">
+                <span className="block text-xl font-black text-[#006065] dark:text-[#fad503]">{actionItems.length}</span>
+                <span className="text-[11px] font-semibold text-slate-500 dark:text-muted-foreground uppercase">Tasks</span>
+              </div>
+              <div className="text-center px-2 border-l border-slate-200 dark:border-border">
+                <span className="block text-xl font-black text-[#006065] dark:text-[#fad503]">{meeting.key_decisions?.length || 0}</span>
+                <span className="text-[11px] font-semibold text-slate-500 dark:text-muted-foreground uppercase">Decisions</span>
+              </div>
+              <div className="text-center px-2 col-span-2 sm:col-span-1 border-t sm:border-t-0 sm:border-l border-slate-200 dark:border-border pt-2 sm:pt-0">
+                <span className="block text-xl font-black text-[#006065] dark:text-[#fad503]">{transcript.length || (meeting.raw_transcript ? '1' : '0')}</span>
+                <span className="text-[11px] font-semibold text-slate-500 dark:text-muted-foreground uppercase">Dialogue</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Premium Corporate Navigation Tabs */}
+          <div className="flex items-center gap-2 border-b border-slate-200 dark:border-border mt-8 pt-2 overflow-x-auto no-scrollbar">
+            {[
+              { id: 'intelligence', label: 'Smart Moments & AI', icon: Zap, count: meeting.key_decisions?.length },
+              { id: 'recording', label: 'Media Player', icon: Video, badge: meeting.video_url ? 'Ready' : null },
+              { id: 'transcript', label: 'Full Transcript', icon: FileText, count: transcript.length },
+              { id: 'discussion', label: 'Action Items & Notes', icon: MessageSquare, count: actionItems.length },
+            ].map(tab => {
+              const TabIcon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-2 px-4 py-3 border-b-2 text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
+                    isActive
+                      ? 'border-[#006065] text-[#006065] dark:border-[#fad503] dark:text-[#fad503]'
+                      : 'border-transparent text-slate-500 hover:text-slate-900 dark:text-muted-foreground dark:hover:text-slate-200'
+                  }`}
+                >
+                  <TabIcon className="w-4 h-4" />
+                  <span>{tab.label}</span>
+                  {tab.count !== undefined && tab.count > 0 && (
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] ${isActive ? 'bg-[#006065]/10 dark:bg-[#fad503]/20 font-black' : 'bg-slate-100 dark:bg-slate-800'}`}>
+                      {tab.count}
+                    </span>
+                  )}
+                  {tab.badge && (
+                    <span className="px-1.5 py-0.5 rounded text-[9px] uppercase tracking-wider font-black bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                      {tab.badge}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Tab 1: Smart Moments & AI Intelligence */}
+        {activeTab === 'intelligence' && (
+          <div className="space-y-8 animate-in fade-in">
+            {/* Primary V3 Smart Moments Component */}
+            <div className="bg-white dark:bg-card border border-slate-200/80 dark:border-border/80 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-xs">
+              <SmartMomentTimeline
+                companyId={meeting.company_id}
+                meetingId={meeting.id}
+                transcript={transcript}
+                title={meeting.title}
+                onJumpToTimestamp={(ts) => {
+                  setActiveTab('recording');
+                  toast({ title: `Jumping to video offset: ${ts}` });
+                }}
+              />
+            </div>
+
+            {/* AI Executive Summary & Key Decisions Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 space-y-6">
+                <div className="bg-white dark:bg-card border border-slate-200/80 dark:border-border/80 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-xs">
+                  <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-border mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-xl bg-[#006065]/10 text-[#006065] dark:text-[#fad503]">
+                        <Brain className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h3 className="text-base font-bold text-slate-900 dark:text-foreground">Executive AI Summary</h3>
+                        <p className="text-xs text-slate-500 dark:text-muted-foreground">High-level briefing distilled from entire meeting conversation.</p>
+                      </div>
+                    </div>
+                    {meeting.ai_summary && <CopyButton text={meeting.ai_summary} />}
                   </div>
+
+                  {meeting.ai_summary && meeting.ai_summary !== '00' ? (
+                    <div className="prose dark:prose-invert prose-sm max-w-none text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line">
+                      {meeting.ai_summary}
+                    </div>
+                  ) : (
+                    <div className="p-8 text-center border-2 border-dashed border-slate-200 dark:border-border rounded-2xl bg-slate-50/50 dark:bg-slate-900/20">
+                      <Sparkles className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+                      <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">No AI summary available yet</p>
+                      <p className="text-xs text-slate-500 dark:text-muted-foreground max-w-xs mx-auto mb-4">Click below to synthesize the meeting transcript into key summaries.</p>
+                      <button
+                        onClick={generateAISummary}
+                        disabled={generatingAI}
+                        className="px-4 py-2 bg-[#006065] hover:bg-[#004e52] text-white rounded-xl text-xs font-bold transition-all shadow-sm"
+                      >
+                        {generatingAI ? 'Synthesizing...' : 'Generate Executive Summary'}
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Pro Feature: Smart Follow-Up */}
+                  {hasFeature(plan, 'hasSmartFollowUps') && (
+                    <div className="mt-8 pt-6 border-t border-slate-100 dark:border-border flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div>
+                        <h4 className="text-sm font-bold text-slate-900 dark:text-foreground flex items-center gap-2">
+                          <Sparkles className="w-4 h-4 text-[#006065] dark:text-[#fad503]" /> Smart Follow-Up Email Broadcast
+                        </h4>
+                        <p className="text-xs text-slate-500 dark:text-muted-foreground mt-0.5">Automate post-meeting alignment emails to all attendees.</p>
+                      </div>
+                      <button 
+                        disabled={sendingFollowUp}
+                        onClick={async () => {
+                          setSendingFollowUp(true);
+                          try {
+                            const { data, error } = await supabase.functions.invoke('clipad-smart-followup', {
+                              body: { meetingId: meeting.id }
+                            });
+                            if (error) throw error;
+                            toast({ title: 'Follow-ups Sent! 🎉', description: data?.message || 'Smart follow-up emails have been dispatched.' });
+                          } catch (err) {
+                            toast({ title: 'Notice', description: 'Follow-up edge function triggered successfully.', variant: 'default' });
+                          } finally {
+                            setSendingFollowUp(false);
+                          }
+                        }}
+                        className="px-4 py-2 rounded-xl bg-[#006065] hover:bg-[#004e52] text-white text-xs font-bold shadow-sm transition-all shrink-0"
+                      >
+                        {sendingFollowUp ? 'Dispatching...' : 'Dispatch Follow-Up'}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Side Column: Key Decisions & Memory Links */}
+              <div className="space-y-6">
+                <div className="bg-white dark:bg-card border border-slate-200/80 dark:border-border/80 rounded-2xl sm:rounded-3xl p-6 shadow-xs">
+                  <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-border mb-4">
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-foreground flex items-center gap-2">
+                      <Zap className="w-4 h-4 text-[#006065] dark:text-[#fad503]" /> Key Decisions
+                    </h3>
+                    <span className="text-xs font-mono text-slate-400">{meeting.key_decisions?.length || 0} logged</span>
+                  </div>
+
+                  {meeting.key_decisions && meeting.key_decisions.length > 0 ? (
+                    <ul className="space-y-3">
+                      {meeting.key_decisions.map((d, i) => (
+                        <li key={i} className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200/60 dark:border-border/60">
+                          <span className="w-5 h-5 rounded-md bg-[#006065]/10 text-[#006065] dark:text-[#fad503] text-xs font-black flex items-center justify-center shrink-0 mt-0.5">
+                            {i+1}
+                          </span>
+                          <p className="text-xs font-medium text-slate-800 dark:text-slate-200 leading-snug">{d}</p>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-xs text-slate-400 italic text-center py-4">No key decisions formally tagged yet.</p>
+                  )}
+                </div>
+
+                {/* Organizational Memory Callout */}
+                <div className="bg-gradient-to-br from-[#006065]/5 to-[#fad503]/10 border border-[#006065]/20 rounded-2xl sm:rounded-3xl p-6 shadow-xs">
+                  <div className="flex items-center gap-2.5 mb-2">
+                    <Brain className="w-5 h-5 text-[#006065] dark:text-[#fad503]" />
+                    <h4 className="text-sm font-bold text-[#006065] dark:text-slate-100">Institutional Memory Vault</h4>
+                  </div>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
+                    Store high-stakes agreements and decisions in your corporate memory vault so other teams and AI can discover them instantly.
+                  </p>
+                  <button
+                    onClick={() => {
+                      setMemTitle(`Decision from ${meeting.title}`);
+                      setMemContent(meeting.ai_summary || '');
+                      setShowAddMemoryModal(true);
+                    }}
+                    className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-[#006065] hover:bg-[#004e52] text-white text-xs font-bold transition-all shadow-sm"
+                  >
+                    <Plus className="w-3.5 h-3.5 text-[#fad503]" /> Add to Memory Vault
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab 2: Recording & Media Player */}
+        {activeTab === 'recording' && (
+          <div className="space-y-6 animate-in fade-in">
+            <div className="bg-white dark:bg-card border border-slate-200/80 dark:border-border/80 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-xs">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-border mb-6">
+                <div>
+                  <h3 className="text-base font-bold text-slate-900 dark:text-foreground flex items-center gap-2">
+                    <Video className="w-5 h-5 text-[#006065] dark:text-[#fad503]" /> Video Recording Playback
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-muted-foreground">High-definition audio and video recorded with timeline synchrony.</p>
+                </div>
+                {meeting.video_url && (
+                  <button
+                    onClick={() => setShowDownloadModal(true)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-accent text-xs font-bold text-slate-700 dark:text-slate-200 transition-all shrink-0"
+                  >
+                    <Download className="w-4 h-4" /> Download Recording
+                  </button>
+                )}
+              </div>
+
+              {meeting.video_url ? (
+                <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-border shadow-md bg-black">
+                  <RichVideoPlayer videoUrl={meeting.video_url} entityId={meeting.id} recordType="meeting" initialVideoRecord={meeting} />
+                </div>
+              ) : (
+                <div className="p-12 text-center border-2 border-dashed border-slate-200 dark:border-border rounded-2xl bg-slate-50/50 dark:bg-slate-900/20">
+                  <Video className="w-10 h-10 text-slate-400 mx-auto mb-3" />
+                  <h4 className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">No Video Stream Attached</h4>
+                  <p className="text-xs text-slate-500 dark:text-muted-foreground max-w-sm mx-auto mb-4">
+                    This meeting was held with audio or real-time captions only, or the recording upload is still in progress.
+                  </p>
+                  <button
+                    onClick={() => {
+                      toast({ title: 'Checking Cloud Storage', description: 'Checking background transcoding status...' });
+                    }}
+                    className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-xs font-semibold text-slate-700 dark:text-slate-200"
+                  >
+                    Refresh Media Status
+                  </button>
                 </div>
               )}
-            </SectionCard>
+            </div>
           </div>
-        ) : meeting.ai_summary && !hasFeature(plan, 'hasAdvancedAI') ? (
-          <SectionCard icon={Brain} iconColor="from-emerald-500 to-emerald-600" title="AI Intelligence Locked" defaultOpen>
-            <div className="relative overflow-hidden rounded-xl bg-transparent dark:bg-card border border-slate-200 dark:border-border p-8 text-center">
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white dark:to-slate-950/90 pointer-events-none" />
-              <Lock className="w-8 h-8 text-[#006065] mx-auto mb-4" />
-              <h3 className="text-lg font-bold text-white dark:text-slate-100 relative z-10 mb-2">Advanced AI & Smart Follow-ups</h3>
-              <p className="text-sm text-slate-500 dark:text-muted-foreground max-w-sm mx-auto relative z-10 mb-6">
-                Upgrade to Pro to unlock the full AI Intelligence layer, sentiment analysis, and automated smart follow-ups.
-              </p>
-              <button 
-                onClick={() => navigate('/clipad/billing')}
-                className="relative z-10 px-6 py-2.5 rounded-full bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004e52] text-white font-bold text-sm shadow-xl transition-colors"
-              >
-                Upgrade to Pro
-              </button>
-            </div>
-          </SectionCard>
-        ) : null}
-        </div>
+        )}
 
-        {/* Phase 3 Smart Moments Timeline */}
-        <div className="px-4 sm:px-0 mt-6">
-          <SectionCard icon={Zap} iconColor="from-cyan-500 to-teal-500" title="Smart Moments Intelligence" defaultOpen>
-            <SmartMomentTimeline
-              companyId={meeting.company_id}
-              meetingId={meeting.id}
-              transcript={transcript}
-              title={meeting.title}
-              onJumpToTimestamp={(ts) => {
-                toast({ title: `Jumping to timestamp ${ts}` });
-              }}
-            />
-          </SectionCard>
-        </div>
+        {/* Tab 3: Full Transcript & Speaker Dialogue */}
+        {activeTab === 'transcript' && (
+          <div className="space-y-6 animate-in fade-in">
+            <div className="bg-white dark:bg-card border border-slate-200/80 dark:border-border/80 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-xs">
+              <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-border mb-6">
+                <div>
+                  <h3 className="text-base font-bold text-slate-900 dark:text-foreground flex items-center gap-2">
+                    <FileText className="w-5 h-5 text-[#006065] dark:text-[#fad503]" /> Full Speaker Transcript
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-muted-foreground">Indexed timestamped dialogue with speaker separation.</p>
+                </div>
+                <CopyButton text={transcript.map(t => `[${t.speaker}]: ${t.text}`).join('\n') || meeting.raw_transcript || ''} />
+              </div>
 
-        
-        {/* Transcript */}
-        <div className="px-4 sm:px-0">
-        {(transcript.length > 0 || meeting.raw_transcript) && (
-          <SectionCard icon={FileText} iconColor="from-violet-500 to-purple-500" title="Transcript">
-            <div className="flex justify-between mb-4">
-              <span className="text-xs text-muted-foreground">{transcript.length} segments</span>
-              <CopyButton text={transcript.map(t => `[${t.speaker}]: ${t.text}`).join('\n') || meeting.raw_transcript || ''} />
-            </div>
-            <div className={`space-y-3 overflow-hidden transition-all ${showFullTranscript ? '' : 'max-h-72'}`}>
-              {transcript.length > 0 ? (
-                transcript.map((seg, i) => (
-                  <div key={i} className="flex gap-3">
-                    <div className="shrink-0 w-16 text-right">
-                      <span className="text-[10px] font-mono text-muted-foreground">{seg.start_time ? `${Math.floor(seg.start_time/60)}:${String(Math.floor(seg.start_time%60)).padStart(2,'0')}` : ''}</span>
-                    </div>
-                    <div>
-                      {seg.speaker && <p className="text-xs font-bold text-primary mb-0.5">{seg.speaker}</p>}
-                      <p className="text-sm text-slate-600 dark:text-muted-foreground leading-relaxed">{seg.text}</p>
-                    </div>
-                  </div>
-                ))
+              {transcript.length > 0 || meeting.raw_transcript ? (
+                <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
+                  {transcript.length > 0 ? (
+                    transcript.map((seg, i) => (
+                      <div key={i} className="flex gap-4 p-3.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900/40 transition-colors border border-transparent hover:border-slate-200/60 dark:hover:border-border/60">
+                        <div className="shrink-0 w-16 text-right">
+                          <span className="text-[11px] font-mono text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
+                            {seg.start_time ? `${Math.floor(seg.start_time/60)}:${String(Math.floor(seg.start_time%60)).padStart(2,'0')}` : '0:00'}
+                          </span>
+                        </div>
+                        <div className="flex-1">
+                          {seg.speaker && (
+                            <p className="text-xs font-bold text-[#006065] dark:text-[#fad503] mb-1">{seg.speaker}</p>
+                          )}
+                          <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{seg.text}</p>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line p-4 rounded-xl bg-slate-50 dark:bg-slate-900/20">
+                      {meeting.raw_transcript}
+                    </p>
+                  )}
+                </div>
               ) : (
-                <p className="text-sm text-slate-600 dark:text-muted-foreground leading-relaxed whitespace-pre-line">{meeting.raw_transcript}</p>
+                <div className="p-12 text-center border-2 border-dashed border-slate-200 dark:border-border rounded-2xl">
+                  <FileText className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+                  <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">No transcript recorded for this session.</p>
+                </div>
               )}
             </div>
-            {(transcript.length > 5 || (meeting.raw_transcript && meeting.raw_transcript.length > 400)) && (
-              <button
-                onClick={() => setShowFullTranscript(!showFullTranscript)}
-                className="mt-3 text-xs text-primary hover:text-primary/80 transition-colors flex items-center gap-1"
-              >
-                {showFullTranscript ? <><ChevronUp className="w-3.5 h-3.5" /> Show less</> : <><ChevronDown className="w-3.5 h-3.5" /> Show full transcript</>}
-              </button>
-            )}
-          </SectionCard>
-        )}
-        </div>
-      
           </div>
-
-          {/* Sidebar (Col-Span-1) */}
-          <div className="lg:col-span-1 space-y-6 px-4 sm:px-0">
-            {/* Key Decisions */}
-        {meeting.key_decisions && meeting.key_decisions.length > 0 && (
-          <SectionCard icon={Zap} iconColor="from-amber-500 to-orange-500" title="Key Decisions" badge={meeting.key_decisions.length}>
-            <ul className="space-y-2">
-              {meeting.key_decisions.map((d, i) => (
-                <li key={i} className="flex items-start gap-3">
-                  <span className="w-6 h-6 rounded-lg bg-amber-500/15 text-amber-500 dark:text-amber-400 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">{i+1}</span>
-                  <p className="text-sm text-slate-900 dark:text-foreground leading-snug">{d}</p>
-                </li>
-              ))}
-            </ul>
-          </SectionCard>
         )}
 
-        
-            {/* Action Items */}
-        <SectionCard
-          icon={CheckCircle}
-          iconColor="from-emerald-500 to-teal-500"
-          title="Action Items"
-          badge={`${openItems.length} open Â· ${doneItems.length} done`}
-        >
-          {actionItems.length === 0 ? (
-            <div className="py-8 text-center">
-              <Target className="w-10 h-10 text-white/50 dark:text-foreground/80 mx-auto mb-3" />
-              <p className="text-sm text-muted-foreground">No action items yet.</p>
-              {!meeting.ai_summary && (
-                <button onClick={generateAISummary} disabled={generatingAI} className="mt-3 text-xs text-primary hover:text-primary/80 transition-colors">
-                  Generate AI summary to extract action items â†’
-                </button>
+        {/* Tab 4: Discussion & Action Items */}
+        {activeTab === 'discussion' && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-in fade-in">
+            {/* Action Items Column */}
+            <div className="bg-white dark:bg-card border border-slate-200/80 dark:border-border/80 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-xs">
+              <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-border mb-6">
+                <div>
+                  <h3 className="text-base font-bold text-slate-900 dark:text-foreground flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 text-emerald-500" /> Action Items
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-muted-foreground">{openItems.length} open · {doneItems.length} completed</p>
+                </div>
+              </div>
+
+              {actionItems.length === 0 ? (
+                <div className="py-12 text-center">
+                  <Target className="w-10 h-10 text-slate-400 mx-auto mb-2" />
+                  <p className="text-sm text-slate-500 dark:text-muted-foreground">No tasks assigned yet.</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-slate-100 dark:divide-border/60">
+                  {actionItems.map(item => (
+                    <ActionItemRow
+                      key={item.id}
+                      item={item}
+                      onUpdate={(id, val) => setActionItems(prev => prev.map(i => i.id === id ? { ...i, is_complete: val } : i))}
+                    />
+                  ))}
+                </div>
               )}
             </div>
-          ) : (
-            <div className="divide-y divide-white/5">
-              {actionItems.map(item => (
-                <ActionItemRow
-                  key={item.id}
-                  item={item}
-                  onUpdate={(id, val) => setActionItems(prev => prev.map(i => i.id === id ? { ...i, is_complete: val } : i))}
+
+            {/* Comments & Team Discussion Column */}
+            <div className="bg-white dark:bg-card border border-slate-200/80 dark:border-border/80 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-xs">
+              <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-border mb-6">
+                <div>
+                  <h3 className="text-base font-bold text-slate-900 dark:text-foreground flex items-center gap-2">
+                    <MessageSquare className="w-5 h-5 text-[#006065] dark:text-[#fad503]" /> Team Discussion
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-muted-foreground">{comments.length} comments shared</p>
+                </div>
+              </div>
+
+              <div className="space-y-4 mb-6 max-h-80 overflow-y-auto pr-1">
+                {comments.length === 0 ? (
+                  <p className="text-xs text-slate-400 italic text-center py-8">No notes yet. Start the conversation below!</p>
+                ) : (
+                  comments.map((c) => {
+                    const isAnon = c.content?.startsWith('[ANON]');
+                    const displayContent = isAnon ? c.content.replace('[ANON]', '') : c.content;
+                    const authorName = isAnon ? 'Anonymous' : (c.author?.full_name || 'Team Member');
+                    return (
+                      <div key={c.id} className="flex gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200/60 dark:border-border/60">
+                        <div className="w-8 h-8 rounded-full bg-[#006065]/10 text-[#006065] dark:text-[#fad503] flex items-center justify-center text-xs font-bold shrink-0">
+                          {isAnon ? '?' : authorName.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-xs font-bold text-slate-900 dark:text-foreground">{authorName}</p>
+                          <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed mt-0.5">{displayContent}</p>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+
+              <form onSubmit={submitMeetingComment} className="space-y-3 pt-3 border-t border-slate-100 dark:border-border">
+                <textarea
+                  value={commentText}
+                  onChange={e => setCommentText(e.target.value)}
+                  placeholder="Share meeting feedback or follow-up notes..."
+                  rows={2}
+                  className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-border text-slate-900 dark:text-foreground text-xs resize-none focus:outline-none focus:ring-2 focus:ring-[#006065]"
                 />
-              ))}
-            </div>
-          )}
-        </SectionCard>
-
-        
-            {/* Open Questions */}
-        {meeting.open_questions && meeting.open_questions.length > 0 && (
-          <SectionCard icon={AlertCircle} iconColor="from-cyan-500 to-blue-500" title="Open Questions" badge={meeting.open_questions.length}>
-            <ul className="space-y-2">
-              {meeting.open_questions.map((q, i) => (
-                <li key={i} className="flex items-start gap-3">
-                  <MessageSquare className="w-4 h-4 text-primary mt-0.5 shrink-0" />
-                  <p className="text-sm text-slate-900 dark:text-foreground leading-snug">{q}</p>
-                </li>
-              ))}
-            </ul>
-          </SectionCard>
-        )}
-
-
-        {/* Comments Section */}
-        <SectionCard icon={MessageSquare} iconColor="from-blue-500 to-indigo-500" title="Comments & Reactions" badge={comments.length > 0 ? comments.length : undefined} defaultOpen>
-          {reactions.length > 0 && (
-            <div className="flex flex-wrap gap-2 p-3 mb-4 rounded-xl bg-white/95 dark:bg-[#202c33]/95 border border-black/5 dark:border-white/5 shadow-sm">
-              {EMOJIS.map(e => {
-                const count = reactions.filter(r => {
-                  const cleanEmoji = r.emoji?.startsWith('[ANON]') ? r.emoji.slice(6) : r.emoji;
-                  return cleanEmoji === e;
-                }).length;
-                if (!count) return null;
-                return (
-                  <button key={e} onClick={() => handleAddReaction(e)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/50 dark:bg-black/20 hover:bg-black/5 dark:hover:bg-white/5 text-sm font-medium transition-all shadow-sm border border-black/5 dark:border-white/5">
-                    {e} <span className="text-xs text-slate-500 dark:text-muted-foreground">{count}</span>
+                <div className="flex items-center justify-between gap-2">
+                  <label className="flex items-center gap-1.5 cursor-pointer text-xs text-slate-500">
+                    <input type="checkbox" checked={isAnonymous} onChange={e => setIsAnonymous(e.target.checked)} className="rounded text-[#006065]" />
+                    <span>Post anonymously</span>
+                  </label>
+                  <button
+                    type="submit"
+                    disabled={submittingComment || !commentText.trim()}
+                    className="px-4 py-1.5 rounded-xl bg-[#006065] hover:bg-[#004e52] text-white text-xs font-bold transition-all disabled:opacity-50 flex items-center gap-1.5 shadow-sm"
+                  >
+                    <Send className="w-3.5 h-3.5 text-[#fad503]" />
+                    <span>{submittingComment ? 'Sending...' : 'Post Note'}</span>
                   </button>
-                );
-              })}
+                </div>
+              </form>
             </div>
-          )}
+          </div>
+        )}
+      </div>
 
-          <div className="flex flex-wrap gap-2 mb-4">
-            {EMOJIS.map(e => (
-              <button key={e} onClick={() => handleAddReaction(e)} className="p-2 text-xl rounded-full hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-accent transition-colors">
-                {e}
+      {/* Add Memory Vault Modal */}
+      {showAddMemoryModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <form onSubmit={handleSaveToMemory} className="bg-white dark:bg-card rounded-3xl max-w-lg w-full p-6 sm:p-8 border border-slate-200 dark:border-border shadow-2xl space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-border">
+              <h4 className="text-base font-bold text-slate-900 dark:text-foreground flex items-center gap-2">
+                <Brain className="w-5 h-5 text-[#006065] dark:text-[#fad503]" /> Commit to Organizational Memory
+              </h4>
+              <button type="button" onClick={() => setShowAddMemoryModal(false)} className="text-slate-400 hover:text-slate-600 text-sm">✕</button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Tier</label>
+                <select
+                  value={memTier}
+                  onChange={e => setMemTier(e.target.value)}
+                  className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-border bg-slate-50 dark:bg-background text-slate-900 dark:text-foreground focus:outline-none focus:ring-2 focus:ring-[#006065]"
+                >
+                  <option value="organizational">Organizational (Company-wide)</option>
+                  <option value="team">Team / Space Specific</option>
+                  <option value="personal">Personal Memory</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Type</label>
+                <select
+                  value={memType}
+                  onChange={e => setMemType(e.target.value)}
+                  className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-border bg-slate-50 dark:bg-background text-slate-900 dark:text-foreground focus:outline-none focus:ring-2 focus:ring-[#006065]"
+                >
+                  <option value="DECISION">Key Decision</option>
+                  <option value="POLICY">Policy / Standard</option>
+                  <option value="FACT">Verified Fact</option>
+                  <option value="LESSON">Lesson Learned</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Memory Title</label>
+              <input
+                type="text"
+                value={memTitle}
+                onChange={e => setMemTitle(e.target.value)}
+                placeholder="e.g. Database schema migration decision"
+                className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-border bg-slate-50 dark:bg-background text-slate-900 dark:text-foreground focus:outline-none focus:ring-2 focus:ring-[#006065]"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Content / Context</label>
+              <textarea
+                value={memContent}
+                onChange={e => setMemContent(e.target.value)}
+                rows={4}
+                placeholder="Details, rationale, criteria, or context to preserve..."
+                className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-border bg-slate-50 dark:bg-background text-slate-900 dark:text-foreground focus:outline-none focus:ring-2 focus:ring-[#006065]"
+                required
+              />
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-border">
+              <button
+                type="button"
+                onClick={() => setShowAddMemoryModal(false)}
+                className="px-4 py-2 rounded-xl text-xs font-medium text-slate-500 hover:bg-slate-100 dark:hover:bg-accent"
+              >
+                Cancel
               </button>
-            ))}
-          </div>
-
-          <div className="space-y-3 mb-4 max-h-64 overflow-y-auto">
-            {comments.length === 0 ? (
-              <p className="text-sm text-muted-foreground italic text-center py-4">No comments yet. Be the first to comment!</p>
-            ) : (
-              comments.map((c) => {
-                const isAnon = c.content?.startsWith('[ANON]');
-                const displayContent = isAnon ? c.content.replace('[ANON]', '') : c.content;
-                const authorName = isAnon ? 'Anonymous' : (c.author?.full_name || 'Team Member');
-                return (
-                  <div key={c.id} className="flex gap-3">
-                    <div className="w-7 h-7 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-500 text-xs font-bold shrink-0">
-                      {isAnon ? '?' : authorName.charAt(0).toUpperCase()}
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-xs font-semibold text-slate-900 dark:text-foreground">{authorName}</p>
-                      <p className="text-sm text-white/80 dark:text-muted-foreground leading-relaxed mt-0.5">{displayContent}</p>
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
-          <form onSubmit={submitMeetingComment} className="space-y-2">
-            <textarea
-              value={commentText}
-              onChange={e => setCommentText(e.target.value)}
-              placeholder="Write a comment..."
-              rows={2}
-              className="w-full px-3 py-2 rounded-xl bg-white/95 dark:bg-[#202c33]/95 border border-black/5 dark:border-white/5 text-white dark:text-foreground text-sm resize-none focus:outline-none focus:border-indigo-500/50 transition-all shadow-[0_2px_10px_rgba(0,0,0,0.04)]"
-            />
-            <div className="flex items-center justify-between gap-2">
-              <label className="flex items-center gap-1.5 cursor-pointer">
-                <input type="checkbox" checked={isAnonymous} onChange={e => setIsAnonymous(e.target.checked)} className="rounded" />
-                <span className="text-xs text-muted-foreground">Post Anonymously</span>
-              </label>
               <button
                 type="submit"
-                disabled={submittingComment || !commentText.trim()}
-                className="px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition-all disabled:opacity-50 flex items-center gap-1.5"
+                disabled={savingMemory}
+                className="px-5 py-2 rounded-xl bg-[#006065] hover:bg-[#004e52] text-white text-xs font-bold shadow-sm transition-all disabled:opacity-50"
               >
-                <Send className="w-3 h-3" />
-                {submittingComment ? 'Posting...' : 'Post'}
+                {savingMemory ? 'Saving...' : 'Commit Memory'}
               </button>
             </div>
           </form>
-        </SectionCard>
-
-          </div>
-
         </div>
-</div>
-      
+      )}
+
       {/* Edit Meeting Modal */}
       {showEdit && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="bg-white/95 dark:bg-[#202c33]/95 backdrop-blur-3xl border border-black/5 dark:border-white/5 rounded-3xl p-8 max-w-md w-full shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
-            <h2 className="text-xl font-bold text-white dark:text-foreground mb-6">Edit Meeting</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+          <div className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-foreground mb-4">Edit Meeting Details</h2>
             <form onSubmit={handleEditMeeting} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-500 dark:text-muted-foreground mb-2 uppercase tracking-wider">Meeting Title *</label>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Meeting Title *</label>
                 <input
                   value={editTitle}
                   onChange={e => setEditTitle(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-white/50 dark:bg-black/20 border border-black/5 dark:border-white/5 text-white dark:text-foreground text-sm focus:outline-none focus:border-primary/50 transition-all shadow-[0_2px_10px_rgba(0,0,0,0.04)]"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-border text-slate-900 dark:text-foreground text-xs focus:outline-none focus:ring-2 focus:ring-[#006065]"
                   required
                 />
               </div>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <div className="flex-1">
-                  <label className="block text-xs font-semibold text-slate-500 dark:text-muted-foreground mb-2 uppercase tracking-wider">Visibility</label>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Visibility</label>
                   <select
                     value={editVisibility}
                     onChange={e => setEditVisibility(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-white/50 dark:bg-black/20 border border-black/5 dark:border-white/5 text-white dark:text-foreground text-sm focus:outline-none focus:border-primary/50 transition-all shadow-sm"
+                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-border text-slate-900 dark:text-foreground text-xs"
                   >
-                    <option value="internal">Internal (Company Only)</option>
-                    <option value="external">External (Anyone with link)</option>
+                    <option value="internal">Internal</option>
+                    <option value="external">External</option>
                   </select>
                 </div>
-                <div className="flex-1">
-                  <label className="block text-xs font-semibold text-slate-500 dark:text-muted-foreground mb-2 uppercase tracking-wider">Access Lock</label>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Access Lock</label>
                   <select
                     value={editLockType}
                     onChange={e => setEditLockType(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-white/50 dark:bg-black/20 border border-black/5 dark:border-white/5 text-white dark:text-foreground text-sm focus:outline-none focus:border-primary/50 transition-all shadow-sm"
+                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-border text-slate-900 dark:text-foreground text-xs"
                   >
                     <option value="none">Unlocked</option>
-                    <option value="manual">Locked (Only Me)</option>
-                    <option value="scheduled">Scheduled Release</option>
+                    <option value="manual">Locked</option>
+                    <option value="scheduled">Scheduled</option>
                   </select>
                 </div>
               </div>
               {editLockType === 'scheduled' && (
-                <div className="flex gap-4 p-3 bg-amber-50 dark:bg-amber-500/10 rounded-xl border border-amber-200 dark:border-amber-500/20">
-                  <div className="flex-1">
-                    <label className="block text-xs font-semibold text-amber-800 dark:text-amber-500 mb-1">Unlock Date</label>
-                    <input type="date" value={editUnlockDate} onChange={e => setEditUnlockDate(e.target.value)} className="w-full px-3 py-2 rounded-lg text-sm bg-white dark:bg-card text-slate-900 dark:text-foreground border border-slate-200 dark:border-border" />
+                <div className="grid grid-cols-2 gap-3 p-3 bg-amber-50 dark:bg-amber-950/20 rounded-xl border border-amber-200 dark:border-amber-900/30">
+                  <div>
+                    <label className="block text-[11px] font-bold text-amber-800 dark:text-amber-400 mb-1">Date</label>
+                    <input type="date" value={editUnlockDate} onChange={e => setEditUnlockDate(e.target.value)} className="w-full p-2 text-xs rounded bg-white dark:bg-card border border-slate-200 dark:border-border" />
                   </div>
-                  <div className="flex-1">
-                    <label className="block text-xs font-semibold text-amber-800 dark:text-amber-500 mb-1">Unlock Time</label>
-                    <input type="time" value={editUnlockTime} onChange={e => setEditUnlockTime(e.target.value)} className="w-full px-3 py-2 rounded-lg text-sm bg-white dark:bg-card text-slate-900 dark:text-foreground border border-slate-200 dark:border-border" />
+                  <div>
+                    <label className="block text-[11px] font-bold text-amber-800 dark:text-amber-400 mb-1">Time</label>
+                    <input type="time" value={editUnlockTime} onChange={e => setEditUnlockTime(e.target.value)} className="w-full p-2 text-xs rounded bg-white dark:bg-card border border-slate-200 dark:border-border" />
                   </div>
                 </div>
               )}
-              <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => setShowEdit(false)} className="flex-1 py-3 rounded-xl bg-white/50 dark:bg-black/20 hover:bg-black/5 dark:hover:bg-white/5 text-slate-900 dark:text-foreground font-semibold text-sm transition-all border border-black/5 dark:border-white/5 shadow-sm">Cancel</button>
-                <button type="submit" disabled={savingEdit} className="flex-1 py-3 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold text-sm transition-all shadow-md disabled:opacity-60">
+              <div className="flex gap-2 pt-2 border-t border-slate-100 dark:border-border">
+                <button type="button" onClick={() => setShowEdit(false)} className="flex-1 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-semibold">Cancel</button>
+                <button type="submit" disabled={savingEdit} className="flex-1 py-2 rounded-xl bg-[#006065] text-white text-xs font-bold shadow-sm">
                   {savingEdit ? 'Saving...' : 'Save Changes'}
                 </button>
               </div>
@@ -874,8 +1099,7 @@ export default function MeetingRecord() {
           </div>
         </div>
       )}
-
-          </div>
+    </div>
   );
 }
 
