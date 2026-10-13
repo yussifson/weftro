@@ -225,42 +225,42 @@ export default function KnowledgeJourney() {
 
   return (
     <div className="min-h-full bg-slate-50 dark:bg-background text-slate-900 dark:text-slate-100 pb-12 font-sans page-enter">
-      {/* Header */}
-      <div className="relative overflow-hidden border-b border-slate-200 dark:border-border bg-[#006065] dark:bg-[#131A2C] text-white px-6 py-10">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(59,130,246,0.07),transparent_60%)] pointer-events-none" />
+            {/* Header */}
+      <div className="relative overflow-hidden border-b border-border bg-gradient-to-br from-primary/5 via-background to-background px-6 py-10">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(var(--primary-rgb),0.08),transparent_60%)] pointer-events-none" />
         <div className="max-w-5xl mx-auto relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <button onClick={() => navigate('/integrations')} className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/10/80 flex items-center justify-center transition-colors shrink-0">
-                <ArrowLeft className="w-4 h-4 text-white/70" />
+              <button onClick={() => navigate('/integrations')} className="w-9 h-9 rounded-full bg-card border border-border flex items-center justify-center hover:bg-secondary transition-colors shrink-0" title="Go back">
+                <ArrowLeft className="w-4 h-4 text-muted-foreground" />
               </button>
-              <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center">
-                <GitBranch className="w-5 h-5 text-[#fad503]" />
+              <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center">
+                <GitBranch className="w-5 h-5 text-primary" />
               </div>
-              <h1 className="text-2xl font-bold text-white">Knowledge Journey</h1>
+              <h1 className="text-2xl font-bold text-foreground">Knowledge Journey</h1>
             </div>
-            <p className="text-sm text-white/70 max-w-xl">
+            <p className="text-sm text-muted-foreground max-w-xl">
               Trace how ideas, decisions, and work items flow across your organization — from a Slack message to a Notion doc to a GitHub release.
             </p>
           </div>
           <div className="flex items-center gap-3">
             <div className="relative">
-              <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 dark:text-muted-foreground" />
+              <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <input
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Search journeys..."
-                className="pl-8 pr-3 py-1.5 text-xs bg-white/10 text-white border border-white/20 rounded-xl focus:outline-none focus:border-[#fad503] w-52 placeholder:text-white/50"
+                className="pl-8 pr-3 py-1.5 text-xs bg-card text-foreground border border-border rounded-xl focus:outline-none focus:border-primary w-52 placeholder:text-muted-foreground shadow-xs"
               />
             </div>
             <button 
               onClick={() => setShowAddMemory(true)}
-              className="flex items-center gap-1.5 px-4 py-2 bg-[#fad503] hover:bg-[#fad503]/90 text-[#006065] rounded-xl text-sm font-bold shadow-md shadow-black/10 transition-all hover:-translate-y-0.5 active:scale-95 shrink-0"
+              className="flex items-center gap-1.5 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl text-sm font-bold shadow-md shadow-black/10 transition-all hover:-translate-y-0.5 active:scale-95 shrink-0"
             >
               <Brain className="w-4 h-4" /> Add Memory
             </button>
-            <button onClick={loadJourneys} className="flex items-center gap-2 px-3 py-2 bg-white/10 hover:bg-white/10/80 text-white rounded-xl text-sm font-medium transition-colors">
-              <RefreshCw className="w-4 h-4" />
+            <button onClick={loadJourneys} className="flex items-center gap-2 px-3 py-2 bg-card hover:bg-secondary text-foreground border border-border rounded-xl text-sm font-medium transition-colors shadow-xs" title="Refresh">
+              <RefreshCw className="w-4 h-4 text-muted-foreground" />
             </button>
           </div>
         </div>

@@ -150,40 +150,42 @@ export default function DecisionLedger() {
   return (
     <div className="min-h-full bg-slate-50 dark:bg-background text-slate-900 dark:text-slate-100 font-sans page-enter pb-12">
       {/* Header */}
-      <div className="relative overflow-hidden border-b border-slate-200 dark:border-border bg-[#006065] dark:bg-[#131A2C] text-white px-6 py-10">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(245,158,11,0.08),transparent_60%)] pointer-events-none" />
+      {/* Header */}
+      <div className="relative overflow-hidden border-b border-border bg-gradient-to-br from-primary/5 via-background to-background px-6 py-10">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(var(--primary-rgb),0.08),transparent_60%)] pointer-events-none" />
         <div className="max-w-5xl mx-auto relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <button onClick={() => navigate('/integrations')} className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/10/80 flex items-center justify-center transition-colors shrink-0">
-                <ArrowLeft className="w-4 h-4 text-white/70" />
+              <button onClick={() => navigate('/integrations')} className="w-9 h-9 rounded-full bg-card border border-border flex items-center justify-center hover:bg-secondary transition-colors shrink-0" title="Go back">
+                <ArrowLeft className="w-4 h-4 text-muted-foreground" />
               </button>
-              <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center">
-                <Scale className="w-5 h-5 text-[#fad503]" />
+              <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center">
+                <Scale className="w-5 h-5 text-primary" />
               </div>
-              <h1 className="text-2xl font-bold text-white">Decision Ledger</h1>
+              <h1 className="text-2xl font-bold text-foreground">Decision Ledger</h1>
             </div>
-            <p className="text-sm text-white/70 max-w-xl">
+            <p className="text-sm text-muted-foreground max-w-xl">
               An AI-powered ledger of every key decision extracted from your meetings, chats, docs, and tickets across all connected integrations.
             </p>
           </div>
 
           <div className="flex items-center gap-3">
             <div className="relative w-full md:w-64">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-muted-foreground" />
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <input
                 type="text"
                 placeholder="Search decisions..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl pl-9 pr-4 py-2 text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all shadow-sm"
+                className="w-full bg-card border border-border rounded-xl pl-9 pr-4 py-2 text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-xs"
               />
             </div>
             <button
               onClick={loadDecisions}
-              className="flex items-center gap-2 px-4 py-2 bg-white/10 text-white rounded-xl text-sm font-medium hover:bg-white/10/80 transition-colors shrink-0"
+              className="flex items-center gap-2 px-4 py-2 bg-card hover:bg-secondary text-foreground border border-border rounded-xl text-sm font-medium transition-colors shrink-0 shadow-xs"
+              title="Refresh"
             >
-              <RefreshCw className="w-4 h-4" />
+              <RefreshCw className="w-4 h-4 text-muted-foreground" />
             </button>
           </div>
         </div>
@@ -191,15 +193,15 @@ export default function DecisionLedger() {
         {/* Filters Row */}
         {!loading && availableProviders.length > 0 && (
           <div className="max-w-5xl mx-auto relative z-10 mt-6 flex flex-wrap items-center gap-2">
-            <span className="text-xs font-semibold text-white/70 flex items-center gap-1 mr-2 uppercase tracking-wider">
+            <span className="text-xs font-semibold text-muted-foreground flex items-center gap-1 mr-2 uppercase tracking-wider">
               <Filter className="w-3 h-3" /> Source
             </span>
             <button
               onClick={() => setFilterProvider('all')}
               className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
                 filterProvider === 'all' 
-                  ? 'bg-[#fad503] text-[#006065] shadow-sm' 
-                  : 'bg-white/10 text-white border border-white/20 hover:bg-white/20'
+                  ? 'bg-primary text-primary-foreground shadow-xs' 
+                  : 'bg-card text-foreground border border-border hover:bg-secondary'
               }`}
             >
               All Sources
@@ -212,8 +214,8 @@ export default function DecisionLedger() {
                   onClick={() => setFilterProvider(provider)}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
                     filterProvider === provider 
-                      ? 'bg-[#fad503] text-[#006065] shadow-sm' 
-                      : 'bg-white/10 text-white border border-white/20 hover:bg-white/20'
+                      ? 'bg-primary text-primary-foreground shadow-xs' 
+                      : 'bg-card text-foreground border border-border hover:bg-secondary'
                   }`}
                 >
                   {intg?.icon && <span className="w-4 h-4 flex items-center justify-center shrink-0">{intg.icon}</span>}
@@ -259,7 +261,7 @@ export default function DecisionLedger() {
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-2 mb-2">
                         <span className="text-xs font-bold text-[#006065] dark:text-[#fad503] uppercase tracking-wider bg-[#006065] dark:bg-card px-2 py-0.5 rounded-md">
-                          {item._type === 'native' ? 'Ã°Å¸Â¤– AI-Detected' : 'Ã°Å¸“ž Knowledge Source'}
+                          {item._type === 'native' ? 'Ã°Å¸Â¤â€“ AI-Detected' : 'Ã°Å¸â€œâ€ž Knowledge Source'}
                         </span>
                         <span className="text-xs text-slate-500 dark:text-muted-foreground flex items-center gap-1">
                           <Calendar className="w-3 h-3" /> {format(new Date(item.imported_at), 'MMM d, yyyy')}

@@ -96,28 +96,29 @@ export default function KnowledgeTimeline() {
   return (
     <div className="min-h-full bg-slate-50 dark:bg-background text-slate-900 dark:text-slate-100 font-sans page-enter pb-12">
       {/* Header */}
-      <div className="relative overflow-hidden border-b border-white/15/80 bg-[#006065] dark:bg-[#131A2C] text-white border-b border-white/15/80 px-6 py-8">
-        <div className="max-w-5xl mx-auto relative z-10 flex items-start justify-between">
+      {/* Header */}
+      <div className="relative overflow-hidden border-b border-border bg-gradient-to-br from-primary/5 via-background to-background px-6 py-10">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(var(--primary-rgb),0.08),transparent_60%)] pointer-events-none" />
+        <div className="max-w-5xl mx-auto relative z-10 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <button onClick={() => navigate('/integrations')} className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors shrink-0">
-                <ArrowLeft className="w-4 h-4 text-white" />
+              <button onClick={() => navigate('/integrations')} className="w-9 h-9 rounded-full bg-card border border-border flex items-center justify-center hover:bg-secondary transition-colors shrink-0" title="Go back">
+                <ArrowLeft className="w-4 h-4 text-muted-foreground" />
               </button>
-              <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center">
-                <History className="w-5 h-5 text-[#fad503]" />
+              <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center">
+                <History className="w-5 h-5 text-primary" />
               </div>
-              <h1 className="text-2xl font-bold text-white">Knowledge Timeline</h1>
+              <h1 className="text-2xl font-bold text-foreground">Knowledge Timeline</h1>
             </div>
-            <p className="text-sm text-white/70 max-w-xl">
-              A chronological feed of all knowledge ingested across your connected applications. 
-              See exactly what the AI is learning in real-time.
+            <p className="text-sm text-muted-foreground max-w-xl">
+              A chronological feed of all knowledge ingested across your connected applications. See exactly what the AI is learning in real-time.
             </p>
           </div>
-          <button 
+          <button
             onClick={loadTimeline}
-            className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-sm font-medium transition-colors border border-white/15"
+            className="flex items-center gap-2 px-4 py-2 bg-card hover:bg-secondary text-foreground rounded-xl text-sm font-medium transition-colors border border-border shadow-xs self-start sm:self-auto"
           >
-            <RefreshCw className="w-4 h-4" /> Refresh
+            <RefreshCw className="w-4 h-4 text-muted-foreground" /> Refresh
           </button>
         </div>
       </div>
