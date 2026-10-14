@@ -122,10 +122,14 @@ export default function RecordVideo() {
   
   useEffect(() => {
     const initDraft = async () => {
+      // Never attempt to restore or switch phases if recording is currently active
+      if (isRecordingRef.current || phase === 'recording') return;
+
       if (id && user) {
         // First check cloud for an existing draft with this ID
         const { data: cloudDraft } = await supabase.from('clipad_videos').select('*').eq('id', id).maybeSingle();
         if (cloudDraft) {
+          if (isRecordingRef.current || phase === 'recording') return;
           setTitle(cloudDraft.title || '');
           setDescription(cloudDraft.description || '');
           setRecordingUrl(cloudDraft.video_url);
@@ -136,6 +140,7 @@ export default function RecordVideo() {
 
         // If not in cloud, check local IndexedDB
         getRecordingState(id).then(state => {
+          if (isRecordingRef.current || phase === 'recording') return;
           if (state && state.chunks && state.chunks.length > 0) {
             if (Date.now() - state.timestamp > 86400000) {
                deleteRecordingState(id);
@@ -188,6 +193,7 @@ export default function RecordVideo() {
   const mediaRecorderRef = useRef(null);
   const chunksRef = useRef([]);
   const animFrameRef = useRef(null);
+  const bgFrameIntervalRef = useRef(null);
   const timerRef = useRef(null);
   const streamsRef = useRef({ screen: null, camera: null });
   const wsRef = useRef(null);
@@ -418,6 +424,7 @@ export default function RecordVideo() {
 
   const stopEverything = () => {
     clearInterval(timerRef.current);
+    clearInterval(bgFrameIntervalRef.current);
     cancelAnimationFrame(animFrameRef.current);
     if (recognitionRef.current) recognitionRef.current.stop();
     if (audioContextRef.current) audioContextRef.current.close().catch(()=>{});
@@ -815,30 +822,45 @@ export default function RecordVideo() {
         camVideo.muted = true;
         await camVideo.play();
 
+        const renderCanvas = () => {
+          try {
+            ctx.drawImage(screenVideo, 0, 0, canvas.width, canvas.height);
+            // PiP: bottom-right corner, 22% of canvas width
+            const pipW = canvas.width * 0.22;
+            const pipH = pipW * (camVideo.videoHeight / (camVideo.videoWidth || 1)) || pipW * 0.75;
+            // Use camPosRef percentages to position on 1920x1080 canvas
+            const pipX = (camPosRef.current.x / 100) * canvas.width;
+            const pipY = (camPosRef.current.y / 100) * canvas.height;
+            // Rounded clip
+            ctx.save();
+            ctx.beginPath();
+            ctx.roundRect(pipX, pipY, pipW, pipH, 20);
+            ctx.clip();
+            ctx.drawImage(camVideo, pipX, pipY, pipW, pipH);
+            ctx.restore();
+            // Shadow ring
+            ctx.strokeStyle = 'rgba(99,102,241,0.8)';
+            ctx.lineWidth = 6;
+            ctx.beginPath();
+            ctx.roundRect(pipX, pipY, pipW, pipH, 20);
+            ctx.stroke();
+          } catch (_) {}
+        };
+
         const drawFrame = () => {
-          ctx.drawImage(screenVideo, 0, 0, canvas.width, canvas.height);
-          // PiP: bottom-right corner, 25% of canvas width
-          const pipW = canvas.width * 0.22;
-          const pipH = pipW * (camVideo.videoHeight / (camVideo.videoWidth || 1)) || pipW * 0.75;
-          // Use camPosRef percentages to position on 1920x1080 canvas
-          const pipX = (camPosRef.current.x / 100) * canvas.width;
-          const pipY = (camPosRef.current.y / 100) * canvas.height;
-          // Rounded clip
-          ctx.save();
-          ctx.beginPath();
-          ctx.roundRect(pipX, pipY, pipW, pipH, 20);
-          ctx.clip();
-          ctx.drawImage(camVideo, pipX, pipY, pipW, pipH);
-          ctx.restore();
-          // Shadow ring
-          ctx.strokeStyle = 'rgba(99,102,241,0.8)';
-          ctx.lineWidth = 6;
-          ctx.beginPath();
-          ctx.roundRect(pipX, pipY, pipW, pipH, 20);
-          ctx.stroke();
+          renderCanvas();
           animFrameRef.current = requestAnimationFrame(drawFrame);
         };
         drawFrame();
+
+        // Background interval fallback: browsers throttle requestAnimationFrame down to 0-1 fps when tab is inactive.
+        // A 33ms interval guarantees that canvas.captureStream keeps receiving active video frames and does not stall MediaRecorder.
+        clearInterval(bgFrameIntervalRef.current);
+        bgFrameIntervalRef.current = setInterval(() => {
+          if (document.hidden) {
+            renderCanvas();
+          }
+        }, 33);
 
         // Merge audio and setup analyzer using the early initialized audioCtx
         const audioCtx = audioContextRef.current;
@@ -1489,15 +1511,35 @@ export default function RecordVideo() {
                 <div className="grid grid-cols-3 gap-3">
                   {MODES.filter(m => hasDisplayMedia || m.id === 'camera_only').map(m => {
                     const Icon = m.icon;
+                    const isSelected = mode === m.id;
                     return (
                       <button
                         key={m.id}
+                        type="button"
                         onClick={() => setMode(m.id)}
-                        className={`flex flex-col items-center justify-center p-4 md:p-5 rounded-2xl border transition-all duration-300 shadow-sm active:scale-95 ${mode === m.id ? 'border-[#006065] dark:border-[#00beac] bg-[#006065] dark:bg-card text-[#006065] dark:text-[#00beac] ring-1 ring-[#006065]/20' : 'bg-white dark:bg-card border-slate-200 dark:border-border text-slate-600 dark:text-muted-foreground hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-accent/50'}`}
+                        className={`group relative flex flex-col items-center justify-center p-4 md:p-5 rounded-2xl border transition-all duration-200 active:scale-98 ${
+                          isSelected
+                            ? 'border-[#006065] dark:border-[#fad503] bg-teal-50/70 dark:bg-[#fad503]/10 text-[#006065] dark:text-[#fad503] ring-2 ring-[#006065]/20 dark:ring-[#fad503]/30 shadow-sm'
+                            : 'bg-white dark:bg-card border-slate-200 dark:border-border text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-accent/40'
+                        }`}
                       >
-                        <Icon className={`w-7 h-7 mb-3 ${mode === m.id ? 'text-[#006065] dark:text-[#00beac]' : 'text-slate-400'}`} />
+                        {isSelected && (
+                          <div className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-[#006065] dark:bg-[#fad503]" />
+                        )}
+                        <div className={`p-2 rounded-xl mb-2.5 transition-colors ${
+                          isSelected 
+                            ? 'bg-[#006065]/10 dark:bg-[#fad503]/20 text-[#006065] dark:text-[#fad503]' 
+                            : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-200'
+                        }`}>
+                          <Icon className="w-5 h-5" />
+                        </div>
                         <span className="font-bold text-[13px] text-center leading-tight">
                           {m.label}
+                        </span>
+                        <span className={`text-[10px] text-center mt-1 font-medium ${
+                          isSelected ? 'text-[#006065]/80 dark:text-[#fad503]/80' : 'text-slate-400 dark:text-muted-foreground'
+                        }`}>
+                          {m.id === 'screen_camera' ? 'PiP Combo' : m.id === 'camera_only' ? 'Webcam Only' : 'Display Only'}
                         </span>
                       </button>
                     );
@@ -1600,12 +1642,16 @@ export default function RecordVideo() {
                   <button
                     onClick={startRecording}
                     disabled={countdown !== null || isPreparingStream || !title.trim() || !selectedSpace}
-                    className={`w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl ${countdown !== null || isPreparingStream || !title.trim() || !selectedSpace ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed' : 'bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004a4e] text-white shadow-md hover:shadow-lg hover:-translate-y-0.5'} font-bold text-sm transition-all duration-200`}
+                    className={`w-full flex items-center justify-center gap-2.5 px-6 py-4 rounded-xl font-extrabold text-sm transition-all duration-200 shadow-md ${
+                      countdown !== null || isPreparingStream || !title.trim() || !selectedSpace
+                        ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed border border-slate-200 dark:border-slate-700'
+                        : 'bg-[#006065] hover:bg-[#004a4e] text-white dark:bg-[#fad503] dark:hover:bg-[#e5c403] dark:text-[#004e52] hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0'
+                    }`}
                   >
                     {isPreparingStream ? (
                       <RefreshCw className="w-4 h-4 animate-spin" />
                     ) : (
-                      <span className={`w-2 h-2 rounded-full ${countdown !== null || isPreparingStream || !title.trim() || !selectedSpace ? 'bg-slate-400' : 'bg-rose-500 animate-pulse'}`} />
+                      <span className={`w-2.5 h-2.5 rounded-full ${countdown !== null || isPreparingStream || !title.trim() || !selectedSpace ? 'bg-slate-400' : 'bg-rose-500 animate-pulse'}`} />
                     )}
                     {isPreparingStream ? 'Accessing Camera...' : countdown !== null ? `Starting in ${countdown}...` : 'Start Recording'}
                   </button>
@@ -1617,29 +1663,29 @@ export default function RecordVideo() {
 
         {/* ── EXECUTIVE CORPORATE COUNTDOWN OVERLAY ── */}
         {countdown !== null && countdown > 0 && createPortal(
-          <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-slate-900/40 dark:bg-black/75 backdrop-blur-md transition-all">
+          <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-slate-900/60 dark:bg-black/80 backdrop-blur-md transition-all">
             <motion.div 
               key={countdown}
-              initial={{ scale: 0.88, opacity: 0 }}
+              initial={{ scale: 0.85, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 1.08, opacity: 0 }}
-              transition={{ duration: 0.22, ease: "easeOut" }}
-              className="flex flex-col items-center gap-6 p-10 rounded-3xl bg-white dark:bg-[#0c1319] border border-slate-200/90 dark:border-white/10 shadow-2xl dark:shadow-[0_25px_70px_rgba(0,0,0,0.85)] max-w-sm w-full mx-4"
+              exit={{ scale: 1.05, opacity: 0 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="flex flex-col items-center gap-6 p-10 rounded-3xl bg-white dark:bg-[#101D22] border border-slate-200 dark:border-white/10 shadow-2xl dark:shadow-[0_25px_70px_rgba(0,0,0,0.9)] max-w-sm w-full mx-4"
             >
               {/* Theme-Adaptive Circular Dial */}
               <div className="relative flex items-center justify-center w-36 h-36">
-                <div className="absolute inset-0 rounded-full border border-[#006065]/15 dark:border-teal-500/20" />
-                <div className="absolute inset-2 rounded-full border border-[#006065]/30 dark:border-teal-500/40" />
-                <div className="absolute inset-0 rounded-full border-t-2 border-[#006065] dark:border-[#00beac] animate-spin" style={{ animationDuration: '2s' }} />
-                <span className="text-7xl font-extrabold text-[#006065] dark:text-[#fad503] tabular-nums tracking-tighter drop-shadow-sm font-sans">
+                <div className="absolute inset-0 rounded-full border-2 border-slate-200/60 dark:border-white/10" />
+                <div className="absolute inset-2 rounded-full border border-teal-500/20 dark:border-[#fad503]/20" />
+                <div className="absolute inset-0 rounded-full border-t-2 border-[#006065] dark:border-[#fad503] animate-spin" style={{ animationDuration: '1.5s' }} />
+                <span className="text-7xl font-black text-[#006065] dark:text-[#fad503] tabular-nums tracking-tighter drop-shadow-sm font-sans">
                   {countdown}
                 </span>
               </div>
               
               {/* Executive Status Badge */}
-              <div className="flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10">
-                <span className="w-2 h-2 rounded-full bg-[#006065] dark:bg-[#fad503] animate-pulse" />
-                <span className="text-xs font-semibold uppercase tracking-widest text-slate-700 dark:text-slate-300">Preparing Recording</span>
+              <div className="flex items-center gap-2.5 px-5 py-2 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#006065] dark:bg-[#fad503] animate-ping" />
+                <span className="text-xs font-bold uppercase tracking-widest text-slate-800 dark:text-slate-200">Recording Starting Soon</span>
               </div>
             </motion.div>
           </div>,

@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/api/supabaseClient';
@@ -142,6 +142,7 @@ export default function SpaceDashboard() {
   const [tasks, setTasks] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isLive, setIsLive] = useState(false);
+  const [liveRoomInfo, setLiveRoomInfo] = useState(null);
   const [showNewTask, setShowNewTask] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [creatingTask, setCreatingTask] = useState(false);
@@ -239,12 +240,38 @@ export default function SpaceDashboard() {
       
       if (activeRoomRes?.data) {
         setIsLive(true);
+        setLiveRoomInfo({
+          roomName: activeRoomRes.data.daily_room_name,
+          url: spaceRes.data?.meeting_url
+        });
+      } else if (spaceRes.data?.meeting_url) {
+        // Direct room name extraction from space meeting_url
+        const urlParts = spaceRes.data.meeting_url.split('/');
+        const extractedRoomName = urlParts[urlParts.length - 1]?.split('?')[0];
+        if (extractedRoomName) {
+          // If recent meeting record is still active within 2 hours
+          const recent = meetingsRes.data?.[0];
+          if (recent && Date.now() - new Date(recent.created_at).getTime() < 7200000 && !recent.ended_at) {
+            setIsLive(true);
+            setLiveRoomInfo({
+              roomName: recent.daily_room_name || extractedRoomName,
+              url: spaceRes.data.meeting_url
+            });
+          }
+        }
       } else if (meetingsRes.data?.[0]) {
         // Fallback for immediate UI updates if status sync is delayed
         const recent = meetingsRes.data[0];
         if (Date.now() - new Date(recent.created_at).getTime() < 7200000 && !recent.ended_at) {
           setIsLive(true);
+          setLiveRoomInfo({
+            roomName: recent.daily_room_name || 'space-room',
+            url: null
+          });
         }
+      } else {
+        setIsLive(false);
+        setLiveRoomInfo(null);
       }
       if (tasksRes.data) setTasks(tasksRes.data);
       if (membersRes.data) setSpaceMembers(membersRes.data);
@@ -297,6 +324,11 @@ export default function SpaceDashboard() {
   };
 
   const handleJoinMeeting = async () => {
+    // If meeting is already active, jump directly into the room
+    if (isLive && liveRoomInfo?.roomName) {
+      navigate(`/join/${liveRoomInfo.roomName}?spaceId=${spaceId}`);
+      return;
+    }
     setShowPrivacyModal(true);
   };
 
@@ -641,7 +673,43 @@ export default function SpaceDashboard() {
 
         {/* Dynamic Tab Content Area */}
         <main className="flex-1 overflow-y-auto p-4 md:p-8">
-          <div className="max-w-6xl mx-auto">
+          <div className="max-w-6xl mx-auto space-y-6">
+
+            {/* LIVE MEETING ACTIVE BANNER */}
+            {isLive && (
+              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-rose-500/15 via-rose-500/10 to-transparent dark:from-rose-500/25 dark:via-rose-500/10 dark:to-transparent border border-rose-500/30 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm backdrop-blur-md">
+                <div className="flex items-center gap-3.5">
+                  <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-rose-500 text-white shadow-md shadow-rose-500/25 shrink-0">
+                    <Video className="w-5 h-5" />
+                    <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-rose-600 border-2 border-white dark:border-[#101D22]"></span>
+                    </span>
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-extrabold uppercase tracking-widest text-rose-600 dark:text-rose-400">
+                        Live Meeting in Progress
+                      </span>
+                      <span className="inline-block w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
+                    </div>
+                    <p className="text-sm font-semibold text-slate-900 dark:text-foreground mt-0.5">
+                      A team call is currently taking place in this space.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                  <button
+                    onClick={handleJoinMeeting}
+                    className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-sm shadow-md shadow-rose-600/30 transition-all hover:scale-102 active:scale-98"
+                  >
+                    <Activity className="w-4 h-4 animate-spin" style={{ animationDuration: '3s' }} />
+                    Join Meeting Now
+                  </button>
+                </div>
+              </div>
+            )}
           
             {activeTab === 'overview' && (
               <div className="space-y-6">
