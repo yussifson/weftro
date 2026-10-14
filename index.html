@@ -117,37 +117,16 @@
     <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     <div id="root">
       <div class="app-preloader">
-        <img src="/slate-logo.png" alt="Loading" class="app-preloader-logo" id="dynamic-preloader-logo" />
+        <img src="/clipad-logo.svg" alt="Weftro" class="app-preloader-logo" id="dynamic-preloader-logo" />
         <div class="app-preloader-spinner"></div>
-        <div class="app-preloader-text">Loading...</div>
+        <div class="app-preloader-text">Loading Weftro...</div>
       </div>
     </div>
     <script>
       (function() {
-        var host = window.location.hostname.toLowerCase();
-        var isCapacitor = !!window.Capacitor || navigator.userAgent.toLowerCase().includes('capacitor');
-        var isClipad = host.includes('clipad') || host.includes('weftro') || host.includes('kerint') || host.includes('optavel');
-        var isSlate = host.includes('slate') && !isClipad;
-
-        var appTitle = 'Workspace';
+        var appTitle = 'Weftro - #1 Enterprise AI-Powered Organizational Memory Platform';
         var faviconHref = '/clipad-logo.svg';
         var faviconType = 'image/svg+xml';
-        var logoSrc = '/clipad-logo-green.svg';
-
-        if (isClipad) {
-          appTitle = 'Weftro - #1 Enterprise AI-Powered Organizational Memory Platform';
-          faviconHref = '/clipad-logo.svg';
-          logoSrc = '/clipad-logo-green.svg';
-        } else if (isSlate) {
-          appTitle = 'Slate - The Unified Workspace That Turns AI Into Clear Profit';
-          faviconHref = '/slate-favicon.svg';
-          faviconType = 'image/svg+xml';
-          logoSrc = '/slate-logo.png';
-        } else {
-          appTitle = 'Weftro - #1 Enterprise AI-Powered Organizational Memory Platform';
-          faviconHref = '/clipad-logo.svg';
-          logoSrc = '/clipad-logo-green.svg';
-        }
 
         document.title = appTitle;
         var link = document.querySelector("link[rel~='icon']");
@@ -161,7 +140,7 @@
 
         var logoEl = document.getElementById('dynamic-preloader-logo');
         if (logoEl) {
-          logoEl.src = logoSrc;
+          logoEl.src = '/clipad-logo.svg';
         }
       })();
     </script>

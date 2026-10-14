@@ -110,7 +110,7 @@ export default function CliPadLogin() {
             
             {/* Top Logo */}
             <div className="flex justify-center mb-6 sm:mb-8">
-              <CliPadLogo height={48} iconOnly={true} />
+              <CliPadLogo height={38} />
             </div>
 
 
@@ -309,8 +309,7 @@ export default function CliPadLogin() {
                 <div className="w-44 bg-[#091114] text-white p-3 border-r border-[#1A2F38] flex flex-col justify-between shrink-0">
                   <div>
                     <div className="flex items-center gap-1.5 mb-4">
-                      <CliPadLogo height={16} white={true} iconOnly={true} />
-                      <span className="font-bold tracking-tight text-xs text-white">Weftro V3</span>
+                      <CliPadLogo height={18} white={true} />
                     </div>
 
                     <div className="text-[9px] uppercase font-bold text-white/40 tracking-wider mb-1.5">General</div>

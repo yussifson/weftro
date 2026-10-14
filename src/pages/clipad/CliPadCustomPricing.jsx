@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
@@ -234,9 +234,8 @@ export default function CliPadCustomPricing() {
           <div className="flex items-center gap-6">
             <Link to="/" className="flex items-center gap-2 group">
               <div className="text-primary transition-transform group-hover:scale-105">
-                <CliPadLogo size={28} />
+                <CliPadLogo height={32} />
               </div>
-              <span className="font-bold text-lg tracking-tight">Weftro</span>
             </Link>
           </div>
 

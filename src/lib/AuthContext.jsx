@@ -518,7 +518,8 @@ export const AuthProvider = ({ children }) => {
           link.rel = 'icon';
           document.getElementsByTagName('head')[0].appendChild(link);
         }
-        link.href = '/clipad-favicon-round.svg';
+        link.type = 'image/svg+xml';
+        link.href = '/clipad-logo.svg';
         document.title = 'Weftro';
       } else if (companyData) {
         if (companyData.favicon_url) {

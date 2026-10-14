@@ -1,4 +1,4 @@
-﻿import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, X, Printer, ShieldCheck, Star, Building2, Calendar, FileText } from 'lucide-react';
@@ -256,7 +256,7 @@ export default function PaymentReceiptModal({ isOpen, onClose, transactionDetail
               
               <div className="relative z-10">
                 <div className="mb-12">
-                  <img src="/clipad-logo-green.png" alt="Weftro Logo" className="h-10 w-auto object-contain" onError={(e) => e.target.style.display='none'} />
+                  <img src="/clipad-logo-green.svg" alt="Weftro Logo" className="h-10 w-auto object-contain" onError={(e) => e.target.style.display='none'} />
                   <div className="flex items-center gap-2 text-slate-500 dark:text-muted-foreground font-medium text-sm">
                     <FileText className="w-4 h-4" /> Receipt
                   </div>

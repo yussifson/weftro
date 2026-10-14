@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
 export default function SEO({ 
@@ -15,8 +15,8 @@ export default function SEO({
     : 'https://clipad.com';
     
   const currentUrl = url || (typeof window !== 'undefined' ? window.location.href : origin);
-  const imageUrl = image || `${origin}/clipad-logo-square.png`;
-  const defaultDesc = "Weftro by Clipad is an enterprise-grade AI-powered collaborative organizational memory platform that unifies live HD meetings, async video, instant chat, spaces, and automated decision ledgers.";
+  const imageUrl = image || `${origin}/clipad-logo.svg`;
+  const defaultDesc = "Weftro is an enterprise-grade AI-powered collaborative organizational memory platform that unifies live HD meetings, async video, instant chat, spaces, and automated decision ledgers.";
 
   return (
     <Helmet>
@@ -33,7 +33,7 @@ export default function SEO({
       {title && <meta property="og:title" content={title} />}
       <meta property="og:description" content={description || defaultDesc} />
       <meta property="og:image" content={imageUrl} />
-      <meta property="og:site_name" content="Weftro by Clipad" />
+      <meta property="og:site_name" content="Weftro" />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
@@ -47,16 +47,16 @@ export default function SEO({
         {JSON.stringify({
           "@context": "https://schema.org",
           "@type": "SoftwareApplication",
-          "name": title || "Weftro by Clipad",
+          "name": title || "Weftro",
           "applicationCategory": "BusinessApplication",
           "operatingSystem": "All",
           "url": currentUrl,
           "description": description || defaultDesc,
           "publisher": {
             "@type": "Organization",
-            "name": organizationName || "Clipad",
-            "url": "https://clipad.com",
-            "logo": `${origin}/clipad-logo-square.png`
+            "name": organizationName || "Weftro",
+            "url": "https://weftro.com",
+            "logo": `${origin}/clipad-logo.svg`
           }
         })}
       </script>
