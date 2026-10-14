@@ -918,7 +918,7 @@ ${orgContext?.contextText || 'Workspace data is loading. You can still answer ge
                 {activeSession?.title || 'Orbit AI'}
               </p>
               <p className="text-[10px] text-slate-400 truncate">
-                {isLoadingContext ? 'Loading workspace...' : orgContext ? 'Workspace context ready Â· Kimi K2.5' : 'Kimi K2.5'}
+                {isLoadingContext ? 'Loading workspace...' : orgContext ? 'Workspace context ready · Kimi K2.5' : 'Kimi K2.5'}
               </p>
             </div>
           </div>
@@ -955,7 +955,7 @@ ${orgContext?.contextText || 'Workspace data is loading. You can still answer ge
                 <Sparkles className="w-7 h-7 text-white" />
               </div>
               <h2 className="text-[15px] text-slate-500 dark:text-muted-foreground font-medium">
-                Hi {user?.full_name?.split(' ')[0] || 'there'} ðŸ‘‹
+                Hi {user?.full_name?.split(' ')[0] || 'there'} 👋
               </h2>
               <h1 className="text-[22px] font-bold text-slate-900 dark:text-foreground mt-1 mb-2">How can Orbit help?</h1>
               <p className="text-[13px] text-slate-500 dark:text-muted-foreground max-w-[280px] leading-relaxed mb-6">
@@ -1145,7 +1145,7 @@ ${orgContext?.contextText || 'Workspace data is loading. You can still answer ge
             <div className="flex items-center gap-1 text-[11px] text-slate-400">
               <Zap className="w-3 h-3 text-violet-500" />
               <span className="font-medium">Kimi K2.5</span>
-              {orgContext && <span className="text-slate-300 dark:text-slate-600 dark:text-muted-foreground">Â· Workspace ready</span>}
+              {orgContext && <span className="text-slate-300 dark:text-slate-600 dark:text-muted-foreground">· Workspace ready</span>}
             </div>
             <div className="flex items-center gap-2">
               <button

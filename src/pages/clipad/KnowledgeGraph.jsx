@@ -446,7 +446,7 @@ export default function KnowledgeGraph() {
                   className="w-8 h-8 rounded-lg flex items-center justify-center text-sm"
                   style={{ background: `${getProviderColor(selectedNode.provider)}25` }}
                 >
-                  {INTEGRATIONS.find(i => i.id === selectedNode.provider)?.icon || 'ðŸ“„'}
+                  {INTEGRATIONS.find(i => i.id === selectedNode.provider)?.icon || '📄'}
                 </div>
                 <div>
                   <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">

@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Play, Pause, RotateCcw, RotateCw, Volume2, VolumeX, Maximize2, PictureInPicture as PipIcon, Send, MessageSquare, PanelRightClose, PanelRightOpen } from 'lucide-react';
 import { supabase as db } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
@@ -7,7 +7,7 @@ import DictationButton from '@/components/ui/DictationButton';
 import { Download } from 'lucide-react';
 import VideoDownloadModal from '@/components/clipad/VideoDownloadModal';
 
-const EMOJIS = ['ðŸ‘', 'ðŸ‘Ž', 'ï¸', '😂', '🔥', '🎉', '💡', 'ðŸ¤”'];
+const EMOJIS = ['👍', '👎', '❤️', '😂', '🔥', '🎉', '💡', '🤔'];
 
 function formatTime(seconds) {
   if (isNaN(seconds) || !isFinite(seconds)) return '0:00';
@@ -193,19 +193,44 @@ Do not wrap in markdown or backticks.`
     };
   }, [videoRecord?.id, entityId]);
 
+  const [isScrubbing, setIsScrubbing] = useState(false);
+
   const handleTimeUpdate = () => {
-    if (videoRef.current) setCurrentTime(videoRef.current.currentTime);
+    if (videoRef.current && !isScrubbing) {
+      const ct = videoRef.current.currentTime;
+      setCurrentTime(ct);
+      const dur = videoRef.current.duration;
+      if (dur && dur !== Infinity && !isNaN(dur) && dur !== duration) {
+        setDuration(dur);
+      }
+    }
   };
 
   const handleLoadedMetadata = () => {
-    if (videoRef.current) setDuration(videoRef.current.duration);
+    if (videoRef.current) {
+      const dur = videoRef.current.duration;
+      if (dur && dur !== Infinity && !isNaN(dur)) {
+        setDuration(dur);
+      }
+    }
   };
 
   const togglePlay = () => {
-    if (videoRef.current) {
-      if (playing) videoRef.current.pause();
-      else videoRef.current.play();
-      setPlaying(!playing);
+    const v = videoRef.current;
+    if (!v) return;
+    if (v.paused) {
+      const p = v.play();
+      if (p !== undefined) {
+        p.then(() => {
+          setPlaying(true);
+          setHasStartedPlaying(true);
+        }).catch((err) => {
+          console.warn('RichVideoPlayer playback resume handled:', err);
+        });
+      }
+    } else {
+      v.pause();
+      setPlaying(false);
     }
   };
 
@@ -218,14 +243,26 @@ Do not wrap in markdown or backticks.`
 
   const skip = (amount) => {
     if (videoRef.current) {
-      videoRef.current.currentTime = Math.max(0, Math.min(videoRef.current.currentTime + amount, duration));
+      const target = Math.max(0, Math.min(videoRef.current.currentTime + amount, duration || videoRecord?.duration_seconds || 999999));
+      seekTo(target, !videoRef.current.paused);
     }
   };
 
-  const seekTo = (time) => {
-    if (videoRef.current) {
-      videoRef.current.currentTime = time;
-      if (!playing) togglePlay();
+  const seekTo = (time, shouldResume = true) => {
+    const v = videoRef.current;
+    if (!v) return;
+    const target = Math.max(0, Number(time) || 0);
+    v.currentTime = target;
+    setCurrentTime(target);
+
+    if (shouldResume) {
+      const p = v.play();
+      if (p !== undefined) {
+        p.then(() => {
+          setPlaying(true);
+          setHasStartedPlaying(true);
+        }).catch(() => {});
+      }
     }
   };
 
@@ -340,7 +377,9 @@ Do not wrap in markdown or backticks.`
             className="w-full h-full object-contain"
             onTimeUpdate={handleTimeUpdate}
             onLoadedMetadata={handleLoadedMetadata}
+            onDurationChange={handleLoadedMetadata}
             onPlay={() => { setPlaying(true); setHasStartedPlaying(true); }}
+            onPlaying={() => { setPlaying(true); setHasStartedPlaying(true); }}
             onPause={() => setPlaying(false)}
             onEnded={() => setPlaying(false)}
             controlsList="nodownload"
@@ -378,22 +417,38 @@ Do not wrap in markdown or backticks.`
           <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30 pointer-events-none">
             <div className="px-4 mb-2 pointer-events-auto">
               <div className="relative h-1 mb-1">
-                {comments.map(c => (
-                  <button
-                    key={c.id}
-                    onClick={() => seekTo(c.timestamp_seconds)}
-                    title={c.content}
-                    className="absolute top-0 w-2 h-2 -mt-0.5 rounded-full bg-indigo-400 hover:scale-150 transition-transform shadow-sm"
-                    style={{ left: `${(c.timestamp_seconds / (duration || 1)) * 100}%` }}
-                  />
-                ))}
+                {comments.map(c => {
+                  const effectiveDur = duration && duration !== Infinity && !isNaN(duration) ? duration : (videoRecord?.duration_seconds || 1);
+                  return (
+                    <button
+                      key={c.id}
+                      onClick={() => seekTo(c.timestamp_seconds, true)}
+                      title={c.content}
+                      className="absolute top-0 w-2 h-2 -mt-0.5 rounded-full bg-indigo-400 hover:scale-150 transition-transform shadow-sm"
+                      style={{ left: `${(c.timestamp_seconds / effectiveDur) * 100}%` }}
+                    />
+                  );
+                })}
               </div>
               <input
                 type="range"
                 min={0}
-                max={duration || 100}
+                step="any"
+                max={duration && duration !== Infinity && !isNaN(duration) ? duration : (videoRecord?.duration_seconds || Math.max(100, currentTime))}
                 value={currentTime}
-                onChange={e => seekTo(Number(e.target.value))}
+                onPointerDown={() => setIsScrubbing(true)}
+                onPointerUp={(e) => {
+                  setIsScrubbing(false);
+                  seekTo(Number(e.currentTarget.value), true);
+                }}
+                onInput={(e) => {
+                  const val = Number(e.target.value);
+                  setCurrentTime(val);
+                  if (videoRef.current) {
+                    videoRef.current.currentTime = val;
+                  }
+                }}
+                onChange={e => seekTo(Number(e.target.value), true)}
                 onClick={e => e.stopPropagation()}
                 className="w-full h-1.5 rounded-full accent-emerald-500 cursor-pointer bg-white/20 hover:h-2 transition-all"
               />

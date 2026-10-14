@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
@@ -13,7 +13,7 @@ import { Download } from 'lucide-react';
 import DictationButton from '@/components/ui/DictationButton';
 import LockWall from '@/components/clipad/LockWall';
 
-const EMOJIS = ['ðŸ‘','ï¸','🔥','😂','🎉','ðŸ¤¯'];
+const EMOJIS = ['👍', '❤️', '🔥', '😂', '🎉', '🤯'];
 
 function formatTime(s) {
   if (!s && s !== 0) return '0:00';
@@ -224,8 +224,11 @@ export default function WatchVideo() {
     finally { setLoading(false); }
   };
 
+  const [isScrubbing, setIsScrubbing] = useState(false);
+  const playPromiseRef = useRef(null);
+
   const handleTimeUpdate = useCallback(() => {
-    if (videoRef.current) {
+    if (videoRef.current && !isScrubbing) {
       const ct = videoRef.current.currentTime;
       setCurrentTime(ct);
       
@@ -249,18 +252,33 @@ export default function WatchVideo() {
         }
       }
     }
-  }, [reactions, playing, duration]);
+  }, [reactions, playing, duration, isScrubbing]);
 
   const handleLoadedMetadata = useCallback(() => {
-    if (videoRef.current) setDuration(videoRef.current.duration);
+    if (videoRef.current) {
+      const dur = videoRef.current.duration;
+      if (dur && dur !== Infinity && !isNaN(dur)) {
+        setDuration(dur);
+      }
+    }
   }, []);
 
-  const seekTo = (t) => {
-    if (videoRef.current) {
-      videoRef.current.currentTime = t;
-      setCurrentTime(t);
-      if (!playing) {
-        videoRef.current.play().then(() => setPlaying(true)).catch(console.error);
+  const seekTo = (t, shouldResume = true) => {
+    const v = videoRef.current;
+    if (!v) return;
+    const target = Math.max(0, Number(t) || 0);
+    v.currentTime = target;
+    setCurrentTime(target);
+
+    if (shouldResume) {
+      const p = v.play();
+      if (p !== undefined) {
+        p.then(() => {
+          setPlaying(true);
+          setHasStartedPlaying(true);
+        }).catch(() => {
+          // Playback auto-abort or interrupted
+        });
       }
     }
   };
@@ -268,21 +286,19 @@ export default function WatchVideo() {
   const togglePlay = () => {
     const v = videoRef.current;
     if (!v) return;
-    if (!v.paused) {
+    if (v.paused) {
+      const p = v.play();
+      if (p !== undefined) {
+        p.then(() => {
+          setPlaying(true);
+          setHasStartedPlaying(true);
+        }).catch((err) => {
+          console.warn('Playback resume handled:', err);
+        });
+      }
+    } else {
       v.pause();
       setPlaying(false);
-    } else {
-      const playPromise = v.play();
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            setPlaying(true);
-            setHasStartedPlaying(true);
-          })
-          .catch((err) => {
-            console.warn('Playback resume handled:', err);
-          });
-      }
     }
   };
 
@@ -485,7 +501,9 @@ return <LockWall type={accessDenied.type} unlockAt={accessDenied.unlockAt || nul
                 className="w-full h-full object-contain"
                 onTimeUpdate={handleTimeUpdate}
                 onLoadedMetadata={handleLoadedMetadata}
+                onDurationChange={handleLoadedMetadata}
                 onPlay={() => { setPlaying(true); setHasStartedPlaying(true); }}
+                onPlaying={() => { setPlaying(true); setHasStartedPlaying(true); }}
                 onPause={() => setPlaying(false)}
                 onEnded={() => setPlaying(false)}
                 controlsList="nodownload"
@@ -531,7 +549,7 @@ return <LockWall type={accessDenied.type} unlockAt={accessDenied.unlockAt || nul
                       return (
                         <button
                           key={c.id}
-                          onClick={() => seekTo(c.timestamp_seconds)}
+                          onClick={() => seekTo(c.timestamp_seconds, true)}
                           title={c.body}
                           className="absolute top-0 w-2 h-2 -mt-0.5 rounded-full bg-indigo-400 hover:scale-150 transition-transform shadow-sm"
                           style={{ left: `${(c.timestamp_seconds / dur) * 100}%` }}
@@ -542,9 +560,24 @@ return <LockWall type={accessDenied.type} unlockAt={accessDenied.unlockAt || nul
                   <input
                     type="range"
                     min={0}
+                    step="any"
                     max={duration && duration !== Infinity && !isNaN(duration) ? duration : (video?.duration_seconds || Math.max(100, currentTime))}
                     value={currentTime}
-                    onChange={e => seekTo(Number(e.target.value))}
+                    onPointerDown={() => setIsScrubbing(true)}
+                    onPointerUp={(e) => {
+                      setIsScrubbing(false);
+                      seekTo(Number(e.currentTarget.value), true);
+                    }}
+                    onInput={(e) => {
+                      const val = Number(e.target.value);
+                      setCurrentTime(val);
+                      if (videoRef.current) {
+                        videoRef.current.currentTime = val;
+                      }
+                    }}
+                    onChange={(e) => {
+                      seekTo(Number(e.target.value), true);
+                    }}
                     onClick={e => e.stopPropagation()}
                     className="w-full h-1.5 rounded-full accent-emerald-500 cursor-pointer bg-white/20 hover:h-2 transition-all"
                   />

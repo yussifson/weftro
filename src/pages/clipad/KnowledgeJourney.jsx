@@ -454,7 +454,7 @@ function ChainPreview({ node, depth }) {
         className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-semibold border"
         style={{ background: `${color}15`, borderColor: `${color}40`, color }}
       >
-        <span>{intg?.icon || 'ðŸ“„'}</span>
+        <span>{intg?.icon || '📄'}</span>
         <span className="capitalize">{node.item.provider?.replace('_', ' ')}</span>
       </div>
       <p className="text-xs text-white font-medium max-w-xs truncate">{node.item.title}</p>
@@ -491,7 +491,7 @@ function DetailChain({ node, depth }) {
           style={{ background: `${color}10`, borderColor: `${color}30`, marginLeft: depth > 0 ? depth * 16 : 0 }}
         >
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-base">{intg?.icon || 'ðŸ“„'}</span>
+            <span className="text-base">{intg?.icon || '📄'}</span>
             <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color }}>{node.item.provider?.replace('_', ' ')}</span>
             <span className="text-[10px] text-slate-500 dark:text-muted-foreground ml-auto">
               {node.item.imported_at ? format(new Date(node.item.imported_at), 'MMM d, yyyy') : ''}

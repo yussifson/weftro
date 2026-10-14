@@ -28,7 +28,7 @@ import { isV3FeatureEnabled, V3_FLAGS } from '@/lib/clipadV3Flags';
 
 const isSuperAdmin = (user) => user?.role === 'super_admin' || user?.user_metadata?.role === 'super_admin';
 
-// Ã¢”€Ã¢”€Ã¢”€ Main Component Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€
+// ─── Main Component ──────────────────────────────────────────────────────────
 export default function IntegrationsHub() {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -51,7 +51,7 @@ export default function IntegrationsHub() {
   const [configModal, setConfigModal] = useState(null); // { integration, conn }
   const [customFreqInput, setCustomFreqInput] = useState({}); // { [connId]: hoursString }
 
-  // Ã¢”€Ã¢”€ Visibility scope selector state Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€
+  // ── Visibility scope selector state ──────────────────────────────────────────
   const [scopeModal, setScopeModal] = useState(null); // { integration } — pending connect
   const [selectedScope, setSelectedScope] = useState('personal'); // 'personal' | 'space' | 'company'
   const [selectedSpaceId, setSelectedSpaceId] = useState(''); // when scope='space'
@@ -69,7 +69,7 @@ export default function IntegrationsHub() {
     const message = searchParams.get('message');
 
     if (status === 'success' && provider) {
-      toast({ title: 'Ã¢Å“… Connected!', description: `${provider.replace('_', ' ')} connected successfully. Syncing your data...` });
+      toast({ title: '✓ Connected!', description: `${provider.replace('_', ' ')} connected successfully. Syncing your data...` });
       setSearchParams({});
       loadConnected();
     } else if (status === 'needs_api_key' && provider) {
@@ -174,7 +174,7 @@ export default function IntegrationsHub() {
     loadUserSpaces();
   }, [loadConnected, loadKnowledge, loadUserSpaces]);
 
-  // Ã¢”€Ã¢”€ Open scope selector before connecting Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€
+  // ── Open scope selector before connecting ────────────────────────────────────
   const handleConnect = (integration) => {
     if (!companyId) {
       toast({ title: 'Not authorized', description: 'You must belong to a company to connect integrations.', variant: 'destructive' });
@@ -186,7 +186,7 @@ export default function IntegrationsHub() {
     setScopeModal({ integration });
   };
 
-  // Ã¢”€Ã¢”€ Actually fire the connection after scope is chosen Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€
+  // ── Actually fire the connection after scope is chosen ───────────────────────
   const confirmConnect = () => {
     const { integration } = scopeModal;
     setScopeModal(null);
@@ -203,7 +203,7 @@ export default function IntegrationsHub() {
     window.location.href = oauthUrl;
   };
 
-  // Ã¢”€Ã¢”€ Change scope of an already-connected integration Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€
+  // ── Change scope of an already-connected integration ───────────────────────
   const handleChangeScope = async () => {
     if (!changeScopeModal) return;
     const { conn } = changeScopeModal;
@@ -231,7 +231,7 @@ export default function IntegrationsHub() {
         .eq('id', conn.id)
         .eq('company_id', companyId); // ensure cross-company update is impossible
       if (error) throw error;
-      toast({ title: 'Ã¢Å“… Scope updated', description: `Integration is now ${selectedScope === 'company' ? 'company-wide' : selectedScope === 'space' ? 'space-level' : 'personal'}.` });
+      toast({ title: '✓ Scope updated', description: `Integration is now ${selectedScope === 'company' ? 'company-wide' : selectedScope === 'space' ? 'space-level' : 'personal'}.` });
       setChangeScopeModal(null);
       await loadConnected();
     } catch (e) {
@@ -328,7 +328,7 @@ export default function IntegrationsHub() {
         : `${imported} item${imported !== 1 ? 's' : ''} imported. AI is now processing the content...`;
 
       toast({ 
-        title: forceFull ? `Ã°Å¸”ž Full Sync Started` : `Ã¢Å“… ${integration.name} synced`, 
+        title: forceFull ? `🔄 Full Sync Started` : `✓ ${integration.name} synced`, 
         description: descriptionText
       });
 
@@ -406,7 +406,7 @@ export default function IntegrationsHub() {
       }
 
       if (error) throw error;
-      toast({ title: 'Ã¢Å“… Connected!', description: `${provider.replace(/_/g, ' ')} connected (${selectedScope === 'company' ? 'company-wide' : selectedScope === 'space' ? 'space-level' : 'personal'}).` });
+      toast({ title: '✓ Connected!', description: `${provider.replace(/_/g, ' ')} connected (${selectedScope === 'company' ? 'company-wide' : selectedScope === 'space' ? 'space-level' : 'personal'}).` });
       setApiKeyModal(null);
       await loadConnected();
     } catch (e) {
@@ -521,7 +521,7 @@ export default function IntegrationsHub() {
           })}
         </div>
 
-        {/* Ã¢”€Ã¢”€ My Connections Panel (scoped view) Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€ */}
+        {/* ── My Connections Panel (scoped view) ─────────────────────────── */}
         {connectedCount > 0 && (() => {
           const personal = Object.entries(connected).filter(([, c]) => c.visibility === 'personal' || (!c.visibility && c.connected_by_user_id === user?.id));
           const space    = Object.entries(connected).filter(([, c]) => c.visibility === 'space');
@@ -825,7 +825,7 @@ export default function IntegrationsHub() {
                 const intg = INTEGRATIONS.find(i => i.provider === item.provider || i.id === item.provider);
                 return (
                   <div key={item.id} className="flex items-start gap-3 bg-card border border-border rounded-xl p-4 hover:border-primary/30 transition-colors group">
-                    <div className="text-xl shrink-0 mt-0.5">{intg?.icon || 'Ã°Å¸“ž'}</div>
+                    <div className="text-xl shrink-0 mt-0.5">{intg?.icon || '📦'}</div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-0.5">
                         <span className="font-semibold text-sm text-foreground truncate">{item.title || 'Untitled'}</span>
@@ -836,7 +836,7 @@ export default function IntegrationsHub() {
                       )}
                       <div className="flex items-center gap-2 mt-1.5">
                         <span className="text-[11px] text-muted-foreground">{intg?.name || item.provider}</span>
-                        <span className="text-muted-foreground">Ã‚Â·</span>
+                        <span className="text-muted-foreground">·</span>
                         <span className="text-[11px] text-muted-foreground">{new Date(item.imported_at).toLocaleDateString()}</span>
                         {item.url && (
                           <a href={item.url} target="_blank" rel="noopener noreferrer" className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
@@ -879,7 +879,7 @@ export default function IntegrationsHub() {
             </>
           )}
       </div>
-{/* Scope Selector Modal — shown BEFORE connecting any integration Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€ */}
+{/* Scope Selector Modal — shown BEFORE connecting any integration ─────── */}
       {scopeModal && createPortal(
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="bg-white dark:bg-card text-slate-900 dark:text-foreground border border-slate-200 dark:border-border rounded-2xl shadow-2xl w-full max-w-md p-5 animate-in fade-in zoom-in-95 duration-200">
@@ -992,7 +992,7 @@ export default function IntegrationsHub() {
         document.body
       )}
 
-      {/* Ã¢”€Ã¢”€ Change Scope Modal — for already-connected integrations Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€ */}
+      {/* ── Change Scope Modal — for already-connected integrations ──────────── */}
       {changeScopeModal && createPortal(
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="bg-white dark:bg-card text-slate-900 dark:text-foreground border border-slate-200 dark:border-border rounded-2xl shadow-2xl w-full max-w-md p-6 animate-in fade-in zoom-in-95 duration-200">
@@ -1002,7 +1002,7 @@ export default function IntegrationsHub() {
               </div>
               <div>
                 <h2 className="text-base font-bold text-slate-900 dark:text-foreground">Change Access Scope</h2>
-                <p className="text-xs text-slate-500 dark:text-muted-foreground">{changeScopeModal.integration?.name} Ã‚Â· Who can access this?</p>
+                <p className="text-xs text-slate-500 dark:text-muted-foreground">{changeScopeModal.integration?.name} · Who can access this?</p>
               </div>
             </div>
 
@@ -1093,7 +1093,7 @@ export default function IntegrationsHub() {
                 })
                 .eq('id', configModal.conn.id);
               if (error) throw error;
-              toast({ title: 'Ã¢Å“… Settings saved', description: 'Import configuration updated.' });
+              toast({ title: '✓ Settings saved', description: 'Import configuration updated.' });
               setConfigModal(null);
               await loadConnected();
             } catch (e) {
@@ -1107,7 +1107,7 @@ export default function IntegrationsHub() {
   );
 }
 
-// Ã¢”€Ã¢”€Ã¢”€ API Key Input Modal Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€
+// ─── API Key Input Modal ──────────────────────────────────────────────────────
 const API_KEY_CONFIGS = {
   freshdesk:        { label: 'Freshdesk',             fields: [{ key: 'api_key', label: 'API Key', secret: true }, { key: 'subdomain', label: 'Subdomain (e.g. yourcompany)', secret: false }] },
   guru:             { label: 'Guru',                   fields: [{ key: 'api_key', label: 'API Key', secret: true }, { key: 'username', label: 'Username / Email', secret: false }] },
@@ -1213,7 +1213,7 @@ function ApiKeyModal({ integration, provider, onSave, onClose }) {
   );
 }
 
-// Ã¢”€Ã¢”€Ã¢”€ Per-Integration Config Modal Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€Ã¢”€
+// ─── Per-Integration Config Modal ─────────────────────────────────────────────
 function IntegrationConfigModal({ integration, conn, onSave, onClose }) {
   const meta = conn?.settings || {};
   const [importLimit, setImportLimit] = useState(meta.import_limit || 100);

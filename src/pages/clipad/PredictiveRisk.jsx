@@ -415,10 +415,10 @@ Analyze patterns that historically precede project failures and org dysfunction.
         <div className="rounded-2xl border border-border bg-card p-4">
           <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">How Risk Score Is Calculated</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs text-muted-foreground">
-            <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-red-500 shrink-0" />Unresolved Blockers (Ã—15 pts)</div>
-            <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-orange-500 shrink-0" />Overdue Commitments (Ã—12 pts)</div>
-            <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />At-Risk Commitments (Ã—8 pts)</div>
-            <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-blue-500 shrink-0" />Inactivity / Isolation (Ã—10-20 pts)</div>
+            <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-red-500 shrink-0" />Unresolved Blockers (×15 pts)</div>
+            <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-orange-500 shrink-0" />Overdue Commitments (×12 pts)</div>
+            <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />At-Risk Commitments (×8 pts)</div>
+            <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-blue-500 shrink-0" />Inactivity / Isolation (×10-20 pts)</div>
           </div>
         </div>
       </div>

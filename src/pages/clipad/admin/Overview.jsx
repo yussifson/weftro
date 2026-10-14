@@ -159,7 +159,7 @@ export default function Overview() {
                       <p className="text-sm font-semibold text-foreground capitalize truncate">
                         {log.action?.replace(/_/g, ' ')}
                         {log.user_name && log.user_name !== 'Unknown' && (
-                          <span className="font-normal text-muted-foreground"> Â· {log.user_name}</span>
+                          <span className="font-normal text-muted-foreground"> · {log.user_name}</span>
                         )}
                       </p>
                       <p className="text-xs text-muted-foreground truncate">{log.details || log.user_email || '—'}</p>

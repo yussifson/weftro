@@ -108,7 +108,7 @@ export default function AuditMonitor() {
           <Wifi className="w-3.5 h-3.5 text-[#006065]" />
           Live
           {lastRefresh && (
-            <span className="text-white/60 ml-1">Â· refreshed {formatDistanceToNow(lastRefresh, { addSuffix: true })}</span>
+            <span className="text-white/60 ml-1">· refreshed {formatDistanceToNow(lastRefresh, { addSuffix: true })}</span>
           )}
         </div>
       </div>

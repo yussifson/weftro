@@ -20,10 +20,10 @@ import {
 
 const MOOD_OPTIONS = [
   { value: 'great',      label: 'Great',      emoji: '🚀', color: 'text-[#006065] bg-[#006065] dark:bg-card border-emerald-200 dark:border-border/20' },
-  { value: 'good',       label: 'Good',       emoji: 'ðŸ˜Š', color: 'text-blue-500 bg-blue-50 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20' },
-  { value: 'neutral',    label: 'Neutral',    emoji: 'ðŸ˜', color: 'text-slate-500 dark:text-muted-foreground bg-slate-100 dark:bg-secondary border-slate-200 dark:border-border' },
-  { value: 'struggling', label: 'Struggling', emoji: 'ðŸ˜“', color: 'text-amber-500 bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20' },
-  { value: 'blocked',    label: 'Blocked',    emoji: 'ðŸ”´', color: 'text-rose-500 bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/20' },
+  { value: 'good',       label: 'Good',       emoji: '😊', color: 'text-blue-500 bg-blue-50 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20' },
+  { value: 'neutral',    label: 'Neutral',    emoji: '😐', color: 'text-slate-500 dark:text-muted-foreground bg-slate-100 dark:bg-secondary border-slate-200 dark:border-border' },
+  { value: 'struggling', label: 'Struggling', emoji: '😓', color: 'text-amber-500 bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20' },
+  { value: 'blocked',    label: 'Blocked',    emoji: '🔴', color: 'text-rose-500 bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/20' },
 ];
 
 const PRIORITY_OPTIONS = [
@@ -409,7 +409,7 @@ export default function StandupPanel({ spaceId }) {
 
           <div>
             <label className="block text-xs font-semibold text-muted-foreground mb-1.5 uppercase tracking-wider">
-              ðŸ“… What did you complete yesterday?
+              📅 What did you complete yesterday?
             </label>
             <textarea
               value={form.yesterday}

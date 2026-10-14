@@ -116,7 +116,7 @@ async function searchPeople(query, companyId) {
     id: p.id,
     space_id: null,
     label: p.full_name || p.email,
-    snippet: [p.role, p.department].filter(Boolean).join(' Â· ') || p.email,
+    snippet: [p.role, p.department].filter(Boolean).join(' · ') || p.email,
     email: p.email,
     avatar_url: p.avatar_url,
     department: p.department,

@@ -78,7 +78,7 @@ export default function KnowledgeTimeline() {
 
   const getProviderIcon = (providerId) => {
     const intg = INTEGRATIONS.find(i => i.id === providerId || i.provider === providerId);
-    return intg?.icon || 'ðŸ“„';
+    return intg?.icon || '📄';
   };
 
   const filteredEvents = events.filter(e => {

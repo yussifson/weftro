@@ -9,11 +9,11 @@ import { RefreshCw,
 } from 'lucide-react';
 
 const GRADE_CONFIG = {
-  A: { color: 'emerald', label: 'Excellent', emoji: 'Ã°Å¸Â' },
-  B: { color: 'green', label: 'Good', emoji: 'Ã¢Å“…' },
-  C: { color: 'amber', label: 'Fair', emoji: 'Ã¢Å¡Â Ã¯Â¸Â' },
-  D: { color: 'orange', label: 'Poor', emoji: 'Ã°Å¸”Â»' },
-  F: { color: 'red', label: 'Critical', emoji: 'Ã°Å¸Å¡Â¨' },
+  A: { color: 'emerald', label: 'Excellent', emoji: '🌟' },
+  B: { color: 'green', label: 'Good', emoji: '✅' },
+  C: { color: 'amber', label: 'Fair', emoji: '⚠️' },
+  D: { color: 'orange', label: 'Poor', emoji: '🔻' },
+  F: { color: 'red', label: 'Critical', emoji: '🚨' },
 };
 
 function PulseGauge({ score }) {
@@ -253,7 +253,7 @@ Respond in valid JSON only:
                 <Clock className="w-8 h-8 text-amber-400 shrink-0" />
                 <div>
                   <p className="font-bold text-foreground">Estimated meeting cost this month: <span className="text-amber-400">${metrics.meetingCostEstimate.toLocaleString()}</span></p>
-                  <p className="text-sm text-muted-foreground">{metrics.meetingsThisMonth} meetings tracked Ã‚Â· Use Meeting ROI data to identify which ones could be async</p>
+                  <p className="text-sm text-muted-foreground">{metrics.meetingsThisMonth} meetings tracked · Use Meeting ROI data to identify which ones could be async</p>
                 </div>
               </div>
             )}

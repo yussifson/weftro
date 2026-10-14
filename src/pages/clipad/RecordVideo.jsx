@@ -21,6 +21,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import * as tus from 'tus-js-client';
 import { playAlertSound } from '@/lib/audioAlerts';
+import { fixWebmDuration } from '@/lib/webmDurationFixer';
 
 
 const MODES = [
@@ -1031,7 +1032,14 @@ export default function RecordVideo() {
         }
         
         // Finalize local recording blob and go straight to review for direct client-side upload
-        const blob = new Blob(chunksRef.current, { type: 'video/webm' });
+        const rawBlob = new Blob(chunksRef.current, { type: 'video/webm' });
+        const durationMs = recordingSecondsRef.current ? (recordingSecondsRef.current * 1000) : (Date.now() - startTime);
+        let blob = rawBlob;
+        try {
+          blob = await fixWebmDuration(rawBlob, durationMs);
+        } catch (e) {
+          console.warn('Could not patch WebM duration header, using raw blob:', e);
+        }
         setVideoBlob(blob);
         setRecordingUrl(URL.createObjectURL(blob));
         setPhase('review');
@@ -1832,7 +1840,7 @@ export default function RecordVideo() {
             )}
             <div>
               <h2 className="text-xl font-bold text-foreground mb-1">Review your recording</h2>
-              <p className="text-slate-500 dark:text-muted-foreground text-sm">{formatDuration(recordingSeconds)} Â· {0} MB</p>
+              <p className="text-slate-500 dark:text-muted-foreground text-sm">{formatDuration(recordingSeconds)} · {0} MB</p>
             </div>
 
             <div className="rounded-2xl overflow-hidden bg-black aspect-video">

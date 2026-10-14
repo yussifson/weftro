@@ -146,7 +146,7 @@ function FormatMessage({ content }) {
                     onClick={(e) => e.stopPropagation()}
                     className="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors no-underline border border-primary/20 mx-0.5"
                   >
-                    ðŸ”— {children}
+                    🔗 {children}
                   </a>
                 );
               },
@@ -738,7 +738,7 @@ To create an automation, use the \`create_record\` tool with recordType "automat
     if (contextText && contextText.length > 50) {
       orgContextSection = `
 
-ðŸ¢ LIVE ORGANIZATIONAL MEMORY — VERIFIED REAL DATA:
+🏢 LIVE ORGANIZATIONAL MEMORY — VERIFIED REAL DATA:
 You have FULL access to the following live data from ${accessibleIds.size} space(s) this user is authorized to see.
 This includes: standups, meetings, decisions, blockers, tasks, videos, commitments, team members, org events, and more.
 ALWAYS use this data to answer questions. If the data exists below, say so clearly with specifics.
@@ -772,7 +772,7 @@ ${contextText}
 
         orgContextSection += `
 
-ðŸ”— INTEGRATION KNOWLEDGE BASE — CROSS-SYSTEM DATA:
+🔗 INTEGRATION KNOWLEDGE BASE — CROSS-SYSTEM DATA:
 The following items were retrieved from connected integrations (Slack, Google Drive, GitHub, Jira, Notion, etc.) relevant to the user's query.
 Use these to answer questions about documents, messages, meetings, tasks, and more across all connected systems.
 Always cite the source provider and title when referencing these results.
@@ -843,7 +843,7 @@ EXACT VERIFIED ROUTE MAP — ALWAYS USE THESE EXACT PATHS FOR navigate_to. NEVER
 /chat → Chat
 
 CITATION RULES (MANDATORY when using INTEGRATION KNOWLEDGE BASE):
-- When answering from the ðŸ”— INTEGRATION KNOWLEDGE BASE section, you MUST cite the source.
+- When answering from the 🔗 INTEGRATION KNOWLEDGE BASE section, you MUST cite the source.
 - Format citations inline like: [Source: {Provider} – "{Title}"]
 - If a URL is available in the source data, format it as a markdown link: [View Source]({url})
 - Always cite, never omit the source when referencing integrated data.

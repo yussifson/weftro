@@ -12,13 +12,13 @@ import {
 import { INTEGRATIONS } from '@/config/integrationsList';
 
 const EXPORT_TARGETS = [
-  { id: 'jira', label: 'Jira', icon: 'ðŸ”µ', color: '#0052CC' },
-  { id: 'clickup', label: 'ClickUp', icon: 'ðŸŸ£', color: '#7B68EE' },
-  { id: 'asana', label: 'Asana', icon: 'ðŸ”´', color: '#F06A6A' },
-  { id: 'linear', label: 'Linear', icon: 'âš¡', color: '#5E6AD2' },
-  { id: 'github', label: 'GitHub Issue', icon: 'âš«', color: '#24292E' },
-  { id: 'trello', label: 'Trello', icon: 'ðŸ”·', color: '#0079BF' },
-  { id: 'slack', label: 'Slack', icon: 'ðŸ’œ', color: '#4A154B' },
+  { id: 'jira', label: 'Jira', icon: '🔵', color: '#0052CC' },
+  { id: 'clickup', label: 'ClickUp', icon: '🟣', color: '#7B68EE' },
+  { id: 'asana', label: 'Asana', icon: '🔴', color: '#F06A6A' },
+  { id: 'linear', label: 'Linear', icon: '⚡', color: '#5E6AD2' },
+  { id: 'github', label: 'GitHub Issue', icon: '⚫', color: '#24292E' },
+  { id: 'trello', label: 'Trello', icon: '🔷', color: '#0079BF' },
+  { id: 'slack', label: 'Slack', icon: '💜', color: '#4A154B' },
 ];
 
 const STATUS_OPTIONS = ['todo', 'in_progress', 'done'];

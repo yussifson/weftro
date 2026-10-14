@@ -405,9 +405,9 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
       const isDeviceNotFound = err?.name === 'NotFoundError' || err?.message?.includes('not found') || err?.message?.includes('device');
       const isPermission = err?.name === 'NotAllowedError' || err?.message?.includes('Permission') || err?.message?.includes('allowed');
       if (isDeviceNotFound) {
-        toast({ title: 'ðŸŽ™ï¸ No Microphone Found', description: 'Please connect a microphone and try again. Make sure it\'s plugged in and not in use by another app.', variant: 'destructive' });
+        toast({ title: '🎙️ No Microphone Found', description: 'Please connect a microphone and try again. Make sure it\'s plugged in and not in use by another app.', variant: 'destructive' });
       } else if (isPermission) {
-        toast({ title: 'ðŸ”’ Microphone Blocked', description: 'Browser blocked microphone access. Click the ðŸ”’ icon in your browser address bar to allow it.', variant: 'destructive' });
+        toast({ title: '🔒 Microphone Blocked', description: 'Browser blocked microphone access. Click the 🔒 icon in your browser address bar to allow it.', variant: 'destructive' });
       } else {
         toast({ title: 'Microphone Error', description: err?.message || 'Could not access your microphone.', variant: 'destructive' });
       }
@@ -424,9 +424,9 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
       const isDeviceNotFound = err?.name === 'NotFoundError' || err?.message?.includes('not found') || err?.message?.includes('device');
       const isPermission = err?.name === 'NotAllowedError' || err?.message?.includes('Permission') || err?.message?.includes('allowed');
       if (isDeviceNotFound) {
-        toast({ title: 'ðŸ“· No Camera Found', description: 'No webcam detected. Please connect a camera and try again. Others will still be able to see your name and hear you.', variant: 'destructive' });
+        toast({ title: '📷 No Camera Found', description: 'No webcam detected. Please connect a camera and try again. Others will still be able to see your name and hear you.', variant: 'destructive' });
       } else if (isPermission) {
-        toast({ title: 'ðŸ”’ Camera Blocked', description: 'Browser blocked camera access. Click the ðŸ”’ icon in your browser address bar to allow it.', variant: 'destructive' });
+        toast({ title: '🔒 Camera Blocked', description: 'Browser blocked camera access. Click the 🔒 icon in your browser address bar to allow it.', variant: 'destructive' });
       } else {
         toast({ title: 'Camera Error', description: err?.message || 'Could not access your camera.', variant: 'destructive' });
       }

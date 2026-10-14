@@ -3,10 +3,10 @@ import { ExternalLink, CheckCircle, Copy, Share2, Sparkles, X } from 'lucide-rea
 import { toast } from 'react-hot-toast';
 
 const PM_TOOLS = [
-  { id: 'jira', name: 'Jira', color: 'bg-blue-600 text-white', icon: 'âš¡' },
-  { id: 'linear', name: 'Linear', color: 'bg-purple-600 text-white', icon: 'ðŸ“' },
-  { id: 'clickup', name: 'ClickUp', color: 'bg-pink-600 text-white', icon: 'ðŸŽ¯' },
-  { id: 'asana', name: 'Asana', color: 'bg-rose-500 text-white', icon: 'ðŸ”´' },
+  { id: 'jira', name: 'Jira', color: 'bg-blue-600 text-white', icon: '⚡' },
+  { id: 'linear', name: 'Linear', color: 'bg-purple-600 text-white', icon: '📐' },
+  { id: 'clickup', name: 'ClickUp', color: 'bg-pink-600 text-white', icon: '🎯' },
+  { id: 'asana', name: 'Asana', color: 'bg-rose-500 text-white', icon: '🔴' },
   { id: 'trello', name: 'Trello', color: 'bg-sky-600 text-white', icon: '📊' },
 ];
 
@@ -55,7 +55,7 @@ export default function ExportTaskModal({ isOpen, onClose, task, meetingTitle, m
           <p className="font-medium text-slate-800 dark:text-slate-200 text-sm">{task.title || task.name}</p>
           {meetingTitle && (
             <p className="text-slate-400 text-[11px] flex items-center gap-1">
-              ðŸ”— Linked to: <span className="font-medium text-[#006065] dark:text-[#00beac]">{meetingTitle}</span>
+              🔗 Linked to: <span className="font-medium text-[#006065] dark:text-[#00beac]">{meetingTitle}</span>
             </p>
           )}
         </div>

@@ -348,7 +348,7 @@ export default function CliPadLogin() {
                         <div className="text-[8px] text-slate-500 dark:text-muted-foreground">Manage your workspace intelligence</div>
                       </div>
                       <div className="bg-slate-100 dark:bg-secondary border border-slate-200 dark:border-border px-2 py-0.5 rounded-full text-slate-400 text-[8px] flex items-center gap-1">
-                        ðŸ” Search memory...
+                        🔍 Search memory...
                       </div>
                     </div>
 

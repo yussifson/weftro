@@ -509,19 +509,19 @@ Layout the stickies in a clear grid or workflow sequence. Return ONLY raw JSON w
 
         {/* Actions */}
         <div className="flex items-center gap-0.5 bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl p-1 shadow-sm">
-          <button onClick={undo} title="Undo (Ctrl+Z)" className="w-8 h-8 rounded-lg hover:bg-slate-100 dark:bg-secondary flex items-center justify-center text-slate-600 dark:text-muted-foreground font-bold text-sm">â†©</button>
-          <button onClick={redo} title="Redo (Ctrl+Y)" className="w-8 h-8 rounded-lg hover:bg-slate-100 dark:bg-secondary flex items-center justify-center text-slate-600 dark:text-muted-foreground font-bold text-sm">â†ª</button>
+          <button onClick={undo} title="Undo (Ctrl+Z)" className="w-8 h-8 rounded-lg hover:bg-slate-100 dark:bg-secondary flex items-center justify-center text-slate-600 dark:text-muted-foreground font-bold text-sm">↩</button>
+          <button onClick={redo} title="Redo (Ctrl+Y)" className="w-8 h-8 rounded-lg hover:bg-slate-100 dark:bg-secondary flex items-center justify-center text-slate-600 dark:text-muted-foreground font-bold text-sm">↪</button>
           <button onClick={() => setShowGrid(g => !g)} title="Toggle grid"
-            className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold transition-all ${showGrid ? 'bg-[#006065] dark:bg-[#131A2C] text-white' : 'hover:bg-slate-100 dark:bg-secondary text-slate-600 dark:text-muted-foreground'}`}>âŠž</button>
-          <button onClick={download} title="Export PNG" className="w-8 h-8 rounded-lg hover:bg-slate-100 dark:bg-secondary flex items-center justify-center text-slate-600 dark:text-muted-foreground text-sm">ðŸ’¾</button>
-          <button onClick={clearBoard} title="Clear" className="w-8 h-8 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-500 text-sm">ðŸ—‘</button>
+            className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold transition-all ${showGrid ? 'bg-[#006065] dark:bg-[#131A2C] text-white' : 'hover:bg-slate-100 dark:bg-secondary text-slate-600 dark:text-muted-foreground'}`}>⊞</button>
+          <button onClick={download} title="Export PNG" className="w-8 h-8 rounded-lg hover:bg-slate-100 dark:bg-secondary flex items-center justify-center text-slate-600 dark:text-muted-foreground text-sm">💾</button>
+          <button onClick={clearBoard} title="Clear" className="w-8 h-8 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-500 text-sm">🗑️</button>
         </div>
 
         <div className="flex items-center gap-1 bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl px-2 py-1 shadow-sm text-xs font-semibold text-slate-600 dark:text-muted-foreground">
-          <button onClick={() => setZoom(z => Math.max(0.2, z - 0.1))} className="w-5 h-5 rounded hover:bg-slate-100 dark:bg-secondary flex items-center justify-center font-bold">âˆ’</button>
+          <button onClick={() => setZoom(z => Math.max(0.2, z - 0.1))} className="w-5 h-5 rounded hover:bg-slate-100 dark:bg-secondary flex items-center justify-center font-bold">−</button>
           <span className="w-10 text-center">{zoomPct}%</span>
           <button onClick={() => setZoom(z => Math.min(5, z + 0.1))} className="w-5 h-5 rounded hover:bg-slate-100 dark:bg-secondary flex items-center justify-center font-bold">+</button>
-          <button onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }} className="ml-1 text-[#006065] hover:text-[#004e52]" title="Reset view">âŠ™</button>
+          <button onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }} className="ml-1 text-[#006065] hover:text-[#004e52]" title="Reset view">⊙</button>
         </div>
 
         {/* AI Diagram & Synthesize */}
