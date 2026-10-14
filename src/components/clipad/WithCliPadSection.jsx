@@ -1,177 +1,161 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Brain, Video, LayoutGrid, CheckCircle, Database, Network, MessageSquare, FileText } from 'lucide-react';
+import { Brain, Video, LayoutGrid, CheckCircle2, Database, Network, MessageSquare, Sparkles, Layers, ShieldCheck } from 'lucide-react';
 import { CliPadLogo } from '@/components/ui/CliPadLogo';
 
 export default function WithCliPadSection() {
   return (
     <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto overflow-hidden relative">
-      {/* Background Glows for Harmony */}
-      <div className="absolute top-1/2 left-0 w-96 h-96 bg-primary/10 rounded-full blur-[100px] pointer-events-none -translate-y-1/2" />
-      <div className="absolute top-1/2 right-0 w-96 h-96 bg-violet-500/10 rounded-full blur-[100px] pointer-events-none -translate-y-1/2" />
+      {/* Ambient background glows for corporate unity */}
+      <div className="absolute top-1/2 left-0 w-96 h-96 bg-primary/10 rounded-full blur-[120px] pointer-events-none -translate-y-1/2" />
+      <div className="absolute top-1/2 right-0 w-96 h-96 bg-[#D9A400]/5 rounded-full blur-[120px] pointer-events-none -translate-y-1/2" />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
         
-        {/* Visual Side: The Harmony */}
-        <div className="relative h-[500px] w-full bg-white dark:bg-card rounded-3xl border border-slate-200 dark:border-border shadow-2xl overflow-hidden flex items-center justify-center order-2 lg:order-1">
+        {/* Visual Side: Unified Enterprise Neural Hub */}
+        <div className="relative h-[500px] w-full bg-card rounded-3xl border border-border shadow-2xl overflow-hidden flex items-center justify-center order-2 lg:order-1">
           
-          {/* Grid background */}
-          <div className="absolute inset-0 opacity-[0.08] dark:opacity-20" style={{ backgroundImage: 'radial-gradient(#334155 1px, transparent 1px)', backgroundSize: '30px 30px' }}></div>
+          {/* Subtle grid pattern */}
+          <div className="absolute inset-0 opacity-15" style={{ backgroundImage: 'radial-gradient(#1A2F38 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
           
-          {/* Central Hub */}
+          {/* Central Weftro Hub */}
           <motion.div 
-            animate={{ boxShadow: ['0px 0px 20px rgba(0, 168, 89, 0.2)', '0px 0px 60px rgba(0, 168, 89, 0.5)', '0px 0px 20px rgba(0, 168, 89, 0.2)'] }}
+            animate={{ boxShadow: ['0px 0px 20px rgba(12, 92, 60, 0.2)', '0px 0px 50px rgba(12, 92, 60, 0.5)', '0px 0px 20px rgba(12, 92, 60, 0.2)'] }}
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute z-20 w-32 h-32 bg-white dark:bg-slate-800 rounded-full border border-primary/30 flex items-center justify-center shadow-lg"
+            className="absolute z-20 w-32 h-32 bg-card rounded-full border-2 border-primary/50 flex flex-col items-center justify-center shadow-2xl backdrop-blur-xl"
           >
-            <div className="absolute inset-0 rounded-full bg-primary/10 animate-ping" style={{ animationDuration: '3s' }}></div>
-            <CliPadLogo size={56} className="text-primary relative z-10" />
+            <div className="absolute inset-0 rounded-full bg-primary/15 animate-ping opacity-30" style={{ animationDuration: '3.5s' }} />
+            <CliPadLogo size={52} className="relative z-10 drop-shadow" />
+            <span className="text-[10px] font-bold uppercase tracking-wider text-primary mt-1">Weftro Hub</span>
           </motion.div>
 
-          {/* Connection Lines */}
-          <svg className="absolute inset-0 w-full h-full z-0 opacity-60 dark:opacity-30">
-            {/* 1. Top Left - Video */}
+          {/* Neural Connection SVG Tracks */}
+          <svg className="absolute inset-0 w-full h-full z-0 opacity-40">
             <motion.path 
-              d="M 100 150 C 150 150, 200 250, 250 250" 
-              stroke="url(#grad1)" strokeWidth="3" fill="transparent" strokeDasharray="5,5"
-              animate={{ strokeDashoffset: [0, -20] }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              d="M 120 130 C 160 130, 200 250, 250 250" 
+              stroke="#0C5C3C" strokeWidth="2.5" fill="transparent" strokeDasharray="4,4"
+              animate={{ strokeDashoffset: [0, -20] }} transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
             />
-            {/* 2. Bottom Left - LayoutGrid */}
             <motion.path 
-              d="M 100 350 C 150 350, 200 250, 250 250" 
-              stroke="url(#grad2)" strokeWidth="3" fill="transparent" strokeDasharray="5,5"
-              animate={{ strokeDashoffset: [0, -20] }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              d="M 120 370 C 160 370, 200 250, 250 250" 
+              stroke="#10B981" strokeWidth="2.5" fill="transparent" strokeDasharray="4,4"
+              animate={{ strokeDashoffset: [0, -20] }} transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
             />
-            {/* 3. Right - Decision Ledger */}
             <motion.path 
-              d="M 450 250 C 350 250, 300 250, 250 250" 
-              stroke="url(#grad3)" strokeWidth="3" fill="transparent" strokeDasharray="5,5"
-              animate={{ strokeDashoffset: [0, 20] }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              d="M 440 250 C 360 250, 310 250, 250 250" 
+              stroke="#D9A400" strokeWidth="2.5" fill="transparent" strokeDasharray="4,4"
+              animate={{ strokeDashoffset: [0, 20] }} transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
             />
-            {/* 4. Top Right - Chat */}
             <motion.path 
-              d="M 400 100 C 350 150, 300 200, 250 250" 
-              stroke="url(#grad4)" strokeWidth="3" fill="transparent" strokeDasharray="5,5"
-              animate={{ strokeDashoffset: [0, 20] }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              d="M 400 120 C 350 170, 300 220, 250 250" 
+              stroke="#0C5C3C" strokeWidth="2.5" fill="transparent" strokeDasharray="4,4"
+              animate={{ strokeDashoffset: [0, 20] }} transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
             />
-            {/* 5. Bottom Right - Notes */}
             <motion.path 
-              d="M 400 400 C 350 350, 300 300, 250 250" 
-              stroke="url(#grad5)" strokeWidth="3" fill="transparent" strokeDasharray="5,5"
-              animate={{ strokeDashoffset: [0, 20] }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              d="M 400 380 C 350 330, 300 280, 250 250" 
+              stroke="#10B981" strokeWidth="2.5" fill="transparent" strokeDasharray="4,4"
+              animate={{ strokeDashoffset: [0, 20] }} transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
             />
-            
-            <defs>
-              <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#8b5cf6" />
-                <stop offset="100%" stopColor="#00A859" />
-              </linearGradient>
-              <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#3b82f6" />
-                <stop offset="100%" stopColor="#00A859" />
-              </linearGradient>
-              <linearGradient id="grad3" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#f59e0b" />
-                <stop offset="100%" stopColor="#00A859" />
-              </linearGradient>
-              <linearGradient id="grad4" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#ec4899" />
-                <stop offset="100%" stopColor="#00A859" />
-              </linearGradient>
-              <linearGradient id="grad5" x1="0%" y1="100%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#06b6d4" />
-                <stop offset="100%" stopColor="#00A859" />
-              </linearGradient>
-            </defs>
           </svg>
 
-          {/* Connected Nodes */}
-          {/* 1. Video Node */}
+          {/* Connected Enterprise Satellites */}
+          {/* Top Left: Live Calls */}
           <motion.div 
-            animate={{ y: [0, -5, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute top-24 left-16 w-16 h-16 bg-white dark:bg-slate-800 rounded-2xl border border-violet-500/30 flex items-center justify-center shadow-lg shadow-violet-500/10 z-10"
+            animate={{ y: [0, -6, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute top-20 left-12 w-14 h-14 bg-card rounded-2xl border border-primary/30 flex items-center justify-center shadow-lg shadow-primary/10 z-10"
           >
-            <Video className="w-6 h-6 text-violet-500" />
+            <Video className="w-5 h-5 text-primary" />
           </motion.div>
 
-          {/* 2. LayoutGrid Node */}
+          {/* Bottom Left: Team Spaces */}
           <motion.div 
-            animate={{ y: [0, 5, 0] }} transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-            className="absolute bottom-24 left-16 w-16 h-16 bg-white dark:bg-slate-800 rounded-2xl border border-blue-500/30 flex items-center justify-center shadow-lg shadow-blue-500/10 z-10"
+            animate={{ y: [0, 6, 0] }} transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+            className="absolute bottom-20 left-12 w-14 h-14 bg-card rounded-2xl border border-emerald-500/30 flex items-center justify-center shadow-lg shadow-emerald-500/10 z-10"
           >
-            <LayoutGrid className="w-6 h-6 text-blue-500" />
+            <Layers className="w-5 h-5 text-emerald-400" />
           </motion.div>
 
-          {/* 4. Chat Node */}
+          {/* Top Right: Messaging & Channels */}
           <motion.div 
-            animate={{ y: [0, -4, 0] }} transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut", delay: 0.2 }}
-            className="absolute top-16 right-32 w-16 h-16 bg-white dark:bg-slate-800 rounded-2xl border border-pink-500/30 flex items-center justify-center shadow-lg shadow-pink-500/10 z-10"
+            animate={{ y: [0, -5, 0] }} transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
+            className="absolute top-16 right-20 w-14 h-14 bg-card rounded-2xl border border-primary/30 flex items-center justify-center shadow-lg shadow-primary/10 z-10"
           >
-            <MessageSquare className="w-6 h-6 text-pink-500" />
+            <MessageSquare className="w-5 h-5 text-primary" />
           </motion.div>
 
-          {/* 5. Notes Node */}
+          {/* Bottom Right: Decision Ledger */}
           <motion.div 
-            animate={{ y: [0, 4, 0] }} transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
-            className="absolute bottom-16 right-32 w-16 h-16 bg-white dark:bg-slate-800 rounded-2xl border border-cyan-500/30 flex items-center justify-center shadow-lg shadow-cyan-500/10 z-10"
+            animate={{ y: [0, 5, 0] }} transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
+            className="absolute bottom-16 right-20 w-14 h-14 bg-card rounded-2xl border border-[#D9A400]/30 flex items-center justify-center shadow-lg shadow-[#D9A400]/10 z-10"
           >
-            <FileText className="w-6 h-6 text-cyan-500" />
+            <Database className="w-5 h-5 text-[#D9A400]" />
           </motion.div>
 
-          {/* 3. Decision Ledger */}
+          {/* Right Floating Badge: Unified Knowledge Record */}
           <motion.div 
-            animate={{ y: [0, -5, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-            className="absolute top-1/2 right-4 md:-right-8 w-48 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md rounded-xl border border-amber-500/30 p-3 shadow-xl shadow-amber-500/10 z-10 -translate-y-1/2"
+            animate={{ x: [0, 4, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            className="absolute top-1/2 right-4 md:right-8 w-44 bg-card/95 backdrop-blur-md rounded-2xl border border-border p-3.5 shadow-xl z-10 -translate-y-1/2"
           >
              <div className="flex items-center gap-2 mb-2">
-               <Database className="w-4 h-4 text-amber-500" />
-               <span className="text-xs font-bold text-slate-800 dark:text-slate-200">Decision Ledger</span>
+               <ShieldCheck className="w-4 h-4 text-primary" />
+               <span className="text-xs font-bold text-foreground">Decision Ledger</span>
              </div>
-             <div className="h-1.5 w-full bg-slate-200 dark:bg-slate-700 rounded-full mb-1"></div>
-             <div className="h-1.5 w-3/4 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
+             <div className="h-1.5 w-full bg-secondary rounded-full mb-1.5" />
+             <div className="h-1.5 w-3/4 bg-primary/40 rounded-full" />
           </motion.div>
 
-          {/* Floating Success Notifications */}
+          {/* Floating Top Status Badge */}
           <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: -10 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.5 }}
-            className="absolute top-8 left-1/2 -translate-x-1/2 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md px-4 py-2 rounded-xl border border-primary/30 flex items-center gap-3 z-30 shadow-lg"
+            className="absolute top-6 left-1/2 -translate-x-1/2 bg-card/90 backdrop-blur-md px-4 py-2 rounded-full border border-primary/30 flex items-center gap-2.5 z-30 shadow-lg"
           >
-            <CheckCircle className="w-5 h-5 text-primary" />
-            <span className="text-xs font-bold text-slate-800 dark:text-slate-200">Meeting Summarized</span>
+            <CheckCircle2 className="w-4 h-4 text-primary" />
+            <span className="text-xs font-semibold text-foreground">Context Automatically Linked</span>
           </motion.div>
 
         </div>
 
         {/* Copy Side */}
         <div className="order-1 lg:order-2">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/25 mb-6">
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            <span className="text-xs font-bold text-primary uppercase tracking-widest">The CliPad Way</span>
+            <span className="text-xs font-bold text-primary uppercase tracking-widest">The Weftro Way</span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-foreground tracking-tight mb-6 leading-tight">
+          <h2 className="text-4xl md:text-5xl font-black text-foreground tracking-tight mb-6 leading-tight">
             The harmony of <br className="hidden md:block"/>
             <span className="text-primary">total organizational memory.</span>
           </h2>
-          <p className="text-slate-500 dark:text-muted-foreground text-lg md:text-xl leading-relaxed mb-8">
-            When every meeting, video, and decision feeds automatically into one intelligent hub, your team moves faster than ever before.
+          <p className="text-muted-foreground text-lg md:text-xl leading-relaxed mb-8">
+            When every meeting, video, and strategic decision feeds automatically into one connected neural intelligence layer, teams execute with absolute clarity.
           </p>
           
           <div className="space-y-6">
             {[
-              { icon: Network, title: 'Everything in One Place', desc: 'Spaces, chat, and HD meetings natively unified in a single, beautiful workspace.' },
-              { icon: Brain, title: 'Instant AI Summaries', desc: 'No more waiting for someone to type up notes. AI delivers action items seconds after the call ends.' },
-              { icon: Database, title: 'Compounding Knowledge', desc: 'New hires get up to speed instantly by searching the collective memory of the entire organization.' }
+              { 
+                icon: Network, 
+                title: 'Natively Interconnected Hub', 
+                desc: 'Live conferences, asynchronous recordings, chat threads, and structured boards live together inside persistent spaces.' 
+              },
+              { 
+                icon: Brain, 
+                title: 'Real-Time Context Synthesis', 
+                desc: 'No manual note typing. AI automatically surfaces key decisions, owner-attributed action items, and open dependencies in seconds.' 
+              },
+              { 
+                icon: Database, 
+                title: 'Compounding Institutional Intelligence', 
+                desc: 'Onboard new team members instantly and retrieve past strategic rationale through an always-accessible enterprise memory layer.' 
+              }
             ].map((item, i) => (
               <div key={i} className="flex gap-4">
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                  <item.icon className="w-6 h-6 text-primary" />
+                <div className="w-12 h-12 rounded-2xl bg-card border border-border flex items-center justify-center shrink-0 shadow-sm">
+                  <item.icon className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <h4 className="text-lg font-bold text-slate-900 dark:text-foreground">{item.title}</h4>
-                  <p className="text-slate-500 dark:text-muted-foreground">{item.desc}</p>
+                  <h4 className="text-lg font-bold text-foreground mb-1">{item.title}</h4>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{item.desc}</p>
                 </div>
               </div>
             ))}

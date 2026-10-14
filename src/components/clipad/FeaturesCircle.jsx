@@ -1,55 +1,55 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Layers, Video, Camera, Brain, Target, Zap } from 'lucide-react';
+import { Layers, Video, Camera, Brain, Target, Zap, ChevronRight } from 'lucide-react';
 
 const pillars = [
   {
     icon: Video,
-    color: 'from-orange-500 to-orange-400',
-    glow: 'shadow-orange-500/20',
-    bg: 'bg-orange-50 dark:bg-orange-900/10',
+    tag: 'Live Communication',
+    accent: '#0C5C3C',
+    color: 'from-emerald-500 to-teal-400',
     title: 'HD Live Meetings',
-    desc: 'No time limits. Up to 500 participants. Speaker spotlight, noise cancellation, live captions, breakout rooms and a persistent whiteboard.'
+    desc: 'Enterprise video conferences with no arbitrary caps. Up to 500 participants, AI noise suppression, speaker spotlight, live multi-language transcripts, and persistent team whiteboards.'
   },
   {
     icon: Camera,
-    color: 'from-green-500 to-emerald-500',
-    glow: 'shadow-green-500/20',
-    bg: 'bg-[#006065] dark:bg-[#131A2C]/10 dark:bg-emerald-900/10',
+    tag: 'Async Collaboration',
+    accent: '#10B981',
+    color: 'from-teal-500 to-emerald-400',
     title: 'Async Video Messages',
-    desc: 'Record camera, screen, or both in picture-in-picture. Share an instant link. Viewers leave timestamped comments and emoji reactions.'
+    desc: 'Record camera, screen, or Picture-in-Picture in pristine 1080p. Instantly shareable with zero upload wait time, timecoded chapter markers, viewer reaction threads, and drop-off analytics.'
   },
   {
     icon: Brain,
-    color: 'from-yellow-500 to-amber-500',
-    glow: 'shadow-yellow-500/20',
-    bg: 'bg-amber-50 dark:bg-amber-900/10',
-    title: 'AI Intelligence',
-    desc: 'Every meeting produces a full summary, key decisions, extracted action items with owners, open questions, and sentiment — instantly.'
+    tag: 'Context Engine',
+    accent: '#D9A400',
+    color: 'from-amber-400 to-[#D9A400]',
+    title: 'AI Intelligence & Extraction',
+    desc: 'Every conversation produces executive summaries, decision records, structured action items assigned to real owners, sentiment trends, and unanswered follow-up items.'
   },
   {
     icon: Layers,
-    color: 'from-blue-500 to-indigo-500',
-    glow: 'shadow-blue-500/20',
-    bg: 'bg-blue-50 dark:bg-blue-900/10',
-    title: 'Team Spaces',
-    desc: 'Persistent rooms for every team and project. Live meetings, async videos, shared notes, action boards, and cross-space search.'
+    tag: 'Workspaces',
+    accent: '#0C5C3C',
+    color: 'from-emerald-600 to-teal-500',
+    title: 'Persistent Team Spaces',
+    desc: 'Dedicated hubs for squads, projects, and clients. Houses live meeting rooms, async video libraries, shared documentation, dynamic action boards, and cross-space semantic search.'
   },
   {
     icon: Target,
-    color: 'from-purple-500 to-fuchsia-500',
-    glow: 'shadow-purple-500/20',
-    bg: 'bg-purple-50 dark:bg-purple-900/10',
-    title: 'Sales & Demo Layer',
-    desc: 'Record personalised video proposals. Know who watched, how much, where they paused, and whether they shared it.'
+    tag: 'Client Intelligence',
+    accent: '#F59E0B',
+    color: 'from-amber-500 to-amber-300',
+    title: 'Sales & Executive Briefings',
+    desc: 'Deliver high-impact asynchronous proposals and client walkthroughs. Track exact audience engagement, second-by-second viewer retention heatmaps, and forwarded link access.'
   },
   {
     icon: Zap,
-    color: 'from-rose-500 to-red-500',
-    glow: 'shadow-rose-500/20',
-    bg: 'bg-rose-50 dark:bg-rose-900/10',
-    title: 'Smart Follow-up',
-    desc: 'After every meeting, each participant receives only their personal action items with full context. Not the whole notes.'
+    tag: 'Execution Loop',
+    accent: '#10B981',
+    color: 'from-emerald-400 to-teal-300',
+    title: 'Smart Automated Follow-ups',
+    desc: 'Eliminate manual note distribution. Each attendee automatically receives tailored action items with exact conversational context and deadlines directly in their inbox.'
   },
 ];
 
@@ -59,42 +59,53 @@ export default function FeaturesCircle() {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setRotation(prev => prev - 60); // 360 / 6
+      setRotation(prev => prev - 60);
       setActiveIndex(prev => (prev + 1) % 6);
-    }, 5000);
+    }, 6000);
     return () => clearInterval(timer);
   }, []);
 
+  const active = pillars[activeIndex];
+  const ActiveIcon = active.icon;
+
   return (
-    <div className="relative w-full max-w-5xl mx-auto py-10 md:py-20 flex flex-col md:flex-row items-center justify-center gap-12 lg:gap-24 overflow-hidden">
+    <div className="relative w-full max-w-6xl mx-auto py-8 md:py-16 flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-16">
       
-      {/* Circle Container */}
-      <div className="relative w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] shrink-0">
-        <div className="absolute inset-0 rounded-full border-2 border-primary/20 dark:border-primary/30 shadow-[inset_0_0_60px_rgba(var(--primary),0.1)] bg-gradient-to-b from-primary/10 to-transparent dark:from-primary/20" />
-        <div className="absolute inset-8 rounded-full border border-dashed border-primary/40 dark:border-primary/50" />
-        <div className="absolute inset-16 rounded-full bg-gradient-to-tr from-emerald-500/10 to-primary/5 dark:from-emerald-900/40 dark:to-primary/20 shadow-[0_10px_40px_-10px_rgba(var(--primary),0.3)] flex items-center justify-center border border-primary/30 backdrop-blur-md">
+      {/* Interactive Orbit System */}
+      <div className="relative w-[320px] h-[320px] sm:w-[420px] sm:h-[420px] shrink-0 flex items-center justify-center">
+        {/* Subtle background ambient mesh glow */}
+        <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-primary/10 via-emerald-500/5 to-transparent blur-2xl pointer-events-none" />
+
+        {/* Outer orbital track */}
+        <div className="absolute inset-0 rounded-full border border-border/80 shadow-[inset_0_0_40px_rgba(12,92,60,0.08)] bg-card/40 backdrop-blur-sm" />
+        
+        {/* Mid dashed orbit */}
+        <div className="absolute inset-10 rounded-full border border-dashed border-primary/25" />
+        
+        {/* Inner Hub Core */}
+        <div className="absolute inset-24 rounded-full bg-gradient-to-br from-card via-[#101D22] to-background border border-primary/30 shadow-[0_0_50px_rgba(12,92,60,0.25)] flex flex-col items-center justify-center p-6 text-center backdrop-blur-xl">
           <motion.div 
-            className="w-24 h-24 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center relative shadow-[0_0_40px_rgba(var(--primary),0.3)] border border-primary/20 backdrop-blur-xl"
-            animate={{ scale: [1, 1.05, 1] }}
-            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/25 to-primary/5 flex items-center justify-center relative shadow-[0_0_30px_rgba(12,92,60,0.3)] border border-primary/40 mb-2"
+            animate={{ scale: [1, 1.04, 1] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
           >
-            <div className="absolute inset-0 rounded-full bg-primary/20 animate-ping opacity-30" style={{ animationDuration: '3s' }} />
-            <Layers className="w-10 h-10 text-primary relative z-10 drop-shadow-md" />
+            <div className="absolute inset-0 rounded-2xl bg-primary/20 animate-ping opacity-25" style={{ animationDuration: '4s' }} />
+            <Layers className="w-8 h-8 text-primary relative z-10 drop-shadow" />
           </motion.div>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Unified Hub</span>
+          <span className="text-xs font-semibold text-foreground/90">6 Core Systems</span>
         </div>
 
+        {/* Orbiting Pillar Nodes */}
         <motion.div 
           className="absolute inset-0 origin-center"
           animate={{ rotate: rotation }}
-          transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1] }}
+          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
         >
           {pillars.map((p, i) => {
             const angle = (i * 60) * (Math.PI / 180);
-            const radius = 150; // px
-            // For sm screens it's 200, so we use a responsive radius approach in css or calc, but we can just fix it approximately for desktop, it will scale down on mobile because of wrapper.
-            // Let's use percentage based positioning for true responsiveness.
-            const left = `calc(50% + ${Math.sin(angle) * 50}% - 28px)`;
-            const top = `calc(50% - ${Math.cos(angle) * 50}% - 28px)`;
+            const left = `calc(50% + ${Math.sin(angle) * 50}% - 26px)`;
+            const top = `calc(50% - ${Math.cos(angle) * 50}% - 26px)`;
             
             const isActive = i === activeIndex;
             const Icon = p.icon;
@@ -102,20 +113,26 @@ export default function FeaturesCircle() {
             return (
               <motion.div
                 key={i}
-                className="absolute w-14 h-14"
+                className="absolute w-13 h-13"
                 style={{ left, top }}
-                animate={{ rotate: -rotation }} // Counter rotate so icons stay upright
-                transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1] }}
+                animate={{ rotate: -rotation }}
+                transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
               >
                 <button
+                  type="button"
                   onClick={() => {
                     const diff = i - activeIndex;
                     setRotation(r => r - (diff * 60));
                     setActiveIndex(i);
                   }}
-                  className={`w-full h-full rounded-2xl flex items-center justify-center transition-all duration-500 shadow-xl border border-white/20 backdrop-blur-sm ${isActive ? `bg-gradient-to-br ${p.color} ${p.glow} scale-125 z-20` : 'bg-white/90 dark:bg-secondary/90 border-slate-200 dark:border-border/50 opacity-70 hover:opacity-100 hover:scale-110 z-10'}`}
+                  aria-label={p.title}
+                  className={`w-13 h-13 p-3 rounded-2xl flex items-center justify-center transition-all duration-300 border ${
+                    isActive 
+                      ? 'bg-primary text-white border-primary shadow-[0_0_25px_rgba(12,92,60,0.6)] scale-115 ring-2 ring-[#D9A400]/40 z-20' 
+                      : 'bg-card/90 text-muted-foreground border-border hover:border-primary/50 hover:text-foreground hover:scale-105 z-10 backdrop-blur-md'
+                  }`}
                 >
-                  <Icon className={`w-6 h-6 drop-shadow-sm ${isActive ? 'text-white' : 'text-slate-600 dark:text-foreground'}`} />
+                  <Icon className="w-5 h-5" />
                 </button>
               </motion.div>
             );
@@ -123,29 +140,74 @@ export default function FeaturesCircle() {
         </motion.div>
       </div>
 
-      {/* Feature Details */}
-      <div className="flex-1 w-full max-w-md min-h-[220px] relative">
+      {/* Feature Details Panel */}
+      <div className="flex-1 w-full max-w-lg min-h-[300px] flex flex-col justify-center">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeIndex}
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-            className={`relative p-6 md:p-8 rounded-2xl md:rounded-3xl ${pillars[activeIndex].bg} border border-white/60 dark:border-border/50 shadow-2xl shadow-slate-200/50 dark:shadow-none backdrop-blur-xl`}
+            exit={{ opacity: 0, y: -16 }}
+            transition={{ duration: 0.35, ease: 'easeOut' }}
+            className="relative p-8 md:p-10 rounded-3xl bg-card border border-border shadow-2xl overflow-hidden"
           >
-            <div className={`absolute -inset-1 opacity-20 blur-xl z-0 bg-gradient-to-br ${pillars[activeIndex].color} rounded-2xl md:rounded-3xl pointer-events-none transition-colors duration-500`} />
+            {/* Subtle top indicator bar */}
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-[#D9A400] to-primary/40" />
             
+            {/* Ambient corner glow */}
+            <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
+
             <div className="relative z-10">
-              <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${pillars[activeIndex].color} ${pillars[activeIndex].glow} flex items-center justify-center mb-6 shadow-lg shadow-black/10 border border-white/20`}>
-                {React.createElement(pillars[activeIndex].icon, { className: "w-7 h-7 text-white drop-shadow-md" })}
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-primary/15 border border-primary/30 flex items-center justify-center shadow-inner">
+                    <ActiveIcon className="w-6 h-6 text-primary" />
+                  </div>
+                  <div>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#D9A400] block">
+                      {active.tag}
+                    </span>
+                    <span className="text-xs text-muted-foreground font-mono">Pillar 0{activeIndex + 1} of 06</span>
+                  </div>
+                </div>
+                <div className="flex gap-1.5">
+                  {pillars.map((_, dotIdx) => (
+                    <button
+                      key={dotIdx}
+                      onClick={() => {
+                        const diff = dotIdx - activeIndex;
+                        setRotation(r => r - (diff * 60));
+                        setActiveIndex(dotIdx);
+                      }}
+                      className={`h-1.5 rounded-full transition-all ${dotIdx === activeIndex ? 'w-6 bg-primary' : 'w-2 bg-border hover:bg-muted-foreground'}`}
+                      aria-label={`Go to slide ${dotIdx + 1}`}
+                    />
+                  ))}
+                </div>
               </div>
-              <h3 className="text-3xl font-black tracking-tight text-slate-900 dark:text-foreground mb-4 drop-shadow-sm">{pillars[activeIndex].title}</h3>
-              <p className="text-slate-600 dark:text-foreground leading-relaxed text-lg font-medium">{pillars[activeIndex].desc}</p>
+
+              <h3 className="text-2xl md:text-3xl font-extrabold tracking-tight text-foreground mb-4">
+                {active.title}
+              </h3>
+              
+              <p className="text-muted-foreground leading-relaxed text-base font-normal mb-6">
+                {active.desc}
+              </p>
+
+              <div className="pt-5 border-t border-border flex items-center justify-between text-xs">
+                <span className="text-muted-foreground flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                  Live Sync Across Workspace
+                </span>
+                <span className="font-semibold text-primary flex items-center gap-1">
+                  Enterprise Ready <ChevronRight className="w-3.5 h-3.5" />
+                </span>
+              </div>
             </div>
           </motion.div>
         </AnimatePresence>
       </div>
+
     </div>
   );
 }

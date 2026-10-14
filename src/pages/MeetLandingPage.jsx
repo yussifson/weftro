@@ -210,6 +210,7 @@ export default function MeetLandingPage() {
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [receiptDetails, setDetails] = useState(null);
   const [showHumanForm, setShowHumanForm] = useState(false);
+  const [isFabOpen, setIsFabOpen] = useState(false);
   
   const { user, isLoadingAuth } = useAuth();
   const companyId = useCompanyId();
@@ -675,238 +676,241 @@ export default function MeetLandingPage() {
               </p>
             </div>
 
-            <div className="w-full overflow-x-auto border border-border rounded-3xl bg-card shadow-sm">
-              <table className="w-full min-w-[860px] text-left border-collapse">
+            <div className="w-full overflow-x-auto border border-border rounded-3xl bg-card shadow-xl">
+              <table className="w-full min-w-[900px] text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-border bg-slate-50 dark:bg-white/5">
-                    <th className="p-5 font-bold text-foreground w-[32%] rounded-tl-3xl text-sm">Features & Limits</th>
-                    <th className="p-5 font-bold text-foreground text-center text-sm w-[17%]">
-                      <div>Free</div>
-                      <div className="text-xs font-normal text-muted-foreground mt-0.5">$0 forever</div>
+                  <tr className="border-b border-border bg-secondary/40">
+                    <th className="py-6 px-6 font-bold text-foreground w-[32%] rounded-tl-3xl text-sm tracking-tight">Features & Capabilities</th>
+                    <th className="py-6 px-5 font-bold text-foreground text-center text-sm w-[17%]">
+                      <div className="text-base font-extrabold text-foreground">Free</div>
+                      <div className="text-xs font-medium text-muted-foreground mt-0.5">$0 forever</div>
                     </th>
-                    <th className="p-5 font-bold text-primary text-center bg-primary/5 text-sm w-[17%]">
-                      <div>Pro</div>
-                      <div className="text-xs font-normal text-primary/80 mt-0.5">$15/mo</div>
+                    <th className="py-6 px-5 font-bold text-primary text-center bg-primary/10 text-sm w-[17%] border-x border-primary/20">
+                      <div className="inline-flex items-center gap-1.5 text-base font-extrabold text-primary">
+                        <span>Pro</span>
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary text-white font-bold uppercase tracking-wider">Popular</span>
+                      </div>
+                      <div className="text-xs font-semibold text-primary/80 mt-0.5">$15 / seat / mo</div>
                     </th>
-                    <th className="p-5 font-bold text-foreground text-center text-sm w-[17%]">
-                      <div>Enterprise</div>
-                      <div className="text-xs font-normal text-muted-foreground mt-0.5">$39/mo</div>
+                    <th className="py-6 px-5 font-bold text-foreground text-center text-sm w-[17%]">
+                      <div className="text-base font-extrabold text-foreground">Enterprise</div>
+                      <div className="text-xs font-medium text-muted-foreground mt-0.5">$39 / seat / mo</div>
                     </th>
-                    <th className="p-5 font-bold text-foreground text-center rounded-tr-3xl text-sm w-[17%]">
-                      <div>Custom</div>
-                      <div className="text-xs font-normal text-muted-foreground mt-0.5">Tailored</div>
+                    <th className="py-6 px-5 font-bold text-foreground text-center rounded-tr-3xl text-sm w-[17%]">
+                      <div className="text-base font-extrabold text-foreground">Custom</div>
+                      <div className="text-xs font-medium text-muted-foreground mt-0.5">Tailored deployment</div>
                     </th>
                   </tr>
                 </thead>
-                <tbody className="text-xs text-slate-600 dark:text-muted-foreground">
+                <tbody className="text-xs text-muted-foreground">
                   {/* Category 1: Live Video Meetings */}
-                  <tr className="bg-slate-100 dark:bg-secondary/60 dark:bg-white/5 font-bold text-foreground border-y border-border">
-                    <td colSpan={5} className="py-2.5 px-5 text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-muted-foreground">
+                  <tr className="bg-secondary/70 font-bold text-foreground border-y border-border">
+                    <td colSpan={5} className="py-3 px-6 text-[11px] font-bold uppercase tracking-wider text-primary">
                       Live Video Meetings
                     </td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-background dark:hover:bg-white/5 transition-colors">
-                    <td className="p-4 font-semibold text-foreground">Participants per Call</td>
-                    <td className="p-4 text-center">10</td>
-                    <td className="p-4 text-center font-bold text-primary bg-primary/5">300</td>
-                    <td className="p-4 text-center font-bold text-foreground">Unlimited</td>
-                    <td className="p-4 text-center font-bold text-foreground">Unlimited (Custom)</td>
+                  <tr className="border-b border-border/60 hover:bg-secondary/30 transition-colors">
+                    <td className="py-4 px-6 font-semibold text-foreground text-sm">Participants per Call</td>
+                    <td className="py-4 px-5 text-center">10 participants</td>
+                    <td className="py-4 px-5 text-center font-bold text-primary bg-primary/5 border-x border-primary/20">300 participants</td>
+                    <td className="py-4 px-5 text-center font-bold text-foreground">Unlimited</td>
+                    <td className="py-4 px-5 text-center font-bold text-foreground">Unlimited (Dedicated Cluster)</td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-secondary/50 dark:hover:bg-white/5 transition-colors">
-                    <td className="p-4 font-semibold text-foreground">Video & Audio Quality</td>
-                    <td className="p-4 text-center">720p HD</td>
-                    <td className="p-4 text-center font-bold text-primary bg-primary/5">1080p Full HD</td>
-                    <td className="p-4 text-center font-bold text-foreground">4K Ultra HD</td>
-                    <td className="p-4 text-center font-bold text-foreground">4K + Media Relays</td>
+                  <tr className="border-b border-border/60 hover:bg-secondary/30 transition-colors">
+                    <td className="py-4 px-6 font-semibold text-foreground text-sm">Video & Audio Quality</td>
+                    <td className="py-4 px-5 text-center">720p HD</td>
+                    <td className="py-4 px-5 text-center font-bold text-primary bg-primary/5 border-x border-primary/20">1080p Full HD</td>
+                    <td className="py-4 px-5 text-center font-bold text-foreground">4K Ultra HD</td>
+                    <td className="py-4 px-5 text-center font-bold text-foreground">4K + Media Relays</td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-secondary/50 dark:hover:bg-white/5 transition-colors">
-                    <td className="p-4 font-semibold text-foreground">Screen Sharing & Whiteboard</td>
-                    <td className="p-4 text-center text-primary font-bold">&check;</td>
-                    <td className="p-4 text-center text-primary font-bold bg-primary/5">&check;</td>
-                    <td className="p-4 text-center text-primary font-bold">&check;</td>
-                    <td className="p-4 text-center text-primary font-bold">&check;</td>
+                  <tr className="border-b border-border/60 hover:bg-secondary/30 transition-colors">
+                    <td className="py-4 px-6 font-semibold text-foreground text-sm">Screen Sharing & Whiteboard</td>
+                    <td className="py-4 px-5 text-center text-primary font-bold">&check;</td>
+                    <td className="py-4 px-5 text-center text-primary font-bold bg-primary/5 border-x border-primary/20">&check;</td>
+                    <td className="py-4 px-5 text-center text-primary font-bold">&check;</td>
+                    <td className="py-4 px-5 text-center text-primary font-bold">&check;</td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-secondary/50 dark:hover:bg-white/5 transition-colors">
-                    <td className="p-4 font-semibold text-foreground">Live Chat & Reactions</td>
-                    <td className="p-4 text-center text-primary font-bold">&check;</td>
-                    <td className="p-4 text-center text-primary font-bold bg-primary/5">&check;</td>
-                    <td className="p-4 text-center text-primary font-bold">&check;</td>
-                    <td className="p-4 text-center text-primary font-bold">&check;</td>
+                  <tr className="border-b border-border/60 hover:bg-secondary/30 transition-colors">
+                    <td className="py-4 px-6 font-semibold text-foreground text-sm">Live Chat & Reactions</td>
+                    <td className="py-4 px-5 text-center text-primary font-bold">&check;</td>
+                    <td className="py-4 px-5 text-center text-primary font-bold bg-primary/5 border-x border-primary/20">&check;</td>
+                    <td className="py-4 px-5 text-center text-primary font-bold">&check;</td>
+                    <td className="py-4 px-5 text-center text-primary font-bold">&check;</td>
                   </tr>
 
                   {/* Category 2: Async Video & Recording */}
-                  <tr className="bg-slate-100 dark:bg-secondary/60 dark:bg-white/5 font-bold text-foreground border-y border-border">
-                    <td colSpan={5} className="py-2.5 px-5 text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-muted-foreground">
+                  <tr className="bg-secondary/70 font-bold text-foreground border-y border-border">
+                    <td colSpan={5} className="py-3 px-6 text-[11px] font-bold uppercase tracking-wider text-primary">
                       Async Video & Screen Recording
                     </td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-secondary/50 dark:hover:bg-white/5 transition-colors">
-                    <td className="p-4 font-semibold text-foreground">Async Video Limit</td>
-                    <td className="p-4 text-center">10 videos/mo (15m)</td>
-                    <td className="p-4 text-center font-bold text-primary bg-primary/5">Unlimited (1 hr)</td>
-                    <td className="p-4 text-center font-bold text-foreground">Unlimited</td>
-                    <td className="p-4 text-center font-bold text-foreground">Unlimited</td>
+                  <tr className="border-b border-border/60 hover:bg-secondary/30 transition-colors">
+                    <td className="py-4 px-6 font-semibold text-foreground text-sm">Async Video Limit</td>
+                    <td className="py-4 px-5 text-center">10 videos/mo (15 min cap)</td>
+                    <td className="py-4 px-5 text-center font-bold text-primary bg-primary/5 border-x border-primary/20">Unlimited (1 hr cap)</td>
+                    <td className="py-4 px-5 text-center font-bold text-foreground">Unlimited (No caps)</td>
+                    <td className="py-4 px-5 text-center font-bold text-foreground">Unlimited (Custom retention)</td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-secondary/50 dark:hover:bg-white/5 transition-colors">
-                    <td className="p-4 font-semibold text-foreground">PiP Webcam + Screen Canvas</td>
-                    <td className="p-4 text-center">Standard</td>
-                    <td className="p-4 text-center font-bold text-primary bg-primary/5">HD Studio</td>
-                    <td className="p-4 text-center font-bold text-foreground">4K Studio</td>
-                    <td className="p-4 text-center font-bold text-foreground">Custom Studio</td>
+                  <tr className="border-b border-border/60 hover:bg-secondary/30 transition-colors">
+                    <td className="py-4 px-6 font-semibold text-foreground text-sm">PiP Webcam + Screen Canvas</td>
+                    <td className="py-4 px-5 text-center">Standard</td>
+                    <td className="py-4 px-5 text-center font-bold text-primary bg-primary/5 border-x border-primary/20">HD Studio Engine</td>
+                    <td className="py-4 px-5 text-center font-bold text-foreground">4K Studio Engine</td>
+                    <td className="py-4 px-5 text-center font-bold text-foreground">Custom Studio + Teleprompter</td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-secondary/50 dark:hover:bg-white/5 transition-colors">
-                    <td className="p-4 font-semibold text-foreground">Viewer Analytics & Drop-off Heatmaps</td>
-                    <td className="p-4 text-center text-muted-foreground">&mdash;</td>
-                    <td className="p-4 text-center font-bold text-primary bg-primary/5">Views & Retention</td>
-                    <td className="p-4 text-center font-bold text-foreground">Drop-off Heatmaps</td>
-                    <td className="p-4 text-center font-bold text-foreground">Custom BI & Telemetry</td>
+                  <tr className="border-b border-border/60 hover:bg-secondary/30 transition-colors">
+                    <td className="py-4 px-6 font-semibold text-foreground text-sm">Viewer Analytics & Heatmaps</td>
+                    <td className="py-4 px-5 text-center text-muted-foreground">&mdash;</td>
+                    <td className="py-4 px-5 text-center font-bold text-primary bg-primary/5 border-x border-primary/20">Views & Retention Curve</td>
+                    <td className="py-4 px-5 text-center font-bold text-foreground">Second-by-second Drop-off</td>
+                    <td className="py-4 px-5 text-center font-bold text-foreground">Custom BI & Telemetry Sync</td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-secondary/50 dark:hover:bg-white/5 transition-colors">
-                    <td className="p-4 font-semibold text-foreground">Password Protection & Expiring Links</td>
-                    <td className="p-4 text-center text-muted-foreground">&mdash;</td>
-                    <td className="p-4 text-center text-primary font-bold bg-primary/5">&check;</td>
-                    <td className="p-4 text-center text-primary font-bold">&check;</td>
-                    <td className="p-4 text-center font-bold text-foreground">Domain Gating & Custom DRM</td>
+                  <tr className="border-b border-border/60 hover:bg-secondary/30 transition-colors">
+                    <td className="py-4 px-6 font-semibold text-foreground text-sm">Password Protection & Expiring Links</td>
+                    <td className="py-4 px-5 text-center text-muted-foreground">&mdash;</td>
+                    <td className="py-4 px-5 text-center text-primary font-bold bg-primary/5 border-x border-primary/20">&check;</td>
+                    <td className="py-4 px-5 text-center text-primary font-bold">&check;</td>
+                    <td className="py-4 px-5 text-center font-bold text-foreground">Domain Gating & Custom DRM</td>
                   </tr>
 
                   {/* Category 3: Team Spaces */}
-                  <tr className="bg-slate-100 dark:bg-secondary/60 dark:bg-white/5 font-bold text-foreground border-y border-border">
-                    <td colSpan={5} className="py-2.5 px-5 text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-muted-foreground">
+                  <tr className="bg-secondary/70 font-bold text-foreground border-y border-border">
+                    <td colSpan={5} className="py-3 px-6 text-[11px] font-bold uppercase tracking-wider text-primary">
                       Team Spaces & Collaboration
                     </td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-secondary/50 dark:hover:bg-white/5 transition-colors">
-                    <td className="p-4 font-semibold text-foreground">Persistent Team Spaces</td>
-                    <td className="p-4 text-center">Up to 5</td>
-                    <td className="p-4 text-center font-bold text-primary bg-primary/5">Unlimited</td>
-                    <td className="p-4 text-center font-bold text-foreground">Unlimited</td>
-                    <td className="p-4 text-center font-bold text-foreground">Multi-Tenant Spaces</td>
+                  <tr className="border-b border-border/60 hover:bg-secondary/30 transition-colors">
+                    <td className="py-4 px-6 font-semibold text-foreground text-sm">Persistent Team Spaces</td>
+                    <td className="py-4 px-5 text-center">Up to 5 Spaces</td>
+                    <td className="py-4 px-5 text-center font-bold text-primary bg-primary/5 border-x border-primary/20">Unlimited Spaces</td>
+                    <td className="py-4 px-5 text-center font-bold text-foreground">Unlimited Spaces</td>
+                    <td className="py-4 px-5 text-center font-bold text-foreground">Multi-Tenant Spaces</td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-secondary/50 dark:hover:bg-white/5 transition-colors">
-                    <td className="p-4 font-semibold text-foreground">Shared Space Notes & Action Boards</td>
-                    <td className="p-4 text-center">Basic</td>
-                    <td className="p-4 text-center font-bold text-primary bg-primary/5">Collaborative</td>
-                    <td className="p-4 text-center font-bold text-foreground">Collaborative</td>
-                    <td className="p-4 text-center font-bold text-foreground">Two-way Jira/CRM Sync</td>
+                  <tr className="border-b border-border/60 hover:bg-secondary/30 transition-colors">
+                    <td className="py-4 px-6 font-semibold text-foreground text-sm">Shared Space Notes & Action Boards</td>
+                    <td className="py-4 px-5 text-center">Basic</td>
+                    <td className="py-4 px-5 text-center font-bold text-primary bg-primary/5 border-x border-primary/20">Collaborative Live Sync</td>
+                    <td className="py-4 px-5 text-center font-bold text-foreground">Collaborative Live Sync</td>
+                    <td className="py-4 px-5 text-center font-bold text-foreground">Two-way Jira / Linear Sync</td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-secondary/50 dark:hover:bg-white/5 transition-colors">
-                    <td className="p-4 font-semibold text-foreground">Cross-Space Search & Discovery</td>
-                    <td className="p-4 text-center text-muted-foreground">&mdash;</td>
-                    <td className="p-4 text-center text-primary font-bold bg-primary/5">&check;</td>
-                    <td className="p-4 text-center text-primary font-bold">&check;</td>
-                    <td className="p-4 text-center font-bold text-foreground">Semantic Vector Index</td>
+                  <tr className="border-b border-border/60 hover:bg-secondary/30 transition-colors">
+                    <td className="py-4 px-6 font-semibold text-foreground text-sm">Cross-Space Search & Discovery</td>
+                    <td className="py-4 px-5 text-center text-muted-foreground">&mdash;</td>
+                    <td className="py-4 px-5 text-center text-primary font-bold bg-primary/5 border-x border-primary/20">&check;</td>
+                    <td className="py-4 px-5 text-center text-primary font-bold">&check;</td>
+                    <td className="py-4 px-5 text-center font-bold text-foreground">Semantic Vector Index</td>
                   </tr>
 
                   {/* Category 4: Meeting Intelligence */}
-                  <tr className="bg-slate-100 dark:bg-secondary/60 dark:bg-white/5 font-bold text-foreground border-y border-border">
-                    <td colSpan={5} className="py-2.5 px-5 text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-muted-foreground">
+                  <tr className="bg-secondary/70 font-bold text-foreground border-y border-border">
+                    <td colSpan={5} className="py-3 px-6 text-[11px] font-bold uppercase tracking-wider text-primary">
                       Meeting Intelligence & Automation
                     </td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-secondary/50 dark:hover:bg-white/5 transition-colors">
-                    <td className="p-4 font-semibold text-foreground">Automated Multilingual Transcripts</td>
-                    <td className="p-4 text-center text-muted-foreground">&mdash;</td>
-                    <td className="p-4 text-center font-bold text-primary bg-primary/5">30+ Languages</td>
-                    <td className="p-4 text-center font-bold text-foreground">50+ Languages</td>
-                    <td className="p-4 text-center font-bold text-foreground">100+ & Custom Vocab</td>
+                  <tr className="border-b border-border/60 hover:bg-secondary/30 transition-colors">
+                    <td className="py-4 px-6 font-semibold text-foreground text-sm">Automated Multilingual Transcripts</td>
+                    <td className="py-4 px-5 text-center text-muted-foreground">&mdash;</td>
+                    <td className="py-4 px-5 text-center font-bold text-primary bg-primary/5 border-x border-primary/20">30+ Languages</td>
+                    <td className="py-4 px-5 text-center font-bold text-foreground">50+ Languages</td>
+                    <td className="py-4 px-5 text-center font-bold text-foreground">100+ & Custom Vocabulary</td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-secondary/50 dark:hover:bg-white/5 transition-colors">
-                    <td className="p-4 font-semibold text-foreground">Executive Summaries & Action Items</td>
-                    <td className="p-4 text-center">Basic</td>
-                    <td className="p-4 text-center font-bold text-primary bg-primary/5">Full Extraction</td>
-                    <td className="p-4 text-center font-bold text-foreground">Full Extraction</td>
-                    <td className="p-4 text-center font-bold text-foreground">Custom Prompts & Tone</td>
+                  <tr className="border-b border-border/60 hover:bg-secondary/30 transition-colors">
+                    <td className="py-4 px-6 font-semibold text-foreground text-sm">Executive Summaries & Action Items</td>
+                    <td className="py-4 px-5 text-center">Basic Summary</td>
+                    <td className="py-4 px-5 text-center font-bold text-primary bg-primary/5 border-x border-primary/20">Full Extraction + Owners</td>
+                    <td className="py-4 px-5 text-center font-bold text-foreground">Full Extraction + Owners</td>
+                    <td className="py-4 px-5 text-center font-bold text-foreground">Custom Prompts & Tone</td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-secondary/50 dark:hover:bg-white/5 transition-colors">
-                    <td className="p-4 font-semibold text-foreground">Smart Follow-up Action Emails</td>
-                    <td className="p-4 text-center text-muted-foreground">&mdash;</td>
-                    <td className="p-4 text-center text-primary font-bold bg-primary/5">&check;</td>
-                    <td className="p-4 text-center text-primary font-bold">&check;</td>
-                    <td className="p-4 text-center font-bold text-foreground">Custom SMTP & Templates</td>
+                  <tr className="border-b border-border/60 hover:bg-secondary/30 transition-colors">
+                    <td className="py-4 px-6 font-semibold text-foreground text-sm">Smart Follow-up Action Emails</td>
+                    <td className="py-4 px-5 text-center text-muted-foreground">&mdash;</td>
+                    <td className="py-4 px-5 text-center text-primary font-bold bg-primary/5 border-x border-primary/20">&check;</td>
+                    <td className="py-4 px-5 text-center text-primary font-bold">&check;</td>
+                    <td className="py-4 px-5 text-center font-bold text-foreground">Custom SMTP & Templates</td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-secondary/50 dark:hover:bg-white/5 transition-colors">
-                    <td className="p-4 font-semibold text-foreground">Speaker Talk-Time & Sentiment</td>
-                    <td className="p-4 text-center text-muted-foreground">&mdash;</td>
-                    <td className="p-4 text-center font-bold text-primary bg-primary/5">Talk-time Ratio</td>
-                    <td className="p-4 text-center font-bold text-foreground">Full Sentiment</td>
-                    <td className="p-4 text-center font-bold text-foreground">Executive Metrics</td>
+                  <tr className="border-b border-border/60 hover:bg-secondary/30 transition-colors">
+                    <td className="py-4 px-6 font-semibold text-foreground text-sm">Speaker Talk-Time & Sentiment</td>
+                    <td className="py-4 px-5 text-center text-muted-foreground">&mdash;</td>
+                    <td className="py-4 px-5 text-center font-bold text-primary bg-primary/5 border-x border-primary/20">Talk-time Ratio</td>
+                    <td className="py-4 px-5 text-center font-bold text-foreground">Full Sentiment Analytics</td>
+                    <td className="py-4 px-5 text-center font-bold text-foreground">Executive Team Telemetry</td>
                   </tr>
 
                   {/* Category 5: Storage & Governance */}
-                  <tr className="bg-slate-100 dark:bg-secondary/60 dark:bg-white/5 font-bold text-foreground border-y border-border">
-                    <td colSpan={5} className="py-2.5 px-5 text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-muted-foreground">
+                  <tr className="bg-secondary/70 font-bold text-foreground border-y border-border">
+                    <td colSpan={5} className="py-3 px-6 text-[11px] font-bold uppercase tracking-wider text-primary">
                       Storage, Governance & Support
                     </td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-secondary/50 dark:hover:bg-white/5 transition-colors">
-                    <td className="p-4 font-semibold text-foreground">Cloud Storage Limit</td>
-                    <td className="p-4 text-center font-bold">2 GB</td>
-                    <td className="p-4 text-center font-bold text-primary bg-primary/5">15 GB</td>
-                    <td className="p-4 text-center font-bold text-foreground">50 GB</td>
-                    <td className="p-4 text-center font-bold text-foreground">Terabyte Scale / BYO-S3</td>
+                  <tr className="border-b border-border/60 hover:bg-secondary/30 transition-colors">
+                    <td className="py-4 px-6 font-semibold text-foreground text-sm">Cloud Storage Limit</td>
+                    <td className="py-4 px-5 text-center font-bold">2 GB</td>
+                    <td className="py-4 px-5 text-center font-bold text-primary bg-primary/5 border-x border-primary/20">15 GB</td>
+                    <td className="py-4 px-5 text-center font-bold text-foreground">50 GB</td>
+                    <td className="py-4 px-5 text-center font-bold text-foreground">TB Scale / BYO-S3</td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-secondary/50 dark:hover:bg-white/5 transition-colors">
-                    <td className="p-4 font-semibold text-foreground">Custom Branding & Branded Rooms</td>
-                    <td className="p-4 text-center text-muted-foreground">&mdash;</td>
-                    <td className="p-4 text-center text-muted-foreground bg-primary/5">&mdash;</td>
-                    <td className="p-4 text-center font-bold text-foreground">Logos & Colors</td>
-                    <td className="p-4 text-center font-bold text-foreground">Full White-Label & Subdomains</td>
+                  <tr className="border-b border-border/60 hover:bg-secondary/30 transition-colors">
+                    <td className="py-4 px-6 font-semibold text-foreground text-sm">Custom Branding & Branded Rooms</td>
+                    <td className="py-4 px-5 text-center text-muted-foreground">&mdash;</td>
+                    <td className="py-4 px-5 text-center text-muted-foreground bg-primary/5 border-x border-primary/20">&mdash;</td>
+                    <td className="py-4 px-5 text-center font-bold text-foreground">Logos & Colors</td>
+                    <td className="py-4 px-5 text-center font-bold text-foreground">Full White-Label & Subdomains</td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-secondary/50 dark:hover:bg-white/5 transition-colors">
-                    <td className="p-4 font-semibold text-foreground">Single Sign-On (SSO)</td>
-                    <td className="p-4 text-center text-muted-foreground">&mdash;</td>
-                    <td className="p-4 text-center text-muted-foreground bg-primary/5">&mdash;</td>
-                    <td className="p-4 text-center font-bold text-foreground">Google & SAML 2.0</td>
-                    <td className="p-4 text-center font-bold text-foreground">Okta, Azure AD, SAML, SCIM</td>
+                  <tr className="border-b border-border/60 hover:bg-secondary/30 transition-colors">
+                    <td className="py-4 px-6 font-semibold text-foreground text-sm">Single Sign-On (SSO)</td>
+                    <td className="py-4 px-5 text-center text-muted-foreground">&mdash;</td>
+                    <td className="py-4 px-5 text-center text-muted-foreground bg-primary/5 border-x border-primary/20">&mdash;</td>
+                    <td className="py-4 px-5 text-center font-bold text-foreground">Google & SAML 2.0</td>
+                    <td className="py-4 px-5 text-center font-bold text-foreground">Okta, Azure AD, SAML, SCIM</td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-secondary/50 dark:hover:bg-white/5 transition-colors">
-                    <td className="p-4 font-semibold text-foreground">Enterprise Audit Trail</td>
-                    <td className="p-4 text-center text-muted-foreground">&mdash;</td>
-                    <td className="p-4 text-center text-muted-foreground bg-primary/5">&mdash;</td>
-                    <td className="p-4 text-center text-primary font-bold">&check;</td>
-                    <td className="p-4 text-center font-bold text-foreground">Immutable SIEM Stream</td>
+                  <tr className="border-b border-border/60 hover:bg-secondary/30 transition-colors">
+                    <td className="py-4 px-6 font-semibold text-foreground text-sm">Enterprise Audit Trail</td>
+                    <td className="py-4 px-5 text-center text-muted-foreground">&mdash;</td>
+                    <td className="py-4 px-5 text-center text-muted-foreground bg-primary/5 border-x border-primary/20">&mdash;</td>
+                    <td className="py-4 px-5 text-center text-primary font-bold">&check;</td>
+                    <td className="py-4 px-5 text-center font-bold text-foreground">Immutable SIEM Stream</td>
                   </tr>
-                  <tr className="border-b border-border/60 hover:bg-secondary/50 dark:hover:bg-white/5 transition-colors">
-                    <td className="p-4 font-semibold text-foreground">SLA & Dedicated Support</td>
-                    <td className="p-4 text-center">Community</td>
-                    <td className="p-4 text-center font-bold text-primary bg-primary/5">Standard Email</td>
-                    <td className="p-4 text-center font-bold text-foreground">99.9% SLA + AM</td>
-                    <td className="p-4 text-center font-bold text-foreground">99.99% SLA + 24/7 CSM</td>
+                  <tr className="border-b border-border/60 hover:bg-secondary/30 transition-colors">
+                    <td className="py-4 px-6 font-semibold text-foreground text-sm">SLA & Dedicated Support</td>
+                    <td className="py-4 px-5 text-center">Community Support</td>
+                    <td className="py-4 px-5 text-center font-bold text-primary bg-primary/5 border-x border-primary/20">Standard Email Support</td>
+                    <td className="py-4 px-5 text-center font-bold text-foreground">99.9% SLA + AM</td>
+                    <td className="py-4 px-5 text-center font-bold text-foreground">99.99% SLA + 24/7 CSM</td>
                   </tr>
 
                   {/* Bottom Action Row */}
-                  <tr className="bg-slate-50 dark:bg-white/5">
-                    <td className="p-5 font-bold text-foreground">Choose Plan</td>
-                    <td className="p-5 text-center">
+                  <tr className="bg-secondary/40">
+                    <td className="py-6 px-6 font-bold text-foreground text-sm">Choose Your Plan</td>
+                    <td className="py-6 px-5 text-center">
                       <button
                         onClick={() => handlePricingAction('Free')}
-                        className="w-full py-2.5 px-3 rounded-xl font-bold text-xs bg-secondary hover:bg-secondary/80 text-foreground border border-border transition-all"
+                        className="w-full py-3 px-4 rounded-xl font-bold text-xs bg-card hover:bg-secondary text-foreground border border-border shadow-sm transition-all"
                       >
-                        {user ? 'Current Plan' : 'Get Started'}
+                        {user ? 'Current Plan' : 'Get Started Free'}
                       </button>
                     </td>
-                    <td className="p-5 text-center bg-primary/5">
+                    <td className="py-6 px-5 text-center bg-primary/5 border-x border-primary/20">
                       <button
                         onClick={() => handlePricingAction('Pro')}
                         disabled={isProcessingPay}
-                        className="w-full py-2.5 px-3 rounded-xl font-bold text-xs bg-primary hover:bg-primary/90 text-white shadow-sm transition-all"
+                        className="w-full py-3 px-4 rounded-xl font-bold text-xs bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25 transition-all"
                       >
                         Choose Pro
                       </button>
                     </td>
-                    <td className="p-5 text-center">
+                    <td className="py-6 px-5 text-center">
                       <button
                         onClick={() => handlePricingAction('Enterprise')}
                         disabled={isProcessingPay}
-                        className="w-full py-2.5 px-3 rounded-xl font-bold text-xs bg-orange-500 hover:bg-orange-600 text-white shadow-md shadow-orange-500/20 transition-all"
+                        className="w-full py-3 px-4 rounded-xl font-bold text-xs bg-[#D9A400] hover:bg-[#D9A400]/90 text-slate-900 shadow-md transition-all font-extrabold"
                       >
                         Choose Enterprise
                       </button>
                     </td>
-                    <td className="p-5 text-center">
+                    <td className="py-6 px-5 text-center">
                       <button
                         onClick={() => navigate('/custom-pricing')}
-                        className="w-full py-2.5 px-3 rounded-xl font-bold text-xs bg-orange-500 hover:bg-orange-600 text-white shadow-md shadow-orange-500/20 transition-all"
+                        className="w-full py-3 px-4 rounded-xl font-bold text-xs bg-secondary hover:bg-secondary/80 text-foreground border border-border transition-all"
                       >
                         Contact Sales
                       </button>
@@ -918,67 +922,111 @@ export default function MeetLandingPage() {
           </div>
         </section>
 
-        <section className="py-24 px-6 md:px-12 max-w-4xl mx-auto text-center">
-          <div className="p-12 rounded-3xl bg-gradient-to-br from-primary/20 to-primary/10 border border-primary/20">
-            <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-5">
-              Start your first meeting.
-              <span className="block text-primary">Free. Right now.</span>
-            </h2>
-            <p className="text-muted-foreground mb-10 max-w-xl mx-auto">No account needed to join or start a meeting. Sign up to unlock AI intelligence, async video, and team spaces.</p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <button
-                onClick={() => handleCreateMeeting('instant')}
-                disabled={isCreating}
-                className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-gradient-to-r from-primary to-primary hover:from-primary/90 hover:to-primary/90 text-white font-bold shadow-2xl shadow-primary/30 transition-all hover:scale-[1.02]"
-              >
-                <Video className="w-5 h-5" /> Start Free Meeting
-              </button>
-              <button
-                onClick={() => navigate('/login')}
-                className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-secondary hover:bg-secondary/80 text-foreground font-semibold border border-border transition-all"
-              >
-                Sign In <ArrowRight className="w-4 h-4" />
-              </button>
+        {/* Start Free Meeting / Trial CTA Banner */}
+        <section className="py-24 px-6 md:px-12 max-w-5xl mx-auto text-center">
+          <div className="relative p-10 md:p-16 rounded-3xl bg-gradient-to-b from-[#101D22] to-card border border-primary/30 shadow-2xl overflow-hidden">
+            {/* Ambient emerald and gold mesh glow */}
+            <div className="absolute -top-24 -left-24 w-80 h-80 bg-primary/20 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-24 -right-24 w-80 h-80 bg-[#D9A400]/10 rounded-full blur-3xl pointer-events-none" />
+
+            <div className="relative z-10">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/15 border border-primary/30 mb-6">
+                <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                <span className="text-xs font-bold text-primary uppercase tracking-wider">Instant Access · No Credit Card Required</span>
+              </div>
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-foreground mb-6">
+                Start your first meeting.
+                <span className="block text-primary mt-1">Instant. Free. Right now.</span>
+              </h2>
+              <p className="text-muted-foreground mb-10 max-w-2xl mx-auto text-base md:text-lg leading-relaxed">
+                Join or host video meetings immediately with zero setup. Create an account to permanently connect organizational memory, async video recordings, and persistent team spaces.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <button
+                  onClick={() => handleCreateMeeting('instant')}
+                  disabled={isCreating}
+                  className="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold shadow-xl shadow-primary/30 transition-all hover:scale-[1.02]"
+                >
+                  <Video className="w-5 h-5" /> Start Free Meeting
+                </button>
+                <button
+                  onClick={() => navigate('/login')}
+                  className="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 rounded-2xl bg-secondary hover:bg-secondary/80 text-foreground font-semibold border border-border transition-all"
+                >
+                  Sign In <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           </div>
         </section>
 
-        <section id="contact" className="py-24 px-6 md:px-12 max-w-7xl mx-auto border-t border-border">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-black tracking-tight mb-4">We're here to help</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">Need assistance with your account, or want to schedule a demo? Reach out to our Optavel Support team below.</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <div className="bg-card border border-border p-8 rounded-3xl shadow-sm hover:shadow-md transition-all text-center flex flex-col items-center">
-              <div className="w-16 h-16 rounded-2xl bg-secondary flex items-center justify-center mb-6 border border-border">
-                <MessageSquare className="w-8 h-8 text-primary" />
-              </div>
-              <h3 className="text-xl font-bold mb-3">Live Support Chat</h3>
-              <p className="text-muted-foreground text-sm mb-6 flex-1">Chat directly with an Optavel support agent in real-time to get your questions answered instantly.</p>
-              <button 
-                onClick={() => setSupportPanel('chat')}
-                className="w-full py-3 rounded-xl bg-primary hover:bg-primary/90 text-white font-semibold transition-colors"
+        {/* Corporate Floating Action Button (FAB) for Support */}
+        <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+          <AnimatePresence>
+            {isFabOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: 15, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 15, scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+                className="w-64 p-3 rounded-2xl bg-card border border-border shadow-2xl space-y-2 backdrop-blur-xl"
               >
-                Start Chat
-              </button>
-            </div>
+                <div className="px-3 py-2 border-b border-border/80">
+                  <p className="text-xs font-bold text-foreground">Optavel Enterprise Support</p>
+                  <p className="text-[11px] text-muted-foreground">Select how you'd like to reach us:</p>
+                </div>
 
-            <div className="bg-card border border-border p-8 rounded-3xl shadow-sm hover:shadow-md transition-all text-center flex flex-col items-center">
-              <div className="w-16 h-16 rounded-2xl bg-secondary flex items-center justify-center mb-6 border border-border">
-                <PhoneCall className="w-8 h-8 text-primary" />
-              </div>
-              <h3 className="text-xl font-bold mb-3">Request a Call</h3>
-              <p className="text-muted-foreground text-sm mb-6 flex-1">Submit your details and a dedicated support representative will call you back shortly.</p>
-              <button 
-                onClick={() => setSupportPanel('call')}
-                className="w-full py-3 rounded-xl bg-primary hover:bg-primary/90 text-white font-semibold transition-colors"
-              >
-                Request Call
-              </button>
-            </div>
-          </div>
-        </section>
+                <button
+                  onClick={() => {
+                    setSupportPanel('chat');
+                    setIsFabOpen(false);
+                  }}
+                  className="w-full flex items-center gap-3 p-3 rounded-xl bg-secondary/60 hover:bg-secondary text-left transition-colors border border-border/60"
+                >
+                  <div className="w-9 h-9 rounded-lg bg-primary/15 border border-primary/30 flex items-center justify-center text-primary shrink-0">
+                    <MessageSquare className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-foreground">Live Support Chat</p>
+                    <p className="text-[10px] text-muted-foreground">Real-time AI & agent help</p>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => {
+                    setSupportPanel('call');
+                    setIsFabOpen(false);
+                  }}
+                  className="w-full flex items-center gap-3 p-3 rounded-xl bg-secondary/60 hover:bg-secondary text-left transition-colors border border-border/60"
+                >
+                  <div className="w-9 h-9 rounded-lg bg-primary/15 border border-primary/30 flex items-center justify-center text-primary shrink-0">
+                    <PhoneCall className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-foreground">Request a Call</p>
+                    <p className="text-[10px] text-muted-foreground">Submit for a direct callback</p>
+                  </div>
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <button
+            type="button"
+            onClick={() => setIsFabOpen(prev => !prev)}
+            aria-label="Toggle Support Options"
+            className="flex items-center gap-2.5 px-4 py-3.5 rounded-full bg-primary hover:bg-primary/90 text-white font-bold shadow-2xl shadow-primary/40 border border-primary/50 transition-all hover:scale-105 active:scale-95"
+          >
+            {isFabOpen ? (
+              <X className="w-5 h-5" />
+            ) : (
+              <>
+                <MessageSquare className="w-5 h-5" />
+                <span className="text-xs tracking-wide">Need Help?</span>
+              </>
+            )}
+          </button>
+        </div>
 
         {/* ΓöÇΓöÇ FOOTER ΓöÇΓöÇ */}
         <footer className="border-t border-border py-6 px-6 md:px-12 bg-slate-50 dark:bg-background/50">

@@ -120,55 +120,51 @@ const features = [
 
 export default function AdvancedFeaturesBento() {
   return (
-    <div className="w-full bg-slate-50 dark:bg-background py-32 relative overflow-hidden">
+    <div className="w-full bg-background py-24 md:py-32 relative overflow-hidden border-t border-border">
       <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
-        <div className="text-center max-w-3xl mx-auto mb-20">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-card border border-primary/20 shadow-sm mb-6">
-            <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse"></span>
-            <span className="text-sm font-bold text-primary uppercase tracking-widest">Total Operational Intelligence</span>
-          </div>
-          <h3 className="text-4xl md:text-6xl font-black text-slate-900 dark:text-foreground tracking-tight mb-6 leading-tight">
-            The ultimate toolkit for <br className="hidden md:block"/>
-            <span className="text-primary">modern teams.</span>
+        
+        {/* Section Header: Tagline removed as instructed */}
+        <div className="text-center max-w-3xl mx-auto mb-16 md:mb-20">
+          <h3 className="text-4xl md:text-5xl lg:text-6xl font-black text-foreground tracking-tight mb-6 leading-tight">
+            The enterprise toolkit for <br className="hidden md:block"/>
+            <span className="text-primary">high-velocity teams.</span>
           </h3>
-          <p className="text-slate-500 dark:text-muted-foreground text-lg md:text-xl leading-relaxed">
-            Everything you need to communicate, organize, and compound knowledge. Built seamlessly into one powerful layer.
+          <p className="text-muted-foreground text-lg md:text-xl leading-relaxed">
+            Everything your organization needs to communicate, capture context, and compound institutional intelligence — engineered into one seamless layer.
           </p>
         </div>
 
-        {/* Using CSS Grid without fixed rows to allow content to dictate height, preventing overflow */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 auto-rows-min">
+        {/* Bento Grid with corporate styling */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-5 auto-rows-min">
           {features.map((feature, i) => {
             const Icon = feature.icon;
-            // For large/tall cards, add a min height so visuals have room. For small cards, let content pad it.
-            const minHeightClass = feature.span.includes('row-span-2') ? 'min-h-[400px]' : 'min-h-[220px]';
+            const minHeightClass = feature.span.includes('row-span-2') ? 'min-h-[380px]' : 'min-h-[220px]';
             
             return (
               <div
                 key={i}
-                className={`relative group bg-white dark:bg-card rounded-3xl border border-slate-200 dark:border-border overflow-hidden hover:border-slate-300 dark:border-border transition-all duration-500 shadow-sm hover:shadow-xl ${feature.span} ${minHeightClass} flex flex-col`}
+                className={`relative group bg-card rounded-3xl border border-border overflow-hidden hover:border-primary/50 transition-all duration-300 shadow-lg hover:shadow-2xl hover:shadow-primary/5 ${feature.span} ${minHeightClass} flex flex-col justify-between`}
               >
-                {/* Colored top gradient bar */}
-                <div className={`absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r ${feature.accent} opacity-80 group-hover:opacity-100 transition-opacity duration-500`} />
+                {/* Subtle top indicator bar */}
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-emerald-400 to-[#D9A400] opacity-70 group-hover:opacity-100 transition-opacity" />
                 
-                {/* Glow effect on hover */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${feature.accent} opacity-0 group-hover:opacity-[0.05] transition-opacity duration-700`} />
+                {/* Ambient glow effect on hover */}
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                 
                 {feature.visual && (
-                   <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+                   <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden opacity-90">
                      {feature.visual}
                    </div>
                 )}
 
                 <div className="relative z-10 p-6 md:p-8 flex flex-col h-full pointer-events-none">
-                  <div className={`w-14 h-14 shrink-0 rounded-2xl bg-white dark:bg-card border border-slate-100 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-500 mb-6 relative overflow-hidden`}>
-                    <div className={`absolute inset-0 bg-gradient-to-br ${feature.accent} opacity-10`} />
-                    <Icon className={`w-6 h-6 ${feature.iconColor} relative z-10`} />
+                  <div className="w-12 h-12 shrink-0 rounded-2xl bg-secondary/80 border border-border flex items-center justify-center shadow-sm group-hover:border-primary/40 group-hover:scale-105 transition-all duration-300 mb-6">
+                    <Icon className="w-6 h-6 text-primary" />
                   </div>
                   
                   <div className="flex-1 relative z-10">
-                    <h4 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-foreground mb-3">{feature.title}</h4>
-                    <p className="text-slate-500 dark:text-muted-foreground text-sm md:text-base leading-relaxed md:max-w-[85%] relative z-10">
+                    <h4 className="text-xl md:text-2xl font-bold text-foreground mb-2.5 tracking-tight">{feature.title}</h4>
+                    <p className="text-muted-foreground text-sm md:text-base leading-relaxed md:max-w-[90%]">
                       {feature.description}
                     </p>
                   </div>
