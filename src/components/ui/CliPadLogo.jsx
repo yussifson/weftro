@@ -1,11 +1,11 @@
 import React from 'react';
 import { useTheme } from '@/lib/ThemeContext';
-import { ICON_PATH, WORDMARK_PATHS } from './weftroLogoPaths';
+import { ICON_PATH, ICON_SUBPATHS, WORDMARK_PATHS } from './weftroLogoPaths';
 
 /**
  * Official Weftro Brand Logo Component
  * - Adapts dynamically to light and dark theme
- * - Supports iconOnly mode with the official rounded badge icon
+ * - Supports iconOnly mode with the official rounded badge icon and two-tone W
  * - Supports custom height, className, style, white override, and custom colors
  */
 export function WeftroLogo({
@@ -44,10 +44,11 @@ export function WeftroLogo({
   const letterAccentColor = accentColor || (white ? '#ffffff' : '#D9A400');
 
   // Badge background color for iconOnly mode:
-  // In light mode: official forest green container #0C5C3C with white 'W'
-  // In dark mode: dark teal container #0C5C3C or #102820 with white 'W'
+  // In light mode: official forest green container #0C5C3C with two-tone 'W'
+  // In dark mode: rich forest green container #0C5C3C
   const badgeBg = color || '#0C5C3C';
-  const iconLetterColor = white ? '#ffffff' : '#ffffff';
+  const iconLeftColor = white ? '#ffffff' : '#ffffff';
+  const iconRightColor = white ? '#ffffff' : (accentColor || '#D9A400');
 
   if (iconOnly) {
     return (
@@ -63,7 +64,14 @@ export function WeftroLogo({
         <rect width="64" height="64" rx="14.08" fill={badgeBg} />
         <g transform="translate(9.404, 19.200)">
           <g transform="scale(0.027093, -0.027093) translate(-0.7883326001465321, -941.7395057976246)">
-            <path fill={iconLetterColor} d={ICON_PATH} />
+            {ICON_SUBPATHS ? (
+              <>
+                <path fill={iconLeftColor} d={ICON_SUBPATHS.left} />
+                <path fill={iconRightColor} d={ICON_SUBPATHS.right} />
+              </>
+            ) : (
+              <path fill={iconLeftColor} d={ICON_PATH} />
+            )}
           </g>
         </g>
       </svg>

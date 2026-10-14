@@ -462,14 +462,7 @@ export default function MeetLandingPage() {
 
 
       <main className="relative z-10 flex-1 flex flex-col md:flex-row items-center justify-center p-6 md:p-12 gap-12 md:gap-16 max-w-7xl mx-auto w-full">
-        <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left space-y-8 max-w-xl">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-primary/10 text-primary border border-primary/25 shadow-sm transition-all duration-300 hover:scale-105 select-none">
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary/80 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
-            </span>
-            <span>AI Organizational Intelligence & Integrations</span>
-          </div>
+        <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left space-y-6 max-w-xl">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-normal text-foreground leading-[1.12] tracking-tight">
             The AI memory and intelligence layer for your entire company.
           </h1>
@@ -582,11 +575,7 @@ export default function MeetLandingPage() {
       </main>
 
       <section id="features" className="py-24 px-6 md:px-12 max-w-7xl mx-auto overflow-hidden">
-        <div className="text-center mb-6">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/25 mb-4">
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            <span className="text-xs font-bold text-primary uppercase tracking-widest">Enterprise Architecture</span>
-          </div>
+        <div className="text-center mb-10">
           <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-4 text-foreground">Everything your organization needs.</h2>
           <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto">Not five disconnected tools. One continuous organizational intelligence layer.</p>
         </div>

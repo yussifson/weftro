@@ -8,10 +8,6 @@ export default function WithoutCliPadSection() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
         {/* Copy Side */}
         <div>
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-500/10 border border-rose-500/25 mb-6">
-            <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
-            <span className="text-xs font-bold text-rose-500 uppercase tracking-widest">The Legacy Stack</span>
-          </div>
           <h2 className="text-4xl md:text-5xl font-black text-foreground tracking-tight mb-6 leading-tight">
             The chaos of <br className="hidden md:block"/>
             <span className="text-rose-500">disconnected tools.</span>

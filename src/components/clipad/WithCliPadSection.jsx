@@ -22,11 +22,11 @@ export default function WithCliPadSection() {
           <motion.div 
             animate={{ boxShadow: ['0px 0px 20px rgba(12, 92, 60, 0.2)', '0px 0px 50px rgba(12, 92, 60, 0.5)', '0px 0px 20px rgba(12, 92, 60, 0.2)'] }}
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute z-20 w-32 h-32 bg-card rounded-full border-2 border-primary/50 flex flex-col items-center justify-center shadow-2xl backdrop-blur-xl"
+            className="absolute z-20 w-36 h-36 bg-card rounded-full border-2 border-primary/50 flex flex-col items-center justify-center shadow-2xl backdrop-blur-xl p-4"
           >
             <div className="absolute inset-0 rounded-full bg-primary/15 animate-ping opacity-30" style={{ animationDuration: '3.5s' }} />
-            <CliPadLogo size={52} className="relative z-10 drop-shadow" />
-            <span className="text-[10px] font-bold uppercase tracking-wider text-primary mt-1">Weftro Hub</span>
+            <CliPadLogo height={44} iconOnly={true} className="relative z-10 drop-shadow" />
+            <span className="text-[11px] font-bold uppercase tracking-wider text-foreground mt-2">Weftro Hub</span>
           </motion.div>
 
           {/* Neural Connection SVG Tracks */}
@@ -119,10 +119,6 @@ export default function WithCliPadSection() {
 
         {/* Copy Side */}
         <div className="order-1 lg:order-2">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/25 mb-6">
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            <span className="text-xs font-bold text-primary uppercase tracking-widest">The Weftro Way</span>
-          </div>
           <h2 className="text-4xl md:text-5xl font-black text-foreground tracking-tight mb-6 leading-tight">
             The harmony of <br className="hidden md:block"/>
             <span className="text-primary">total organizational memory.</span>
