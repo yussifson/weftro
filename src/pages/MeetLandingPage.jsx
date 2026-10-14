@@ -8,7 +8,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { OrbitLoader, PageLoader } from '@/components/ui/orbit-loader';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Menu, Zap, Target, Star, Brain, Camera, Rocket, MessageSquare, PhoneCall, ArrowRight, ShieldCheck, CheckCircle, Video, TrendingUp, Calendar, X, Keyboard, Sparkles, Copy, Link as LinkIcon, Users, Layers, ChevronRight, ChevronLeft, Monitor, Globe, Plus, Clock, Search } from 'lucide-react';
+import { Menu, Zap, Target, Star, Brain, Camera, Rocket, MessageSquare, PhoneCall, ArrowRight, ShieldCheck, CheckCircle, Video, TrendingUp, Calendar, X, Keyboard, Sparkles, Copy, Link as LinkIcon, Users, Layers, ChevronRight, ChevronLeft, Monitor, Globe, Plus, Clock, Search, Network, Cpu, Database } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CliPadLogo } from '@/components/ui/CliPadLogo';
@@ -28,54 +28,54 @@ import ClipadMobileNav from '@/components/clipad/ClipadMobileNav';
 
 const pillars = [
   {
-    icon: Video,
-    color: 'from-orange-500 to-orange-400',
-    glow: 'shadow-orange-500/20',
-    title: 'HD Live Meetings',
-    desc: 'No time limits. Up to 500 participants. Speaker spotlight, noise cancellation, live captions, breakout rooms and a persistent whiteboard — all built in.'
+    icon: Database,
+    color: 'from-emerald-600 to-teal-500',
+    glow: 'shadow-emerald-500/20',
+    title: 'Organizational Memory & Context',
+    desc: 'Connect conversations, documents, team decisions, and projects into a unified knowledge graph. Never lose institutional context again.'
   },
   {
-    icon: Camera,
-    color: 'from-green-500 to-primary',
-    glow: 'shadow-green-500/20',
-    title: 'Async Video Messages',
-    desc: 'Record camera, screen, or both in picture-in-picture. Share an instant link. Viewers leave timestamped comments and emoji reactions at exact moments.'
+    icon: Network,
+    color: 'from-teal-500 to-emerald-400',
+    glow: 'shadow-teal-500/20',
+    title: 'Connected Integrations & MCP',
+    desc: 'Seamlessly connects with Slack, Google Drive, Notion, GitHub, third-party APIs, and Model Context Protocol (MCP) servers.'
   },
   {
     icon: Brain,
-    color: 'from-yellow-500 to-amber-500',
-    glow: 'shadow-yellow-500/20',
-    title: 'AI Meeting Intelligence',
-    desc: 'Every meeting produces a full summary, key decisions, extracted action items with owners, open questions, and sentiment — within 2 minutes of ending.'
+    color: 'from-amber-500 to-[#D9A400]',
+    glow: 'shadow-amber-500/20',
+    title: 'AI Reasoning & Decision Support',
+    desc: 'Autonomous meeting extraction, cross-tool semantic search, decision ledgers, and intelligent workflow automation.'
   },
   {
     icon: Layers,
-    color: 'from-orange-500 to-orange-400',
-    glow: 'shadow-orange-500/20',
-    title: 'Team Spaces',
-    desc: 'Persistent rooms for every team and project. Live meetings, async videos, shared notes, action boards, and cross-space search in one place.'
+    color: 'from-emerald-600 to-teal-600',
+    glow: 'shadow-emerald-600/20',
+    title: 'Persistent Team Spaces',
+    desc: 'Dedicated enterprise hubs unifying live HD collaboration, async video updates, dynamic action boards, and team documentation.'
   },
   {
-    icon: Target,
-    color: 'from-green-500 to-primary',
-    glow: 'shadow-green-500/20',
-    title: 'Sales & Demo Layer',
-    desc: 'Record personalised video proposals. Know who watched, how much, where they paused, and whether they shared it — before your follow-up call.'
+    icon: Video,
+    color: 'from-orange-500 to-amber-500',
+    glow: 'shadow-orange-500/20',
+    title: 'HD Meetings & Async Capture',
+    desc: 'Instant video conferences and picture-in-picture recordings with live AI transcription, timestamps, and viewer telemetry.'
   },
   {
     icon: Zap,
-    color: 'from-yellow-500 to-amber-500',
+    color: 'from-[#D9A400] to-yellow-400',
     glow: 'shadow-yellow-500/20',
-    title: 'Smart Follow-up',
-    desc: 'After every meeting, each participant receives only their personal action items with full context. Not the whole notes — just what they need to do.'
+    title: 'Autonomous Action Execution',
+    desc: 'Transforms spoken consensus into structured tasks, follow-up briefs, and automated team workflows without manual note-taking.'
   },
 ];
 
 const stats = [
-  { value: '500+', label: 'Participants per call' },
-  { value: '2 min', label: 'AI summary delivery' },
-  { value: '0', label: 'Time limits' },
-  { value: '100%', label: 'End-to-end encrypted' },
+  { value: '100+', label: 'Connected Integrations & MCP' },
+  { value: '100%', label: 'Organizational Memory Retention' },
+  { value: '< 2 min', label: 'AI Synthesis Delivery' },
+  { value: 'Enterprise', label: 'End-to-End Encryption & Audit' },
 ];
 
 const tiers = [
@@ -114,51 +114,51 @@ const tiers = [
 const slides = [
   {
     id: 0,
-    title: 'Team Spaces & Async Video',
-    description: 'Create persistent rooms for every project. Record picture-in-picture async updates and share instantly.',
+    title: 'Organizational Memory & Knowledge Graph',
+    description: 'Automatically links conversations, documents, projects, and strategic decisions into compounding institutional intelligence.',
     render: () => (
       <div className="relative flex flex-col items-center justify-center w-full h-full select-none">
-        <div className="absolute w-64 h-64 rounded-full border-2 border-[#fad503]/20 animate-pulse" />
-        <div className="absolute w-44 h-44 rounded-full bg-[#fad503]/10" />
-        <div className="relative w-32 h-32 rounded-full bg-gradient-to-br from-[#fad503] to-[#fad503]/80 flex items-center justify-center shadow-2xl shadow-[#fad503]/40">
-          <Layers className="w-14 h-14 text-white" strokeWidth={1.5} />
+        <div className="absolute w-64 h-64 rounded-full border-2 border-primary/20 animate-pulse" />
+        <div className="absolute w-44 h-44 rounded-full bg-primary/10" />
+        <div className="relative w-32 h-32 rounded-full bg-gradient-to-br from-primary to-teal-500 flex items-center justify-center shadow-2xl shadow-primary/40">
+          <Database className="w-14 h-14 text-white" strokeWidth={1.5} />
         </div>
         <div className="absolute top-6 right-10 bg-background border border-border rounded-xl px-3 py-1.5 shadow-lg flex items-center gap-1.5">
-          <Camera className="w-3 h-3 text-[#fad503]" />
-          <span className="text-xs font-semibold text-[#fad503]">Async Ready</span>
+          <Brain className="w-3 h-3 text-[#D9A400]" />
+          <span className="text-xs font-semibold text-[#D9A400]">Neural Graph</span>
         </div>
         <div className="absolute bottom-10 left-6 bg-background border border-border rounded-xl px-3 py-1.5 shadow-lg">
-          <span className="text-xs font-medium text-muted-foreground font-mono">Design Team Space</span>
+          <span className="text-xs font-medium text-muted-foreground font-mono">Institutional Memory</span>
         </div>
       </div>
     ),
   },
   {
     id: 1,
-    title: 'AI Meeting Intelligence',
-    description: 'Every meeting produces a full summary, extracted action items, and key decisions within 2 minutes of ending.',
+    title: 'Universal Integrations & MCP Protocol',
+    description: 'Integrates natively across Slack, Notion, GitHub, Google Workspace, external LLMs, and Model Context Protocol servers.',
     render: () => (
       <div className="relative flex flex-col items-center justify-center w-full h-full select-none">
-        <div className="absolute w-64 h-64 rounded-full border-2 border-teal-100 animate-pulse" />
-        <div className="absolute w-44 h-44 rounded-full bg-teal-50" />
-        <div className="relative w-32 h-32 rounded-full bg-gradient-to-br from-teal-500 to-teal-400 flex items-center justify-center shadow-2xl shadow-teal-500/40">
-          <Brain className="w-14 h-14 text-white" strokeWidth={1.5} />
+        <div className="absolute w-64 h-64 rounded-full border-2 border-teal-500/20 animate-pulse" />
+        <div className="absolute w-44 h-44 rounded-full bg-teal-500/10" />
+        <div className="relative w-32 h-32 rounded-full bg-gradient-to-br from-teal-500 to-emerald-400 flex items-center justify-center shadow-2xl shadow-teal-500/40">
+          <Network className="w-14 h-14 text-white" strokeWidth={1.5} />
         </div>
         <div className="absolute top-4 right-8 bg-background border border-border rounded-xl px-3 py-1.5 shadow-lg flex items-center gap-2">
-          <Brain className="w-3 h-3 text-teal-500" />
-          <span className="text-xs font-semibold text-teal-600">Summary Gen</span>
+          <Cpu className="w-3 h-3 text-teal-500" />
+          <span className="text-xs font-semibold text-teal-600 dark:text-teal-400">MCP Connected</span>
         </div>
         <div className="absolute bottom-8 left-4 bg-background border border-border rounded-xl px-3 py-2 shadow-lg text-center">
-          <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider block">Action Items</span>
-          <span className="text-xs font-bold text-foreground">3 assigned to you</span>
+          <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider block">Unified APIs</span>
+          <span className="text-xs font-bold text-foreground">Cross-Tool Reasoning</span>
         </div>
       </div>
     ),
   },
   {
     id: 2,
-    title: 'Smart Follow-up',
-    description: 'Participants receive only their personal action items with full context. No more reading through entire transcripts.',
+    title: 'Controlled AI Actions & Reasoning',
+    description: 'Transforms discussions into automated workflows, verified decision logs, and contextual tasks dispatched to the right owners.',
     render: () => (
       <div className="relative flex flex-col items-center justify-center w-full h-full select-none">
         <div className="absolute w-64 h-64 rounded-full border-2 border-primary/10 animate-pulse" />
@@ -167,7 +167,7 @@ const slides = [
           <Zap className="w-14 h-14 text-white" strokeWidth={1.5} />
         </div>
         <div className="absolute bottom-6 flex -space-x-3">
-          {['bg-primary/80', 'bg-[#fad503]', 'bg-teal-400', 'bg-primary/80'].map((c, i) => (
+          {['bg-primary/80', 'bg-[#D9A400]', 'bg-teal-500', 'bg-emerald-600'].map((c, i) => (
             <div key={i} className={`w-9 h-9 rounded-full ${c} border-2 border-background flex items-center justify-center`}>
               <Users className="w-4 h-4 text-white" />
             </div>
@@ -175,7 +175,7 @@ const slides = [
         </div>
         <div className="absolute top-4 right-6 bg-background border border-border rounded-xl px-3 py-1.5 shadow-lg flex items-center gap-1.5">
           <CheckCircle className="w-3 h-3 text-primary" />
-          <span className="text-xs font-semibold text-primary">Context aware</span>
+          <span className="text-xs font-semibold text-primary">Contextual Execution</span>
         </div>
       </div>
     ),
@@ -463,18 +463,18 @@ export default function MeetLandingPage() {
 
       <main className="relative z-10 flex-1 flex flex-col md:flex-row items-center justify-center p-6 md:p-12 gap-12 md:gap-16 max-w-7xl mx-auto w-full">
         <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left space-y-8 max-w-xl">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-primary/5 dark:bg-primary/10 text-primary dark:text-primary/80 border border-primary/20 dark:border-primary/30 shadow-md transition-all duration-300 hover:scale-105 select-none">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-primary/10 text-primary border border-primary/25 shadow-sm transition-all duration-300 hover:scale-105 select-none">
             <span className="relative flex h-2.5 w-2.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary/80 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
             </span>
-            <span>Weftro V3 Live</span>
+            <span>AI Organizational Intelligence & Integrations</span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-normal text-foreground leading-tight tracking-tight">
-            #1 Enterprise AI-powered organizational memory and intelligence layer.<br />Now free for everyone.
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-normal text-foreground leading-[1.12] tracking-tight">
+            The AI memory and intelligence layer for your entire company.
           </h1>
           <p className="text-lg text-slate-500 dark:text-muted-foreground leading-relaxed">
-            Weftro captures, connects, and preserves your company's knowledge—through meetings, async video, collaboration, and intelligent context.
+            Weftro continuously captures, links, and reasons across meetings, conversations, documents, and business systems. Powered by universal integrations, MCP protocols, and automated decision support.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center gap-4 w-full pt-2">
@@ -582,10 +582,13 @@ export default function MeetLandingPage() {
       </main>
 
       <section id="features" className="py-24 px-6 md:px-12 max-w-7xl mx-auto overflow-hidden">
-        <div className="text-center mb-4">
-
-          <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-5">Everything your team needs.</h2>
-          <p className="text-muted-foreground text-lg max-w-xl mx-auto">Not five tools. One.</p>
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/25 mb-4">
+            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+            <span className="text-xs font-bold text-primary uppercase tracking-widest">Enterprise Architecture</span>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-4 text-foreground">Everything your organization needs.</h2>
+          <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto">Not five disconnected tools. One continuous organizational intelligence layer.</p>
         </div>
 
         <FeaturesCircle />
@@ -922,36 +925,41 @@ export default function MeetLandingPage() {
           </div>
         </section>
 
-        {/* Start Free Meeting / Trial CTA Banner */}
-        <section className="py-24 px-6 md:px-12 max-w-5xl mx-auto text-center">
-          <div className="relative p-10 md:p-16 rounded-3xl bg-gradient-to-b from-[#101D22] to-card border border-primary/30 shadow-2xl overflow-hidden">
-            {/* Ambient emerald and gold mesh glow */}
-            <div className="absolute -top-24 -left-24 w-80 h-80 bg-primary/20 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-24 -right-24 w-80 h-80 bg-[#D9A400]/10 rounded-full blur-3xl pointer-events-none" />
+        {/* Start Free Meeting / Trial CTA Banner - Sleek Horizontal Layout */}
+        <section className="py-12 md:py-16 px-6 md:px-12 max-w-6xl mx-auto">
+          <div className="relative p-8 md:p-10 lg:p-12 rounded-3xl bg-gradient-to-r from-[#101D22] via-card to-[#101D22] border border-primary/30 shadow-2xl overflow-hidden">
+            {/* Ambient mesh glow */}
+            <div className="absolute -top-24 -left-24 w-72 h-72 bg-primary/20 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-24 -right-24 w-72 h-72 bg-[#D9A400]/10 rounded-full blur-3xl pointer-events-none" />
 
-            <div className="relative z-10">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/15 border border-primary/30 mb-6">
-                <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                <span className="text-xs font-bold text-primary uppercase tracking-wider">Instant Access · No Credit Card Required</span>
+            <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8 text-center lg:text-left">
+              {/* Left Column: Heading and Context */}
+              <div className="max-w-2xl">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/15 border border-primary/30 mb-3.5">
+                  <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                  <span className="text-xs font-bold text-primary uppercase tracking-wider">Instant Access · No Credit Card Required</span>
+                </div>
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight text-foreground mb-3 leading-tight">
+                  Start your first meeting.
+                  <span className="block text-primary">Instant. Free. Right now.</span>
+                </h2>
+                <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
+                  Join or host meetings immediately with zero friction. Unify organizational memory, async video recordings, integrations, and persistent team spaces in one place.
+                </p>
               </div>
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-foreground mb-6">
-                Start your first meeting.
-                <span className="block text-primary mt-1">Instant. Free. Right now.</span>
-              </h2>
-              <p className="text-muted-foreground mb-10 max-w-2xl mx-auto text-base md:text-lg leading-relaxed">
-                Join or host video meetings immediately with zero setup. Create an account to permanently connect organizational memory, async video recordings, and persistent team spaces.
-              </p>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+
+              {/* Right Column: CTA Buttons */}
+              <div className="flex flex-col sm:flex-row items-center gap-3.5 shrink-0 w-full sm:w-auto">
                 <button
                   onClick={() => handleCreateMeeting('instant')}
                   disabled={isCreating}
-                  className="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold shadow-xl shadow-primary/30 transition-all hover:scale-[1.02]"
+                  className="w-full sm:w-auto flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold shadow-xl shadow-primary/30 transition-all hover:scale-[1.02] active:scale-95 text-sm"
                 >
-                  <Video className="w-5 h-5" /> Start Free Meeting
+                  <Video className="w-4 h-4" /> Start Free Meeting
                 </button>
                 <button
                   onClick={() => navigate('/login')}
-                  className="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 rounded-2xl bg-secondary hover:bg-secondary/80 text-foreground font-semibold border border-border transition-all"
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground font-semibold border border-border transition-all text-sm"
                 >
                   Sign In <ArrowRight className="w-4 h-4" />
                 </button>
@@ -960,8 +968,8 @@ export default function MeetLandingPage() {
           </div>
         </section>
 
-        {/* Corporate Floating Action Button (FAB) for Support */}
-        <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+        {/* Corporate Floating Action Button (FAB) for Support - Pushed Up */}
+        <div className="fixed bottom-20 md:bottom-24 right-6 z-50 flex flex-col items-end gap-3">
           <AnimatePresence>
             {isFabOpen && (
               <motion.div
@@ -1015,7 +1023,7 @@ export default function MeetLandingPage() {
             type="button"
             onClick={() => setIsFabOpen(prev => !prev)}
             aria-label="Toggle Support Options"
-            className="flex items-center gap-2.5 px-4 py-3.5 rounded-full bg-primary hover:bg-primary/90 text-white font-bold shadow-2xl shadow-primary/40 border border-primary/50 transition-all hover:scale-105 active:scale-95"
+            className="flex items-center gap-2.5 px-4 py-3 rounded-full bg-primary hover:bg-primary/90 text-white font-bold shadow-2xl shadow-primary/40 border border-primary/50 transition-all hover:scale-105 active:scale-95"
           >
             {isFabOpen ? (
               <X className="w-5 h-5" />

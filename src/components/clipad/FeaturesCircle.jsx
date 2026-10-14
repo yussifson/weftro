@@ -1,31 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Layers, Video, Camera, Brain, Target, Zap, ChevronRight } from 'lucide-react';
+import { Layers, Video, Camera, Brain, Target, Zap, ChevronRight, Network, Database } from 'lucide-react';
 
 const pillars = [
   {
-    icon: Video,
-    tag: 'Live Communication',
+    icon: Database,
+    tag: 'Institutional Memory',
     accent: '#0C5C3C',
-    color: 'from-emerald-500 to-teal-400',
-    title: 'HD Live Meetings',
-    desc: 'Enterprise video conferences with no arbitrary caps. Up to 500 participants, AI noise suppression, speaker spotlight, live multi-language transcripts, and persistent team whiteboards.'
+    color: 'from-emerald-600 to-teal-500',
+    title: 'Organizational Memory & Context',
+    desc: 'Unifies conversations, meetings, documents, and historical decisions into an active corporate knowledge graph. Eradicates knowledge loss when teams scale or personnel changes.'
   },
   {
-    icon: Camera,
-    tag: 'Async Collaboration',
+    icon: Network,
+    tag: 'Ecosystem & MCP',
     accent: '#10B981',
     color: 'from-teal-500 to-emerald-400',
-    title: 'Async Video Messages',
-    desc: 'Record camera, screen, or Picture-in-Picture in pristine 1080p. Instantly shareable with zero upload wait time, timecoded chapter markers, viewer reaction threads, and drop-off analytics.'
+    title: 'Connected Integrations & MCP',
+    desc: 'Integrates bidirectional context with Slack, Notion, GitHub, Google Drive, Jira, external AI models, APIs, and the Model Context Protocol (MCP) ecosystem.'
   },
   {
     icon: Brain,
-    tag: 'Context Engine',
+    tag: 'Reasoning & Intelligence',
     accent: '#D9A400',
     color: 'from-amber-400 to-[#D9A400]',
-    title: 'AI Intelligence & Extraction',
-    desc: 'Every conversation produces executive summaries, decision records, structured action items assigned to real owners, sentiment trends, and unanswered follow-up items.'
+    title: 'AI Reasoning & Decision Support',
+    desc: 'Deep multi-modal synthesis that extracts core decisions, attributes assigned owners, maps open dependencies, and answers cross-organization strategic inquiries.'
   },
   {
     icon: Layers,
@@ -33,23 +33,23 @@ const pillars = [
     accent: '#0C5C3C',
     color: 'from-emerald-600 to-teal-500',
     title: 'Persistent Team Spaces',
-    desc: 'Dedicated hubs for squads, projects, and clients. Houses live meeting rooms, async video libraries, shared documentation, dynamic action boards, and cross-space semantic search.'
+    desc: 'Dedicated enterprise workspaces for squads and clients. Houses live meeting rooms, async video libraries, shared documentation, dynamic action boards, and cross-space semantic search.'
   },
   {
-    icon: Target,
-    tag: 'Client Intelligence',
+    icon: Video,
+    tag: 'Multi-Modal Capture',
     accent: '#F59E0B',
     color: 'from-amber-500 to-amber-300',
-    title: 'Sales & Executive Briefings',
-    desc: 'Deliver high-impact asynchronous proposals and client walkthroughs. Track exact audience engagement, second-by-second viewer retention heatmaps, and forwarded link access.'
+    title: 'HD Meetings & Async Video',
+    desc: 'Enterprise conferences and picture-in-picture recordings with live AI transcription, zero-lag global streaming, timestamps, and drop-off engagement telemetry.'
   },
   {
     icon: Zap,
-    tag: 'Execution Loop',
+    tag: 'Autonomous Execution',
     accent: '#10B981',
     color: 'from-emerald-400 to-teal-300',
-    title: 'Smart Automated Follow-ups',
-    desc: 'Eliminate manual note distribution. Each attendee automatically receives tailored action items with exact conversational context and deadlines directly in their inbox.'
+    title: 'Automated Action Workflows',
+    desc: 'Turns consensus into immediate execution. Dispatches contextual action items to team members and triggers downstream workflows across connected business apps.'
   },
 ];
 

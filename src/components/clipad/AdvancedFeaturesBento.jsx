@@ -3,8 +3,8 @@ import { Video, Brain, HeadphonesIcon, LayoutGrid, Search, TrendingUp, Sparkles,
 
 const features = [
   {
-    title: "Organizational Memory",
-    description: "The core of your enterprise. Every video, meeting, and decision is automatically captured, transcribed, and intelligently linked. Never lose context again, even as your team scales.",
+    title: "Organizational Memory & Knowledge Graph",
+    description: "The core intelligence repository. Every meeting, recording, and strategic decision is automatically indexed, contextualized, and cross-linked across team members and milestones.",
     icon: Database,
     span: "md:col-span-2 md:row-span-2",
     accent: "from-primary to-primary/80",
@@ -28,17 +28,17 @@ const features = [
     )
   },
   {
-    title: "AI Meeting Insights",
-    description: "Automatic transcription, key decisions, and action items generated the second your meeting ends.",
-    icon: Sparkles,
+    title: "Connected Integrations & MCP",
+    description: "Plug into Slack, Notion, GitHub, Google Drive, Jira, and custom Model Context Protocol (MCP) agents to query enterprise tools directly.",
+    icon: Network,
     span: "md:col-span-1 md:row-span-2",
-    accent: "from-violet-600 to-fuchsia-600",
-    iconColor: "text-violet-600",
+    accent: "from-emerald-600 to-teal-500",
+    iconColor: "text-emerald-500",
     visual: (
       <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-12 group-hover:translate-y-4 transition-transform duration-700">
         <div className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl p-4 space-y-3 shadow-xl">
           <div className="flex items-center gap-3">
-            <div className="w-2 h-2 rounded-full bg-violet-600 animate-pulse"></div>
+            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
             <div className="h-2 w-20 bg-slate-200 dark:bg-accent rounded-full"></div>
           </div>
           <div className="h-2 w-full bg-slate-200 dark:bg-accent rounded-full"></div>
@@ -48,29 +48,16 @@ const features = [
     )
   },
   {
-    title: "HD Async Video",
-    description: "Record your screen and camera in pristine 1080p. Send updates instantly.",
-    icon: Video,
+    title: "AI Synthesis & Actions",
+    description: "Extract verified action items, owner tags, and automated execution workflows instantly.",
+    icon: Sparkles,
     span: "md:col-span-1",
-    accent: "from-blue-600 to-cyan-600",
-    iconColor: "text-blue-600",
-    visual: (
-      <div className="absolute -right-6 -bottom-6 opacity-10 group-hover:opacity-20 group-hover:-rotate-12 transition-all duration-700">
-        <Video className="w-40 h-40 text-blue-600" />
-      </div>
-    )
+    accent: "from-amber-500 to-[#D9A400]",
+    iconColor: "text-[#D9A400]",
   },
   {
-    title: "Live Escalation",
-    description: "Instantly route users to real human agents within the same chat interface.",
-    icon: HeadphonesIcon,
-    span: "md:col-span-1",
-    accent: "from-rose-600 to-orange-600",
-    iconColor: "text-rose-600",
-  },
-  {
-    title: "Smart Spaces",
-    description: "Organize teams, projects, and topics securely.",
+    title: "Persistent Team Spaces",
+    description: "Centralized hubs for projects, teams, live spaces, and knowledge boards.",
     icon: LayoutGrid,
     span: "md:col-span-1",
     accent: "from-indigo-600 to-blue-600",
@@ -78,15 +65,15 @@ const features = [
   },
   {
     title: "Decision Ledger",
-    description: "A chronological record of every key decision made across the organization.",
+    description: "An immutable audit trail of every strategic decision and architectural rationale.",
     icon: BookOpen,
     span: "md:col-span-1",
     accent: "from-amber-500 to-orange-500",
     iconColor: "text-amber-600",
   },
   {
-    title: "Global Search",
-    description: "Find exactly what was said in any video, instantly.",
+    title: "Cross-System Semantic Search",
+    description: "Search across transcripts, shared documents, discussions, and external integrations in milliseconds.",
     icon: Search,
     span: "md:col-span-2",
     accent: "from-primary to-cyan-600",
@@ -101,17 +88,17 @@ const features = [
     )
   },
   {
-    title: "Enterprise Analytics",
-    description: "Track ROI, adoption, and organizational health.",
+    title: "Enterprise Governance",
+    description: "Granular access controls, SIEM audit streams, and encryption.",
     icon: TrendingUp,
     span: "md:col-span-1",
     accent: "from-pink-600 to-rose-600",
     iconColor: "text-pink-600",
   },
   {
-    title: "Async Standups",
-    description: "Keep remote teams aligned without disruptive meetings.",
-    icon: Clock,
+    title: "Async Capture & Briefs",
+    description: "High-definition screen & camera recordings with viewer drop-off analytics.",
+    icon: Video,
     span: "md:col-span-1",
     accent: "from-teal-600 to-primary",
     iconColor: "text-teal-600",
