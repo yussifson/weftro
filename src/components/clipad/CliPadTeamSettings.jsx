@@ -201,25 +201,25 @@ export default function CliPadTeamSettings() {
       if (!aliasData || !aliasData.exactMatch) {
         emailHtml = `
           <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2>You've been invited to KERINT!</h2>
+            <h2>You've been invited to Weftro!</h2>
             <p>Hi ${inviteName},</p>
-            <p>You have been invited to join the team on KERINT.</p>
+            <p>You have been invited to join the team on Weftro.</p>
             <p>You can log in using your email address and the following temporary password:</p>
             <div style="background-color: #f4f4f5; padding: 12px; border-radius: 6px; font-family: monospace; font-size: 18px; margin: 16px 0; letter-spacing: 1px;">
               <strong>${tempPassword}</strong>
             </div>
             <p>Please log in and change your password immediately in your account settings.</p>
-            <a href="${loginUrl}" style="display: inline-block; background-color: #10b981; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 16px;">Log In to KERINT</a>
+            <a href="${loginUrl}" style="display: inline-block; background-color: #10b981; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 16px;">Log In to Weftro</a>
           </div>
         `;
       } else {
         emailHtml = `
           <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2>You've been added to a new workspace on KERINT!</h2>
+            <h2>You've been added to a new workspace on Weftro!</h2>
             <p>Hi ${inviteName},</p>
-            <p>Good news! You have been invited to join a new workspace on KERINT.</p>
+            <p>Good news! You have been invited to join a new workspace on Weftro.</p>
             <p>Since you already have an account with us, simply log in using your existing email and password to access your new workspace.</p>
-            <a href="${loginUrl}" style="display: inline-block; background-color: #10b981; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 16px;">Log In to KERINT</a>
+            <a href="${loginUrl}" style="display: inline-block; background-color: #10b981; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 16px;">Log In to Weftro</a>
           </div>
         `;
       }
@@ -227,7 +227,7 @@ export default function CliPadTeamSettings() {
       const { error: sendError } = await supabase.functions.invoke('send-email', {
         body: {
           to: [inviteEmail.trim()],
-          subject: 'You have been invited to KERINT',
+          subject: 'You have been invited to Weftro',
           html: emailHtml
         }
       });
@@ -270,7 +270,7 @@ export default function CliPadTeamSettings() {
           <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
             <Users className="w-5 h-5 text-primary" /> Team Management
           </h2>
-          <p className="text-sm text-muted-foreground mt-1">Manage who has access to your company's KERINT Workspace.</p>
+          <p className="text-sm text-muted-foreground mt-1">Manage who has access to your company's Weftro Workspace.</p>
         </div>
         {!showInviteForm && (
           <button 

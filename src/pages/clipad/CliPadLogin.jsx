@@ -98,7 +98,7 @@ export default function CliPadLogin() {
   return (
     <>
       <Helmet>
-        <title>Log In — KERINT Collaborative Workspace</title>
+        <title>Log In — Weftro Collaborative Workspace</title>
         <meta name="description" content="Log in to your enterprise-grade collaborative productivity workspace." />
         <link rel="icon" type="image/svg+xml" href="/clipad-logo.svg" />
       </Helmet>
@@ -310,7 +310,7 @@ export default function CliPadLogin() {
                   <div>
                     <div className="flex items-center gap-1.5 mb-4">
                       <CliPadLogo height={16} white={true} iconOnly={true} />
-                      <span className="font-bold tracking-tight text-xs text-white">KERINT V3</span>
+                      <span className="font-bold tracking-tight text-xs text-white">Weftro V3</span>
                     </div>
 
                     <div className="text-[9px] uppercase font-bold text-white/40 tracking-wider mb-1.5">General</div>
@@ -388,7 +388,7 @@ export default function CliPadLogin() {
                   </div>
 
                   <div className="flex items-center justify-between text-[8px] text-slate-400 pt-1.5 border-t border-slate-100">
-                    <span>KERINT V3</span>
+                    <span>Weftro V3</span>
                     <span className="text-[#006065] font-bold">â— System Operational</span>
                   </div>
                 </div>

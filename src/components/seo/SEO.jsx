@@ -16,7 +16,7 @@ export default function SEO({
     
   const currentUrl = url || (typeof window !== 'undefined' ? window.location.href : origin);
   const imageUrl = image || `${origin}/clipad-logo-square.png`;
-  const defaultDesc = "KERINT by Clipad is an enterprise-grade AI-powered collaborative organizational memory platform that unifies live HD meetings, async video, instant chat, spaces, and automated decision ledgers.";
+  const defaultDesc = "Weftro by Clipad is an enterprise-grade AI-powered collaborative organizational memory platform that unifies live HD meetings, async video, instant chat, spaces, and automated decision ledgers.";
 
   return (
     <Helmet>
@@ -33,7 +33,7 @@ export default function SEO({
       {title && <meta property="og:title" content={title} />}
       <meta property="og:description" content={description || defaultDesc} />
       <meta property="og:image" content={imageUrl} />
-      <meta property="og:site_name" content="KERINT by Clipad" />
+      <meta property="og:site_name" content="Weftro by Clipad" />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
@@ -47,7 +47,7 @@ export default function SEO({
         {JSON.stringify({
           "@context": "https://schema.org",
           "@type": "SoftwareApplication",
-          "name": title || "KERINT by Clipad",
+          "name": title || "Weftro by Clipad",
           "applicationCategory": "BusinessApplication",
           "operatingSystem": "All",
           "url": currentUrl,

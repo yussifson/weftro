@@ -150,7 +150,7 @@ export default function PaymentReceiptModal({ isOpen, onClose, transactionDetail
             <div class="header">
               <div>
                 <!-- We inject the absolute URL for the logo so it prints correctly -->
-                <img src="${window.location.origin}/clipad-logo-green.svg" alt="KERINT Logo" class="logo" onerror="this.style.display='none'" />
+                <img src="${window.location.origin}/clipad-logo-green.svg" alt="Weftro Logo" class="logo" onerror="this.style.display='none'" />
                 <div style="font-size: 12px; font-weight: 600; color: #64748b; margin-top: 8px;">Workspace Billing</div>
               </div>
               <div>
@@ -184,7 +184,7 @@ export default function PaymentReceiptModal({ isOpen, onClose, transactionDetail
               <tbody>
                 <tr>
                   <td>
-                    <strong>KERINT ${transactionDetails.plan.toUpperCase()} Plan</strong>
+                    <strong>Weftro ${transactionDetails.plan.toUpperCase()} Plan</strong>
                     <div style="font-size: 13px; color: #64748b; margin-top: 4px;">Premium Workspace Subscription</div>
                     ${transactionDetails.reference && !isAdminAssigned ? `<div style="font-size: 11px; color: #94a3b8; margin-top: 8px;">Ref: ${transactionDetails.reference}</div>` : ''}
                   </td>
@@ -256,7 +256,7 @@ export default function PaymentReceiptModal({ isOpen, onClose, transactionDetail
               
               <div className="relative z-10">
                 <div className="mb-12">
-                  <img src="/clipad-logo-green.png" alt="KERINT Logo" className="h-10 w-auto object-contain" onError={(e) => e.target.style.display='none'} />
+                  <img src="/clipad-logo-green.png" alt="Weftro Logo" className="h-10 w-auto object-contain" onError={(e) => e.target.style.display='none'} />
                   <div className="flex items-center gap-2 text-slate-500 dark:text-muted-foreground font-medium text-sm">
                     <FileText className="w-4 h-4" /> Receipt
                   </div>
@@ -331,7 +331,7 @@ export default function PaymentReceiptModal({ isOpen, onClose, transactionDetail
                         <Star className="w-5 h-5 text-[#006065]" />
                       </div>
                       <div>
-                        <div className="font-bold text-slate-900 dark:text-foreground text-sm">KERINT {transactionDetails.plan.toUpperCase()} Plan</div>
+                        <div className="font-bold text-slate-900 dark:text-foreground text-sm">Weftro {transactionDetails.plan.toUpperCase()} Plan</div>
                         <div className="text-xs text-slate-500 dark:text-muted-foreground mt-0.5">Workspace Subscription</div>
                       </div>
                     </div>

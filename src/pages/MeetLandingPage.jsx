@@ -430,9 +430,9 @@ export default function MeetLandingPage() {
         <div className="absolute -bottom-[20%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-[#fad503]/5 blur-[120px]" />
       </div>
       <SEO 
-        title="KERINT by Clipad — #1 Enterprise AI-Powered Collaborative Workspace & Memory Platform"
+        title="Weftro by Clipad — #1 Enterprise AI-Powered Collaborative Workspace & Memory Platform"
           url="https://clipad.com/" 
-        description="KERINT is a free, secure, enterprise-grade collaborative productivity workspace. Connect your team with chat, spaces, and HD video meetings instantly. Trusted by teams worldwide." 
+        description="Weftro is a free, secure, enterprise-grade collaborative productivity workspace. Connect your team with chat, spaces, and HD video meetings instantly. Trusted by teams worldwide." 
         type="website"
       />
       <header className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-border/50 bg-white/80 dark:bg-background/80 backdrop-blur-md shadow-sm">
@@ -479,13 +479,13 @@ export default function MeetLandingPage() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary/80 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
             </span>
-            <span>KERINT V3 Live</span>
+            <span>Weftro V3 Live</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-normal text-slate-800 leading-tight tracking-tight">
             #1 Enterprise AI-powered organizational memory and intelligence layer.<br />Now free for everyone.
           </h1>
           <p className="text-lg text-slate-500 dark:text-muted-foreground leading-relaxed">
-            KERINT captures, connects, and preserves your company's knowledge—through meetings, async video, collaboration, and intelligent context.
+            Weftro captures, connects, and preserves your company's knowledge—through meetings, async video, collaboration, and intelligent context.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center gap-4 w-full pt-2">
@@ -610,7 +610,7 @@ export default function MeetLandingPage() {
           <div className="text-center mb-16">
 
             <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-5">Choose the perfect plan for your team.</h2>
-            <p className="text-muted-foreground text-lg max-w-xl mx-auto">Scale your operations seamlessly with KERINT.</p>
+            <p className="text-muted-foreground text-lg max-w-xl mx-auto">Scale your operations seamlessly with Weftro.</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

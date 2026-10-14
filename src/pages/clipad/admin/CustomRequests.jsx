@@ -572,7 +572,7 @@ export default function CustomRequests() {
                             <Eye className="w-4 h-4" />
                           </button>
                           <a
-                            href={`mailto:${req.email}?subject=KERINT%20Enterprise%20Plan%20Arrangement%20-%20${encodeURIComponent(req.company || 'Inquiry')}&body=Hi%20${encodeURIComponent(req.name || 'there')},%0A%0AThank%20you%20for%20reaching%20out%20regarding%20a%20custom%20KERINT%20plan%20for%20${encodeURIComponent(req.company || 'your team')}.`}
+                            href={`mailto:${req.email}?subject=Weftro%20Enterprise%20Plan%20Arrangement%20-%20${encodeURIComponent(req.company || 'Inquiry')}&body=Hi%20${encodeURIComponent(req.name || 'there')},%0A%0AThank%20you%20for%20reaching%20out%20regarding%20a%20custom%20Weftro%20plan%20for%20${encodeURIComponent(req.company || 'your team')}.`}
                             className="p-2 rounded-lg text-white/70 hover:text-blue-500 hover:bg-blue-500/10 transition-colors"
                             title="Send Email"
                           >
@@ -730,7 +730,7 @@ export default function CustomRequests() {
 
                 <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
                   <a
-                    href={`mailto:${selectedRequest.email}?subject=KERINT%20Enterprise%20Arrangement%20-%20${encodeURIComponent(selectedRequest.company || '')}`}
+                    href={`mailto:${selectedRequest.email}?subject=Weftro%20Enterprise%20Arrangement%20-%20${encodeURIComponent(selectedRequest.company || '')}`}
                     className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary hover:bg-primary/90 text-white font-semibold text-xs transition-all shadow-sm"
                   >
                     <Send className="w-3.5 h-3.5" /> Email Prospect

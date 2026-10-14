@@ -12,12 +12,12 @@ export default function SecurityPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
-      <SEO title="Enterprise Security & Privacy Architecture — KERINT by Clipad" description="Bank-grade multi-tenant security, end-to-end encryption, SOC2 and HIPAA compliant data infrastructure for your organizational memory." url="https://clipad.com/security" />
+      <SEO title="Enterprise Security & Privacy Architecture — Weftro by Clipad" description="Bank-grade multi-tenant security, end-to-end encryption, SOC2 and HIPAA compliant data infrastructure for your organizational memory." url="https://clipad.com/security" />
       <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
             <Shield className="w-8 h-8 text-[#006065]" />
-            <span className="text-xl font-bold text-slate-900">KERINT</span>
+            <span className="text-xl font-bold text-slate-900">Weftro</span>
           </div>
           <Button onClick={() => navigate('/login')} className="bg-[#006065] text-white hover:bg-[#004e52] rounded-full">Sign In</Button>
         </div>
@@ -27,7 +27,7 @@ export default function SecurityPage() {
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">Built for Trust. Secured by Design.</h1>
           <p className="text-lg text-slate-600 leading-relaxed">
-            Your organizational memory is your most valuable asset. KERINT protects it with military-grade encryption, rigorous compliance standards, and uncompromising privacy controls.
+            Your organizational memory is your most valuable asset. Weftro protects it with military-grade encryption, rigorous compliance standards, and uncompromising privacy controls.
           </p>
         </div>
 

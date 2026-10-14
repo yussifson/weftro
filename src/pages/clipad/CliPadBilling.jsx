@@ -190,12 +190,12 @@ export default function CliPadBilling() {
             supabase.functions.invoke('send-email', {
               body: {
                 to: [user?.email],
-                subject: `KERINT Plan Upgrade Receipt - ${receiptNum}`,
+                subject: `Weftro Plan Upgrade Receipt - ${receiptNum}`,
                 html: `
                   <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; background: #f8fafc; padding: 40px; color: #0f172a;">
                     <div style="background: white; border: 1px solid #e2e8f0; border-radius: 20px; overflow: hidden;">
                       <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; text-align: center; padding: 32px;">
-                        <div style="font-size: 22px; font-weight: 900; margin-bottom: 8px;">KERINT</div>
+                        <div style="font-size: 22px; font-weight: 900; margin-bottom: 8px;">Weftro</div>
                         <div style="font-size: 12px; font-weight: 500;">Payment Successful</div>
                         <div style="font-size: 10px; margin-top: 12px; font-family: monospace;">#${receiptNum}</div>
                       </div>
@@ -277,7 +277,7 @@ export default function CliPadBilling() {
     <div className="space-y-8">
       <div>
         <h2 className="text-2xl font-bold text-foreground">Billing & Plans</h2>
-        <p className="text-muted-foreground mt-2">Manage your KERINT subscription and features.</p>
+        <p className="text-muted-foreground mt-2">Manage your Weftro subscription and features.</p>
       </div>
 
       {/* Billing Cycle Progress */}

@@ -226,7 +226,7 @@ export default function CliPadCustomPricing() {
 
   return (
     <>
-      <SEO title="Enterprise Custom Pricing & SLA — KERINT by Clipad" description="Tailored deployment options, custom data retention policies, and dedicated SLA contracts for enterprise organizations." url="https://clipad.com/custom-pricing" />
+      <SEO title="Enterprise Custom Pricing & SLA — Weftro by Clipad" description="Tailored deployment options, custom data retention policies, and dedicated SLA contracts for enterprise organizations." url="https://clipad.com/custom-pricing" />
     <div className="min-h-screen bg-[#fafbfc] dark:bg-[#090d16] text-white dark:text-slate-100 flex flex-col selection:bg-orange-500 selection:text-white">
       {/* Top Header */}
       <header className="sticky top-0 z-50 backdrop-blur-md bg-white/95 dark:bg-[#090d16]/95 border-b border-white/15/80 dark:border-white/10 px-6 md:px-12 py-3.5">
@@ -236,7 +236,7 @@ export default function CliPadCustomPricing() {
               <div className="text-primary transition-transform group-hover:scale-105">
                 <CliPadLogo size={28} />
               </div>
-              <span className="font-bold text-lg tracking-tight">KERINT</span>
+              <span className="font-bold text-lg tracking-tight">Weftro</span>
             </Link>
           </div>
 

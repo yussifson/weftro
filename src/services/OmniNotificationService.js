@@ -3,12 +3,12 @@ import { supabase } from '@/api/supabaseClient';
 /**
  * OmniNotificationService.js
  * 
- * Unified in-app and external email notification engine for CliPad / KERINT.
+ * Unified in-app and external email notification engine for CliPad / Weftro.
  * - In-App: Writes to `clipad_notifications` (triggering Supabase Realtime, audio alert, badge count, and local capacitor push)
- * - External Email: Dispatches emails branded for CliPad/KERINT with the unified Optavel sender identity
+ * - External Email: Dispatches emails branded for CliPad/Weftro with the unified Optavel sender identity
  */
 
-const OPTAVEL_SENDER = 'KERINT by Optavel <notifications@optavel.com>';
+const OPTAVEL_SENDER = 'Weftro by Optavel <notifications@optavel.com>';
 
 /**
  * Generate standardized corporate HTML email template
@@ -39,7 +39,7 @@ function createEmailTemplate({ title, recipientName, preheader, bodyHtml, ctaTex
 <body>
   <div class="wrapper">
     <div class="header">
-      <h1>KERINT</h1>
+      <h1>Weftro</h1>
       <span>CliPad Intelligence Platform</span>
     </div>
     <div class="content">
@@ -90,7 +90,7 @@ export const OmniNotificationService = {
     link = null,
     sourceId = null,
     sendEmail = true,
-    ctaText = 'View in KERINT',
+    ctaText = 'View in Weftro',
     emailBodyHtml = null
   }) {
     let resolvedUserId = userId;
@@ -165,7 +165,7 @@ export const OmniNotificationService = {
             body: {
               from: OPTAVEL_SENDER,
               to: [resolvedEmail.trim()],
-              subject: `${title} — KERINT`,
+              subject: `${title} — Weftro`,
               html: emailHtml
             }
           });
@@ -207,7 +207,7 @@ export const OmniNotificationService = {
     const title = `${hostName || 'A colleague'} invited you to a video meeting`;
     const message = scheduledTime 
       ? `You have been invited to a scheduled video meeting starting at ${new Date(scheduledTime).toLocaleString()}.`
-      : `You have been invited to join a live video meeting on KERINT right now.`;
+      : `You have been invited to join a live video meeting on Weftro right now.`;
 
     const bodyHtml = `
       <p style="font-size: 16px; color: #0f172a; font-weight: 600; margin-bottom: 8px;">

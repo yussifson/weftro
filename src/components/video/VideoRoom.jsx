@@ -223,8 +223,8 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
       setShowInvite(false);
     } catch (error) {
       console.warn("Omni invite warning, falling back:", error);
-      const subject = encodeURIComponent("You're invited to a video meeting on KERINT");
-      const body = encodeURIComponent(`Please join my video meeting using this secure link:\n\n${properLink}\n\nPowered by KERINT Intelligence.`);
+      const subject = encodeURIComponent("You're invited to a video meeting on Weftro");
+      const body = encodeURIComponent(`Please join my video meeting using this secure link:\n\n${properLink}\n\nPowered by Weftro Intelligence.`);
       window.open(`mailto:${inviteEmail.trim()}?subject=${subject}&body=${body}`, '_blank');
       toast({ title: "Opening Email Client", description: "Opening your default mail client to dispatch the invite." });
       setShowInvite(false);
@@ -694,7 +694,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
 
     setIsAiLoading(true);
     setAiResponse(null);
-    toast({ title: "KERINT AI", description: "Generating meeting summary and action items..."});
+    toast({ title: "Weftro AI", description: "Generating meeting summary and action items..."});
     try {
       // Fix #7: Use the ref (always up to date) and pass the real room name
       const meetingContext = transcriptDataRef.current.map(t => `${t.name}: ${t.text}`).join('\n');
@@ -731,7 +731,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
 
     setIsAiLoading(true);
     setAiResponse(null);
-    toast({ title: "KERINT AI", description: "Drafting follow-up email..."});
+    toast({ title: "Weftro AI", description: "Drafting follow-up email..."});
     try {
       const { data, error } = await supabase.functions.invoke('clipad-smart-followup', {
         body: { type: 'meeting_followup', targetId: 'dummy-room' }

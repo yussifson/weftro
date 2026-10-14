@@ -5,7 +5,7 @@ import { supabase } from '@/api/supabaseClient';
 
 export default function SupportAIChat() {
   const [messages, setMessages] = useState([
-    { id: 1, text: "Hi there! I'm the KERINT Support Assistant. How can I help you today?", sender: 'ai' }
+    { id: 1, text: "Hi there! I'm the Weftro Support Assistant. How can I help you today?", sender: 'ai' }
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -113,16 +113,16 @@ export default function SupportAIChat() {
 
     // Simulate AI response
     setTimeout(async () => {
-      let aiResponse = "I understand. I can help with general questions about KERINT's features, pricing, or getting started.";
+      let aiResponse = "I understand. I can help with general questions about Weftro's features, pricing, or getting started.";
       const lowerInput = userMessage.text.toLowerCase();
       let shouldEscalate = false;
       
       if (lowerInput.includes('human') || lowerInput.includes('agent') || lowerInput.includes('admin') || lowerInput.includes('support')) {
         shouldEscalate = true;
       } else if (lowerInput.includes('pricing') || lowerInput.includes('cost')) {
-        aiResponse = "KERINT has a Free Starter plan, a Pro plan at $49/mo, and Enterprise solutions. You can check the Pricing page for exact details.";
+        aiResponse = "Weftro has a Free Starter plan, a Pro plan at $49/mo, and Enterprise solutions. You can check the Pricing page for exact details.";
       } else if (lowerInput.includes('hi') || lowerInput.includes('hello')) {
-        aiResponse = "Hello! How can I assist you with KERINT today?";
+        aiResponse = "Hello! How can I assist you with Weftro today?";
       }
 
       if (shouldEscalate) {

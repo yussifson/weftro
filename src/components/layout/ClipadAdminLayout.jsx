@@ -90,7 +90,7 @@ export default function ClipadAdminLayout() {
       {/* Main Content */}
       <main className="flex-1 flex flex-col h-full overflow-y-auto relative z-30 page-enter bg-[#f8fafc] dark:bg-background text-[#0f172a] dark:text-foreground scrollbar-thin">
         <div className="md:hidden p-4 border-b border-slate-800 bg-[#006065] dark:bg-[#0A0F1C] text-white flex items-center justify-between">
-            <h2 className="text-lg font-black text-white">KERINT Admin</h2>
+            <h2 className="text-lg font-black text-white">Weftro Admin</h2>
             <button onClick={() => navigate('/dashboard')}><ArrowLeft className="w-5 h-5 text-white"/></button>
         </div>
         <div className={`flex-1 w-full ${location.pathname.endsWith('/ai') ? 'p-0' : 'p-6 md:p-8 max-w-7xl mx-auto'}`}>

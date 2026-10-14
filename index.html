@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/clipad-logo.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>KERINT - #1 Enterprise AI-Powered Organizational Memory Platform</title>
-    <meta name="description" content="KERINT is an enterprise-grade collaborative productivity workspace that unifies chat, spaces, video meetings, and action items in one place." />
+    <title>Weftro - #1 Enterprise AI-Powered Organizational Memory Platform</title>
+    <meta name="description" content="Weftro is an enterprise-grade collaborative productivity workspace that unifies chat, spaces, video meetings, and action items in one place." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:wght@400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -60,7 +60,7 @@
         height: 32px;
         border: 2px solid rgba(0, 96, 101, 0.15); /* very light teal */
         border-radius: 50%;
-        border-top-color: #006065; /* KERINT teal */
+        border-top-color: #006065; /* Weftro teal */
         animation: spin 1s linear infinite;
         margin-bottom: 16px;
       }
@@ -126,7 +126,7 @@
       (function() {
         var host = window.location.hostname.toLowerCase();
         var isCapacitor = !!window.Capacitor || navigator.userAgent.toLowerCase().includes('capacitor');
-        var isClipad = host.includes('clipad') || host.includes('kerint') || host.includes('optavel');
+        var isClipad = host.includes('clipad') || host.includes('weftro') || host.includes('kerint') || host.includes('optavel');
         var isSlate = host.includes('slate') && !isClipad;
 
         var appTitle = 'Workspace';
@@ -135,7 +135,7 @@
         var logoSrc = '/clipad-logo-green.svg';
 
         if (isClipad) {
-          appTitle = 'KERINT - #1 Enterprise AI-Powered Organizational Memory Platform';
+          appTitle = 'Weftro - #1 Enterprise AI-Powered Organizational Memory Platform';
           faviconHref = '/clipad-logo.svg';
           logoSrc = '/clipad-logo-green.svg';
         } else if (isSlate) {
@@ -144,7 +144,7 @@
           faviconType = 'image/svg+xml';
           logoSrc = '/slate-logo.png';
         } else {
-          appTitle = 'KERINT - #1 Enterprise AI-Powered Organizational Memory Platform';
+          appTitle = 'Weftro - #1 Enterprise AI-Powered Organizational Memory Platform';
           faviconHref = '/clipad-logo.svg';
           logoSrc = '/clipad-logo-green.svg';
         }

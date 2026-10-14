@@ -47,7 +47,7 @@ export default function PricingPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
-      <SEO title="Pricing & Plans — KERINT by Clipad" description="Simple, transparent pricing for teams of all sizes. From free collaborative spaces to enterprise knowledge intelligence." url="https://clipad.com/pricing" />
+      <SEO title="Pricing & Plans — Weftro by Clipad" description="Simple, transparent pricing for teams of all sizes. From free collaborative spaces to enterprise knowledge intelligence." url="https://clipad.com/pricing" />
       
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200">
@@ -145,7 +145,7 @@ export default function PricingPage() {
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-slate-500">
           <div className="flex items-center gap-2">
             <CliPadLogo height={20} iconOnly />
-            <span>© {new Date().getFullYear()} KERINT by Optavel Technologies</span>
+            <span>© {new Date().getFullYear()} Weftro by Optavel Technologies</span>
           </div>
           <div className="flex items-center gap-6">
             <span className="cursor-pointer hover:text-slate-700" onClick={() => navigate('/')}>Home</span>
