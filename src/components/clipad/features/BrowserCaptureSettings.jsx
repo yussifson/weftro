@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/AuthContext';
-import { getUserCaptureSettings, updateUserCaptureSettings } from '@/lib/clipadBrowserCaptureService';
+import { getUserCaptureSettings, updateUserCaptureSettings, ingestBrowserCapture } from '@/lib/clipadBrowserCaptureService';
 import { isV3FeatureEnabled, V3_FLAGS } from '@/lib/clipadV3Flags';
-import { Shield, Power, Globe, X, Plus, AlertCircle, Chrome, Settings2, Loader2 } from 'lucide-react';
+import { Shield, Power, Globe, X, Plus, AlertCircle, Chrome, Settings2, Loader2, Send, Sparkles, CheckCircle2 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,6 +17,52 @@ export default function BrowserCaptureSettings() {
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
   const [newDomain, setNewDomain] = useState('');
+
+  // Simulator State
+  const [simUrl, setSimUrl] = useState('https://github.com/project/pull/42');
+  const [simTitle, setSimTitle] = useState('PR #42: Distributed Cache & Edge Routing');
+  const [simSelectedText, setSimSelectedText] = useState('Team agreed to deploy Redis replica on worker node to drop latency from 180ms to 24ms.');
+  const [isSimulating, setIsSimulating] = useState(false);
+
+  const handleSimulateCapture = async (e) => {
+    e.preventDefault();
+    if (!simUrl.trim()) return;
+
+    setIsSimulating(true);
+    try {
+      let domain = '';
+      try {
+        const parsed = new URL(simUrl.startsWith('http') ? simUrl : `https://${simUrl}`);
+        domain = parsed.hostname;
+      } catch {
+        domain = simUrl.replace(/^https?:\/\//, '').split('/')[0];
+      }
+
+      await ingestBrowserCapture(user, {
+        url: simUrl.trim(),
+        domain,
+        pageTitle: simTitle.trim() || domain,
+        selectedText: simSelectedText.trim(),
+        captureMode: 'extension_test',
+        extensionVersion: '1.2.0',
+        contextSessionId: null
+      });
+
+      toast({
+        title: "✓ Browser Capture Ingested",
+        description: `Successfully ingested from ${domain}. Contextualization started in your inbox.`,
+      });
+    } catch (err) {
+      console.warn('Browser capture rejected or error:', err);
+      toast({
+        title: "Ingestion Blocked / Error",
+        description: err.message,
+        variant: "destructive"
+      });
+    } finally {
+      setIsSimulating(false);
+    }
+  };
 
   const companyId = user?.user_metadata?.company_id || user?.company_id;
   const isEnabledGlobal = isV3FeatureEnabled(V3_FLAGS.BROWSER_CAPTURE_ENABLED, user);
@@ -160,6 +206,73 @@ export default function BrowserCaptureSettings() {
               ))
             )}
           </div>
+        </div>
+
+        {/* Browser Extension Ingestion Simulator & Test Sandbox */}
+        <div className="pt-6 border-t border-border space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-amber-500" />
+              <h4 className="font-bold text-foreground">Test Browser Ingestion Pipeline</h4>
+            </div>
+            <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider bg-secondary px-2 py-0.5 rounded">
+              Interactive Test Sandbox
+            </span>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Simulate a tab capture from the Clipad Browser Extension. It tests whether your exclusions, privacy guard, and AI contextualization work as expected.
+          </p>
+
+          <form onSubmit={handleSimulateCapture} className="space-y-3 p-4 rounded-xl bg-secondary/30 border border-border">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="sim-url" className="text-xs font-semibold text-muted-foreground">Page URL</Label>
+                <Input
+                  id="sim-url"
+                  placeholder="https://github.com/project/pull/42"
+                  value={simUrl}
+                  onChange={(e) => setSimUrl(e.target.value)}
+                  className="mt-1 bg-background"
+                />
+              </div>
+              <div>
+                <Label htmlFor="sim-title" className="text-xs font-semibold text-muted-foreground">Page Title</Label>
+                <Input
+                  id="sim-title"
+                  placeholder="PR #42: Distributed Cache & Edge Routing"
+                  value={simTitle}
+                  onChange={(e) => setSimTitle(e.target.value)}
+                  className="mt-1 bg-background"
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="sim-text" className="text-xs font-semibold text-muted-foreground">Highlighted / Selected Text</Label>
+              <Input
+                id="sim-text"
+                placeholder="Team agreed to deploy Redis replica on worker node to drop latency from 180ms to 24ms."
+                value={simSelectedText}
+                onChange={(e) => setSimSelectedText(e.target.value)}
+                className="mt-1 bg-background"
+              />
+            </div>
+
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2">
+              <div className="text-xs text-muted-foreground flex items-center gap-1.5">
+                <Chrome className="w-4 h-4 text-primary" />
+                <span>Sends through <code className="font-mono text-[11px] text-foreground">ingestBrowserCapture()</code></span>
+              </div>
+              <Button
+                type="submit"
+                disabled={isSimulating || !simUrl.trim()}
+                className="font-semibold text-xs gap-2 shrink-0 bg-primary hover:bg-primary/90 text-white"
+              >
+                {isSimulating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+                Send Simulated Capture
+              </Button>
+            </div>
+          </form>
         </div>
       </CardContent>
     </Card>
