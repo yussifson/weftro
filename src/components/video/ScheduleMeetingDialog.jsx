@@ -14,6 +14,7 @@ import { OrbitLoader } from '@/components/ui/orbit-loader';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { NotificationService } from '@/services/NotificationService';
+import { OmniNotificationService } from '@/services/OmniNotificationService';
 
 export default function ScheduleMeetingDialog({ open, onOpenChange, onScheduled }) {
   const { user } = useAuth();
@@ -153,16 +154,14 @@ export default function ScheduleMeetingDialog({ open, onOpenChange, onScheduled 
 
       if (selectedParticipants.length > 0) {
         for (const participant of selectedParticipants) {
-          await NotificationService.emit({
-            companyId: companyId,
+          await OmniNotificationService.sendMeetingInvite({
+            hostName: user?.full_name || user?.email || 'A colleague',
             recipientEmail: participant.email,
-            title: `Meeting Invite: ${title}`,
-            message: `You have been invited to a scheduled video meeting on ${scheduledStart.toLocaleString()}. Join here: ${_payload.meeting_link}`,
-            type: 'video_meeting',
-            relatedId: _payload.meeting_link
+            roomUrl: _payload.meeting_link,
+            scheduledTime: scheduledStart.toISOString()
           });
         }
-        toast({ title: 'Invites Sent', description: `Emailed ${selectedParticipants.length} participants.` });
+        toast({ title: 'Invites Dispatched', description: `Meeting invitation delivered to ${selectedParticipants.length} participants.` });
       }
 
       setScheduledMeeting({

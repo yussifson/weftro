@@ -2,6 +2,7 @@
 import { createPortal } from 'react-dom';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/api/supabaseClient';
+import { OmniNotificationService } from '@/services/OmniNotificationService';
 import { getLimit, hasFeature } from '@/lib/clipadPricing';
 import { useAuth } from '@/lib/AuthContext';
 import { isAdmin, isSpacemanInSpace } from '@/lib/constants';
@@ -396,15 +397,17 @@ export default function SpaceDashboard() {
         if (data) {
           setSpaceMembers(prev => [...prev, data]);
           
-          // Send notification
+          // Send unified in-app & Optavel external email notification
           try {
-            await supabase.from('clipad_notifications').insert({
-              user_id: profileId,
+            await OmniNotificationService.notify({
+              userId: profileId,
               type: 'space_invite',
               title: 'Added to Workspace',
-              message: `You have been added to the workspace "${space?.name || 'Workspace'}"`,
+              message: `You have been added to the workspace "${space?.name || 'Workspace'}" by ${user?.full_name || 'a team administrator'}.`,
               link: `/space/${spaceId}`,
-              source_id: spaceId
+              sourceId: spaceId,
+              ctaText: 'Open Workspace',
+              sendEmail: true
             });
           } catch (notifErr) {
             console.error('Failed to send notification', notifErr);

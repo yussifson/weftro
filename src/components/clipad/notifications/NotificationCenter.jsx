@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Bell, Check, Video, MessageSquare, Calendar, BrainCircuit, Users, ShieldCheck } from 'lucide-react';
 import {
   DropdownMenu,
@@ -16,6 +17,7 @@ import { LocalNotifications } from '@capacitor/local-notifications';
 
 export default function NotificationCenter() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -196,7 +198,14 @@ export default function NotificationCenter() {
                     if (!notification.is_read) {
                       markAsRead(notification.id);
                     }
-                    // Could add navigation logic here based on notification.link or similar if it exists
+                    if (notification.link) {
+                      setIsOpen(false);
+                      if (notification.link.startsWith('http')) {
+                        window.location.href = notification.link;
+                      } else {
+                        navigate(notification.link);
+                      }
+                    }
                   }}
                 >
                   <div className="flex items-start gap-2 w-full">

@@ -1,4 +1,5 @@
 import { supabase} from '@/api/supabaseClient';
+import { OmniNotificationService } from '@/services/OmniNotificationService';
 import React, { useState, useEffect, useRef} from "react";
 import { useTranslation} from "react-i18next";
 import {Search, Plus, MessageSquare, MoreVertical, Send, Sparkles, Users, UserCircle, CheckCheck, Check, Smile, Paperclip, ImageIcon, FileText, File, X, PanelLeftClose, PanelLeftOpen, ChevronsRight, ChevronsLeft, Settings} from "lucide-react";
@@ -253,6 +254,23 @@ export default function ClipadChat({ isDockedMode = false }) {
  const _vals = Object.values(_payload).map(v => typeof v === 'object' && v !== null ? JSON.stringify(v) : v);
  await powerSync.execute(`UPDATE chat_rooms SET ${_keys.map(k => k+' = ?').join(', ')} WHERE id = ?`, [..._vals, activeRoomId]);
 })();
+  // Dispatch in-app & Optavel external email notification to room participants
+  (async () => {
+    try {
+      const activeRoom = rooms.find(r => r.id === activeRoomId);
+      const roomParticipants = await powerSync.getAll('SELECT user_id FROM chat_participants WHERE room_id = ? AND user_id != ?', [activeRoomId, user.id]);
+      const otherUserIds = (roomParticipants || []).map(p => p.user_id).filter(Boolean);
+      for (const targetId of otherUserIds) {
+        OmniNotificationService.sendChatAlert({
+          recipientId: targetId,
+          senderName: user?.full_name || 'A colleague',
+          roomName: activeRoom?.name || 'Workspace Chat',
+          messageSnippet: text,
+          roomId: activeRoomId
+        }).catch(() => {});
+      }
+    } catch (_) {}
+  })();
 } catch (err) {
  toast({ title: "Error", description: "Failed to send message", variant: "destructive"});
 }

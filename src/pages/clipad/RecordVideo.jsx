@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/api/supabaseClient';
+import { OmniNotificationService } from '@/services/OmniNotificationService';
 import { trackEvent } from '@/lib/posthog';
 import { createCapture } from '@/lib/clipadCaptureService';
 import { contextualizeCapture } from '@/lib/clipadContextualizationService';
@@ -1162,6 +1163,19 @@ export default function RecordVideo() {
                     is_complete: false,
                   }));
                   await supabase.from('clipad_action_items').insert(inserts);
+
+                  // Dispatch in-app & Optavel external email notifications for each assigned action item
+                  for (const ai of parsed.action_items) {
+                    if (ai.owner) {
+                      OmniNotificationService.sendTaskAssigned({
+                        assigneeId: ai.owner,
+                        taskTitle: ai.title,
+                        spaceId: selectedSpace,
+                        spaceName: 'Video Recording Actions',
+                        assignerName: user?.full_name || 'AI Assistant'
+                      }).catch(err => console.warn('Action item notification warning:', err));
+                    }
+                  }
                 }
                 
                 // --- ADDED FOR ORG MEMORY ENGINE: Decisions & Commitments ---
