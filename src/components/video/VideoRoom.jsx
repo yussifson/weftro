@@ -779,7 +779,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
       </div>
 
       {/* Middle: Corporate Control Group */}
-      <div className="flex-1 w-full flex flex-col items-center justify-center gap-2.5 my-2">
+      <div className="flex-1 w-full flex flex-col items-center justify-start gap-2.5 my-2 overflow-y-auto no-scrollbar min-h-0 py-1">
         {/* Mic Toggle */}
         <button
           onClick={toggleAudio}
@@ -910,7 +910,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
       </div>
 
       {/* Bottom: Settings & Leave */}
-      <div className="flex flex-col items-center w-full gap-2.5 pt-3 border-t border-[#2d353f] dark:border-[#222a33]">
+      <div className="flex flex-col items-center w-full gap-2.5 pt-3 border-t border-[#2d353f] dark:border-[#222a33] shrink-0">
         <button
           onClick={() => setShowSettings(true)}
           className="w-10 h-10 rounded-full flex items-center justify-center bg-[#28313b] hover:bg-[#343f4c] text-slate-300 hover:text-white transition-all"
@@ -954,10 +954,10 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
       <div className="flex items-center gap-3">
         <button
           onClick={handleCopyLink}
-          className={`h-9 px-4 rounded-full text-xs font-semibold flex items-center gap-2 transition-all shadow-sm ${
+          className={`h-9 px-4 rounded-full text-xs font-bold flex items-center gap-2 transition-all shadow-md active:scale-95 ${
             copiedLink
-              ? 'bg-emerald-600 text-white'
-              : 'bg-[#28313b] hover:bg-[#343f4c] text-white border border-[#3d4957]'
+              ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-500/20'
+              : 'bg-[#fad503] hover:bg-[#e6c402] text-[#006065] shadow-[0_2px_12px_rgba(250,213,3,0.35)]'
           }`}
           title="Copy meeting link to clipboard"
         >
@@ -968,8 +968,8 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
             </>
           ) : (
             <>
-              <Copy className="w-4 h-4 text-slate-300" />
-              <span>Copy meeting link</span>
+              <Copy className="w-4 h-4 text-[#006065]" />
+              <span>Copy link</span>
             </>
           )}
         </button>
@@ -1041,7 +1041,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           ) : null}
         </div>
         {/* Participant Sidebar — always visible, even in 2-person calls */}
-        <div className="flex-1 lg:max-w-[320px] flex lg:flex-col gap-4 overflow-x-auto lg:overflow-y-auto min-h-[140px] lg:min-h-0 items-center lg:items-stretch content-start">
+        <div className="flex-1 lg:max-w-[320px] flex lg:flex-col gap-3 overflow-x-auto lg:overflow-y-auto min-h-[140px] lg:min-h-0 max-h-full items-center lg:items-stretch content-start scrollbar-thin scrollbar-thumb-[#28313b]">
           {sidebarParticipants.map(id => (
             <ParticipantTile key={id} id={id} isLocal={id === localSessionId} className="w-64 min-w-[16rem] lg:w-full lg:min-w-0 shrink-0 m-0" />
           ))}
