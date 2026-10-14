@@ -324,16 +324,7 @@ export default function RecordVideo() {
     handlersRef.current = { toggleMicTrack, toggleWebcam, togglePause, stopRecording };
   });
 
-  useEffect(() => {
-    const handleOffline = () => {
-      if (mediaRecorderRef.current?.state === 'recording') {
-        handlersRef.current.togglePause();
-        toast({ title: '⚠️ï¸ Network Disconnected', description: 'Recording paused automatically.', variant: 'destructive' });
-      }
-    };
-    window.addEventListener('offline', handleOffline);
-    return () => window.removeEventListener('offline', handleOffline);
-  }, [toast]);
+  // Local recording does not require active internet connection; continue uninterrupted when tab goes to background
 
   // Two-Way Sync for PiP Window UI
   useEffect(() => {
@@ -437,21 +428,24 @@ export default function RecordVideo() {
   };
 
   const togglePause = () => {
-    if (!mediaRecorderRef.current) return;
-    if (mediaRecorderRef.current.state === 'recording') {
-      mediaRecorderRef.current.pause();
+    const rec = mediaRecorderRef.current;
+    if (!rec) return;
+
+    if (rec.state === 'recording') {
+      try { rec.pause(); } catch (err) { console.warn('Could not pause recorder:', err); }
       setIsPaused(true);
       clearInterval(timerRef.current);
-    } else if (mediaRecorderRef.current.state === 'paused') {
-      mediaRecorderRef.current.resume();
+      timerRef.current = null;
+    } else if (rec.state === 'paused' || isPaused) {
+      try { rec.resume(); } catch (err) { console.warn('Could not resume recorder:', err); }
       setIsPaused(false);
       
-      // Use ref (not state) to avoid stale closure — ref is always kept in sync by the interval
       const resumedAtSeconds = recordingSecondsRef.current;
       const resumeWallTime = Date.now();
       const planLimits = getPlanLimits(user);
       const maxSeconds = planLimits.maxAsyncVideoDurationSeconds;
 
+      clearInterval(timerRef.current);
       timerRef.current = setInterval(() => {
         const elapsed = Math.floor((Date.now() - resumeWallTime) / 1000);
         const seconds = resumedAtSeconds + elapsed;
@@ -1718,20 +1712,22 @@ export default function RecordVideo() {
             </div>
 
             {/* FLOATING PILL CONTROLS */}
-            <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 p-1.5 bg-white dark:bg-card border border-slate-200 dark:border-border rounded-[24px] shadow-xl">
+            <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-2 p-2 bg-white/95 dark:bg-[#131d24]/95 backdrop-blur-xl border border-slate-300 dark:border-white/15 rounded-full shadow-2xl transition-all">
               <button
-                onClick={togglePause}
-                className={`flex items-center justify-center w-10 h-10 rounded-full transition-all ${isPaused ? 'bg-amber-500/20 text-amber-500 hover:bg-amber-500/30' : 'bg-white dark:bg-card text-slate-700 dark:text-muted-foreground hover:text-slate-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10'}`}
-                title={isPaused ? 'Resume' : 'Pause'}
+                type="button"
+                onClick={(e) => { e.stopPropagation(); togglePause(); }}
+                className={`flex items-center justify-center w-11 h-11 rounded-full transition-all ${isPaused ? 'bg-amber-500 text-white hover:bg-amber-600 shadow-md shadow-amber-500/30' : 'bg-slate-100 dark:bg-white/10 text-slate-800 dark:text-slate-100 hover:bg-slate-200 dark:hover:bg-white/20'}`}
+                title={isPaused ? 'Resume recording' : 'Pause recording'}
               >
-                {isPaused ? <Play className="w-5 h-5 fill-current" /> : <Pause className="w-5 h-5 fill-current" />}
+                {isPaused ? <Play className="w-5 h-5 fill-current ml-0.5" /> : <Pause className="w-5 h-5 fill-current" />}
               </button>
               
               {!pipWindow && ('documentPictureInPicture' in window) && (
                 <button
-                  onClick={() => startPip(window.documentPictureInPicture.requestWindow({ width: 320, height: 180 }).catch(console.error))}
-                  className="flex items-center justify-center w-10 h-10 rounded-full bg-white dark:bg-card text-indigo-500 dark:text-indigo-400 hover:bg-black/5 dark:hover:bg-white/10 transition-all"
-                  title="Open PiP Controls"
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); startPip(window.documentPictureInPicture.requestWindow({ width: 320, height: 180 }).catch(console.error)); }}
+                  className="flex items-center justify-center w-11 h-11 rounded-full bg-slate-100 dark:bg-white/10 text-[#006065] dark:text-[#fad503] hover:bg-slate-200 dark:hover:bg-white/20 transition-all"
+                  title="Open Picture-in-Picture controls"
                 >
                   <Monitor className="w-5 h-5" />
                 </button>
@@ -1739,22 +1735,24 @@ export default function RecordVideo() {
 
               {teleprompterText && !showTeleprompter && (
                 <button
-                  onClick={() => setShowTeleprompter(true)}
-                  className="flex items-center justify-center w-10 h-10 rounded-full bg-white dark:bg-card text-white/80 dark:text-foreground hover:bg-black/5 dark:hover:bg-white/10 transition-all"
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); setShowTeleprompter(true); }}
+                  className="flex items-center justify-center w-11 h-11 rounded-full bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-white/20 transition-all"
                   title="Show Teleprompter"
                 >
                   <AlignLeft className="w-5 h-5" />
                 </button>
               )}
 
-              <div className="w-px h-8 bg-white/15 dark:bg-slate-700 mx-1"></div>
+              <div className="w-px h-6 bg-slate-300 dark:bg-white/20 mx-1"></div>
 
               <button
-                onClick={stopRecording}
-                className="flex items-center gap-2 pl-4 pr-5 py-3 rounded-full bg-red-500 hover:bg-red-400 text-white font-bold transition-all shadow-lg shadow-red-500/20"
+                type="button"
+                onClick={(e) => { e.stopPropagation(); stopRecording(); }}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-red-600 hover:bg-red-700 text-white font-semibold text-sm transition-all shadow-lg shadow-red-600/30 hover:scale-105 active:scale-95"
               >
-                <div className="w-4 h-4 bg-white dark:bg-card border border-slate-300 dark:border-border rounded-sm"></div>
-                Stop
+                <div className="w-3.5 h-3.5 bg-white rounded-sm"></div>
+                <span>Stop</span>
               </button>
             </div>
           </div>

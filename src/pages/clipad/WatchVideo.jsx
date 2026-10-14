@@ -266,9 +266,24 @@ export default function WatchVideo() {
   };
 
   const togglePlay = () => {
-    if (!videoRef.current) return;
-    if (playing) { videoRef.current.pause(); setPlaying(false); }
-    else { videoRef.current.play(); setPlaying(true); }
+    const v = videoRef.current;
+    if (!v) return;
+    if (!v.paused) {
+      v.pause();
+      setPlaying(false);
+    } else {
+      const playPromise = v.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            setPlaying(true);
+            setHasStartedPlaying(true);
+          })
+          .catch((err) => {
+            console.warn('Playback resume handled:', err);
+          });
+      }
+    }
   };
 
   const handleEditVideo = async (e) => {
@@ -502,8 +517,8 @@ return <LockWall type={accessDenied.type} unlockAt={accessDenied.unlockAt || nul
                 ))}
               </div>
 
-              {/* Click to play/pause */}
-              <div className="absolute inset-0 cursor-pointer z-10" onClick={togglePlay} />
+              {/* Click to play/pause on video surface */}
+              <div className="absolute inset-0 bottom-16 cursor-pointer z-10" onClick={togglePlay} />
 
               {/* Controls overlay */}
               <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30 pointer-events-none">

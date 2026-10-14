@@ -49,7 +49,7 @@ export default defineConfig({
       renderer: {},
     }),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
       devOptions: {
         enabled: false,
         type: 'module'

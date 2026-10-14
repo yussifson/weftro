@@ -13,9 +13,7 @@ import { I18nextProvider } from 'react-i18next'
 
 const updateSW = registerSW({
   onNeedRefresh() {
-    console.log('New content available. Update prepared.');
-    // We do not force updateSW(true) here anymore, it will apply on restart.
-    // Or we show a subtle non-intrusive update prompt to the user.
+    console.log('New service worker update available — deferred until deliberate page refresh.');
     window.dispatchEvent(new CustomEvent('app:updateAvailable'));
   },
   onOfflineReady() {
@@ -23,18 +21,13 @@ const updateSW = registerSW({
   }
 });
 
-// Allow PullToRefresh to trigger a service worker update check
+// PullToRefresh triggers SW check without aggressively forcing hard reload
 window.addEventListener('app:refresh', async () => {
   if ('serviceWorker' in navigator) {
-    const reg = await navigator.serviceWorker.ready;
-    if (reg) {
-      await reg.update();
-      window.location.reload(true);
-    } else {
-      window.location.reload(true);
-    }
-  } else {
-    window.location.reload(true);
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      if (reg) await reg.update();
+    } catch (_) {}
   }
 });
 
