@@ -27,6 +27,7 @@ import { useTheme } from "@/lib/ThemeContext";
 import CanvasWhiteboard from '@/components/clipad/CanvasWhiteboard';
 import { CliPadLogo } from '@/components/ui/CliPadLogo';
 import { supabase } from '@/api/supabaseClient';
+import { OmniNotificationService } from '@/services/OmniNotificationService';
 import { logAuditEvent } from '@/lib/auditLogger';
 import { useAuth } from '@/lib/AuthContext';
 import { hasFeature, getLimit } from '@/lib/clipadPricing';
@@ -213,30 +214,24 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
     setIsInviteLoading(true);
     
     const properLink = window.location.origin + '/join/' + roomUrl.split('/').pop().split('?')[0];
-    
-    try {
-      // Direct call to send-email edge function
-      const { data, error } = await db.functions.invoke('send-email', {
-        body: {
-          to: [inviteEmail.trim()],
-          subject: "You're invited to a video meeting on KERINT",
-          html: `<p>Please join my video meeting using this secure link:</p><p><a href="${properLink}">${properLink}</a></p><p>Powered by KERINT Intelligence.</p>`
-        }
-      });
-      
-      // If error (or function doesn't exist), throw to trigger fallback
-      if (error) throw error;
+    const hostDisplayName = user?.full_name || user?.email || 'A team member';
 
-      toast({ title: "Invite Sent", description: `Meeting invite securely sent to ${inviteEmail}.` });
+    try {
+      await OmniNotificationService.sendMeetingInvite({
+        hostName: hostDisplayName,
+        recipientEmail: inviteEmail.trim(),
+        roomUrl: properLink
+      });
+
+      toast({ title: "Invite Dispatched", description: `Meeting invitation delivered to ${inviteEmail}.` });
       setInviteEmail("");
       setShowInvite(false);
     } catch (error) {
-      console.warn("API invite failed, using mailto fallback:", error);
+      console.warn("Omni invite warning, falling back:", error);
       const subject = encodeURIComponent("You're invited to a video meeting on KERINT");
       const body = encodeURIComponent(`Please join my video meeting using this secure link:\n\n${properLink}\n\nPowered by KERINT Intelligence.`);
-      // Prevent page unload by using window.open instead of window.location.href
       window.open(`mailto:${inviteEmail.trim()}?subject=${subject}&body=${body}`, '_blank');
-      toast({ title: "Opening Email Client", description: "Could not send via server. Opening your email app to send the invite." });
+      toast({ title: "Opening Email Client", description: "Opening your default mail client to dispatch the invite." });
       setShowInvite(false);
     } finally {
       setIsInviteLoading(false);
@@ -249,10 +244,12 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
    if (!daily) return;
    // Enforce the pre-join mic/camera choices — Daily sometimes ignores startAudioOff/startVideoOff
    // so we explicitly set them after joining to guarantee the intended state.
-   Promise.all([
-     daily.setLocalAudio(initialAudio).catch(() => {}),
-     daily.setLocalVideo(initialVideo).catch(() => {}),
-   ]);
+   try {
+     if (typeof daily.setLocalAudio === "function") daily.setLocalAudio(Boolean(initialAudio));
+     if (typeof daily.setLocalVideo === "function") daily.setLocalVideo(Boolean(initialVideo));
+   } catch (e) {
+     console.warn("Initial media state set error:", e);
+   }
    // Fix #8/#9: Apply adaptive send settings AFTER joining (not before)
    daily.updateSendSettings({
      video: {
@@ -336,7 +333,9 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
 
  useDailyEvent('left-meeting', useCallback(() => {
   setJoined(false);
-  onLeave(null);
+  if (typeof onLeave === 'function') {
+    onLeave(null);
+  }
 }, [onLeave]));
 
  useDailyEvent('participant-left', useCallback((ev) => {
@@ -401,11 +400,11 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
    return false;
  };
 
-  const toggleAudio = async () => {
+  const toggleAudio = () => {
     if (!ensureJoined()) return;
     try {
-      const p = daily.participants().local;
-      await daily.setLocalAudio(!p.audio);
+      const currentAudio = localAudioTrack?.state === 'playable';
+      daily.setLocalAudio(!currentAudio);
     } catch (err) {
       console.error(err);
       const isDeviceNotFound = err?.name === 'NotFoundError' || err?.message?.includes('not found') || err?.message?.includes('device');
@@ -420,11 +419,11 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
     }
   };
 
-  const toggleVideo = async () => {
+  const toggleVideo = () => {
     if (!ensureJoined()) return;
     try {
-      const p = daily.participants().local;
-      await daily.setLocalVideo(!p.video);
+      const currentVideo = localVideoTrack?.state === 'playable';
+      daily.setLocalVideo(!currentVideo);
     } catch (err) {
       console.error(err);
       const isDeviceNotFound = err?.name === 'NotFoundError' || err?.message?.includes('not found') || err?.message?.includes('device');
@@ -749,7 +748,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
 };
 
  return (
-  <div className="flex flex-col h-screen w-screen overflow-hidden relative bg-gradient-to-br from-slate-100 via-slate-50 to-slate-200/90 dark:bg-gradient-to-br dark:from-[#060b0e] dark:via-[#091217] dark:to-[#04080a] text-slate-900 dark:text-white font-sans select-none transition-colors duration-300">
+  <div className="flex flex-col h-screen w-screen overflow-hidden relative bg-slate-100 dark:bg-[#090f14] text-slate-900 dark:text-white font-sans select-none transition-colors duration-300">
     {/* Refined ambient specular glow */}
     <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
       <div className="absolute -top-[20%] left-[10%] w-[55vw] h-[55vw] rounded-full bg-teal-500/10 dark:bg-cyan-500/15 blur-[150px]" />
@@ -789,8 +788,8 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           onClick={toggleAudio}
           className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-all hover:scale-105 active:scale-95 ${
             isMuted
-              ? 'bg-gradient-to-b from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 text-white shadow-[0_4px_14px_rgba(239,68,68,0.4),inset_0_1px_0_rgba(255,255,255,0.35)] border border-red-400/50'
-              : 'bg-gradient-to-b from-white to-slate-100/90 dark:bg-gradient-to-b dark:from-white/[0.12] dark:to-white/[0.04] border border-slate-200/90 dark:border-white/[0.12] text-emerald-600 dark:text-emerald-400 shadow-[0_1px_3px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_2px_6px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.18)] hover:border-emerald-500/40'
+              ? 'bg-rose-600 hover:bg-rose-500 text-white border border-rose-500 shadow-sm'
+              : 'bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/40 border border-emerald-300/60 dark:border-emerald-500/30 text-emerald-600 dark:text-emerald-400'
           }`}
           title={isMuted ? "Unmute Microphone" : "Mute Microphone"}
         >
@@ -802,8 +801,8 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           onClick={toggleVideo}
           className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-all hover:scale-105 active:scale-95 ${
             isVideoOff
-              ? 'bg-gradient-to-b from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 text-white shadow-[0_4px_14px_rgba(239,68,68,0.4),inset_0_1px_0_rgba(255,255,255,0.35)] border border-red-400/50'
-              : 'bg-gradient-to-b from-white to-slate-100/90 dark:bg-gradient-to-b dark:from-white/[0.12] dark:to-white/[0.04] border border-slate-200/90 dark:border-white/[0.12] text-emerald-600 dark:text-emerald-400 shadow-[0_1px_3px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_2px_6px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.18)] hover:border-emerald-500/40'
+              ? 'bg-rose-600 hover:bg-rose-500 text-white border border-rose-500 shadow-sm'
+              : 'bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/40 border border-emerald-300/60 dark:border-emerald-500/30 text-emerald-600 dark:text-emerald-400'
           }`}
           title={isVideoOff ? "Turn Camera On" : "Turn Camera Off"}
         >
@@ -819,7 +818,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-all hover:scale-105 active:scale-95 ${
             isSharingScreen
               ? 'bg-gradient-to-b from-[#00828a] to-[#005a5f] text-white shadow-[0_4px_16px_rgba(0,130,138,0.45),inset_0_1px_0_rgba(255,255,255,0.35)] border border-teal-300/40'
-              : 'bg-gradient-to-b from-white to-slate-100/90 dark:bg-gradient-to-b dark:from-white/[0.12] dark:to-white/[0.04] border border-slate-200/90 dark:border-white/[0.12] text-slate-700 dark:text-slate-300 shadow-[0_1px_3px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_2px_6px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.18)] hover:from-white hover:to-white dark:hover:from-white/[0.18]'
+              : 'bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.08] dark:hover:bg-white/[0.14] border border-slate-200/60 dark:border-white/[0.08] text-slate-700 dark:text-slate-200 hover:from-white hover:to-white dark:hover:from-white/[0.18]'
           }`}
           title="Share Screen"
         >
@@ -832,7 +831,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-all hover:scale-105 active:scale-95 ${
             showWhiteboard
               ? 'bg-gradient-to-b from-[#00828a] to-[#005a5f] text-white shadow-[0_4px_16px_rgba(0,130,138,0.45),inset_0_1px_0_rgba(255,255,255,0.35)] border border-teal-300/40'
-              : 'bg-gradient-to-b from-white to-slate-100/90 dark:bg-gradient-to-b dark:from-white/[0.12] dark:to-white/[0.04] border border-slate-200/90 dark:border-white/[0.12] text-slate-700 dark:text-slate-300 shadow-[0_1px_3px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_2px_6px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.18)] hover:from-white hover:to-white dark:hover:from-white/[0.18]'
+              : 'bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.08] dark:hover:bg-white/[0.14] border border-slate-200/60 dark:border-white/[0.08] text-slate-700 dark:text-slate-200 hover:from-white hover:to-white dark:hover:from-white/[0.18]'
           }`}
           title="Interactive Whiteboard"
         >
@@ -889,7 +888,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl relative flex items-center justify-center transition-all hover:scale-105 active:scale-95 ${
             showChat
               ? 'bg-gradient-to-b from-[#00828a] to-[#005a5f] text-white shadow-[0_4px_16px_rgba(0,130,138,0.45),inset_0_1px_0_rgba(255,255,255,0.35)] border border-teal-300/40'
-              : 'bg-gradient-to-b from-white to-slate-100/90 dark:bg-gradient-to-b dark:from-white/[0.12] dark:to-white/[0.04] border border-slate-200/90 dark:border-white/[0.12] text-slate-700 dark:text-slate-300 shadow-[0_1px_3px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_2px_6px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.18)] hover:from-white hover:to-white dark:hover:from-white/[0.18]'
+              : 'bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.08] dark:hover:bg-white/[0.14] border border-slate-200/60 dark:border-white/[0.08] text-slate-700 dark:text-slate-200 hover:from-white hover:to-white dark:hover:from-white/[0.18]'
           }`}
           title="Chat"
         >
@@ -902,7 +901,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
         {/* Invite Participants */}
         <button
           onClick={() => setShowInvite(true)}
-          className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-gradient-to-b from-white to-slate-100/90 dark:bg-gradient-to-b dark:from-white/[0.12] dark:to-white/[0.04] border border-slate-200/90 dark:border-white/[0.12] text-slate-700 dark:text-slate-300 shadow-[0_1px_3px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_2px_6px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.18)] hover:scale-105 active:scale-95 transition-all"
+          className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.08] dark:hover:bg-white/[0.14] border border-slate-200/60 dark:border-white/[0.08] text-slate-700 dark:text-slate-200 hover:scale-105 active:scale-95 transition-all"
           title="Invite Participants"
         >
           <UserPlus className="w-4.5 h-4.5" />
@@ -912,7 +911,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
         <button
           onClick={handleAiAssist}
           disabled={isAiLoading}
-          className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-gradient-to-b from-white to-slate-100/90 dark:bg-gradient-to-b dark:from-white/[0.12] dark:to-white/[0.04] border border-slate-200/90 dark:border-white/[0.12] text-slate-700 dark:text-slate-300 shadow-[0_1px_3px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_2px_6px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.18)] hover:scale-105 active:scale-95 transition-all"
+          className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.08] dark:hover:bg-white/[0.14] border border-slate-200/60 dark:border-white/[0.08] text-slate-700 dark:text-slate-200 hover:scale-105 active:scale-95 transition-all"
           title="Generate AI Notes & Summary"
         >
           <Sparkles className="w-4.5 h-4.5 text-[#fad503]" />
@@ -924,7 +923,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
         {/* Settings Button */}
         <button
           onClick={() => setShowSettings(true)}
-          className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-gradient-to-b from-white to-slate-100/90 dark:bg-gradient-to-b dark:from-white/[0.12] dark:to-white/[0.04] border border-slate-200/90 dark:border-white/[0.12] text-slate-700 dark:text-slate-300 shadow-[0_1px_3px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_2px_6px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.18)] hover:scale-105 active:scale-95 transition-all"
+          className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.08] dark:hover:bg-white/[0.14] border border-slate-200/60 dark:border-white/[0.08] text-slate-700 dark:text-slate-200 hover:scale-105 active:scale-95 transition-all"
           title="Meeting Settings"
         >
           <Settings className="w-4.5 h-4.5" />
@@ -933,7 +932,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
         {/* Leave Meeting */}
         <button
           onClick={leaveCall}
-          className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-gradient-to-b from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white shadow-[0_4px_16px_rgba(220,38,38,0.45),inset_0_1px_0_rgba(255,255,255,0.35)] border border-red-500/60 hover:scale-105 active:scale-95 transition-all"
+          className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-red-600 hover:bg-red-700 text-white border border-red-600 rounded-xl shadow-sm hover:scale-105 active:scale-95 transition-all"
           title="Leave Meeting"
         >
           <PhoneOff className="w-4.5 h-4.5" />
@@ -968,10 +967,10 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
       <div className="flex items-center gap-2">
         <button
           onClick={handleCopyLink}
-          className={`h-8.5 px-4 text-xs font-semibold rounded-xl border shadow-sm flex items-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] ${
+          className={`h-8.5 px-3.5 text-xs font-medium rounded-lg border flex items-center gap-2 transition-colors ${
             copiedLink
-              ? 'bg-gradient-to-b from-emerald-500 to-emerald-600 text-white border-emerald-400/50 shadow-[0_4px_12px_rgba(16,185,129,0.35),inset_0_1px_0_rgba(255,255,255,0.3)]'
-              : 'bg-gradient-to-b from-white to-slate-100/90 dark:bg-gradient-to-b dark:from-white/[0.14] dark:to-white/[0.04] text-slate-700 dark:text-slate-100 border-slate-200/90 dark:border-white/[0.16] shadow-[0_1px_3px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.95)] dark:shadow-[0_2px_6px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.2)] hover:from-white hover:to-white dark:hover:from-white/[0.2] dark:hover:to-white/[0.08]'
+              ? 'bg-emerald-600 text-white border-emerald-500 shadow-sm'
+              : 'bg-white hover:bg-slate-50 dark:bg-[#131f28] dark:hover:bg-[#1a2936] text-slate-700 dark:text-slate-200 border-slate-200 dark:border-white/10 shadow-sm'
           }`}
           title="Copy Meeting Link to Clipboard"
         >
@@ -1031,9 +1030,9 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
     return (
       <div className="flex-1 flex flex-col lg:flex-row p-3 sm:p-5 gap-4 overflow-hidden bg-slate-200/30 dark:bg-[#070d12]/50 backdrop-blur-xl">
         {/* Main Stage Area with Specular Bevel & Cinematic Depth */}
-        <div className="flex-[3] relative rounded-3xl flex items-center justify-center overflow-hidden border border-slate-300/80 dark:border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.15),inset_0_1px_1px_rgba(255,255,255,0.9)] dark:shadow-[0_25px_60px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.22)] bg-gradient-to-b from-slate-900 via-[#0d161d] to-[#080e13] ring-1 ring-black/10 dark:ring-white/10 group">
+        <div className="flex-[3] relative rounded-3xl flex items-center justify-center overflow-hidden border border-slate-200 dark:border-white/[0.08] shadow-[0_12px_40px_rgba(0,0,0,0.08)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.6)] bg-slate-950 dark:bg-[#070d12] rounded-2xl">
           {/* Top specular reflection line across stage */}
-          <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/40 dark:via-white/30 to-transparent pointer-events-none z-30" />
+          
           {showWhiteboard && (
             <CanvasWhiteboard onClose={() => setShowWhiteboard(false)} />
           )}
@@ -1415,7 +1414,7 @@ function ParticipantTile({ id, isLocal, className }) {
  const activeSpeakerId = useActiveSpeakerId();
  const isSpeaking = activeSpeakerId === id;
  return (
- <div className={`relative bg-gradient-to-b from-white to-slate-100/90 dark:bg-gradient-to-b dark:from-slate-800/80 dark:to-slate-900/90 rounded-2xl overflow-hidden group flex items-center justify-center aspect-video shadow-[0_4px_16px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_8px_24px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.15)] border transition-all duration-300 ${isSpeaking ? 'border-cyan-500 dark:border-cyan-400 ring-2 ring-cyan-500/40 shadow-[0_0_24px_rgba(6,182,212,0.4),inset_0_1px_0_rgba(255,255,255,0.25)]' : 'border-slate-200/90 dark:border-white/10'} ${className || 'w-full max-w-3xl min-w-[320px] m-2'}`}>
+ <div className={`relative bg-slate-900 rounded-xl overflow-hidden group flex items-center justify-center aspect-video border transition-colors ${isSpeaking ? 'border-cyan-500 dark:border-cyan-400 ring-2 ring-cyan-500/40 shadow-[0_0_24px_rgba(6,182,212,0.4),inset_0_1px_0_rgba(255,255,255,0.25)]' : 'border-slate-200/90 dark:border-white/10'} ${className || 'w-full max-w-3xl min-w-[320px] m-2'}`}>
  {videoState?.state === 'playable' ? (
  <video 
  ref={videoRef}
