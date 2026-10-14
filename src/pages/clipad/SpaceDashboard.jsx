@@ -178,7 +178,7 @@ export default function SpaceDashboard() {
   };
 
   const fetchAll = async () => {
-    setLoading(true);
+    if (!space) setLoading(true);
     try {
       // Phase 1: fetch the space first so we get company_id
       const spaceRes = await supabase.from('clipad_spaces').select('*').eq('id', spaceId).single();

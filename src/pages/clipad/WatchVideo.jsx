@@ -123,11 +123,11 @@ export default function WatchVideo() {
       supabase.removeChannel(channel); 
       if (blobUrl) URL.revokeObjectURL(blobUrl);
     };
-  }, [videoId, isLoadingAuth, user]);
+  }, [videoId]);
 
   const fetchAll = async () => {
     if (isLoadingAuth) return;
-    setLoading(true);
+    if (!video) setLoading(true);
     try {
       const [videoRes, commentsRes, reactionsRes] = await Promise.all([
         supabase.from('clipad_videos').select('*, creator:creator_id(full_name, avatar_url)').eq('id', videoId).single(),

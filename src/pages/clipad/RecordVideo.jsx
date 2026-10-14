@@ -393,7 +393,6 @@ export default function RecordVideo() {
       }
     };
     loadSpaces();
-    return () => stopEverything();
   }, [user?.id]);
 
   useEffect(() => {

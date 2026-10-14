@@ -256,7 +256,12 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
      }
    }).catch(e => console.warn('updateSendSettings failed:', e));
    // Only attempt cloud transcription — silent failure is fine if not enabled
-   daily.startTranscription().catch(() => {});
+   if (typeof daily?.startTranscription === 'function') {
+      try {
+        const tr = daily.startTranscription();
+        if (tr && typeof tr.catch === 'function') tr.catch(() => {});
+      } catch (_) {}
+    }
   }, [daily, initialAudio, initialVideo]));
 
   // Fix #18: Reuse a single AudioContext instead of creating one per sound
@@ -1420,7 +1425,7 @@ function ParticipantTile({ id, isLocal, className }) {
  };
 
  const activeSpeakerId = useActiveSpeakerId();
- const isSpeaking = activeSpeakerId === id;
+ const isSpeaking = activeSpeakerId === id || (isLocal && audioState?.state === 'playable');
  return (
  <div className={`relative bg-slate-100 dark:bg-[#101D22] rounded-2xl overflow-hidden group flex items-center justify-center border transition-all ${isSpeaking ? 'border-[#00beac] ring-2 ring-[#00beac]/50' : 'border-slate-200 dark:border-[#1A2F38]'} ${className || 'w-full h-full'}`}>
  {videoState?.state === 'playable' ? (

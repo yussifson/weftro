@@ -153,7 +153,7 @@ export default function MeetingRecord() {
   useEffect(() => { if (meetingId) fetchMeeting(); }, [meetingId, isLoadingAuth, user]);
 
   const fetchMeeting = async () => {
-    setLoading(true);
+    if (!meeting) setLoading(true);
     try {
       const [meetingRes, actionsRes, transcriptRes, commentsRes, reactionsRes] = await Promise.all([
         supabase.from('clipad_meeting_records').select('*').eq('id', meetingId).single(),

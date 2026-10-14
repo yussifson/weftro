@@ -72,7 +72,7 @@ export default function CaptureInbox() {
   }, [user, companyId]);
 
   const loadData = async () => {
-    setLoading(true);
+    if (captures.length === 0) setLoading(true);
     try {
       let query = supabase
         .from('clipad_v3_captures')
