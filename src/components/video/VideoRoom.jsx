@@ -95,12 +95,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
  const [copiedLink, setCopiedLink] = useState(false);
  const { theme, changeTheme } = useTheme();
 
-  // Default meeting interface to dark theme on enter
-  useEffect(() => {
-    if (theme !== 'dark') {
-      changeTheme('dark');
-    }
-  }, []);
+  // Preserves active theme from ThemeContext / system settings
  const [showEmojis, setShowEmojis] = useState(false);
  const [floatingEmojis, setFloatingEmojis] = useState([]);
   // Fix #3: Network reconnection state
@@ -748,7 +743,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
 };
 
  return (
-  <div className="flex flex-col h-screen w-screen overflow-hidden relative bg-slate-100 dark:bg-[#090f14] text-slate-900 dark:text-white font-sans select-none transition-colors duration-300">
+  <div className="flex flex-col h-screen w-screen overflow-hidden relative bg-[#f8fafc] dark:bg-[#0B1418] text-slate-900 dark:text-white font-sans select-none transition-colors duration-200">
     {/* Refined ambient specular glow */}
     <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
       <div className="absolute -top-[20%] left-[10%] w-[55vw] h-[55vw] rounded-full bg-teal-500/10 dark:bg-cyan-500/15 blur-[150px]" />
@@ -761,9 +756,9 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
  <div className="relative z-10 flex-1 flex flex-row min-w-0 overflow-hidden">
 
    {/* Corporate Left Mission Control Sidebar */}
-    <aside className="w-16 sm:w-[72px] bg-[#1e242b] dark:bg-[#11161b] border-r border-[#2d353f] dark:border-[#222a33] flex flex-col items-center justify-between py-3 px-2 z-40 shrink-0 select-none shadow-md transition-colors">
+    <aside className="w-16 sm:w-[72px] bg-white dark:bg-[#091114] border-r border-slate-200 dark:border-[#1A2F38] flex flex-col items-center justify-between py-3 px-2 z-40 shrink-0 select-none shadow-sm dark:shadow-md transition-colors">
       {/* Top: Home / Return button */}
-      <div className="flex flex-col items-center w-full pb-3 border-b border-[#2d353f] dark:border-[#222a33]">
+      <div className="flex flex-col items-center w-full pb-3 border-b border-slate-200 dark:border-[#1A2F38]">
         <button
           onClick={() => {
             if (window.confirm("Are you sure you want to return to Dashboard?")) {
@@ -771,7 +766,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
               navigate('/dashboard');
             }
           }}
-          className="w-10 h-10 rounded-full flex items-center justify-center bg-[#28313b] hover:bg-[#343f4c] text-slate-300 hover:text-white transition-all"
+          className="w-10 h-10 rounded-full flex items-center justify-center bg-slate-100 hover:bg-slate-200 dark:bg-[#15262D] dark:hover:bg-[#1C333C] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#1A2F38] transition-all"
           title="Exit to Dashboard"
         >
           <Home className="w-5 h-5" />
@@ -786,7 +781,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
             isMuted
               ? 'bg-[#ea4335] text-white shadow-sm hover:bg-[#d93025]'
-              : 'bg-[#28313b] hover:bg-[#343f4c] text-white'
+              : 'bg-slate-100 hover:bg-slate-200 dark:bg-[#15262D] dark:hover:bg-[#1C333C] text-slate-700 dark:text-white border border-slate-200 dark:border-[#1A2F38]'
           }`}
           title={isMuted ? "Turn on microphone" : "Turn off microphone"}
         >
@@ -799,7 +794,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
             isVideoOff
               ? 'bg-[#ea4335] text-white shadow-sm hover:bg-[#d93025]'
-              : 'bg-[#28313b] hover:bg-[#343f4c] text-white'
+              : 'bg-slate-100 hover:bg-slate-200 dark:bg-[#15262D] dark:hover:bg-[#1C333C] text-slate-700 dark:text-white border border-slate-200 dark:border-[#1A2F38]'
           }`}
           title={isVideoOff ? "Turn on camera" : "Turn off camera"}
         >
@@ -812,7 +807,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
             isSharingScreen
               ? 'bg-[#00828a] text-white'
-              : 'bg-[#28313b] hover:bg-[#343f4c] text-slate-200 hover:text-white'
+              : 'bg-slate-100 hover:bg-slate-200 dark:bg-[#15262D] dark:hover:bg-[#1C333C] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#1A2F38]'
           }`}
           title={isSharingScreen ? "Stop sharing screen" : "Share screen"}
         >
@@ -825,7 +820,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
             showWhiteboard
               ? 'bg-[#00828a] text-white'
-              : 'bg-[#28313b] hover:bg-[#343f4c] text-slate-200 hover:text-white'
+              : 'bg-slate-100 hover:bg-slate-200 dark:bg-[#15262D] dark:hover:bg-[#1C333C] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#1A2F38]'
           }`}
           title="Whiteboard"
         >
@@ -866,7 +861,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
             isRecording
               ? 'bg-[#ea4335] text-white animate-pulse'
-              : 'bg-[#28313b] hover:bg-[#343f4c] text-slate-200 hover:text-white'
+              : 'bg-slate-100 hover:bg-slate-200 dark:bg-[#15262D] dark:hover:bg-[#1C333C] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#1A2F38]'
           }`}
           title={isRecording ? "Stop recording" : "Record meeting"}
         >
@@ -879,7 +874,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           className={`w-10 h-10 rounded-full relative flex items-center justify-center transition-all ${
             showChat
               ? 'bg-[#00828a] text-white'
-              : 'bg-[#28313b] hover:bg-[#343f4c] text-slate-200 hover:text-white'
+              : 'bg-slate-100 hover:bg-slate-200 dark:bg-[#15262D] dark:hover:bg-[#1C333C] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#1A2F38]'
           }`}
           title="Meeting chat"
         >
@@ -892,7 +887,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
         {/* Invite Participants */}
         <button
           onClick={() => setShowInvite(true)}
-          className="w-10 h-10 rounded-full flex items-center justify-center bg-[#28313b] hover:bg-[#343f4c] text-slate-200 hover:text-white transition-all"
+          className="w-10 h-10 rounded-full flex items-center justify-center bg-slate-100 hover:bg-slate-200 dark:bg-[#15262D] dark:hover:bg-[#1C333C] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#1A2F38] transition-all"
           title="Invite people"
         >
           <UserPlus className="w-5 h-5" />
@@ -902,7 +897,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
         <button
           onClick={handleAiAssist}
           disabled={isAiLoading}
-          className="w-10 h-10 rounded-full flex items-center justify-center bg-[#28313b] hover:bg-[#343f4c] text-slate-200 hover:text-white transition-all"
+          className="w-10 h-10 rounded-full flex items-center justify-center bg-slate-100 hover:bg-slate-200 dark:bg-[#15262D] dark:hover:bg-[#1C333C] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#1A2F38] transition-all"
           title="AI Notes"
         >
           <Sparkles className="w-5 h-5 text-[#fad503]" />
@@ -910,10 +905,10 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
       </div>
 
       {/* Bottom: Settings & Leave */}
-      <div className="flex flex-col items-center w-full gap-2.5 pt-3 border-t border-[#2d353f] dark:border-[#222a33] shrink-0">
+      <div className="flex flex-col items-center w-full gap-2.5 pt-3 border-t border-slate-200 dark:border-[#1A2F38] shrink-0">
         <button
           onClick={() => setShowSettings(true)}
-          className="w-10 h-10 rounded-full flex items-center justify-center bg-[#28313b] hover:bg-[#343f4c] text-slate-300 hover:text-white transition-all"
+          className="w-10 h-10 rounded-full flex items-center justify-center bg-slate-100 hover:bg-slate-200 dark:bg-[#15262D] dark:hover:bg-[#1C333C] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-[#1A2F38] transition-all"
           title="Settings"
         >
           <Settings className="w-5 h-5" />
@@ -935,10 +930,10 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
 
 
   {/* Corporate Meeting Header Bar with Glass Luster */}
-    <header className="h-14 px-6 flex items-center justify-between border-b border-[#2d353f] dark:border-[#1e2630] bg-[#1a2027] dark:bg-[#0e1318] z-30 shrink-0">
+    <header className="h-14 px-6 flex items-center justify-between border-b border-slate-200 dark:border-[#1A2F38] bg-white dark:bg-[#0B1418] z-30 shrink-0 transition-colors">
       {/* Left: Meeting title & recording badge */}
       <div className="flex items-center gap-3">
-        <span className="font-semibold text-sm text-slate-100 tracking-tight">Meeting Room</span>
+        <span className="font-semibold text-sm text-slate-900 dark:text-slate-100 tracking-tight">Meeting Room</span>
         {isRecording && (
           <div className="flex items-center gap-2 bg-red-500/15 border border-red-500/40 text-red-400 px-3 py-1 rounded-full text-xs font-semibold">
             <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
@@ -1015,9 +1010,9 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
     const sidebarParticipants = allParticipants.filter(id => id !== mainSpeakerId);
 
     return (
-      <div className="flex-1 flex flex-col lg:flex-row p-2 sm:p-3 gap-3 overflow-hidden bg-[#12171d] dark:bg-[#090d11]">
+      <div className="flex-1 flex flex-col lg:flex-row p-2 sm:p-3 gap-3 overflow-hidden bg-[#f1f5f9] dark:bg-[#0B1418] transition-colors">
         {/* Main Stage Area with Specular Bevel & Cinematic Depth */}
-        <div className="flex-1 relative rounded-2xl flex items-center justify-center overflow-hidden bg-[#0c1014] border border-[#232b36] w-full h-full">
+        <div className="flex-1 relative rounded-2xl flex items-center justify-center overflow-hidden bg-white dark:bg-[#101D22] border border-slate-200 dark:border-[#1A2F38] w-full h-full shadow-sm transition-colors">
           {/* Top specular reflection line across stage */}
           
           {showWhiteboard && (
@@ -1401,7 +1396,7 @@ function ParticipantTile({ id, isLocal, className }) {
  const activeSpeakerId = useActiveSpeakerId();
  const isSpeaking = activeSpeakerId === id;
  return (
- <div className={`relative bg-[#151b22] rounded-2xl overflow-hidden group flex items-center justify-center border transition-all ${isSpeaking ? 'border-[#00828a] ring-2 ring-[#00828a]/50' : 'border-[#222a34]'} ${className || 'w-full h-full'}`}>
+ <div className={`relative bg-slate-100 dark:bg-[#101D22] rounded-2xl overflow-hidden group flex items-center justify-center border transition-all ${isSpeaking ? 'border-[#00beac] ring-2 ring-[#00beac]/50' : 'border-slate-200 dark:border-[#1A2F38]'} ${className || 'w-full h-full'}`}>
  {videoState?.state === 'playable' ? (
  <video 
  ref={videoRef}
