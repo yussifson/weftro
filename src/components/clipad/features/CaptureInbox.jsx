@@ -4,7 +4,7 @@ import { useAuth } from '@/lib/AuthContext';
 import { 
   Loader2, Sparkles, BrainCircuit, Mic, Type, FileText, Link2 as LinkIcon, Monitor, 
   PlaySquare as Video, Users, MessageSquare as File, Plus, CheckCircle2, AlertCircle, 
-  Clock, ArrowRight, Play, Pause, Archive, Settings2, FolderOpen
+  Clock, ArrowRight, Play, Pause, Archive, Settings2, FolderOpen, Trash2, Eye, ExternalLink
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -47,26 +47,52 @@ export default function CaptureInbox() {
   const contextSessionsEnabled = isV3FeatureEnabled(V3_FLAGS.CONTEXT_SESSIONS_ENABLED, user);
   const browserCaptureEnabled = isV3FeatureEnabled(V3_FLAGS.BROWSER_CAPTURE_ENABLED, user);
 
+  const [selectedCaptureForView, setSelectedCaptureForView] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
+
   useEffect(() => {
     if (user) {
       loadData();
+
+      // Realtime subscription for capture status updates
+      const channel = supabase.channel(`captures_inbox_${user.id}`)
+        .on('postgres_changes', { 
+          event: '*', 
+          schema: 'public', 
+          table: 'clipad_v3_captures' 
+        }, () => {
+          loadData();
+        })
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
     }
-  }, [user]);
+  }, [user, companyId]);
 
   const loadData = async () => {
     setLoading(true);
     try {
-      const { data: capturesData } = await supabase
+      let query = supabase
         .from('clipad_v3_captures')
-        .select('*')
-        .eq('company_id', companyId)
+        .select('*');
+      
+      if (companyId) {
+        query = query.or(`company_id.eq.${companyId},user_id.eq.${user.id}`);
+      } else {
+        query = query.eq('user_id', user.id);
+      }
+
+      const { data: capturesData, error: capErr } = await query
         .order('captured_at', { ascending: false })
         .limit(50);
-      
+
+      if (capErr) throw capErr;
       setCaptures(capturesData || []);
 
       if (contextSessionsEnabled) {
-        const sessData = await getUserContextSessions(user.id, companyId);
+        const sessData = await getUserContextSessions(user.id, companyId || user.id);
         setSessions(sessData || []);
       }
     } catch (e) {
@@ -74,6 +100,25 @@ export default function CaptureInbox() {
       toast({ title: "Error", description: "Failed to load inbox data.", variant: "destructive" });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteCapture = async (e, captureId) => {
+    e.stopPropagation();
+    if (!window.confirm("Are you sure you want to delete this capture?")) return;
+    setDeletingId(captureId);
+    try {
+      const { error } = await supabase.from('clipad_v3_captures').delete().eq('id', captureId);
+      if (error) throw error;
+      toast({ title: "Capture deleted", description: "The capture was removed from your inbox." });
+      setCaptures(prev => prev.filter(c => c.id !== captureId));
+      if (selectedCaptureForView?.id === captureId) {
+        setSelectedCaptureForView(null);
+      }
+    } catch (err) {
+      toast({ title: "Delete failed", description: err.message, variant: "destructive" });
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -199,8 +244,12 @@ export default function CaptureInbox() {
     switch(status) {
       case 'CREATED': return <Badge variant="secondary" className="bg-blue-500/10 text-blue-500 hover:bg-blue-500/20">Ready</Badge>;
       case 'PROCESSING': return <Badge variant="secondary" className="bg-amber-500/10 text-amber-500 hover:bg-amber-500/20"><Loader2 className="w-3 h-3 mr-1 animate-spin" /> Processing</Badge>;
-      case 'PROCESSED': return <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20">Processed</Badge>;
+      case 'PROCESSED':
+      case 'CONTEXTUALIZED':
+      case 'INGESTED':
+        return <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 border-emerald-500/20">Contextualized</Badge>;
       case 'FAILED': return <Badge variant="destructive" className="bg-red-500/10 text-red-500 hover:bg-red-500/20 border-red-500/20">Failed</Badge>;
+      case 'ARCHIVED': return <Badge variant="outline" className="text-muted-foreground">Archived</Badge>;
       default: return <Badge variant="outline">{status}</Badge>;
     }
   };
@@ -379,6 +428,11 @@ export default function CaptureInbox() {
                               </>
                             )}
                           </div>
+                          {capture.content && (
+                            <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed pt-1">
+                              {capture.content}
+                            </p>
+                          )}
                           {capture.metadata?.extracted_topics && capture.metadata.extracted_topics.length > 0 && (
                             <div className="flex flex-wrap gap-1 mt-2">
                               {capture.metadata.extracted_topics.map(t => (
@@ -389,13 +443,13 @@ export default function CaptureInbox() {
                         </div>
                       </div>
                       
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto shrink-0 border-t sm:border-t-0 sm:border-l border-border pt-4 sm:pt-0 sm:pl-4 mt-2 sm:mt-0">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto shrink-0 border-t sm:border-t-0 sm:border-l border-border pt-4 sm:pt-0 sm:pl-4 mt-2 sm:mt-0">
                         {contextSessionsEnabled && (
                           <Select 
                             value={capture.context_session_id || 'none'}
                             onValueChange={(val) => handleAssociateSession(capture.id, val === 'none' ? null : val)}
                           >
-                            <SelectTrigger className="w-full sm:w-[140px] h-8 text-xs bg-secondary/50 border-border">
+                            <SelectTrigger className="w-full sm:w-[130px] h-8 text-xs bg-secondary/50 border-border">
                               <SelectValue placeholder="No Session" />
                             </SelectTrigger>
                             <SelectContent>
@@ -409,7 +463,17 @@ export default function CaptureInbox() {
                           </Select>
                         )}
 
-                        {['CREATED', 'FAILED'].includes(capture.status) && (
+                        <Button
+                          onClick={() => setSelectedCaptureForView(capture)}
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 px-2.5 text-xs text-muted-foreground hover:text-foreground"
+                          title="View Details"
+                        >
+                          <Eye className="w-3.5 h-3.5 mr-1" /> View
+                        </Button>
+
+                        {['CREATED', 'FAILED'].includes(capture.status) ? (
                           <Button
                             onClick={() => handleProcess(capture)}
                             disabled={processingId === capture.id}
@@ -423,7 +487,38 @@ export default function CaptureInbox() {
                             )}
                             Process Context
                           </Button>
+                        ) : (
+                          <Button
+                            onClick={() => handleProcess(capture)}
+                            disabled={processingId === capture.id}
+                            variant="outline"
+                            size="sm"
+                            className="w-full sm:w-auto h-8 text-xs font-semibold text-muted-foreground hover:text-foreground"
+                            title="Re-run AI extraction"
+                          >
+                            {processingId === capture.id ? (
+                              <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                            ) : (
+                              <BrainCircuit className="w-3.5 h-3.5 mr-1.5" />
+                            )}
+                            Re-process
+                          </Button>
                         )}
+
+                        <Button
+                          onClick={(e) => handleDeleteCapture(e, capture.id)}
+                          disabled={deletingId === capture.id}
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-500/10 shrink-0"
+                          title="Delete Capture"
+                        >
+                          {deletingId === capture.id ? (
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          ) : (
+                            <Trash2 className="w-3.5 h-3.5" />
+                          )}
+                        </Button>
                       </div>
                     </div>
                   </CardContent>
@@ -517,6 +612,99 @@ export default function CaptureInbox() {
           </TabsContent>
         )}
       </Tabs>
+
+      {/* Capture Details Modal */}
+      <Dialog open={!!selectedCaptureForView} onOpenChange={(open) => !open && setSelectedCaptureForView(null)}>
+        <DialogContent className="sm:max-w-xl max-h-[85vh] overflow-y-auto">
+          {selectedCaptureForView && (
+            <div>
+              <DialogHeader>
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center shrink-0">
+                    {getSourceIcon(selectedCaptureForView.capture_type)}
+                  </div>
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <DialogTitle className="truncate text-lg">{selectedCaptureForView.title || 'Untitled Capture'}</DialogTitle>
+                    {getStatusBadge(selectedCaptureForView.status)}
+                  </div>
+                </div>
+                <DialogDescription className="flex items-center gap-2 text-xs">
+                  <span>Type: <strong className="text-foreground">{selectedCaptureForView.capture_type}</strong></span>
+                  <span>•</span>
+                  <span>Source: <strong className="text-foreground">{selectedCaptureForView.source_type}</strong></span>
+                  <span>•</span>
+                  <span>{new Date(selectedCaptureForView.captured_at).toLocaleString()}</span>
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-4 py-4 text-sm">
+                <div className="space-y-1">
+                  <Label className="text-xs uppercase font-bold text-muted-foreground">Content</Label>
+                  <div className="p-3.5 rounded-lg bg-secondary/40 border border-border text-foreground whitespace-pre-wrap font-sans text-xs leading-relaxed max-h-60 overflow-y-auto">
+                    {selectedCaptureForView.content || 'No text content attached.'}
+                  </div>
+                </div>
+
+                {selectedCaptureForView.metadata?.extracted_topics && selectedCaptureForView.metadata.extracted_topics.length > 0 && (
+                  <div className="space-y-1">
+                    <Label className="text-xs uppercase font-bold text-muted-foreground">Extracted Topics</Label>
+                    <div className="flex flex-wrap gap-1.5 pt-0.5">
+                      {selectedCaptureForView.metadata.extracted_topics.map(t => (
+                        <Badge key={t} variant="secondary" className="text-xs font-medium bg-primary/10 text-primary border border-primary/20">
+                          {t}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {selectedCaptureForView.metadata && Object.keys(selectedCaptureForView.metadata).length > 0 && (
+                  <div className="space-y-1">
+                    <Label className="text-xs uppercase font-bold text-muted-foreground">Metadata</Label>
+                    <pre className="p-3 rounded-lg bg-secondary/30 border border-border text-[11px] font-mono text-muted-foreground overflow-x-auto max-h-40">
+                      {JSON.stringify(selectedCaptureForView.metadata, null, 2)}
+                    </pre>
+                  </div>
+                )}
+              </div>
+
+              <DialogFooter className="flex sm:justify-between items-center gap-2 pt-2 border-t">
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={(e) => {
+                    handleDeleteCapture(e, selectedCaptureForView.id);
+                  }}
+                  className="gap-1.5 text-xs"
+                >
+                  <Trash2 className="w-3.5 h-3.5" /> Delete
+                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const cap = selectedCaptureForView;
+                      setSelectedCaptureForView(null);
+                      handleProcess(cap);
+                    }}
+                    className="gap-1.5 text-xs"
+                  >
+                    <BrainCircuit className="w-3.5 h-3.5" /> Contextualize AI
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => setSelectedCaptureForView(null)}
+                    className="text-xs"
+                  >
+                    Done
+                  </Button>
+                </div>
+              </DialogFooter>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -26,6 +26,8 @@ const TYPE_META = {
   blocker:     { icon: AlertTriangle, label: 'Blocker',   color: 'text-primary', bg: 'bg-primary/10 border border-primary/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=overview` : null },
   standup:     { icon: Zap,           label: 'Standup',   color: 'text-primary', bg: 'bg-primary/10 border border-primary/20', route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=standup` : null },
   integration: { icon: ExternalLink,  label: 'Imported',  color: 'text-primary', bg: 'bg-primary/10 border border-primary/20', route: () => `/integrations` },
+  capture:     { icon: Inbox,         label: 'Capture',   color: 'text-primary', bg: 'bg-primary/10 border border-primary/20', route: () => `/capture` },
+  memory:      { icon: BrainCircuit,  label: 'Memory',    color: 'text-primary', bg: 'bg-primary/10 border border-primary/20', route: () => `/capture` },
 };
 
 const FILTER_TABS = [
@@ -36,6 +38,7 @@ const FILTER_TABS = [
   { id: 'meeting', label: 'Meetings', icon: Calendar },
   { id: 'decision', label: 'Decisions', icon: ShieldAlert },
   { id: 'message', label: 'Conversations', icon: MessageSquare },
+  { id: 'capture', label: 'Captures', icon: Inbox },
   { id: 'integration', label: 'Integrations', icon: ExternalLink },
 ];
 
@@ -54,6 +57,7 @@ const FILTER_TYPE_MAP = {
   meeting: ['meeting', 'video'],
   decision: ['decision', 'blocker'],
   message: ['message'],
+  capture: ['capture', 'memory'],
   integration: ['integration'],
 };
 

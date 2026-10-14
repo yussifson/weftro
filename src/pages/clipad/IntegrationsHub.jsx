@@ -471,6 +471,12 @@ export default function IntegrationsHub() {
               >
                 App Integrations
               </button>
+              <button 
+                onClick={() => setActiveTab('inbox')}
+                className={`pb-3 px-1 text-sm font-bold border-b-2 transition-colors ${activeTab === 'inbox' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
+              >
+                Capture Inbox
+              </button>
               {isConnectEnabled && (
                 <button 
                   onClick={() => setActiveTab('connect')}
