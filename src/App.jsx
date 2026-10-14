@@ -96,7 +96,7 @@ function App() {
             
               <ImpersonationProvider>
               <AuthProvider>
-                <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+                <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
                   <VideoProvider>
                   <BrowserRouter>
                     <AnalyticsTracker />

@@ -71,10 +71,10 @@ export default function CliPadSignUp() {
         <meta name="description" content="Create your enterprise-grade collaborative productivity workspace." />
         <link rel="icon" type="image/svg+xml" href="/clipad-logo.svg" />
       </Helmet>
-      <div className="min-h-screen w-full bg-white dark:bg-card flex flex-col lg:flex-row font-sans text-slate-900 dark:text-foreground overflow-hidden select-none">
+      <div className="min-h-screen w-full bg-background flex flex-col lg:flex-row font-sans text-foreground overflow-hidden select-none">
         
         {/* Left Panel: Form */}
-        <div className="w-full lg:w-1/2 bg-white dark:bg-card flex flex-col justify-between p-6 sm:p-10 lg:p-16 min-h-screen overflow-y-auto">
+        <div className="w-full lg:w-1/2 bg-background flex flex-col justify-between p-6 sm:p-10 lg:p-16 min-h-screen overflow-y-auto">
           <div className="max-w-md w-full mx-auto my-auto py-4">
             
             {/* Top Logo */}
@@ -103,7 +103,7 @@ export default function CliPadSignUp() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter your email"
-                    className="w-full pl-10 pr-4 h-11 text-sm bg-white dark:bg-card border border-slate-200 dark:border-border text-slate-900 dark:text-foreground rounded-xl focus:border-[#006065] dark:border-border focus:ring-2 focus:ring-[#006065]/15 transition-all outline-none shadow-sm placeholder:text-slate-400"
+                    className="w-full pl-10 pr-4 h-11 text-sm bg-card border border-border text-foreground rounded-xl focus:border-[#fad503] focus:ring-2 focus:ring-[#fad503]/20 transition-all outline-none shadow-sm placeholder:text-slate-400"
                     required
                   />
                 </div>
@@ -118,7 +118,7 @@ export default function CliPadSignUp() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Create a password"
-                    className="w-full pl-10 pr-10 h-11 text-sm bg-white dark:bg-card border border-slate-200 dark:border-border text-slate-900 dark:text-foreground rounded-xl focus:border-[#006065] dark:border-border focus:ring-2 focus:ring-[#006065]/15 transition-all outline-none shadow-sm placeholder:text-slate-400"
+                    className="w-full pl-10 pr-10 h-11 text-sm bg-card border border-border text-foreground rounded-xl focus:border-[#fad503] focus:ring-2 focus:ring-[#fad503]/20 transition-all outline-none shadow-sm placeholder:text-slate-400"
                     required
                   />
                   <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-muted-foreground">
@@ -133,7 +133,7 @@ export default function CliPadSignUp() {
                   <input 
                     type="checkbox" 
                     required
-                    className="w-4 h-4 rounded border-slate-300 dark:border-border text-[#006065] focus:ring-[#006065] accent-[#006065]" 
+                    className="w-4 h-4 rounded border-slate-300 dark:border-border text-[#fad503] focus:ring-[#fad503] accent-[#fad503]" 
                   />
                   <span className="text-xs text-slate-600 dark:text-muted-foreground font-medium">I agree to the Terms & Privacy Policy</span>
                 </label>
@@ -143,7 +143,7 @@ export default function CliPadSignUp() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full h-11 bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004d52] text-white font-bold rounded-xl text-sm shadow-md transition-all active:scale-[0.99] disabled:opacity-60 flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full h-11 bg-[#fad503] hover:bg-yellow-400 text-[#0B1418] font-bold rounded-xl text-sm shadow-md shadow-[#fad503]/10 transition-all active:scale-[0.99] disabled:opacity-60 flex items-center justify-center gap-2 cursor-pointer"
               >
                 {loading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : 'Get Started'}
               </button>
@@ -164,7 +164,7 @@ export default function CliPadSignUp() {
               <button
                 onClick={handleSSOLogin}
                 type="button"
-                className="w-full h-11 px-3 bg-white dark:bg-card hover:bg-slate-50 dark:bg-background text-slate-700 dark:text-foreground border border-slate-200 dark:border-border rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-sm cursor-pointer"
+                className="w-full h-11 px-3 bg-card hover:bg-secondary text-foreground border border-border rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-sm cursor-pointer"
               >
                 <img src="/optavel-favicon.svg" alt="Optavel" className="w-4 h-4" />
                 Sign up with Optavel SSO
@@ -173,7 +173,7 @@ export default function CliPadSignUp() {
                 onClick={handleGoogleOAuth}
                 disabled={loading}
                 type="button"
-                className="w-full h-11 px-3 bg-white dark:bg-card hover:bg-slate-50 dark:bg-background text-slate-700 dark:text-foreground border border-slate-200 dark:border-border rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-sm cursor-pointer"
+                className="w-full h-11 px-3 bg-card hover:bg-secondary text-foreground border border-border rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-sm cursor-pointer"
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24">
                   <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -191,7 +191,7 @@ export default function CliPadSignUp() {
               <button
                 type="button"
                 onClick={() => navigate(`/login${window.location.search}`)}
-                className="font-bold text-[#006065] cursor-pointer hover:underline ml-0.5"
+                className="font-bold text-[#fad503] cursor-pointer hover:underline ml-0.5"
               >
                 Log in
               </button>
@@ -200,7 +200,7 @@ export default function CliPadSignUp() {
         </div>
 
         {/* Right Panel: Deep Teal Full-Height with Tilted Device Mockup */}
-        <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#006065] via-[#005055] to-[#00393d] relative overflow-hidden flex-col justify-between p-12 lg:p-16 text-white select-none min-h-screen">
+        <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#0B1418] via-[#101D22] to-[#091114] border-l border-border relative overflow-hidden flex-col justify-between p-12 lg:p-16 text-white select-none min-h-screen">
           
           {/* Top Branding & Headline */}
           <div className="relative z-10">
@@ -218,16 +218,16 @@ export default function CliPadSignUp() {
           {/* Bottom Right Tilted Perspective 3D Tablet Mockup */}
           <div className="absolute -bottom-16 -right-16 w-[560px] lg:w-[640px] h-[500px] pointer-events-none select-none transition-transform duration-700 hover:scale-[1.02]">
             <div 
-              className="w-full h-full bg-slate-900 p-2.5 rounded-[30px] shadow-[0_35px_60px_-15px_rgba(0,0,0,0.6)] border border-slate-700/50 flex flex-col"
+              className="w-full h-full bg-[#091114] p-2.5 rounded-[30px] shadow-[0_35px_60px_-15px_rgba(0,0,0,0.8)] border border-[#1A2F38] flex flex-col"
               style={{
                 transform: 'perspective(1200px) rotateX(12deg) rotateY(-18deg) rotate(-10deg)',
                 transformStyle: 'preserve-3d'
               }}
             >
               {/* Inner Device Screen */}
-              <div className="w-full h-full bg-[#f8fafc] dark:bg-background rounded-[22px] overflow-hidden flex flex-row text-[10px] text-slate-800 font-sans shadow-inner">
+              <div className="w-full h-full bg-[#0B1418] rounded-[22px] border border-[#1A2F38] overflow-hidden flex flex-row text-[10px] text-slate-800 font-sans shadow-inner">
                 {/* Sidebar */}
-                <div className="w-44 bg-[#006065] dark:bg-[#131A2C] text-white p-3 flex flex-col justify-between shrink-0">
+                <div className="w-44 bg-[#091114] text-white p-3 border-r border-[#1A2F38] flex flex-col justify-between shrink-0">
                   <div>
                     <div className="flex items-center gap-1.5 mb-4">
                       <CliPadLogo height={16} white={true} iconOnly={true} />
@@ -236,7 +236,7 @@ export default function CliPadSignUp() {
 
                     <div className="text-[9px] uppercase font-bold text-white/40 tracking-wider mb-1.5">General</div>
                     <div className="space-y-1 mb-3">
-                      <div className="bg-[#fad503] text-[#006065] font-bold px-2 py-1 rounded-md flex items-center gap-1.5">
+                      <div className="bg-[#fad503] text-[#fad503] font-bold px-2 py-1 rounded-md flex items-center gap-1.5">
                         <span className="w-1.5 h-1.5 rounded-full bg-[#006065] dark:bg-[#131A2C]"></span> Home
                       </div>
                       <div className="text-white/70 hover:text-white px-2 py-1">Search</div>
@@ -260,7 +260,7 @@ export default function CliPadSignUp() {
                 </div>
 
                 {/* Main App Content View */}
-                <div className="flex-1 bg-white dark:bg-card p-3.5 flex flex-col justify-between overflow-hidden">
+                <div className="flex-1 bg-[#101D22] p-3.5 flex flex-col justify-between overflow-hidden">
                   <div>
                     {/* Header Bar */}
                     <div className="flex items-center justify-between mb-3">
@@ -275,26 +275,26 @@ export default function CliPadSignUp() {
 
                     {/* Stat Cards */}
                     <div className="grid grid-cols-2 gap-2 mb-3">
-                      <div className="bg-slate-50 dark:bg-background border border-slate-100 p-2 rounded-xl">
+                      <div className="bg-[#0B1418] border border-[#1A2F38] p-2 rounded-xl">
                         <div className="text-slate-400 text-[8px] font-semibold">Smart Moments</div>
                         <div className="text-xs font-extrabold text-slate-900 dark:text-foreground mt-0.5">128 extracted</div>
                       </div>
-                      <div className="bg-slate-50 dark:bg-background border border-slate-100 p-2 rounded-xl">
+                      <div className="bg-[#0B1418] border border-[#1A2F38] p-2 rounded-xl">
                         <div className="text-slate-400 text-[8px] font-semibold">Memory Core</div>
-                        <div className="text-xs font-extrabold text-[#006065] mt-0.5">Active & Syncing</div>
+                        <div className="text-xs font-extrabold text-[#fad503] mt-0.5">Active & Syncing</div>
                       </div>
                     </div>
 
                     {/* Records Table Mockup */}
-                    <div className="border border-slate-100 rounded-xl overflow-hidden">
-                      <div className="bg-slate-50 dark:bg-background px-2.5 py-1 border-b border-slate-100 font-bold text-slate-600 dark:text-muted-foreground text-[8px] flex justify-between">
+                    <div className="border border-[#1A2F38] rounded-xl overflow-hidden">
+                      <div className="bg-[#0B1418] px-2.5 py-1 border-b border-[#1A2F38] font-bold text-slate-600 dark:text-muted-foreground text-[8px] flex justify-between">
                         <span>Recent Meeting / Source</span>
                         <span>Status</span>
                       </div>
-                      <div className="divide-y divide-slate-100 text-[8px]">
+                      <div className="divide-y divide-[#1A2F38] text-[8px]">
                         <div className="px-2.5 py-1 flex justify-between items-center">
                           <span className="font-semibold text-slate-800">Q4 Product Architecture</span>
-                          <span className="bg-[#006065] dark:bg-[#131A2C]/10 text-[#006065] font-bold px-1.5 py-0.5 rounded text-[7px]">Processed</span>
+                          <span className="bg-[#006065] dark:bg-[#131A2C]/10 text-[#fad503] font-bold px-1.5 py-0.5 rounded text-[7px]">Processed</span>
                         </div>
                         <div className="px-2.5 py-1 flex justify-between items-center">
                           <span className="font-semibold text-slate-800">Sprint Review Recording</span>
@@ -308,9 +308,9 @@ export default function CliPadSignUp() {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between text-[8px] text-slate-400 pt-1.5 border-t border-slate-100">
+                  <div className="flex items-center justify-between text-[8px] text-slate-400 pt-1.5 border-t border-[#1A2F38]">
                     <span>Weftro V3</span>
-                    <span className="text-[#006065] font-bold">● System Operational</span>
+                    <span className="text-[#fad503] font-bold">● System Operational</span>
                   </div>
                 </div>
               </div>

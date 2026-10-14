@@ -10,7 +10,7 @@ export const ThemeProvider = ({ children }) => {
     // 1. Check local storage for quick sync to prevent flash on load
     const stored = localStorage.getItem('theme');
     if (stored && ['light', 'dark', 'system'].includes(stored)) return stored;
-    return 'light';
+    return 'dark';
   });
 
   const isUpdatingRef = useRef(false);
@@ -19,16 +19,6 @@ export const ThemeProvider = ({ children }) => {
   const applyTheme = (themeName) => {
     const root = window.document.documentElement;
     root.classList.remove('light', 'dark');
-
-    // Force light mode on marketing pages regardless of user setting
-    const path = window.location.pathname;
-    const isMarketingPage = ['/', '/features', '/solutions', '/pricing', '/login', '/signup', '/custom-pricing', '/landing', '/home', '/marketing', '/about', '/meet'].includes(path);
-
-    if (isMarketingPage) {
-      root.classList.add('light');
-      root.style.colorScheme = 'light';
-      return;
-    }
 
     if (themeName === 'system') {
       const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
