@@ -477,7 +477,8 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
       else navigate(spaceId ? `/spaces/${spaceId}` : '/meetings');
     };
 
-    if (joined) {
+    const meetingDuration = joinTimeRef.current ? Math.round((Date.now() - joinTimeRef.current) / 1000) : 0;
+    if (joined || meetingDuration > 2) {
       // If currently recording, stop it and wait for the upload to finish before saving
       if (isRecording && mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
         toast({ title: "Finishing Recording", description: "Saving your video before leaving..." });
@@ -1455,7 +1456,8 @@ function ParticipantTile({ id, isLocal, className }) {
 export default function VideoRoom({ roomUrl, userName, token, initialAudio = true, initialVideo = true, initialBackground, onLeave, isPipMode, togglePipMode, spaceId }) {
  const { id: routeId } = useParams();
  const cleanRoomId = routeId ? routeId.replace(/^optavel\//i, '').replace(/^optalflow\//i, '') : '';
- const [resolvedRoomUrl, setResolvedRoomUrl] = useState(roomUrl || null);
+ const defaultUrl = roomUrl || (cleanRoomId ? 'https://optalflow.daily.co/' + cleanRoomId : null);
+ const [resolvedRoomUrl, setResolvedRoomUrl] = useState(defaultUrl);
  const { user } = useAuth();
  const [daily, setDaily] = useState(null);
  const callRef = useRef(null);
@@ -1534,6 +1536,7 @@ export default function VideoRoom({ roomUrl, userName, token, initialAudio = tru
 
    const callObject = DailyIframe.createCallObject();
    callRef.current = callObject;
+   setDaily(callObject);
 
    // Always respect the choices made on the pre-join screen
    const startMic = initialAudio;
@@ -1614,7 +1617,6 @@ export default function VideoRoom({ roomUrl, userName, token, initialAudio = tru
 
 
    if (cancelled) return;
-   setDaily(callObject);
     // Log meeting join
     logAuditEvent({ action: 'meeting_created', user, details: `Joined Meeting Room: ${cleanUrl ? cleanUrl.split('/').pop() : 'Unknown'}` });
   };
@@ -1635,7 +1637,7 @@ export default function VideoRoom({ roomUrl, userName, token, initialAudio = tru
    cleanup();
    setDaily(null);
   };
- }, [roomUrl, token]);
+ }, [resolvedRoomUrl, token]);
 
   if (!daily || !resolvedRoomUrl) {
    return (
