@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import DailyIframe from '@daily-co/daily-js';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation} from "react-i18next";
 import { 
  DailyProvider, 
@@ -593,6 +593,19 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           }
 
           
+          // End meeting in video_rooms and clear space meeting_url if leaving last
+          const targetRoomName = roomUrl ? roomUrl.split('/').pop().split('?')[0] : '';
+          if (targetRoomName) {
+            try {
+              await supabase.from('video_rooms').update({ status: 'ended', ended_at: new Date().toISOString() }).eq('daily_room_name', targetRoomName);
+            } catch (_) {}
+          }
+          if (spaceId) {
+            try {
+              await supabase.from('clipad_spaces').update({ meeting_url: null }).eq('id', spaceId);
+            } catch (_) {}
+          }
+
           const basePath = window.location.pathname.startsWith('/clipad') ? '/clipad' : '';
           if (insertedMeeting) {
             safeExit(`${basePath}/save-meeting/${insertedMeeting.id}${spaceId ? `?spaceId=${spaceId}` : ''}`);
@@ -608,6 +621,19 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
       }
     }
     
+    // Also clean up if user left before meeting record inserted
+    const targetRoomName = roomUrl ? roomUrl.split('/').pop().split('?')[0] : '';
+    if (targetRoomName) {
+      try {
+        await supabase.from('video_rooms').update({ status: 'ended', ended_at: new Date().toISOString() }).eq('daily_room_name', targetRoomName);
+      } catch (_) {}
+    }
+    if (spaceId) {
+      try {
+        await supabase.from('clipad_spaces').update({ meeting_url: null }).eq('id', spaceId);
+      } catch (_) {}
+    }
+
     safeExit(spaceId ? `/spaces/${spaceId}` : '/meetings');
   };
 
@@ -1436,6 +1462,8 @@ function ParticipantTile({ id, isLocal, className }) {
 // Wrapper to initialize Daily provider
 export default function VideoRoom({ roomUrl, userName, token, initialAudio = true, initialVideo = true, initialBackground, onLeave, isPipMode, togglePipMode, spaceId }) {
  const { id: routeId } = useParams();
+ const [searchParams] = useSearchParams();
+ const effectiveSpaceId = spaceId || searchParams.get('spaceId');
  const cleanRoomId = routeId ? routeId.replace(/^optavel\//i, '').replace(/^optalflow\//i, '') : '';
  const defaultUrl = roomUrl || (cleanRoomId ? 'https://optalflow.daily.co/' + cleanRoomId : null);
  const [resolvedRoomUrl, setResolvedRoomUrl] = useState(defaultUrl);
@@ -1454,26 +1482,26 @@ export default function VideoRoom({ roomUrl, userName, token, initialAudio = tru
   let cancelled = false;
   const ensureRoom = async () => {
     try {
-      // 1. Check if room URL is already in Supabase video_rooms
+      // Guarantee room exists on Daily.co by invoking create-daily-room (idempotent: gets or creates)
+      const { data: fnData, error: fnError } = await supabase.functions.invoke('create-daily-room', {
+        body: { roomName: cleanRoomId, privacy: 'public', companyId: user?.company_id || user?.user_metadata?.company_id }
+      });
+
+      if (!cancelled && !fnError && fnData?.url) {
+        setResolvedRoomUrl(fnData.url);
+        return;
+      }
+
+      // Fallback: Check cached URL if function failed or unreachable
       const { data: dbRoom } = await supabase
         .from('video_rooms')
         .select('daily_room_url')
         .eq('daily_room_name', cleanRoomId)
         .maybeSingle();
 
-      if (!cancelled && dbRoom?.daily_room_url && !dbRoom.daily_room_url.includes('optavel.daily.co')) {
-        setResolvedRoomUrl(dbRoom.daily_room_url);
-        return;
-      }
-
-      // 2. Ensure room exists on Daily.co by invoking create-daily-room
-      const { data: fnData } = await supabase.functions.invoke('create-daily-room', {
-        body: { roomName: cleanRoomId, privacy: 'public', companyId: user?.company_id || user?.user_metadata?.company_id }
-      });
-
       if (!cancelled) {
-        if (fnData?.url) {
-          setResolvedRoomUrl(fnData.url);
+        if (dbRoom?.daily_room_url && !dbRoom.daily_room_url.includes('optavel.daily.co')) {
+          setResolvedRoomUrl(dbRoom.daily_room_url);
         } else {
           setResolvedRoomUrl(`https://optalflow.daily.co/${cleanRoomId}`);
         }
@@ -1587,9 +1615,19 @@ export default function VideoRoom({ roomUrl, userName, token, initialAudio = tru
     // inside VideoRoomInner (after join succeeds) — see the useDailyEvent listener
 
    } catch (joinErr) {
-    console.warn('Joining error — attempting fallback join without media settings.', joinErr);
+    console.warn('Joining error — attempting provisioning and fallback join.', joinErr);
     if (cancelled) return;
     try {
+      // If room did not exist, invoke create-daily-room to ensure it's registered on Daily.co
+      if (cleanRoomId) {
+        try {
+          const { data: createData } = await supabase.functions.invoke('create-daily-room', {
+            body: { roomName: cleanRoomId, privacy: 'public', companyId: user?.company_id || user?.user_metadata?.company_id }
+          });
+          if (createData?.url) cleanUrl = createData.url;
+        } catch (_) {}
+      }
+
       const joinPayload = { url: cleanUrl, userName: joinOpts.userName, startAudioOff: !startMic, startVideoOff: !startCam };
       if (joinOpts.token) joinPayload.token = joinOpts.token;
       await callObject.join(joinPayload);
@@ -1630,7 +1668,7 @@ export default function VideoRoom({ roomUrl, userName, token, initialAudio = tru
 
  return (
   <DailyProvider callObject={daily}>
-   <VideoRoomInner roomUrl={resolvedRoomUrl} onLeave={onLeave} isPipMode={isPipMode} togglePipMode={togglePipMode} initialBackground={initialBackground} spaceId={spaceId} initialAudio={initialAudio} initialVideo={initialVideo} />
+   <VideoRoomInner roomUrl={resolvedRoomUrl} onLeave={onLeave} isPipMode={isPipMode} togglePipMode={togglePipMode} initialBackground={initialBackground} spaceId={effectiveSpaceId} initialAudio={initialAudio} initialVideo={initialVideo} />
   </DailyProvider>
  );
 }

@@ -9,7 +9,7 @@ export const ThemeProvider = ({ children }) => {
   const [theme, setThemeState] = useState(() => {
     // 1. Check local storage for quick sync to prevent flash on load
     const stored = localStorage.getItem('theme');
-    if (stored) return stored;
+    if (stored && ['light', 'dark', 'system'].includes(stored)) return stored;
     return 'light';
   });
 
@@ -46,6 +46,30 @@ export const ThemeProvider = ({ children }) => {
     localStorage.setItem('theme', theme);
   }, [theme]);
 
+  // Keep theme in sync when navigating between marketing and app routes
+  useEffect(() => {
+    const handleLocationChange = () => {
+      applyTheme(theme);
+    };
+
+    window.addEventListener('popstate', handleLocationChange);
+    return () => window.removeEventListener('popstate', handleLocationChange);
+  }, [theme]);
+
+  // Listen to cross-tab/window theme updates
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === 'theme' && e.newValue && ['light', 'dark', 'system'].includes(e.newValue)) {
+        if (e.newValue !== theme) {
+          setThemeState(e.newValue);
+        }
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [theme]);
+
   // Handle system theme updates dynamically
   useEffect(() => {
     if (theme !== 'system') return;
@@ -60,7 +84,6 @@ export const ThemeProvider = ({ children }) => {
   }, [theme]);
 
   // Sync with user database theme once user session resolves
-  // Sync with user database theme once user session resolves
   useEffect(() => {
     if (user && user.user_metadata?.theme) {
       const userTheme = user.user_metadata.theme;
@@ -68,8 +91,9 @@ export const ThemeProvider = ({ children }) => {
       
       // If we haven't synced this user's theme to this device yet, apply it
       if (syncedUserId !== user.id) {
-        if (userTheme !== theme) {
+        if (userTheme !== theme && ['light', 'dark', 'system'].includes(userTheme)) {
           setThemeState(userTheme);
+          localStorage.setItem('theme', userTheme);
         }
         localStorage.setItem('theme_synced_user_id', user.id);
       }
@@ -80,6 +104,7 @@ export const ThemeProvider = ({ children }) => {
     if (newTheme === theme) return;
     setThemeState(newTheme);
     localStorage.setItem('theme', newTheme);
+    applyTheme(newTheme);
 
     // If user is authenticated, save the preference in Supabase auth user_metadata
     if (user && !isUpdatingRef.current) {
@@ -104,7 +129,7 @@ export const ThemeProvider = ({ children }) => {
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, changeTheme }}>
+    <ThemeContext.Provider value={{ theme, changeTheme, setTheme: changeTheme }}>
       {children}
     </ThemeContext.Provider>
   );

@@ -222,7 +222,7 @@ export default function SpaceDashboard() {
           ? supabase.from('staff_records').select('user_id, user_email, full_name').eq('company_id', companyId)
           : { data: [] },
         spaceRes.data?.meeting_url
-          ? supabase.from('video_rooms').select('daily_room_name, status').eq('daily_room_url', spaceRes.data.meeting_url).eq('status', 'active').maybeSingle()
+          ? supabase.from('video_rooms').select('daily_room_name, status, created_at').eq('daily_room_url', spaceRes.data.meeting_url).eq('status', 'active').maybeSingle()
           : { data: null }
       ]);
 
@@ -238,37 +238,26 @@ export default function SpaceDashboard() {
         setMeetings(meetingsRes.data);
       }
       
-      if (activeRoomRes?.data) {
+      // Strictly scope active meeting verification to THIS space
+      const hasRecentRoom = activeRoomRes?.data && (!activeRoomRes.data.created_at || (Date.now() - new Date(activeRoomRes.data.created_at).getTime() < 28800000));
+      
+      // Also check if this specific space has an active meeting record without ended_at within 4 hours
+      const activeMeetingRecord = (meetingsRes.data || []).find(m => !m.ended_at && (Date.now() - new Date(m.created_at).getTime() < 14400000));
+
+      if (hasRecentRoom) {
         setIsLive(true);
         setLiveRoomInfo({
           roomName: activeRoomRes.data.daily_room_name,
           url: spaceRes.data?.meeting_url
         });
-      } else if (spaceRes.data?.meeting_url) {
-        // Direct room name extraction from space meeting_url
+      } else if (activeMeetingRecord && spaceRes.data?.meeting_url) {
         const urlParts = spaceRes.data.meeting_url.split('/');
         const extractedRoomName = urlParts[urlParts.length - 1]?.split('?')[0];
-        if (extractedRoomName) {
-          // If recent meeting record is still active within 2 hours
-          const recent = meetingsRes.data?.[0];
-          if (recent && Date.now() - new Date(recent.created_at).getTime() < 7200000 && !recent.ended_at) {
-            setIsLive(true);
-            setLiveRoomInfo({
-              roomName: recent.daily_room_name || extractedRoomName,
-              url: spaceRes.data.meeting_url
-            });
-          }
-        }
-      } else if (meetingsRes.data?.[0]) {
-        // Fallback for immediate UI updates if status sync is delayed
-        const recent = meetingsRes.data[0];
-        if (Date.now() - new Date(recent.created_at).getTime() < 7200000 && !recent.ended_at) {
-          setIsLive(true);
-          setLiveRoomInfo({
-            roomName: recent.daily_room_name || 'space-room',
-            url: null
-          });
-        }
+        setIsLive(true);
+        setLiveRoomInfo({
+          roomName: activeMeetingRecord.daily_room_name || extractedRoomName,
+          url: spaceRes.data.meeting_url
+        });
       } else {
         setIsLive(false);
         setLiveRoomInfo(null);
