@@ -49,7 +49,7 @@ export default defineConfig({
       renderer: {},
     }),
     VitePWA({
-      registerType: 'prompt',
+      registerType: 'autoUpdate',
       devOptions: {
         enabled: false,
         type: 'module'
@@ -79,6 +79,8 @@ export default defineConfig({
         maximumFileSizeToCacheInBytes: 50 * 1024 * 1024, // 50MB for ffmpeg-core.wasm
         navigateFallback: '/index.html',
         cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        skipWaiting: true,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2,wasm}'],
         runtimeCaching: [
           {

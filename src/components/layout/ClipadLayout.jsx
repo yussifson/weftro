@@ -5,7 +5,8 @@ import ClipadMobileNav from '@/components/clipad/ClipadMobileNav';
 import ClipadTopNav from '@/components/clipad/ClipadTopNav';
 import ClipadSidebar from '@/components/clipad/ClipadSidebar';
 import { useChatDock } from '@/hooks/useChatDock';
-const ClipadChat = React.lazy(() => import('@/pages/clipad/ClipadChat'));
+import { safeLazy } from '@/lib/safeLazy';
+const ClipadChat = safeLazy(() => import('@/pages/clipad/ClipadChat'));
 import { MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
