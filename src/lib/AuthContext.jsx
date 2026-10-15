@@ -507,9 +507,9 @@ export const AuthProvider = ({ children }) => {
       // Branch switching works perfectly on the same URL by just relying on AuthContext state.
 
       // Update favicon and title if company data has it
-      // Clipad pages always use CliPad branding regardless of company
-      const clipadRoutes = ['/chat', '/analytics', '/meetings', '/spaces', '/dashboard', '/settings', '/support', '/search', '/record', '/watch', '/journey', '/decisions', '/integrations', '/action-items', '/knowledge-graph', '/timeline', '/health', '/integration-analytics', '/clipad'];
-      const isClipadRoute = window.location.hostname.includes('Weftro') || clipadRoutes.some(r => window.location.pathname.startsWith(r));
+      // Clipad / Weftro pages always use Weftro branding regardless of company
+      const clipadRoutes = ['/', '/pricing', '/security', '/custom-pricing', '/login', '/signup', '/chat', '/analytics', '/meetings', '/spaces', '/dashboard', '/settings', '/support', '/search', '/record', '/watch', '/journey', '/decisions', '/integrations', '/action-items', '/knowledge-graph', '/timeline', '/health', '/integration-analytics', '/clipad'];
+      const isClipadRoute = window.location.pathname === '/' || window.location.hostname.includes('Weftro') || window.location.hostname.includes('clipad') || clipadRoutes.some(r => r !== '/' && window.location.pathname.startsWith(r));
 
       if (isClipadRoute) {
         let link = document.querySelector("link[rel~='icon']");
@@ -520,7 +520,9 @@ export const AuthProvider = ({ children }) => {
         }
         link.type = 'image/svg+xml';
         link.href = '/clipad-logo.svg';
-        document.title = 'Weftro';
+        if (window.location.pathname !== '/' && window.location.pathname !== '/pricing' && window.location.pathname !== '/security') {
+          document.title = 'Weftro';
+        }
       } else if (companyData) {
         if (companyData.favicon_url) {
           let link = document.querySelector("link[rel~='icon']");

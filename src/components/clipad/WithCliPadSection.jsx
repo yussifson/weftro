@@ -26,7 +26,7 @@ export default function WithCliPadSection() {
           >
             <div className="absolute inset-0 rounded-full bg-primary/15 animate-ping opacity-30" style={{ animationDuration: '3.5s' }} />
             <CliPadLogo height={44} iconOnly={true} className="relative z-10 drop-shadow" />
-            <span className="text-[11px] font-bold uppercase tracking-wider text-foreground mt-2">Weftro Hub</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-foreground mt-2">Weftro</span>
           </motion.div>
 
           {/* Neural Connection SVG Tracks */}

@@ -118,16 +118,16 @@ const slides = [
     description: 'Automatically links conversations, documents, projects, and strategic decisions into compounding institutional intelligence.',
     render: () => (
       <div className="relative flex flex-col items-center justify-center w-full h-full select-none">
-        <div className="absolute w-64 h-64 rounded-full border-2 border-primary/20 animate-pulse" />
+        <div className="absolute w-64 h-64 rounded-full border-2 border-primary/25 animate-pulse" />
         <div className="absolute w-44 h-44 rounded-full bg-primary/10" />
-        <div className="relative w-32 h-32 rounded-full bg-gradient-to-br from-primary to-teal-500 flex items-center justify-center shadow-2xl shadow-primary/40">
+        <div className="relative w-32 h-32 rounded-full bg-primary flex items-center justify-center shadow-2xl shadow-primary/40 border border-primary/60">
           <Database className="w-14 h-14 text-white" strokeWidth={1.5} />
         </div>
-        <div className="absolute top-6 right-10 bg-background border border-border rounded-xl px-3 py-1.5 shadow-lg flex items-center gap-1.5">
-          <Brain className="w-3 h-3 text-[#D9A400]" />
-          <span className="text-xs font-semibold text-[#D9A400]">Neural Graph</span>
+        <div className="absolute top-6 right-10 bg-card border border-border rounded-xl px-3 py-1.5 shadow-lg flex items-center gap-1.5">
+          <Brain className="w-3.5 h-3.5 text-primary" />
+          <span className="text-xs font-semibold text-primary">Knowledge Graph</span>
         </div>
-        <div className="absolute bottom-10 left-6 bg-background border border-border rounded-xl px-3 py-1.5 shadow-lg">
+        <div className="absolute bottom-10 left-6 bg-card border border-border rounded-xl px-3 py-1.5 shadow-lg">
           <span className="text-xs font-medium text-muted-foreground font-mono">Institutional Memory</span>
         </div>
       </div>
@@ -139,18 +139,18 @@ const slides = [
     description: 'Integrates natively across Slack, Notion, GitHub, Google Workspace, external LLMs, and Model Context Protocol servers.',
     render: () => (
       <div className="relative flex flex-col items-center justify-center w-full h-full select-none">
-        <div className="absolute w-64 h-64 rounded-full border-2 border-teal-500/20 animate-pulse" />
-        <div className="absolute w-44 h-44 rounded-full bg-teal-500/10" />
-        <div className="relative w-32 h-32 rounded-full bg-gradient-to-br from-teal-500 to-emerald-400 flex items-center justify-center shadow-2xl shadow-teal-500/40">
+        <div className="absolute w-64 h-64 rounded-full border-2 border-primary/25 animate-pulse" />
+        <div className="absolute w-44 h-44 rounded-full bg-primary/10" />
+        <div className="relative w-32 h-32 rounded-full bg-primary flex items-center justify-center shadow-2xl shadow-primary/40 border border-primary/60">
           <Network className="w-14 h-14 text-white" strokeWidth={1.5} />
         </div>
-        <div className="absolute top-4 right-8 bg-background border border-border rounded-xl px-3 py-1.5 shadow-lg flex items-center gap-2">
-          <Cpu className="w-3 h-3 text-teal-500" />
-          <span className="text-xs font-semibold text-teal-600 dark:text-teal-400">MCP Connected</span>
+        <div className="absolute top-4 right-8 bg-card border border-border rounded-xl px-3 py-1.5 shadow-lg flex items-center gap-2">
+          <Cpu className="w-3.5 h-3.5 text-primary" />
+          <span className="text-xs font-semibold text-primary">MCP Protocol</span>
         </div>
-        <div className="absolute bottom-8 left-4 bg-background border border-border rounded-xl px-3 py-2 shadow-lg text-center">
-          <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider block">Unified APIs</span>
-          <span className="text-xs font-bold text-foreground">Cross-Tool Reasoning</span>
+        <div className="absolute bottom-8 left-4 bg-card border border-border rounded-xl px-3 py-2 shadow-lg text-center">
+          <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider block">Unified Context</span>
+          <span className="text-xs font-bold text-foreground">Multi-Model Reasoning</span>
         </div>
       </div>
     ),
@@ -161,21 +161,21 @@ const slides = [
     description: 'Transforms discussions into automated workflows, verified decision logs, and contextual tasks dispatched to the right owners.',
     render: () => (
       <div className="relative flex flex-col items-center justify-center w-full h-full select-none">
-        <div className="absolute w-64 h-64 rounded-full border-2 border-primary/10 animate-pulse" />
-        <div className="absolute w-44 h-44 rounded-full bg-primary/5" />
-        <div className="relative w-32 h-32 rounded-full bg-gradient-to-br from-primary to-teal-400 flex items-center justify-center shadow-2xl shadow-primary/40">
-          <Zap className="w-14 h-14 text-white" strokeWidth={1.5} />
+        <div className="absolute w-64 h-64 rounded-full border-2 border-[#D9A400]/25 animate-pulse" />
+        <div className="absolute w-44 h-44 rounded-full bg-[#D9A400]/10" />
+        <div className="relative w-32 h-32 rounded-full bg-[#D9A400] flex items-center justify-center shadow-2xl shadow-[#D9A400]/40 border border-[#D9A400]/60">
+          <Zap className="w-14 h-14 text-slate-950" strokeWidth={1.8} />
         </div>
         <div className="absolute bottom-6 flex -space-x-3">
-          {['bg-primary/80', 'bg-[#D9A400]', 'bg-teal-500', 'bg-emerald-600'].map((c, i) => (
-            <div key={i} className={`w-9 h-9 rounded-full ${c} border-2 border-background flex items-center justify-center`}>
-              <Users className="w-4 h-4 text-white" />
+          {['bg-primary', 'bg-primary', 'bg-primary', 'bg-[#D9A400]'].map((c, i) => (
+            <div key={i} className={`w-9 h-9 rounded-full ${c} border-2 border-background flex items-center justify-center shadow-sm`}>
+              <Users className={`w-4 h-4 ${c === 'bg-[#D9A400]' ? 'text-slate-950' : 'text-white'}`} />
             </div>
           ))}
         </div>
-        <div className="absolute top-4 right-6 bg-background border border-border rounded-xl px-3 py-1.5 shadow-lg flex items-center gap-1.5">
-          <CheckCircle className="w-3 h-3 text-primary" />
-          <span className="text-xs font-semibold text-primary">Contextual Execution</span>
+        <div className="absolute top-4 right-6 bg-card border border-border rounded-xl px-3 py-1.5 shadow-lg flex items-center gap-1.5">
+          <CheckCircle className="w-3.5 h-3.5 text-[#D9A400]" />
+          <span className="text-xs font-semibold text-[#D9A400]">Action Automation</span>
         </div>
       </div>
     ),
@@ -186,9 +186,23 @@ function useLiveClock() {
   const [now, setNow] = useState(new Date());
 
   useEffect(() => {
-    const link = document.querySelector("link[rel~='icon']");
-    if (link) {
+    // Ensure all icon links point to the official Weftro logo
+    const links = document.querySelectorAll("link[rel*='icon']");
+    if (links.length > 0) {
+      links.forEach((l, idx) => {
+        if (idx === 0) {
+          l.type = 'image/svg+xml';
+          l.href = '/clipad-logo.svg';
+        } else {
+          l.remove();
+        }
+      });
+    } else {
+      const link = document.createElement('link');
+      link.rel = 'icon';
+      link.type = 'image/svg+xml';
       link.href = '/clipad-logo.svg';
+      document.head.appendChild(link);
     }
 
     const id = setInterval(() => setNow(new Date()), 1000);
