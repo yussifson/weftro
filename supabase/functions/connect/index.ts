@@ -74,7 +74,14 @@ serve(async (req) => {
     return new Response(JSON.stringify({ error: 'Endpoint not implemented in foundation' }), { status: 404 });
     
   } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), { status: 500 });
+    console.error('Connect Edge Function Error:', err);
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json'
+      },
+      status: 500
+    });
   }
 });
 

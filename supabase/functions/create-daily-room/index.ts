@@ -27,6 +27,53 @@ serve(async (req) => {
       throw new Error('DAILY_API_KEY is missing')
     }
 
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+
+    // Authenticate caller if token provided
+    const authHeader = req.headers.get('Authorization')
+    let callerUser = null
+    let callerProfile = null
+
+    if (authHeader && supabaseUrl && supabaseAnonKey) {
+      const authClient = createClient(supabaseUrl, supabaseAnonKey, {
+        global: { headers: { Authorization: authHeader } }
+      })
+      const { data: { user } } = await authClient.auth.getUser()
+      callerUser = user
+
+      if (callerUser && supabaseServiceKey) {
+        const adminClient = createClient(supabaseUrl, supabaseServiceKey)
+        const { data: profile } = await adminClient
+          .from('profiles')
+          .select('id, company_id, role')
+          .eq('id', callerUser.id)
+          .maybeSingle()
+        callerProfile = profile
+      }
+    }
+
+    // Security Gate: If companyId is targeted or room is private, enforce strict auth and company membership
+    if (companyId || privacy === 'private') {
+      if (!callerUser) {
+        return new Response(JSON.stringify({ error: 'Unauthorized: Authentication required' }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 401,
+        })
+      }
+      if (companyId && callerProfile) {
+        const isSuperAdmin = callerProfile.role === 'super_admin'
+        const isSameCompany = String(callerProfile.company_id) === String(companyId)
+        if (!isSuperAdmin && !isSameCompany) {
+          return new Response(JSON.stringify({ error: 'Forbidden: Cannot create rooms for another company' }), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 403,
+          })
+        }
+      }
+    }
+
     // Rooms expire in 7 days so scheduled meetings always work
     const expirySeconds = Math.round(Date.now() / 1000) + 86400 * 7
 
