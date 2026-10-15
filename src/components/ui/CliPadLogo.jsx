@@ -34,21 +34,17 @@ export function WeftroLogo({
   const isLight = currentTheme === 'light' && !white;
 
   // Primary brand colors:
-  // In light theme: Official rich forest green #0C5C3C
-  // In dark theme or white mode: Crisp white #FFFFFF (or pristine light slate)
-  const primaryBrandColor = white
-    ? '#ffffff'
-    : color || (isLight ? '#0C5C3C' : '#ffffff');
-
-  // Accent color for letter 't': Official gold #D9A400
-  const letterAccentColor = accentColor || (white ? '#ffffff' : '#D9A400');
+  // The official Weftro logo provided by the user is green #0C5C3C with yellow #D9A400 't'.
+  // Letters W, e, f, r, o = #0C5C3C (official green)
+  // Letter t = #D9A400 (official gold/yellow)
+  const primaryBrandColor = color || '#0C5C3C';
+  const letterAccentColor = accentColor || '#D9A400';
 
   // Badge background color for iconOnly mode:
-  // In light mode: official forest green container #0C5C3C with two-tone 'W'
-  // In dark mode: rich forest green container #0C5C3C
+  // Official rich forest green container #0C5C3C with two-tone 'W' (left white, right yellow)
   const badgeBg = color || '#0C5C3C';
-  const iconLeftColor = white ? '#ffffff' : '#ffffff';
-  const iconRightColor = white ? '#ffffff' : (accentColor || '#D9A400');
+  const iconLeftColor = '#ffffff';
+  const iconRightColor = accentColor || '#D9A400';
 
   if (iconOnly) {
     return (
@@ -88,19 +84,21 @@ export function WeftroLogo({
       aria-label="Weftro"
     >
       <title>Weftro</title>
+      {/* Crisp container pill matching the exact SVG provided by user */}
+      <rect width="900" height="400" rx="64" fill="#FFFFFF" />
       <g transform="translate(100.0, 100.0)">
         <g transform="scale(0.137931, -0.137931) translate(9.00018310546875, -1430)">
-          {/* W */}
+          {/* W (Green) */}
           <path fill={primaryBrandColor} transform="translate(0, 0)" d={WORDMARK_PATHS.w} />
-          {/* e */}
+          {/* e (Green) */}
           <path fill={primaryBrandColor} transform="translate(1325.0, 0)" d={WORDMARK_PATHS.e} />
-          {/* f */}
+          {/* f (Green) */}
           <path fill={primaryBrandColor} transform="translate(2180.0, 0)" d={WORDMARK_PATHS.f} />
-          {/* t (Official distinctive gold accent) */}
+          {/* t (Official gold accent #D9A400) */}
           <path fill={letterAccentColor} transform="translate(2716.0, 0)" d={WORDMARK_PATHS.t} />
-          {/* r */}
+          {/* r (Green) */}
           <path fill={primaryBrandColor} transform="translate(3301.0, 0)" d={WORDMARK_PATHS.r} />
-          {/* o */}
+          {/* o (Green) */}
           <path fill={primaryBrandColor} transform="translate(4079.0, 0)" d={WORDMARK_PATHS.o} />
         </g>
       </g>
