@@ -437,7 +437,7 @@ export default function MeetLandingPage() {
       />
       <header className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 border-b border-border bg-background/85 backdrop-blur-md shadow-sm">
         <div className="flex items-center gap-2.5">
-          <CliPadLogo size={42} />
+          <CliPadLogo height={30} />
         </div>
         
         {/* Desktop Nav */}

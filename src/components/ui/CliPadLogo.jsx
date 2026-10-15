@@ -34,10 +34,12 @@ export function WeftroLogo({
   const isLight = currentTheme === 'light' && !white;
 
   // Primary brand colors:
-  // The official Weftro logo provided by the user is green #0C5C3C with yellow #D9A400 't'.
-  // Letters W, e, f, r, o = #0C5C3C (official green)
-  // Letter t = #D9A400 (official gold/yellow)
-  const primaryBrandColor = color || '#0C5C3C';
+  // If explicitly white, or when in high contrast dark contexts where white is specified
+  // Default brand colors:
+  // W, e, f, r, o = #0C5C3C (official rich green) or white if white={true}
+  // t = #D9A400 (official gold/yellow)
+  const defaultLetterColor = white ? '#FFFFFF' : (color || '#0C5C3C');
+  const primaryBrandColor = defaultLetterColor;
   const letterAccentColor = accentColor || '#D9A400';
 
   // Badge background color for iconOnly mode:
@@ -74,33 +76,32 @@ export function WeftroLogo({
     );
   }
 
+  // Pure SVG wordmark without artificial background bounding boxes:
+  // Transparent, seamlessly blends into dark and light backgrounds.
+  // Tight viewBox: 0 0 700 200 matches the exact letter bounding box perfectly.
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 900 400"
+      viewBox="0 0 700 200"
       style={{ height: typeof height === 'number' ? `${height}px` : height, width: 'auto', ...style }}
       className={className}
       role="img"
       aria-label="Weftro"
     >
       <title>Weftro</title>
-      {/* Crisp container pill matching the exact SVG provided by user */}
-      <rect width="900" height="400" rx="64" fill="#FFFFFF" />
-      <g transform="translate(100.0, 100.0)">
-        <g transform="scale(0.137931, -0.137931) translate(9.00018310546875, -1430)">
-          {/* W (Green) */}
-          <path fill={primaryBrandColor} transform="translate(0, 0)" d={WORDMARK_PATHS.w} />
-          {/* e (Green) */}
-          <path fill={primaryBrandColor} transform="translate(1325.0, 0)" d={WORDMARK_PATHS.e} />
-          {/* f (Green) */}
-          <path fill={primaryBrandColor} transform="translate(2180.0, 0)" d={WORDMARK_PATHS.f} />
-          {/* t (Official gold accent #D9A400) */}
-          <path fill={letterAccentColor} transform="translate(2716.0, 0)" d={WORDMARK_PATHS.t} />
-          {/* r (Green) */}
-          <path fill={primaryBrandColor} transform="translate(3301.0, 0)" d={WORDMARK_PATHS.r} />
-          {/* o (Green) */}
-          <path fill={primaryBrandColor} transform="translate(4079.0, 0)" d={WORDMARK_PATHS.o} />
-        </g>
+      <g transform="scale(0.137931, -0.137931) translate(9.00018310546875, -1430)">
+        {/* W (Brand Forest Green or White) */}
+        <path fill={primaryBrandColor} transform="translate(0, 0)" d={WORDMARK_PATHS.w} />
+        {/* e (Brand Forest Green or White) */}
+        <path fill={primaryBrandColor} transform="translate(1325.0, 0)" d={WORDMARK_PATHS.e} />
+        {/* f (Brand Forest Green or White) */}
+        <path fill={primaryBrandColor} transform="translate(2180.0, 0)" d={WORDMARK_PATHS.f} />
+        {/* t (Official gold/yellow accent #D9A400) */}
+        <path fill={letterAccentColor} transform="translate(2716.0, 0)" d={WORDMARK_PATHS.t} />
+        {/* r (Brand Forest Green or White) */}
+        <path fill={primaryBrandColor} transform="translate(3301.0, 0)" d={WORDMARK_PATHS.r} />
+        {/* o (Brand Forest Green or White) */}
+        <path fill={primaryBrandColor} transform="translate(4079.0, 0)" d={WORDMARK_PATHS.o} />
       </g>
     </svg>
   );
@@ -110,7 +111,7 @@ export function WeftroLogo({
 export const KerintLogo = WeftroLogo;
 
 export function CliPadLogo({ size, color, dotColor, white, height, className = '', style = {}, iconOnly = false }) {
-  const h = height || (size ? size * 1.5 : 32);
+  const h = height || (size ? size * 0.75 : 32);
   return <WeftroLogo color={color} white={white} height={h} className={className} style={style} iconOnly={iconOnly} />;
 }
 
