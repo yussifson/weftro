@@ -65,9 +65,10 @@ export const AuthProvider = ({ children }) => {
       }
 
       if (!sessionVal) {
-        // Attempt to restore cross-domain session from URL query parameters manually
-        const urlAccessToken = urlParams.get('access_token');
-        const urlRefreshToken = urlParams.get('refresh_token');
+        // Attempt to restore cross-domain session from URL query parameters or hash fragment
+        const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+        const urlAccessToken = urlParams.get('access_token') || hashParams.get('access_token');
+        const urlRefreshToken = urlParams.get('refresh_token') || hashParams.get('refresh_token');
         
         if (urlAccessToken && urlRefreshToken) {
             setAuthStep("Restoring cross-domain session...");
@@ -76,8 +77,12 @@ export const AuthProvider = ({ children }) => {
             const params = new URLSearchParams(window.location.search);
             params.delete('access_token');
             params.delete('refresh_token');
+            const cleanHashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+            cleanHashParams.delete('access_token');
+            cleanHashParams.delete('refresh_token');
             const newSearch = params.toString();
-            const newUrl = window.location.pathname + (newSearch ? '?' + newSearch : '') + window.location.hash;
+            const newHash = cleanHashParams.toString();
+            const newUrl = window.location.pathname + (newSearch ? '?' + newSearch : '') + (newHash ? '#' + newHash : '');
             window.history.replaceState({}, document.title, newUrl);
 
             const { data, error } = await supabase.auth.setSession({
@@ -105,6 +110,7 @@ export const AuthProvider = ({ children }) => {
                        // Manually persist to local storage to survive refresh
                        try {
                            const projectId = import.meta.env.VITE_SUPABASE_URL.split('//')[1].split('.')[0];
+                           localStorage.setItem('sb-optavel-auth-token', JSON.stringify(sessionVal));
                            localStorage.setItem(`sb-${projectId}-auth-token`, JSON.stringify(sessionVal));
                        } catch (e) {
                            console.warn("Failed to manually persist fallback session:", e);
