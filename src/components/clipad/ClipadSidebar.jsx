@@ -149,7 +149,7 @@ export default function ClipadSidebar({ forceMobile }) {
           <>
             <div className="flex items-center gap-3 cursor-pointer group" onClick={() => navigate('/dashboard')}>
               <div className="flex items-center transition-transform group-hover:scale-105">
-                <CliPadLogo height={32} />
+                <CliPadLogo height={32} white={true} />
               </div>
             </div>
             <button onClick={() => setIsCollapsed(true)} className="text-white/50 hover:text-white transition-colors p-1.5 rounded-lg hover:bg-white/10 opacity-0 group-hover:opacity-100 lg:opacity-100">

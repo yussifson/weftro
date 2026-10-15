@@ -108,12 +108,6 @@ export default function CliPadLogin() {
         <div className="w-full lg:w-1/2 bg-background flex flex-col justify-between p-6 sm:p-10 lg:p-16 min-h-screen overflow-y-auto">
           <div className="max-w-md w-full mx-auto my-auto py-4">
             
-            {/* Top Logo */}
-            <div className="flex justify-center mb-6 sm:mb-8">
-              <CliPadLogo height={38} />
-            </div>
-
-
             {/* Title & Subtitle */}
             <div className="mb-6">
               <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-foreground tracking-tight mb-1.5">

@@ -435,27 +435,48 @@ export default function MeetLandingPage() {
         description="Weftro is a free, secure, enterprise-grade collaborative productivity workspace. Connect your team with chat, spaces, and HD video meetings instantly. Trusted by teams worldwide." 
         type="website"
       />
-      <header className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 border-b border-border bg-background/85 backdrop-blur-md shadow-sm">
-        <div className="flex items-center gap-2.5">
-          <CliPadLogo height={30} />
-        </div>
-        
-        {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-1 text-sm text-muted-foreground">
-          <a href="#features" className="px-4 py-2 rounded-lg hover:text-foreground hover:bg-secondary transition-colors">Features</a>
-          <a href="#pricing" className="px-4 py-2 rounded-lg hover:text-foreground hover:bg-secondary transition-colors">Pricing</a>
-          <a href="#contact" className="px-4 py-2 rounded-lg hover:text-foreground hover:bg-secondary transition-colors">Support</a>
-        </div>
-        
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <LanguageSwitcher className="h-9 w-[130px] rounded-xl border border-border bg-background hover:bg-secondary text-foreground text-xs" />
+      <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur-md shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
+          {/* Brand Logo */}
+          <div className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+            <CliPadLogo height={32} />
+          </div>
+          
+          {/* Desktop Nav - Centered Executive Navigation */}
+          <nav className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary/60 border border-border/80 shadow-inner">
+            <a 
+              href="#features" 
+              className="px-4 py-1.5 text-xs font-semibold tracking-wide text-foreground/80 hover:text-foreground hover:bg-background/80 rounded-full transition-all duration-150"
+            >
+              Features
+            </a>
+            <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
+            <a 
+              href="#pricing" 
+              className="px-4 py-1.5 text-xs font-semibold tracking-wide text-foreground/80 hover:text-foreground hover:bg-background/80 rounded-full transition-all duration-150"
+            >
+              Pricing
+            </a>
+            <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
+            <button 
+              onClick={() => {
+                setSupportPanel('chat');
+              }}
+              className="px-4 py-1.5 text-xs font-semibold tracking-wide text-foreground/80 hover:text-foreground hover:bg-background/80 rounded-full transition-all duration-150 cursor-pointer"
+            >
+              Support
+            </button>
+          </nav>
+          
+          {/* Right Action Items */}
+          <div className="flex items-center gap-3 shrink-0">
+            <LanguageSwitcher className="h-9 w-[130px] rounded-xl border border-border bg-background hover:bg-secondary text-foreground text-xs font-medium" />
             {user ? (
-              <Button onClick={() => navigate('/dashboard')} className="rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm">
-                <Layers className="w-4 h-4 mr-2" /> Dashboard
+              <Button onClick={() => navigate('/dashboard')} className="rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold px-4 h-9 shadow-sm">
+                <Layers className="w-4 h-4 mr-1.5" /> Dashboard
               </Button>
             ) : (
-              <Button onClick={() => navigate('/login')} variant="outline" className="rounded-xl border-border bg-background hover:bg-secondary text-foreground">
+              <Button onClick={() => navigate('/login')} variant="outline" className="rounded-xl border-border bg-background hover:bg-secondary text-foreground text-xs font-semibold px-4 h-9">
                 Sign In
               </Button>
             )}
