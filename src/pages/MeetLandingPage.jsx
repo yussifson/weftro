@@ -118,14 +118,14 @@ const slides = [
     description: 'Automatically links conversations, documents, projects, and strategic decisions into compounding institutional intelligence.',
     render: () => (
       <div className="relative flex flex-col items-center justify-center w-full h-full select-none">
-        <div className="absolute w-64 h-64 rounded-full border-2 border-primary/25 animate-pulse" />
-        <div className="absolute w-44 h-44 rounded-full bg-primary/10" />
-        <div className="relative w-32 h-32 rounded-full bg-primary flex items-center justify-center shadow-2xl shadow-primary/40 border border-primary/60">
+        <div className="absolute w-64 h-64 rounded-full border-2 border-[#0C5C3C]/30 animate-pulse" />
+        <div className="absolute w-44 h-44 rounded-full bg-[#0C5C3C]/10" />
+        <div className="relative w-32 h-32 rounded-full bg-[#0C5C3C] flex items-center justify-center shadow-2xl shadow-[#0C5C3C]/40 border-2 border-[#0C5C3C]">
           <Database className="w-14 h-14 text-white" strokeWidth={1.5} />
         </div>
         <div className="absolute top-6 right-10 bg-card border border-border rounded-xl px-3 py-1.5 shadow-lg flex items-center gap-1.5">
-          <Brain className="w-3.5 h-3.5 text-primary" />
-          <span className="text-xs font-semibold text-primary">Knowledge Graph</span>
+          <Brain className="w-3.5 h-3.5 text-[#0C5C3C]" />
+          <span className="text-xs font-semibold text-[#0C5C3C]">Knowledge Graph</span>
         </div>
         <div className="absolute bottom-10 left-6 bg-card border border-border rounded-xl px-3 py-1.5 shadow-lg">
           <span className="text-xs font-medium text-muted-foreground font-mono">Institutional Memory</span>
@@ -139,14 +139,14 @@ const slides = [
     description: 'Integrates natively across Slack, Notion, GitHub, Google Workspace, external LLMs, and Model Context Protocol servers.',
     render: () => (
       <div className="relative flex flex-col items-center justify-center w-full h-full select-none">
-        <div className="absolute w-64 h-64 rounded-full border-2 border-primary/25 animate-pulse" />
-        <div className="absolute w-44 h-44 rounded-full bg-primary/10" />
-        <div className="relative w-32 h-32 rounded-full bg-primary flex items-center justify-center shadow-2xl shadow-primary/40 border border-primary/60">
+        <div className="absolute w-64 h-64 rounded-full border-2 border-[#0C5C3C]/30 animate-pulse" />
+        <div className="absolute w-44 h-44 rounded-full bg-[#0C5C3C]/10" />
+        <div className="relative w-32 h-32 rounded-full bg-[#0C5C3C] flex items-center justify-center shadow-2xl shadow-[#0C5C3C]/40 border-2 border-[#0C5C3C]">
           <Network className="w-14 h-14 text-white" strokeWidth={1.5} />
         </div>
         <div className="absolute top-4 right-8 bg-card border border-border rounded-xl px-3 py-1.5 shadow-lg flex items-center gap-2">
-          <Cpu className="w-3.5 h-3.5 text-primary" />
-          <span className="text-xs font-semibold text-primary">MCP Protocol</span>
+          <Cpu className="w-3.5 h-3.5 text-[#0C5C3C]" />
+          <span className="text-xs font-semibold text-[#0C5C3C]">MCP Protocol</span>
         </div>
         <div className="absolute bottom-8 left-4 bg-card border border-border rounded-xl px-3 py-2 shadow-lg text-center">
           <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider block">Unified Context</span>
@@ -161,13 +161,13 @@ const slides = [
     description: 'Transforms discussions into automated workflows, verified decision logs, and contextual tasks dispatched to the right owners.',
     render: () => (
       <div className="relative flex flex-col items-center justify-center w-full h-full select-none">
-        <div className="absolute w-64 h-64 rounded-full border-2 border-[#D9A400]/25 animate-pulse" />
+        <div className="absolute w-64 h-64 rounded-full border-2 border-[#D9A400]/30 animate-pulse" />
         <div className="absolute w-44 h-44 rounded-full bg-[#D9A400]/10" />
-        <div className="relative w-32 h-32 rounded-full bg-[#D9A400] flex items-center justify-center shadow-2xl shadow-[#D9A400]/40 border border-[#D9A400]/60">
+        <div className="relative w-32 h-32 rounded-full bg-[#D9A400] flex items-center justify-center shadow-2xl shadow-[#D9A400]/40 border-2 border-[#D9A400]">
           <Zap className="w-14 h-14 text-slate-950" strokeWidth={1.8} />
         </div>
         <div className="absolute bottom-6 flex -space-x-3">
-          {['bg-primary', 'bg-primary', 'bg-primary', 'bg-[#D9A400]'].map((c, i) => (
+          {['bg-[#0C5C3C]', 'bg-[#0C5C3C]', 'bg-[#0C5C3C]', 'bg-[#D9A400]'].map((c, i) => (
             <div key={i} className={`w-9 h-9 rounded-full ${c} border-2 border-background flex items-center justify-center shadow-sm`}>
               <Users className={`w-4 h-4 ${c === 'bg-[#D9A400]' ? 'text-slate-950' : 'text-white'}`} />
             </div>
@@ -418,9 +418,6 @@ export default function MeetLandingPage() {
     navigate(`/join/${roomId}`);
   };
 
-  const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-  const dateStr = now.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
-
   if (isLoadingAuth) {
     return <PageLoader label="" />;
   }
@@ -451,13 +448,6 @@ export default function MeetLandingPage() {
         </div>
         
         <div className="flex items-center gap-4">
-          <div className="hidden md:flex items-center gap-2 text-sm font-semibold tabular-nums bg-secondary/80 px-3 py-1.5 rounded-xl border border-border shadow-inner text-foreground">
-            <Clock className="w-4 h-4 text-primary" />
-            <span>{timeStr}</span>
-            <span className="text-slate-300 mx-0.5">|</span>
-            <span>{dateStr}</span>
-          </div>
-          
           <div className="flex items-center gap-2">
             <LanguageSwitcher className="h-9 w-[130px] rounded-xl border border-border bg-background hover:bg-secondary text-foreground text-xs" />
             {user ? (
@@ -971,8 +961,8 @@ export default function MeetLandingPage() {
           </div>
         </section>
 
-        {/* Corporate Floating Action Button (FAB) for Support - Pushed Up */}
-        <div className="fixed bottom-20 md:bottom-24 right-6 z-50 flex flex-col items-end gap-3">
+        {/* Corporate Floating Action Button (FAB) for Support */}
+        <div className="fixed bottom-8 md:bottom-10 right-6 z-50 flex flex-col items-end gap-3">
           <AnimatePresence>
             {isFabOpen && (
               <motion.div
