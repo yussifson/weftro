@@ -669,8 +669,10 @@ export default function MeetLandingPage() {
                   }}
                   disabled={isProcessingPay}
                   className={`w-full py-3 rounded-xl font-semibold text-sm transition-all ${
-                    tier.highlight 
-                      ? 'bg-primary hover:bg-primary/90 text-white shadow-md shadow-primary/20' 
+                    tier.name === 'Pro' 
+                      ? 'bg-orange-500 hover:bg-orange-600 text-white shadow-md shadow-orange-500/20' 
+                      : tier.name === 'Enterprise'
+                      ? 'bg-[#0C5C3C] hover:bg-[#0C5C3C]/90 text-white shadow-md shadow-[#0C5C3C]/20'
                       : tier.name === 'Custom'
                       ? 'bg-orange-500 hover:bg-orange-600 text-white shadow-md shadow-orange-500/20'
                       : 'bg-secondary hover:bg-secondary/80 text-foreground border border-border'
@@ -906,11 +908,11 @@ export default function MeetLandingPage() {
                         {user ? 'Current Plan' : 'Get Started Free'}
                       </button>
                     </td>
-                    <td className="py-6 px-5 text-center bg-primary/5 border-x border-primary/20">
+                    <td className="py-6 px-5 text-center bg-orange-500/5 border-x border-orange-500/20">
                       <button
                         onClick={() => handlePricingAction('Pro')}
                         disabled={isProcessingPay}
-                        className="w-full py-3 px-4 rounded-xl font-bold text-xs bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25 transition-all"
+                        className="w-full py-3 px-4 rounded-xl font-bold text-xs bg-orange-500 hover:bg-orange-600 text-white shadow-lg shadow-orange-500/25 transition-all"
                       >
                         Choose Pro
                       </button>
@@ -919,7 +921,7 @@ export default function MeetLandingPage() {
                       <button
                         onClick={() => handlePricingAction('Enterprise')}
                         disabled={isProcessingPay}
-                        className="w-full py-3 px-4 rounded-xl font-bold text-xs bg-[#D9A400] hover:bg-[#D9A400]/90 text-slate-900 shadow-md transition-all font-extrabold"
+                        className="w-full py-3 px-4 rounded-xl font-bold text-xs bg-[#0C5C3C] hover:bg-[#0C5C3C]/90 text-white shadow-md transition-all font-bold"
                       >
                         Choose Enterprise
                       </button>
@@ -927,7 +929,7 @@ export default function MeetLandingPage() {
                     <td className="py-6 px-5 text-center">
                       <button
                         onClick={() => navigate('/custom-pricing')}
-                        className="w-full py-3 px-4 rounded-xl font-bold text-xs bg-secondary hover:bg-secondary/80 text-foreground border border-border transition-all"
+                        className="w-full py-3 px-4 rounded-xl font-bold text-xs bg-orange-500 hover:bg-orange-600 text-white shadow-md transition-all"
                       >
                         Contact Sales
                       </button>
@@ -967,7 +969,7 @@ export default function MeetLandingPage() {
                 <button
                   onClick={() => handleCreateMeeting('instant')}
                   disabled={isCreating}
-                  className="w-full sm:w-auto flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold shadow-xl shadow-primary/30 transition-all hover:scale-[1.02] active:scale-95 text-sm"
+                  className="w-full sm:w-auto flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold shadow-xl shadow-orange-500/30 transition-all hover:scale-[1.02] active:scale-95 text-sm"
                 >
                   <Video className="w-4 h-4" /> Start Free Meeting
                 </button>
@@ -1037,7 +1039,7 @@ export default function MeetLandingPage() {
             type="button"
             onClick={() => setIsFabOpen(prev => !prev)}
             aria-label="Toggle Support Options"
-            className="flex items-center gap-2.5 px-4 py-3 rounded-full bg-primary hover:bg-primary/90 text-white font-bold shadow-2xl shadow-primary/40 border border-primary/50 transition-all hover:scale-105 active:scale-95"
+            className="flex items-center gap-2.5 px-4 py-3 rounded-full bg-[#0C5C3C] hover:bg-[#0C5C3C]/90 text-white font-bold shadow-2xl shadow-[#0C5C3C]/40 border border-[#0C5C3C]/60 transition-all hover:scale-105 active:scale-95"
           >
             {isFabOpen ? (
               <X className="w-5 h-5" />
