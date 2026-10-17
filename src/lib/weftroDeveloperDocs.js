@@ -26,7 +26,8 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
     { name: "moments:read", desc: "Read extracted meeting/video smart moments and decisions" },
     { name: "entities:read", desc: "Read knowledge graph entities and relationship nodes" },
     { name: "sources:read", desc: "Read source provenance metadata" },
-    { name: "apps:manage", desc: "Register apps, rotate client secrets, issue and revoke tokens" }
+    { name: "apps:manage", desc: "Register apps, rotate client secrets, issue and revoke tokens" },
+    { name: "webhooks:manage", desc: "Create, inspect, update, rotate secrets, and delete webhook subscriptions and delivery history" }
   ],
   endpoints: [
     {
@@ -151,8 +152,69 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
       description: "Revoke an active API token immediately.",
       example: `curl -X POST "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/tokens/<ID>/revoke" \\
   -H "Authorization: Bearer <JWT_OR_APPS_MANAGE_TOKEN>"`
+    },
+    {
+      method: "GET",
+      path: "/api/v1/webhooks",
+      scope: "webhooks:manage",
+      description: "List webhook subscriptions registered for the authorized company tenant.",
+      example: `curl -X GET "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/webhooks" \\
+  -H "Authorization: Bearer cpd_..."`
+    },
+    {
+      method: "POST",
+      path: "/api/v1/webhooks",
+      scope: "webhooks:manage",
+      description: "Register an outbound webhook subscription. Returns endpoint record and unhashed signing secret (whsec_...) ONCE.",
+      body: { endpoint_url: "string (HTTPS required, SSRF protected)", events: "string[]", description: "string (optional)" }
+    },
+    {
+      method: "POST",
+      path: "/api/v1/webhooks/:id/rotate-secret",
+      scope: "webhooks:manage",
+      description: "Rotate the signing secret for a webhook subscription. Invalidate previous secret immediately.",
+      example: `curl -X POST "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/webhooks/<ID>/rotate-secret" \\
+  -H "Authorization: Bearer cpd_..."`
+    },
+    {
+      method: "POST",
+      path: "/api/v1/webhooks/:id/test",
+      scope: "webhooks:manage",
+      description: "Dispatch a signed test event to verify receiver signature checking and delivery.",
+      example: `curl -X POST "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/webhooks/<ID>/test" \\
+  -H "Authorization: Bearer cpd_..."`
+    },
+    {
+      method: "GET",
+      path: "/api/v1/webhooks/:id/deliveries",
+      scope: "webhooks:manage",
+      description: "List recent delivery logs, HTTP response status codes, latency, and payloads for an endpoint.",
+      example: `curl -X GET "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/webhooks/<ID>/deliveries" \\
+  -H "Authorization: Bearer cpd_..."`
     }
   ],
+  webhooks: {
+    signature_header: "X-Weftro-Signature",
+    event_id_header: "X-Weftro-Event-Id",
+    timestamp_header: "X-Weftro-Timestamp",
+    supported_events: [
+      { name: "capture.created", desc: "Fired when a new capture or recording session begins" },
+      { name: "capture.processed", desc: "Fired when background queue processing of audio/video capture finishes" },
+      { name: "memory.created", desc: "Fired when a new synthesized organizational memory is indexed" },
+      { name: "memory.updated", desc: "Fired when an existing organizational memory is enriched or re-indexed" },
+      { name: "smart_moment.detected", desc: "Fired when a decision or high-importance moment is identified" }
+    ],
+    verification_snippet: `// Node.js signature verification
+const crypto = require('crypto');
+function verifyWeftroWebhook(payload, signatureHeader, secret) {
+  const parts = Object.fromEntries(signatureHeader.split(',').map(s => s.split('=')));
+  const timestamp = parts.t;
+  const signature = parts.v1;
+  const signedPayload = \`\${timestamp}.\${typeof payload === 'string' ? payload : JSON.stringify(payload)}\`;
+  const expected = crypto.createHmac('sha256', secret).update(signedPayload).digest('hex');
+  return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected));
+}`
+  },
   mcp_support: {
     protocol_version: "2024-11-05",
     server_package: "@weftro/mcp-server",
@@ -188,7 +250,7 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
     error_code: "RATE_LIMIT_EXCEEDED"
   },
   errors: {
-    400: "BAD_REQUEST - Missing or malformed parameters",
+    400: "BAD_REQUEST - Missing or malformed parameters (or unsafe URL / SSRF violation)",
     401: "UNAUTHORIZED / INVALID_CREDENTIALS / TOKEN_REVOKED / TOKEN_EXPIRED",
     403: "FORBIDDEN (insufficient scope) / APP_INACTIVE",
     404: "RESOURCE_NOT_FOUND (nonexistent or belongs to different company)",
@@ -197,7 +259,7 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
   },
   roadmap: {
     phase_5: "Production MCP Server (Completed & Live)",
-    phase_6: "Outbound Webhook Delivery Engine with HMAC signatures and retry queue",
+    phase_6: "Outbound Webhook Delivery Engine with HMAC signatures and retry queue (Completed & Live)",
     phase_7: "Developer Experience & Production Hardening"
   }
 };

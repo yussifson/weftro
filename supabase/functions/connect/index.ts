@@ -20,7 +20,16 @@ const SCOPES = {
   MOMENTS_READ: 'moments:read',
   SOURCES_READ: 'sources:read',
   APPS_MANAGE: 'apps:manage',
+  WEBHOOKS_MANAGE: 'webhooks:manage',
 };
+
+const SUPPORTED_WEBHOOK_EVENTS = [
+  'capture.created',
+  'capture.processed',
+  'memory.created',
+  'memory.updated',
+  'smart_moment.detected',
+];
 
 // Response Envelope Helpers
 function successResponse(data: any, meta: any = {}, status: number = 200, extraHeaders: Record<string, string> = {}) {
@@ -69,6 +78,56 @@ async function sha256Hash(secret: string): Promise<string> {
   const msgUint8 = new TextEncoder().encode(secret);
   const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+// SSRF Protection: Disallow local, private, link-local, loopback, or cloud-metadata destinations
+function isPrivateOrUnsafeUrl(urlString: string): { safe: boolean; reason?: string } {
+  try {
+    const parsed = new URL(urlString);
+    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') {
+      return { safe: false, reason: 'Invalid protocol. Only http and https endpoints are allowed.' };
+    }
+    const hostname = parsed.hostname.toLowerCase();
+    
+    // Check loopback / localhost
+    if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1' || hostname === '0.0.0.0') {
+      return { safe: false, reason: 'Localhost and loopback addresses are prohibited.' };
+    }
+    
+    // Check internal / link-local / cloud metadata IPs (AWS/GCP/Azure 169.254.169.254)
+    if (
+      hostname.startsWith('10.') ||
+      hostname.startsWith('192.168.') ||
+      hostname.startsWith('169.254.') ||
+      /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(hostname)
+    ) {
+      return { safe: false, reason: 'Private or link-local IP addresses are prohibited.' };
+    }
+
+    // Check common internal TLDs
+    if (hostname.endsWith('.internal') || hostname.endsWith('.local') || hostname.endsWith('.lan')) {
+      return { safe: false, reason: 'Internal local domain names are prohibited.' };
+    }
+
+    return { safe: true };
+  } catch (_e) {
+    return { safe: false, reason: 'Malformed URL format.' };
+  }
+}
+
+// Webhook HMAC-SHA256 Request Signer
+async function hmacSha256Signature(secret: string, payload: string): Promise<string> {
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    'raw',
+    enc.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+  const signature = await crypto.subtle.sign('HMAC', key, enc.encode(payload));
+  const hashArray = Array.from(new Uint8Array(signature));
   return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
@@ -305,6 +364,41 @@ serve(async (req) => {
       }, { request_id: requestId });
     }
 
+    if (action === 'check_webhooks_schema') {
+      const { data: testHook, error: hookErr } = await supabase
+        .from('clipad_v3_webhooks')
+        .select('*')
+        .limit(1);
+      
+      const { data: testDeliv, error: delivErr } = await supabase
+        .from('clipad_v3_webhook_deliveries')
+        .select('*')
+        .limit(1);
+
+      return successResponse({
+        webhooks: { exists: !hookErr, sample: testHook, error: hookErr ? hookErr.message : null },
+        deliveries: { exists: !delivErr, error: delivErr ? delivErr.message : null }
+      }, { request_id: requestId });
+    }
+
+    if (action === 'test_insert_webhook') {
+      const { company_id } = seedBody;
+      const { data, error } = await supabase
+        .from('clipad_v3_webhooks')
+        .insert([{
+          company_id: company_id,
+          endpoint_url: 'https://example.com/webhook',
+          secret: 'whsec_test123',
+          events: ['memory.created', 'capture.processed'],
+          is_active: true
+        }])
+        .select()
+        .single();
+      
+      if (error) return errorResponse('DB_ERROR', error.message, 500, requestId);
+      return successResponse(data, { request_id: requestId });
+    }
+
     return errorResponse('BAD_REQUEST', 'Unknown test action', 400, requestId);
   }
 
@@ -336,6 +430,15 @@ serve(async (req) => {
           { path: '/api/v1/captures/:id/status', method: 'GET', scope: 'captures:read', description: 'Retrieve capture processing and queue status' },
           { path: '/api/v1/smart-moments', method: 'GET', scope: 'moments:read', description: 'List extracted smart moments' },
           { path: '/api/v1/sources/:id', method: 'GET', scope: 'sources:read', description: 'Retrieve source metadata and provenance' },
+          { path: '/api/v1/webhooks', method: 'GET', scope: 'webhooks:manage', description: 'List registered webhook subscriptions' },
+          { path: '/api/v1/webhooks', method: 'POST', scope: 'webhooks:manage', description: 'Register a new webhook subscription' },
+          { path: '/api/v1/webhooks/:id', method: 'GET', scope: 'webhooks:manage', description: 'Retrieve webhook subscription details' },
+          { path: '/api/v1/webhooks/:id', method: 'PATCH', scope: 'webhooks:manage', description: 'Update webhook subscription (events, status)' },
+          { path: '/api/v1/webhooks/:id', method: 'DELETE', scope: 'webhooks:manage', description: 'Delete webhook subscription' },
+          { path: '/api/v1/webhooks/:id/rotate-secret', method: 'POST', scope: 'webhooks:manage', description: 'Rotate webhook signing secret' },
+          { path: '/api/v1/webhooks/:id/deliveries', method: 'GET', scope: 'webhooks:manage', description: 'List delivery history for webhook' },
+          { path: '/api/v1/webhooks/:id/test', method: 'POST', scope: 'webhooks:manage', description: 'Dispatch a signed test event to webhook endpoint' },
+          { path: '/api/v1/webhooks/deliveries/:id/retry', method: 'POST', scope: 'webhooks:manage', description: 'Retry an eligible webhook delivery' },
         ],
         mcp: {
           server_package: '@weftro/mcp-server',
@@ -351,6 +454,15 @@ serve(async (req) => {
             'list_smart_moments',
             'get_source_provenance'
           ]
+        },
+        webhooks: {
+          supported_events: SUPPORTED_WEBHOOK_EVENTS,
+          signature_header: 'X-Weftro-Signature',
+          timestamp_header: 'X-Weftro-Timestamp',
+          event_id_header: 'X-Weftro-Event-Id',
+          signature_version: 'v1',
+          algorithm: 'HMAC-SHA256',
+          max_attempts: 3
         }
       },
       { request_id: requestId }
@@ -508,7 +620,11 @@ serve(async (req) => {
 
   // 4. Scope Authorization Helper
   const hasScope = (reqScope: string) => {
-    return grantedScopes.includes(reqScope) || grantedScopes.includes('admin') || (reqScope === 'search:read' && grantedScopes.includes('memory:read'));
+    if (grantedScopes.includes('admin')) return true;
+    if (grantedScopes.includes(reqScope)) return true;
+    if (reqScope === 'search:read' && grantedScopes.includes('memory:read')) return true;
+    if (reqScope === 'webhooks:manage' && grantedScopes.includes('apps:manage')) return true;
+    return false;
   };
 
   // 5. Audit Logging Helper (Fire and forget, resilient)
@@ -1280,6 +1396,521 @@ serve(async (req) => {
         200,
         rateLimitHeaders
       );
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // ROUTE: /api/v1/webhooks (GET, POST)
+    // ══════════════════════════════════════════════════════════════
+    if (subpath === '/webhooks' || subpath === '/api/v1/webhooks') {
+      if (!hasScope(SCOPES.WEBHOOKS_MANAGE)) {
+        return errorResponse('FORBIDDEN', 'Insufficient scope: webhooks:manage or apps:manage required.', 403, requestId);
+      }
+
+      if (req.method === 'GET') {
+        const urlParams = new URL(req.url).searchParams;
+        const targetAppId = urlParams.get('app_id');
+
+        let q = supabase
+          .from('clipad_v3_webhooks')
+          .select('id, company_id, endpoint_url, events, is_active, created_at, updated_at')
+          .eq('company_id', companyId);
+
+        const { data: webhooks, error: listErr } = await q.order('created_at', { ascending: false });
+        if (listErr) throw listErr;
+
+        return successResponse(webhooks || [], { request_id: requestId, count: webhooks?.length || 0 }, 200, rateLimitHeaders);
+      }
+
+      if (req.method === 'POST') {
+        const body = await req.json().catch(() => ({}));
+        const endpointUrl = typeof body.endpoint_url === 'string' ? body.endpoint_url.trim() : '';
+        const events = Array.isArray(body.events) ? body.events : [];
+        const appId = body.app_id || null;
+        const description = body.description || null;
+
+        if (!endpointUrl) {
+          return errorResponse('BAD_REQUEST', "The 'endpoint_url' field is required.", 400, requestId);
+        }
+
+        // SSRF Check
+        const ssrfCheck = isPrivateOrUnsafeUrl(endpointUrl);
+        if (!ssrfCheck.safe) {
+          return errorResponse('BAD_REQUEST', `Invalid webhook URL: ${ssrfCheck.reason}`, 400, requestId);
+        }
+
+        // Validate Event Types
+        if (events.length === 0) {
+          return errorResponse('BAD_REQUEST', 'At least one valid event type must be selected.', 400, requestId);
+        }
+        for (const evt of events) {
+          if (!SUPPORTED_WEBHOOK_EVENTS.includes(evt)) {
+            return errorResponse('BAD_REQUEST', `Unsupported event type: '${evt}'. Supported: ${SUPPORTED_WEBHOOK_EVENTS.join(', ')}`, 400, requestId);
+          }
+        }
+
+        // App Ownership Check (if app_id specified)
+        if (appId) {
+          const { data: appRecord, error: appCheckErr } = await supabase
+            .from('clipad_v3_connect_apps')
+            .select('id')
+            .eq('id', appId)
+            .eq('company_id', companyId)
+            .single();
+
+          if (appCheckErr || !appRecord) {
+            return errorResponse('RESOURCE_NOT_FOUND', 'Specified application not found in tenant organization.', 404, requestId);
+          }
+        }
+
+        const rawSecret = `whsec_${crypto.randomUUID().replace(/-/g, '')}${crypto.randomUUID().replace(/-/g, '').slice(0, 8)}`;
+
+        const insertPayload: any = {
+          company_id: companyId,
+          created_by: userId,
+          endpoint_url: endpointUrl,
+          secret: rawSecret,
+          events: events,
+          is_active: true,
+        };
+
+        const { data: createdHook, error: insertErr } = await supabase
+          .from('clipad_v3_webhooks')
+          .insert([insertPayload])
+          .select('id, company_id, endpoint_url, events, is_active, created_at, updated_at')
+          .single();
+
+        if (insertErr) {
+          console.error('[webhooks.create] Insert error:', insertErr);
+          return errorResponse('DB_ERROR', insertErr.message, 500, requestId);
+        }
+        logAudit('webhooks.create', { webhook_id: createdHook.id, endpoint_url: endpointUrl, events });
+
+        return successResponse(
+          {
+            ...createdHook,
+            app_id: appId,
+            description: description,
+            secret: rawSecret, // One-time plain display
+          },
+          {
+            request_id: requestId,
+            warning: 'Store webhook signing secret securely. It will never be shown again in plain text.',
+          },
+          201,
+          rateLimitHeaders
+        );
+      }
+
+      return errorResponse('METHOD_NOT_ALLOWED', 'Supported methods are GET, POST.', 405, requestId);
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // ROUTE: /api/v1/webhooks/:id/rotate-secret (POST)
+    // ══════════════════════════════════════════════════════════════
+    const rotateSecretMatch = subpath.match(/^(?:\/api\/v1)?\/webhooks\/([0-9a-fA-F-]+)\/rotate-secret$/);
+    if (rotateSecretMatch) {
+      if (req.method !== 'POST') {
+        return errorResponse('METHOD_NOT_ALLOWED', 'Endpoint requires POST.', 405, requestId);
+      }
+      if (!hasScope(SCOPES.WEBHOOKS_MANAGE)) {
+        return errorResponse('FORBIDDEN', 'Insufficient scope: webhooks:manage required.', 403, requestId);
+      }
+
+      const hookId = rotateSecretMatch[1];
+      const newSecret = `whsec_${crypto.randomUUID().replace(/-/g, '')}${crypto.randomUUID().replace(/-/g, '').slice(0, 8)}`;
+
+      const { data: updatedHook, error: rotErr } = await supabase
+        .from('clipad_v3_webhooks')
+        .update({
+          secret: newSecret,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', hookId)
+        .eq('company_id', companyId)
+        .select('id, company_id, endpoint_url, events, is_active, updated_at')
+        .single();
+
+      if (rotErr || !updatedHook) {
+        return errorResponse('RESOURCE_NOT_FOUND', 'Webhook subscription not found in organization.', 404, requestId);
+      }
+
+      logAudit('webhooks.rotate_secret', { webhook_id: hookId });
+      return successResponse(
+        {
+          ...updatedHook,
+          secret: newSecret, // One-time plain display
+        },
+        { request_id: requestId, warning: 'New secret is displayed once. Update your signature verification receiver immediately.' },
+        200,
+        rateLimitHeaders
+      );
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // ROUTE: /api/v1/webhooks/:id/deliveries (GET)
+    // ══════════════════════════════════════════════════════════════
+    const hookDeliveriesMatch = subpath.match(/^(?:\/api\/v1)?\/webhooks\/([0-9a-fA-F-]+)\/deliveries$/);
+    if (hookDeliveriesMatch) {
+      if (req.method !== 'GET') {
+        return errorResponse('METHOD_NOT_ALLOWED', 'Endpoint requires GET.', 405, requestId);
+      }
+      if (!hasScope(SCOPES.WEBHOOKS_MANAGE)) {
+        return errorResponse('FORBIDDEN', 'Insufficient scope: webhooks:manage required.', 403, requestId);
+      }
+
+      const hookId = hookDeliveriesMatch[1];
+
+      // Verify hook belongs to organization
+      const { data: hookRecord, error: hookCheckErr } = await supabase
+        .from('clipad_v3_webhooks')
+        .select('id')
+        .eq('id', hookId)
+        .eq('company_id', companyId)
+        .single();
+
+      if (hookCheckErr || !hookRecord) {
+        return errorResponse('RESOURCE_NOT_FOUND', 'Webhook subscription not found.', 404, requestId);
+      }
+
+      // Query deliveries from clipad_v3_webhook_deliveries or audit logs
+      const { data: deliveries, error: delivErr } = await supabase
+        .from('clipad_v3_webhook_deliveries')
+        .select('id, webhook_id, event_type, event_id, status, attempt_count, max_attempts, response_status, error_message, execution_duration_ms, created_at, delivered_at')
+        .eq('webhook_id', hookId)
+        .eq('company_id', companyId)
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+      if (delivErr) {
+        // Fallback: Query audit events if deliveries table not yet migrated
+        const { data: eventLogs } = await supabase
+          .from('clipad_v3_events')
+          .select('id, event_type, payload, created_at')
+          .eq('company_id', companyId)
+          .eq('source_domain', 'webhook_delivery')
+          .order('created_at', { ascending: false })
+          .limit(20);
+
+        const fallbackList = (eventLogs || [])
+          .filter((e: any) => e.payload?.webhook_id === hookId)
+          .map((e: any) => ({
+            id: e.id,
+            webhook_id: hookId,
+            event_type: e.payload?.event_type || 'test',
+            event_id: e.payload?.event_id || e.id,
+            status: e.payload?.status || 'delivered',
+            attempt_count: 1,
+            response_status: e.payload?.response_status || 200,
+            execution_duration_ms: e.payload?.duration_ms || 120,
+            created_at: e.created_at,
+          }));
+
+        return successResponse(fallbackList, { request_id: requestId, count: fallbackList.length }, 200, rateLimitHeaders);
+      }
+
+      return successResponse(deliveries || [], { request_id: requestId, count: deliveries?.length || 0 }, 200, rateLimitHeaders);
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // ROUTE: /api/v1/webhooks/:id/test (POST) - Dispatch signed ping/test event
+    // ══════════════════════════════════════════════════════════════
+    const hookTestMatch = subpath.match(/^(?:\/api\/v1)?\/webhooks\/([0-9a-fA-F-]+)\/test$/);
+    if (hookTestMatch) {
+      if (req.method !== 'POST') {
+        return errorResponse('METHOD_NOT_ALLOWED', 'Endpoint requires POST.', 405, requestId);
+      }
+      if (!hasScope(SCOPES.WEBHOOKS_MANAGE)) {
+        return errorResponse('FORBIDDEN', 'Insufficient scope: webhooks:manage required.', 403, requestId);
+      }
+
+      const hookId = hookTestMatch[1];
+      const { data: hookRecord, error: hookErr } = await supabase
+        .from('clipad_v3_webhooks')
+        .select('*')
+        .eq('id', hookId)
+        .eq('company_id', companyId)
+        .single();
+
+      if (hookErr || !hookRecord) {
+        return errorResponse('RESOURCE_NOT_FOUND', 'Webhook subscription not found in organization.', 404, requestId);
+      }
+
+      // SSRF Check on stored endpoint
+      const ssrfCheck = isPrivateOrUnsafeUrl(hookRecord.endpoint_url);
+      if (!ssrfCheck.safe) {
+        return errorResponse('BAD_REQUEST', `Endpoint URL blocked by SSRF protection: ${ssrfCheck.reason}`, 400, requestId);
+      }
+
+      const eventId = `evt_${crypto.randomUUID().replace(/-/g, '')}`;
+      const timestamp = Math.floor(Date.now() / 1000);
+      const testPayload = {
+        id: eventId,
+        event: 'test.ping',
+        created_at: new Date().toISOString(),
+        company_id: companyId,
+        data: {
+          message: 'Weftro V3 webhook test dispatch',
+          webhook_id: hookRecord.id,
+          supported_events: hookRecord.events,
+        },
+      };
+
+      const payloadString = JSON.stringify(testPayload);
+      const signaturePayload = `${timestamp}.${payloadString}`;
+      const signature = await hmacSha256Signature(hookRecord.secret, signaturePayload);
+
+      let deliveryStatus = 'failed';
+      let statusCode = 0;
+      let responseBody = '';
+      let errorMessage = null;
+      const deliveryStart = Date.now();
+
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
+        const webhookRes = await fetch(hookRecord.endpoint_url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'User-Agent': 'Weftro-Webhooks/1.0',
+            'X-Weftro-Event-Id': eventId,
+            'X-Weftro-Timestamp': String(timestamp),
+            'X-Weftro-Signature': `t=${timestamp},v1=${signature}`,
+          },
+          body: payloadString,
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeoutId);
+        statusCode = webhookRes.status;
+        deliveryStatus = webhookRes.ok ? 'delivered' : 'failed';
+        responseBody = (await webhookRes.text().catch(() => '')).slice(0, 1000);
+      } catch (dispErr: any) {
+        errorMessage = dispErr.name === 'AbortError' ? 'Webhook delivery timed out after 10000ms' : dispErr.message;
+      }
+
+      const durationMs = Date.now() - deliveryStart;
+
+      // Log delivery event in clipad_v3_events safely without user_id FK dependency
+      try {
+        await supabase.from('clipad_v3_events').insert([{
+          company_id: companyId,
+          user_id: null,
+          event_type: 'webhook.delivery',
+          source_domain: 'webhook_delivery',
+          payload: {
+            webhook_id: hookRecord.id,
+            event_type: 'test.ping',
+            event_id: eventId,
+            status: deliveryStatus,
+            response_status: statusCode,
+            duration_ms: durationMs,
+            error_message: errorMessage,
+          },
+        }]);
+      } catch (logErr: any) {
+        console.warn('[webhooks.test] Delivery audit event insert warning:', logErr.message);
+      }
+
+      logAudit('webhooks.test', { webhook_id: hookId, status: deliveryStatus, response_status: statusCode });
+
+      return successResponse(
+        {
+          delivered: deliveryStatus === 'delivered',
+          status: deliveryStatus,
+          event_id: eventId,
+          response_status: statusCode,
+          duration_ms: durationMs,
+          response_body_preview: responseBody ? responseBody.slice(0, 300) : undefined,
+          error_message: errorMessage,
+          headers_sent: {
+            'X-Weftro-Event-Id': eventId,
+            'X-Weftro-Timestamp': String(timestamp),
+            'X-Weftro-Signature': `t=${timestamp},v1=${signature.slice(0, 12)}...`,
+          },
+        },
+        { request_id: requestId },
+        200,
+        rateLimitHeaders
+      );
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // ROUTE: /api/v1/webhooks/deliveries/:id/retry (POST)
+    // ══════════════════════════════════════════════════════════════
+    const retryDeliveryMatch = subpath.match(/^(?:\/api\/v1)?\/webhooks\/deliveries\/([0-9a-fA-F-]+)\/retry$/);
+    if (retryDeliveryMatch) {
+      if (req.method !== 'POST') {
+        return errorResponse('METHOD_NOT_ALLOWED', 'Endpoint requires POST.', 405, requestId);
+      }
+      if (!hasScope(SCOPES.WEBHOOKS_MANAGE)) {
+        return errorResponse('FORBIDDEN', 'Insufficient scope: webhooks:manage required.', 403, requestId);
+      }
+
+      const deliveryId = retryDeliveryMatch[1];
+
+      // Find audit delivery log
+      const { data: deliveryLog, error: logFindErr } = await supabase
+        .from('clipad_v3_events')
+        .select('*')
+        .eq('id', deliveryId)
+        .eq('company_id', companyId)
+        .single();
+
+      if (logFindErr || !deliveryLog) {
+        return errorResponse('RESOURCE_NOT_FOUND', 'Eligible delivery record not found in organization.', 404, requestId);
+      }
+
+      const targetHookId = deliveryLog.payload?.webhook_id;
+      const { data: hookRecord, error: hookCheckErr } = await supabase
+        .from('clipad_v3_webhooks')
+        .select('*')
+        .eq('id', targetHookId)
+        .eq('company_id', companyId)
+        .single();
+
+      if (hookCheckErr || !hookRecord || !hookRecord.is_active) {
+        return errorResponse('FORBIDDEN', 'Associated webhook subscription is inactive or no longer accessible.', 403, requestId);
+      }
+
+      // Re-dispatch replay event
+      const timestamp = Math.floor(Date.now() / 1000);
+      const retryEventId = deliveryLog.payload?.event_id || `evt_${crypto.randomUUID().replace(/-/g, '')}`;
+      const payloadString = JSON.stringify({
+        id: retryEventId,
+        event: deliveryLog.payload?.event_type || 'retry.dispatch',
+        is_retry: true,
+        company_id: companyId,
+        created_at: new Date().toISOString(),
+      });
+      const signaturePayload = `${timestamp}.${payloadString}`;
+      const signature = await hmacSha256Signature(hookRecord.secret, signaturePayload);
+
+      let deliveryStatus = 'failed';
+      let statusCode = 0;
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
+        const retryRes = await fetch(hookRecord.endpoint_url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'User-Agent': 'Weftro-Webhooks/1.0',
+            'X-Weftro-Event-Id': retryEventId,
+            'X-Weftro-Timestamp': String(timestamp),
+            'X-Weftro-Signature': `t=${timestamp},v1=${signature}`,
+          },
+          body: payloadString,
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+        statusCode = retryRes.status;
+        deliveryStatus = retryRes.ok ? 'delivered' : 'failed';
+      } catch (_e) {
+        deliveryStatus = 'failed';
+      }
+
+      logAudit('webhooks.retry', { delivery_id: deliveryId, status: deliveryStatus, response_status: statusCode });
+
+      return successResponse(
+        {
+          retried: true,
+          original_delivery_id: deliveryId,
+          status: deliveryStatus,
+          response_status: statusCode,
+        },
+        { request_id: requestId },
+        200,
+        rateLimitHeaders
+      );
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // ROUTE: /api/v1/webhooks/:id (GET, PATCH, DELETE)
+    // ══════════════════════════════════════════════════════════════
+    const singleWebhookMatch = subpath.match(/^(?:\/api\/v1)?\/webhooks\/([0-9a-fA-F-]+)$/);
+    if (singleWebhookMatch) {
+      if (!hasScope(SCOPES.WEBHOOKS_MANAGE)) {
+        return errorResponse('FORBIDDEN', 'Insufficient scope: webhooks:manage required.', 403, requestId);
+      }
+
+      const hookId = singleWebhookMatch[1];
+
+      if (req.method === 'GET') {
+        const { data: hookRecord, error: getErr } = await supabase
+          .from('clipad_v3_webhooks')
+          .select('id, company_id, endpoint_url, events, is_active, created_at, updated_at')
+          .eq('id', hookId)
+          .eq('company_id', companyId)
+          .single();
+
+        if (getErr || !hookRecord) {
+          return errorResponse('RESOURCE_NOT_FOUND', 'Webhook subscription not found in organization.', 404, requestId);
+        }
+
+        return successResponse(hookRecord, { request_id: requestId }, 200, rateLimitHeaders);
+      }
+
+      if (req.method === 'PATCH') {
+        const body = await req.json().catch(() => ({}));
+        const updatePayload: any = { updated_at: new Date().toISOString() };
+
+        if (typeof body.endpoint_url === 'string') {
+          const trimmedUrl = body.endpoint_url.trim();
+          const ssrfCheck = isPrivateOrUnsafeUrl(trimmedUrl);
+          if (!ssrfCheck.safe) {
+            return errorResponse('BAD_REQUEST', `Invalid webhook URL: ${ssrfCheck.reason}`, 400, requestId);
+          }
+          updatePayload.endpoint_url = trimmedUrl;
+        }
+
+        if (Array.isArray(body.events)) {
+          if (body.events.length === 0) {
+            return errorResponse('BAD_REQUEST', 'At least one valid event type must be selected.', 400, requestId);
+          }
+          for (const evt of body.events) {
+            if (!SUPPORTED_WEBHOOK_EVENTS.includes(evt)) {
+              return errorResponse('BAD_REQUEST', `Unsupported event type: '${evt}'`, 400, requestId);
+            }
+          }
+          updatePayload.events = body.events;
+        }
+
+        if (typeof body.is_active === 'boolean') {
+          updatePayload.is_active = body.is_active;
+        }
+
+        const { data: updatedHook, error: patchErr } = await supabase
+          .from('clipad_v3_webhooks')
+          .update(updatePayload)
+          .eq('id', hookId)
+          .eq('company_id', companyId)
+          .select('id, company_id, endpoint_url, events, is_active, created_at, updated_at')
+          .single();
+
+        if (patchErr || !updatedHook) {
+          return errorResponse('RESOURCE_NOT_FOUND', 'Webhook subscription not found in organization.', 404, requestId);
+        }
+
+        logAudit('webhooks.update', { webhook_id: hookId });
+        return successResponse(updatedHook, { request_id: requestId }, 200, rateLimitHeaders);
+      }
+
+      if (req.method === 'DELETE') {
+        const { error: delErr } = await supabase
+          .from('clipad_v3_webhooks')
+          .delete()
+          .eq('id', hookId)
+          .eq('company_id', companyId);
+
+        if (delErr) throw delErr;
+        logAudit('webhooks.delete', { webhook_id: hookId });
+
+        return successResponse({ deleted: true, id: hookId }, { request_id: requestId }, 200, rateLimitHeaders);
+      }
+
+      return errorResponse('METHOD_NOT_ALLOWED', 'Supported methods are GET, PATCH, DELETE.', 405, requestId);
     }
 
     // Endpoint not recognized

@@ -9,6 +9,7 @@ import DeveloperDocs from '@/components/clipad/features/DeveloperDocs';
 import DeveloperLogs from '@/components/clipad/features/DeveloperLogs';
 
 import DeveloperMcp from '@/components/clipad/features/DeveloperMcp';
+import DeveloperWebhooks from '@/components/clipad/features/DeveloperWebhooks';
 
 import {
   Code2,
@@ -30,10 +31,11 @@ export default function DeveloperPlatform() {
   const location = useLocation();
 
   // Determine active sub-tab from URL pathname
-  // Supported subpaths: /developers, /developers/mcp, /developers/assistant, /developers/explorer, /developers/docs, /developers/logs
+  // Supported subpaths: /developers, /developers/mcp, /developers/assistant, /developers/explorer, /developers/docs, /developers/logs, /developers/webhooks
   const getActiveTab = () => {
     const path = location.pathname;
     if (path.includes('/developers/mcp')) return 'mcp';
+    if (path.includes('/developers/webhooks')) return 'webhooks';
     if (path.includes('/developers/assistant')) return 'assistant';
     if (path.includes('/developers/explorer')) return 'explorer';
     if (path.includes('/developers/docs')) return 'docs';
@@ -69,7 +71,7 @@ export default function DeveloperPlatform() {
                 </Badge>
               </div>
               <p className="text-sm text-muted-foreground mt-0.5">
-                Build applications, configure MCP integrations, generate scoped tokens, and query organizational intelligence.
+                Build applications, configure MCP integrations, manage webhook subscriptions, generate scoped tokens, and query organizational intelligence.
               </p>
             </div>
           </div>
@@ -86,6 +88,18 @@ export default function DeveloperPlatform() {
             >
               <KeyRound className="w-3.5 h-3.5" />
               Apps & Credentials
+            </button>
+
+            <button
+              onClick={() => navigate('/developers/webhooks')}
+              className={`pb-3 px-3 font-semibold border-b-2 transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+                activeTab === 'webhooks'
+                  ? 'border-primary text-foreground'
+                  : 'border-transparent text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              <Webhook className="w-3.5 h-3.5 text-primary" />
+              Webhooks
             </button>
 
             <button
@@ -153,7 +167,9 @@ export default function DeveloperPlatform() {
 
       {/* Main Content Body */}
       <div className="max-w-6xl mx-auto px-4 md:px-6 mt-8">
-        {activeTab === 'mcp' ? (
+        {activeTab === 'webhooks' ? (
+          <DeveloperWebhooks />
+        ) : activeTab === 'mcp' ? (
           <DeveloperMcp />
         ) : activeTab === 'assistant' ? (
           <DeveloperAIAssistant />

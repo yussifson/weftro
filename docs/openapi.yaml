@@ -234,6 +234,173 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /api/v1/webhooks:
+    get:
+      summary: List Webhook Subscriptions
+      description: Lists registered webhook endpoints for the authenticated organization.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of registered webhooks.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      summary: Create Webhook Subscription
+      description: Registers an outbound webhook subscription with SSRF validation. Returns endpoint details and one-time secret.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - endpoint_url
+                - events
+              properties:
+                endpoint_url:
+                  type: string
+                  format: uri
+                  example: "https://example.com/api/weftro-webhook"
+                events:
+                  type: array
+                  items:
+                    type: string
+                  example: ["capture.created", "memory.created"]
+                description:
+                  type: string
+                app_id:
+                  type: string
+      responses:
+        '201':
+          description: Webhook subscription created.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/v1/webhooks/{id}:
+    get:
+      summary: Get Webhook Subscription
+      description: Retrieves details of a specific webhook subscription.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Webhook details.
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      summary: Update Webhook Subscription
+      description: Updates URL, subscribed events, or active state.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                endpoint_url:
+                  type: string
+                events:
+                  type: array
+                  items:
+                    type: string
+                is_active:
+                  type: boolean
+      responses:
+        '200':
+          description: Webhook updated.
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      summary: Delete Webhook Subscription
+      description: Permanently deletes a webhook subscription.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Webhook deleted.
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/v1/webhooks/{id}/rotate-secret:
+    post:
+      summary: Rotate Webhook Signing Secret
+      description: Generates a new signing secret and immediately invalidates the previous secret.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Secret rotated with new secret returned once.
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/v1/webhooks/{id}/test:
+    post:
+      summary: Dispatch Test Webhook Event
+      description: Sends a test ping with HMAC signature to verify receiver setup.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Test ping dispatched and result returned.
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/v1/webhooks/{id}/deliveries:
+    get:
+      summary: Get Webhook Delivery Logs
+      description: Lists recent webhook delivery attempts, status codes, latency, and request IDs.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Delivery attempts log.
+        '404':
+          $ref: '#/components/responses/NotFound'
+
   /api/v1/search:
     post:
       summary: Grounded Organizational Search
