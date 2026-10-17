@@ -167,26 +167,35 @@ export async function getMemories({
       q = q.range(offset, offset + limit - 1);
     }
 
+    // Server-side database filter for spaceIds when querying team-tier or specific space memories
+    if (Array.isArray(spaceIds) && spaceIds.length > 0) {
+      q = q.in('team_space_id', spaceIds);
+    } else if (memoryTier === MEMORY_TIERS.TEAM) {
+      // If team tier was explicitly requested without space authorization, do not query any team spaces
+      return [];
+    }
+
+    // Server-side query text filter if requested
+    if (queryText && queryText.trim()) {
+      const sanitized = queryText.trim().replace(/[%_]/g, '');
+      if (sanitized) {
+        q = q.or(`title.ilike.%${sanitized}%,content.ilike.%${sanitized}%,summary.ilike.%${sanitized}%`);
+      }
+    }
+
     const { data, error } = await q;
 
     if (error || !data) return [];
 
-    // Filter in JS for fine-grained space & scope permissions
+    // Secondary client defense-in-depth: enforce personal user ownership
     return data.filter(mem => {
-      // 1. Personal tier filter
+      // 1. Personal tier filter: ensure personal memory belongs strictly to caller
       if (mem.memory_tier === MEMORY_TIERS.PERSONAL) {
         return mem.user_id === userId;
       }
-      // 2. Team tier filter
+      // 2. Team tier filter: ensure spaceId matches caller's authorized spaces if provided
       if (mem.memory_tier === MEMORY_TIERS.TEAM && mem.team_space_id) {
         if (spaceIds.length > 0 && !spaceIds.includes(mem.team_space_id)) {
-          return false;
-        }
-      }
-      // 3. Query text filter if requested
-      if (queryText && queryText.trim()) {
-        const text = (mem.title + ' ' + mem.content + ' ' + (mem.summary || '')).toLowerCase();
-        if (!text.includes(queryText.toLowerCase().trim())) {
           return false;
         }
       }
