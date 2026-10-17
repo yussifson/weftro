@@ -4,11 +4,12 @@ import {
   Search, Sparkles, FileText, CheckCircle, MessageSquare, Calendar, Video,
   Loader2, X, ShieldAlert, AlertTriangle, ArrowRight, ExternalLink, Zap, Lock,
   Command, Bot, CornerDownLeft, Filter, Check, Layers, ChevronRight, Copy,
-  CheckCheck, Folder, Clock, User, Users, Hash
+  CheckCheck, Folder, Clock, User, Users, Hash, BrainCircuit
 } from 'lucide-react';
 import { supabase } from '@/api/supabaseClient';
 import { generateText } from '@/lib/cloudflareAI';
 import { buildOrgContext } from '@/lib/clipadIntelligence';
+import { searchMemoriesHybrid } from '@/lib/clipadHybridRetrievalService';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/lib/AuthContext';
 import { isAdmin, isSpaceman } from '@/lib/constants';
@@ -27,6 +28,7 @@ const TYPE_META = {
   standup:     { icon: Zap,           label: 'Standup',   color: 'text-slate-600 dark:text-slate-400 group-hover:text-[#006065]', bg: 'bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800',     route: (id, spaceId) => spaceId ? `/spaces/${spaceId}?tab=standup` : null },
   integration: { icon: ExternalLink,  label: 'Imported',  color: 'text-slate-700 dark:text-muted-foreground',     bg: 'bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-border',   route: () => `/integrations` },
   person:      { icon: User,          label: 'Person',    color: 'text-violet-700 dark:text-violet-400',   bg: 'bg-violet-100 dark:bg-violet-900/30 border border-violet-200 dark:border-violet-700/50', route: () => null },
+  memory:      { icon: BrainCircuit,  label: 'Memory',    color: 'text-emerald-700 dark:text-emerald-400', bg: 'bg-emerald-100 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-700/50', route: () => `/search` },
 };
 
 const FILTER_TABS = [
@@ -41,7 +43,7 @@ const FILTER_TABS = [
 
 const FILTER_TYPE_MAP = {
   all:      null,
-  doc:      ['doc', 'integration'],
+  doc:      ['doc', 'integration', 'memory'],
   task:     ['task', 'blocker', 'standup'],
   meeting:  ['meeting', 'video'],
   decision: ['decision', 'blocker'],
@@ -378,10 +380,31 @@ export default function GlobalSearch() {
       ),
       // People search
       Promise.resolve(searchPeople(q, cid)).catch(() => []),
+      // Hybrid Organizational Memories search
+      searchMemoriesHybrid({
+        queryText: q,
+        companyId: cid,
+        userId: user?.id,
+        accessibleSpaceIds: spaceIdArr,
+        limit: Math.min(limit, 10),
+        enableSemantic: true
+      }).catch(err => {
+        console.warn('[GlobalSearch] Hybrid retrieval fallback:', err);
+        return [];
+      }),
     ]);
 
     const raw = [
       ...(people || []),
+      ...(memories || []).map(m => ({
+        type: 'memory',
+        id: m.id,
+        space_id: m.team_space_id || null,
+        label: m.title || 'Memory',
+        snippet: (m.summary || m.content)?.substring(0, 200),
+        created_at: m.updated_at || m.created_at,
+        score: m.rrf_score || m.combined_score || null
+      })),
       ...(docs || []).map(d => ({ type: 'doc', id: d.id, space_id: d.space_id, label: d.title, snippet: d.content?.substring(0, 200), created_at: d.created_at })),
       ...(tasks || []).map(t => ({ type: 'task', id: t.id, space_id: t.space_id, label: t.title, snippet: t.context?.substring(0, 200), created_at: t.created_at })),
       ...(messages || []).map(m => ({ type: 'message', id: m.id, space_id: m.space_id, label: 'Chat Message', snippet: m.content?.substring(0, 200), created_at: m.created_at })),
