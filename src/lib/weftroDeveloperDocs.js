@@ -101,6 +101,14 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
     },
     {
       method: "GET",
+      path: "/api/v1/captures/:id",
+      scope: "captures:read",
+      description: "Retrieve specific capture transcript, source type, and queue state.",
+      example: `curl -X GET "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/captures/<ID>" \\
+  -H "Authorization: Bearer cpd_..."`
+    },
+    {
+      method: "GET",
       path: "/api/v1/captures/:id/status",
       scope: "captures:read",
       description: "Get capture processing and background queue job status.",
@@ -124,6 +132,14 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
   -H "Authorization: Bearer cpd_..."`
     },
     {
+      method: "GET",
+      path: "/api/v1/apps",
+      scope: "apps:manage",
+      description: "List registered developer applications for the authorized organization.",
+      example: `curl -X GET "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/apps" \\
+  -H "Authorization: Bearer <JWT_OR_APPS_MANAGE_TOKEN>"`
+    },
+    {
       method: "POST",
       path: "/api/v1/apps",
       scope: "apps:manage",
@@ -131,11 +147,42 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
       body: { name: "string (required)", description: "string (optional)", redirect_uris: "string[] (optional)" }
     },
     {
+      method: "GET",
+      path: "/api/v1/apps/:id",
+      scope: "apps:manage",
+      description: "Retrieve developer application details.",
+      example: `curl -X GET "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/apps/<ID>" \\
+  -H "Authorization: Bearer <JWT_OR_APPS_MANAGE_TOKEN>"`
+    },
+    {
+      method: "PATCH",
+      path: "/api/v1/apps/:id",
+      scope: "apps:manage",
+      description: "Update developer application name, description, or active status.",
+      body: { name: "string (optional)", description: "string (optional)", is_active: "boolean (optional)" }
+    },
+    {
+      method: "DELETE",
+      path: "/api/v1/apps/:id",
+      scope: "apps:manage",
+      description: "Delete developer application and revoke its client credentials.",
+      example: `curl -X DELETE "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/apps/<ID>" \\
+  -H "Authorization: Bearer <JWT_OR_APPS_MANAGE_TOKEN>"`
+    },
+    {
       method: "POST",
       path: "/api/v1/apps/:id/rotate-secret",
       scope: "apps:manage",
       description: "Rotate client secret. Previous secret is immediately invalidated.",
       example: `curl -X POST "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/apps/<ID>/rotate-secret" \\
+  -H "Authorization: Bearer <JWT_OR_APPS_MANAGE_TOKEN>"`
+    },
+    {
+      method: "GET",
+      path: "/api/v1/tokens",
+      scope: "apps:manage",
+      description: "List active scoped API access tokens without revealing secrets.",
+      example: `curl -X GET "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/tokens" \\
   -H "Authorization: Bearer <JWT_OR_APPS_MANAGE_TOKEN>"`
     },
     {
@@ -169,6 +216,29 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
       body: { endpoint_url: "string (HTTPS required, SSRF protected)", events: "string[]", description: "string (optional)" }
     },
     {
+      method: "GET",
+      path: "/api/v1/webhooks/:id",
+      scope: "webhooks:manage",
+      description: "Retrieve webhook subscription details and active status.",
+      example: `curl -X GET "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/webhooks/<ID>" \\
+  -H "Authorization: Bearer cpd_..."`
+    },
+    {
+      method: "PATCH",
+      path: "/api/v1/webhooks/:id",
+      scope: "webhooks:manage",
+      description: "Update webhook subscription events filter, description, or active status.",
+      body: { events: "string[] (optional)", is_active: "boolean (optional)", description: "string (optional)" }
+    },
+    {
+      method: "DELETE",
+      path: "/api/v1/webhooks/:id",
+      scope: "webhooks:manage",
+      description: "Delete webhook subscription cleanly.",
+      example: `curl -X DELETE "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/webhooks/<ID>" \\
+  -H "Authorization: Bearer cpd_..."`
+    },
+    {
       method: "POST",
       path: "/api/v1/webhooks/:id/rotate-secret",
       scope: "webhooks:manage",
@@ -190,6 +260,14 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
       scope: "webhooks:manage",
       description: "List recent delivery logs, HTTP response status codes, latency, and payloads for an endpoint.",
       example: `curl -X GET "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/webhooks/<ID>/deliveries" \\
+  -H "Authorization: Bearer cpd_..."`
+    },
+    {
+      method: "POST",
+      path: "/api/v1/webhooks/deliveries/:id/retry",
+      scope: "webhooks:manage",
+      description: "Retry an eligible webhook delivery using current subscription credentials.",
+      example: `curl -X POST "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/webhooks/deliveries/<DELIVERY_ID>/retry" \\
   -H "Authorization: Bearer cpd_..."`
     }
   ],
