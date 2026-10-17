@@ -68,14 +68,9 @@ DROP POLICY IF EXISTS "Users can view capture jobs in their company" ON public.c
 CREATE POLICY "Users can view capture jobs in their company"
   ON public.clipad_v3_capture_queue FOR SELECT
   USING (
-    company_id::text IN (
+    auth.uid() = user_id
+    OR company_id::text IN (
       SELECT company_id::text FROM public.profiles WHERE id = auth.uid()
-    )
-    AND (
-      auth.uid() = user_id
-      OR EXISTS (
-        SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role IN ('admin', 'owner', 'super_admin')
-      )
     )
   );
 
@@ -84,7 +79,20 @@ CREATE POLICY "Users can insert queue jobs for their own captures"
   ON public.clipad_v3_capture_queue FOR INSERT
   WITH CHECK (
     auth.uid() = user_id
-    AND company_id::text IN (
+  );
+
+DROP POLICY IF EXISTS "Users can update their own capture jobs" ON public.clipad_v3_capture_queue;
+CREATE POLICY "Users can update their own capture jobs"
+  ON public.clipad_v3_capture_queue FOR UPDATE
+  USING (
+    auth.uid() = user_id
+    OR company_id::text IN (
+      SELECT company_id::text FROM public.profiles WHERE id = auth.uid()
+    )
+  )
+  WITH CHECK (
+    auth.uid() = user_id
+    OR company_id::text IN (
       SELECT company_id::text FROM public.profiles WHERE id = auth.uid()
     )
   );
