@@ -61,18 +61,27 @@ DECLARE
 BEGIN
   -- Authoritatively resolve session credentials directly from Postgres auth context
   v_user_id := auth.uid();
-  v_company_id := public.get_auth_company_id();
   
-  -- Admin scope: super_admin across system, or admin strictly within caller's own company
-  v_is_admin := public.is_super_admin() OR EXISTS (
-    SELECT 1 FROM public.profiles 
-    WHERE id = v_user_id 
-      AND company_id::text = v_company_id 
-      AND role IN ('super_admin', 'admin')
-  );
+  -- Resolve company_id directly from profiles table
+  SELECT p.company_id::text INTO v_company_id 
+  FROM public.profiles p 
+  WHERE p.id = v_user_id 
+  LIMIT 1;
+  
+  -- Scoped admin check: super_admin globally, or admin strictly within caller's own tenant
+  SELECT EXISTS (
+    SELECT 1 FROM public.profiles p
+    WHERE p.id = v_user_id 
+      AND p.role = 'super_admin'
+  ) OR EXISTS (
+    SELECT 1 FROM public.profiles p
+    WHERE p.id = v_user_id 
+      AND p.company_id::text = v_company_id 
+      AND p.role IN ('admin', 'company_admin', 'owner')
+  ) INTO v_is_admin;
 
   -- Reject unauthenticated callers immediately (requires active user session)
-  IF v_user_id IS NULL OR (v_company_id IS NULL AND NOT public.is_super_admin()) THEN
+  IF v_user_id IS NULL OR (v_company_id IS NULL AND NOT v_is_admin) THEN
     RETURN;
   END IF;
 
