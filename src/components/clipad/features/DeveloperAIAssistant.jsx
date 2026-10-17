@@ -158,11 +158,11 @@ STRICT OPERATING INSTRUCTIONS:
   };
 
   return (
-    <div className="h-[calc(100vh-140px)] min-h-[580px] flex flex-col bg-background text-foreground">
+    <div className="h-full w-full flex flex-col bg-background text-foreground overflow-hidden">
       {/* Top Banner / Status */}
-      <div className="flex items-center justify-between px-6 py-3.5 border-b border-border bg-card/60 backdrop-blur-sm shrink-0">
+      <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-border bg-card/60 backdrop-blur-sm shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+          <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
             <Bot className="w-4 h-4" />
           </div>
           <div>
@@ -172,7 +172,7 @@ STRICT OPERATING INSTRUCTIONS:
                 API v1 Grounded
               </Badge>
             </div>
-            <p className="text-xs text-muted-foreground">Ask architecture, endpoint specs, authentication rules, or MCP config</p>
+            <p className="text-xs text-muted-foreground hidden sm:block">Ask architecture, endpoint specs, authentication rules, or MCP config</p>
           </div>
         </div>
 
@@ -191,11 +191,11 @@ STRICT OPERATING INSTRUCTIONS:
       </div>
 
       {/* Main Responsive Two-Column Layout */}
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden">
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 min-h-0 overflow-hidden">
         {/* Left / Center Column: Chat Messages & Input (8 cols on lg) */}
-        <div className="lg:col-span-8 flex flex-col h-full border-r border-border overflow-hidden bg-card/30">
+        <div className="lg:col-span-8 flex flex-col h-full min-h-0 border-r border-border overflow-hidden bg-card/30">
           {/* Scrollable Messages Area */}
-          <div className="flex-1 overflow-y-auto px-4 md:px-6 py-5 space-y-5 scrollbar-thin">
+          <div className="flex-1 overflow-y-auto px-4 md:px-6 py-4 space-y-4 scrollbar-thin">
             {messages.map((msg, idx) => {
               const isAssistant = msg.role === 'assistant';
               return (

@@ -106,57 +106,40 @@ export default function DeveloperPlatform() {
   const currentTabObj = SIDEBAR_TABS.find(t => t.id === activeTab) || SIDEBAR_TABS[0];
 
   return (
-    <div className="flex h-[calc(100vh-60px)] w-full overflow-hidden bg-background text-foreground" style={{ fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ fontFamily: "'Inter', sans-serif" }} className="flex h-screen bg-slate-50 dark:bg-background overflow-hidden text-slate-900 dark:text-slate-100">
       {/* SIDEBAR NAVIGATION (Matching SpaceDashboard pattern) */}
-      <aside
-        className={`bg-card border-r border-border flex-col hidden md:flex shrink-0 transition-all duration-300 ${
-          sidebarOpen ? 'w-64' : 'w-20'
-        }`}
-      >
-        {/* Sidebar Header */}
-        <div className="h-16 flex items-center px-4 border-b border-border gap-3 shrink-0 justify-between">
+      <aside className={`bg-white dark:bg-card border-r border-slate-200 dark:border-border flex-col hidden md:flex shrink-0 transition-all duration-300 ${sidebarOpen ? 'w-64' : 'w-20'}`}>
+        {/* Sidebar Header: Back button and expand/collapse button, top name area left empty */}
+        <div className="h-16 flex items-center px-4 border-b border-slate-200 dark:border-border gap-3 shrink-0 justify-between">
           <div className="flex items-center gap-3 overflow-hidden">
-            {sidebarOpen ? (
+            {sidebarOpen && (
               <button
                 onClick={() => navigate(-1)}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground bg-secondary hover:bg-accent rounded-md transition-all shadow-sm shrink-0"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-slate-600 dark:text-muted-foreground hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-secondary hover:bg-slate-200 dark:hover:bg-accent rounded-md transition-all shadow-sm shrink-0"
                 title="Go back"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 <span>Back</span>
               </button>
-            ) : (
-              <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
-                <Code2 className="w-4 h-4" />
-              </div>
             )}
-            <div className={`overflow-hidden transition-opacity duration-300 ${sidebarOpen ? 'opacity-100' : 'opacity-0 hidden'}`}>
-              <div className="flex items-center gap-1.5">
-                <span className="font-bold text-sm text-foreground truncate">Developer</span>
-                <Badge variant="outline" className="text-[9px] bg-primary/10 text-primary border-primary/20 font-mono px-1 py-0">
-                  v1
-                </Badge>
-              </div>
-            </div>
           </div>
-
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-secondary rounded-md transition-colors shrink-0"
+            className="p-1.5 text-slate-400 hover:text-slate-600 dark:text-muted-foreground hover:bg-slate-100 dark:hover:bg-accent rounded-md transition-colors shrink-0"
             title={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
           >
             {sidebarOpen ? (
-              <PanelLeftClose className="w-4 h-4 transition-transform duration-300" />
+              <PanelLeftClose className="w-5 h-5 transition-transform duration-300" />
             ) : (
-              <PanelLeft className="w-4 h-4 transition-transform duration-300" />
+              <PanelLeft className="w-5 h-5 transition-transform duration-300" />
             )}
           </button>
         </div>
 
         {/* Sidebar Nav Links */}
-        <div className="flex-1 overflow-y-auto py-4 px-3 space-y-1.5 scrollbar-thin">
+        <div className="flex-1 overflow-y-auto py-4 px-3 space-y-1 scrollbar-hide">
           {sidebarOpen && (
-            <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 px-3">
+            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3 px-3 transition-opacity">
               Developer Platform
             </div>
           )}
@@ -169,29 +152,20 @@ export default function DeveloperPlatform() {
                 key={tab.id}
                 onClick={() => navigate(tab.path)}
                 title={!sidebarOpen ? tab.label : ''}
-                className={`flex items-center rounded-xl transition-all ${
-                  sidebarOpen
-                    ? 'w-full gap-3 px-3.5 py-2.5 text-left'
-                    : 'justify-center w-12 h-12 mx-auto'
+                className={`flex items-center py-2 rounded-md transition-all ${
+                  sidebarOpen ? 'w-full gap-3 px-3 text-sm' : 'justify-center w-12 h-12 mx-auto'
                 } ${
                   isActive
-                    ? 'bg-primary/10 text-primary font-semibold border border-primary/20 shadow-sm'
-                    : 'text-muted-foreground hover:bg-secondary/60 hover:text-foreground'
+                    ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-foreground font-medium'
+                    : 'text-slate-600 dark:text-muted-foreground hover:bg-slate-50 dark:hover:bg-accent/50 hover:text-slate-900 dark:hover:text-slate-200'
                 }`}
               >
                 <Icon
                   className={`shrink-0 ${sidebarOpen ? 'w-4 h-4' : 'w-5 h-5'} ${
-                    isActive ? 'text-primary' : 'text-muted-foreground'
+                    isActive ? 'text-slate-900 dark:text-foreground' : 'text-slate-400'
                   }`}
                 />
-                {sidebarOpen && (
-                  <div className="flex flex-col min-w-0">
-                    <span className="text-xs truncate">{tab.label}</span>
-                    <span className="text-[10px] text-muted-foreground font-normal truncate">
-                      {tab.description}
-                    </span>
-                  </div>
-                )}
+                {sidebarOpen && <span className="truncate">{tab.label}</span>}
               </button>
             );
           })}
@@ -199,7 +173,7 @@ export default function DeveloperPlatform() {
 
         {/* Sidebar Footer */}
         {sidebarOpen && (
-          <div className="p-4 border-t border-border shrink-0 bg-secondary/20">
+          <div className="p-4 border-t border-slate-200 dark:border-border shrink-0">
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span className="font-mono text-[11px]">Gateway Operational</span>
@@ -209,7 +183,7 @@ export default function DeveloperPlatform() {
       </aside>
 
       {/* MOBILE HORIZONTAL NAVIGATION (Visible on small screens) */}
-      <div className="md:hidden fixed top-14 left-0 right-0 bg-card border-b border-border z-30 flex overflow-x-auto px-2 py-2 hide-scrollbar">
+      <div className="md:hidden fixed top-14 left-0 right-0 bg-white dark:bg-card border-b border-slate-200 dark:border-border z-30 flex overflow-x-auto px-2 py-2 hide-scrollbar">
         {SIDEBAR_TABS.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -230,29 +204,10 @@ export default function DeveloperPlatform() {
         })}
       </div>
 
-      {/* MAIN CONTENT AREA */}
+      {/* MAIN CONTENT AREA - Takes entire space without redundant top header */}
       <div className="flex-1 flex flex-col h-full overflow-hidden pt-12 md:pt-0 relative">
-        {/* Top Header of the Content Column (Only shown when not full-bleed assistant) */}
-        {activeTab !== 'assistant' && (
-          <header className="h-16 border-b border-border bg-card/60 backdrop-blur-md flex items-center justify-between px-6 shrink-0 z-10">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                <currentTabObj.icon className="w-4 h-4" />
-              </div>
-              <div>
-                <h1 className="text-base font-bold text-foreground">
-                  {currentTabObj.label}
-                </h1>
-                <p className="text-xs text-muted-foreground">
-                  {currentTabObj.description}
-                </p>
-              </div>
-            </div>
-          </header>
-        )}
-
         {/* Scrollable / Full-Size Tab Body */}
-        <div className={`flex-1 overflow-y-auto ${activeTab === 'assistant' ? 'p-0' : 'p-4 md:p-6'} scrollbar-thin`}>
+        <div className={`flex-1 ${activeTab === 'assistant' ? 'p-0 h-full overflow-hidden' : 'p-4 md:p-6 overflow-y-auto scrollbar-thin'}`}>
           {activeTab === 'webhooks' ? (
             <div className="max-w-6xl mx-auto">
               <DeveloperWebhooks />
