@@ -3,8 +3,8 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-request-id',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-request-id, x-test-suite-key',
+  'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE, OPTIONS',
 };
 
 const API_VERSION = 'v1';
@@ -19,6 +19,7 @@ const SCOPES = {
   CAPTURES_READ: 'captures:read',
   MOMENTS_READ: 'moments:read',
   SOURCES_READ: 'sources:read',
+  APPS_MANAGE: 'apps:manage',
 };
 
 // Response Envelope Helpers
@@ -311,11 +312,20 @@ serve(async (req) => {
     return successResponse(
       {
         api_version: API_VERSION,
-        authentication: ['Bearer connect_token'],
+        authentication: ['Bearer connect_token', 'Bearer supabase_jwt'],
         supported_scopes: Object.values(SCOPES),
         endpoints: [
           { path: '/api/v1/health', method: 'GET', scope: 'none', description: 'API health probe' },
           { path: '/api/v1/capabilities', method: 'GET', scope: 'none', description: 'Supported capabilities and routes' },
+          { path: '/api/v1/apps', method: 'GET', scope: 'apps:manage', description: 'List registered developer applications' },
+          { path: '/api/v1/apps', method: 'POST', scope: 'apps:manage', description: 'Register a new developer application' },
+          { path: '/api/v1/apps/:id', method: 'GET', scope: 'apps:manage', description: 'Retrieve application details' },
+          { path: '/api/v1/apps/:id', method: 'PATCH', scope: 'apps:manage', description: 'Update application settings' },
+          { path: '/api/v1/apps/:id', method: 'DELETE', scope: 'apps:manage', description: 'Delete application' },
+          { path: '/api/v1/apps/:id/rotate-secret', method: 'POST', scope: 'apps:manage', description: 'Rotate application client secret' },
+          { path: '/api/v1/tokens', method: 'GET', scope: 'apps:manage', description: 'List scoped API access tokens' },
+          { path: '/api/v1/tokens', method: 'POST', scope: 'apps:manage', description: 'Issue scoped API access token' },
+          { path: '/api/v1/tokens/:id/revoke', method: 'POST', scope: 'apps:manage', description: 'Revoke active API access token' },
           { path: '/api/v1/search', method: 'POST', scope: 'search:read', description: 'Grounded search across organizational memories' },
           { path: '/api/v1/context/query', method: 'POST', scope: 'context:read', description: 'Structured context query with provenance' },
           { path: '/api/v1/memories', method: 'GET', scope: 'memory:read', description: 'List organizational memories with pagination' },
@@ -332,7 +342,7 @@ serve(async (req) => {
     );
   }
 
-  // 2. Authentication: Require Bearer Connect Token
+  // 2. Authentication: Support Supabase User JWT or Connect API Token
   const authHeader = req.headers.get('Authorization') || '';
   if (!authHeader.startsWith('Bearer ')) {
     return errorResponse(
@@ -353,58 +363,103 @@ serve(async (req) => {
     );
   }
 
-  const tokenHash = await sha256Hash(rawToken);
+  let callerType: 'user_jwt' | 'connect_token' = 'connect_token';
+  let companyId: string | null = null;
+  let userId: string | null = null;
+  let grantedScopes: string[] = [];
+  let tokenData: any = null;
+  let rateLimitRPM = DEFAULT_RATE_LIMIT_RPM;
+  let rateLimitKey = '';
 
-  const { data: tokenData, error: tokenErr } = await supabase
-    .from('clipad_v3_connect_tokens')
-    .select('id, user_id, company_id, scopes, expires_at, revoked_at, rate_limit_rpm, app:app_id ( id, name, client_id, is_active )')
-    .eq('token_hash', tokenHash)
-    .single();
+  // Check if token is a Supabase Auth JWT
+  const { data: userAuthData, error: userAuthErr } = await supabase.auth.getUser(rawToken);
+  if (!userAuthErr && userAuthData?.user) {
+    callerType = 'user_jwt';
+    userId = userAuthData.user.id;
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('company_id, role')
+      .eq('id', userId)
+      .single();
+    companyId = profile?.company_id || userAuthData.user.user_metadata?.company_id || null;
+    grantedScopes = [
+      'apps:manage',
+      'search:read',
+      'context:read',
+      'memory:read',
+      'entities:read',
+      'captures:read',
+      'moments:read',
+      'sources:read',
+      'admin',
+    ];
+    rateLimitKey = `user:${userId}`;
+  } else {
+    // Treat as Connect API Token
+    callerType = 'connect_token';
+    const tokenHash = await sha256Hash(rawToken);
 
-  if (tokenErr || !tokenData) {
+    const { data: tokRecord, error: tokenErr } = await supabase
+      .from('clipad_v3_connect_tokens')
+      .select('id, user_id, company_id, scopes, expires_at, revoked_at, rate_limit_rpm, app:app_id ( id, name, client_id, is_active )')
+      .eq('token_hash', tokenHash)
+      .single();
+
+    if (tokenErr || !tokRecord) {
+      return errorResponse(
+        'INVALID_CREDENTIALS',
+        'The provided API token is invalid, unrecognized, or expired.',
+        401,
+        requestId
+      );
+    }
+
+    if (tokRecord.revoked_at) {
+      return errorResponse(
+        'TOKEN_REVOKED',
+        'The provided API token has been revoked.',
+        401,
+        requestId
+      );
+    }
+
+    if (tokRecord.expires_at && new Date(tokRecord.expires_at) < new Date()) {
+      return errorResponse(
+        'TOKEN_EXPIRED',
+        'The provided API token has expired.',
+        401,
+        requestId
+      );
+    }
+
+    if (tokRecord.app && tokRecord.app.is_active === false) {
+      return errorResponse(
+        'APP_INACTIVE',
+        'The application associated with this token is inactive.',
+        403,
+        requestId
+      );
+    }
+
+    tokenData = tokRecord;
+    grantedScopes = Array.isArray(tokRecord.scopes) ? tokRecord.scopes : [];
+    companyId = tokRecord.company_id;
+    userId = tokRecord.user_id;
+    rateLimitRPM = tokRecord.rate_limit_rpm || DEFAULT_RATE_LIMIT_RPM;
+    rateLimitKey = `token:${tokRecord.id}`;
+  }
+
+  if (!companyId) {
     return errorResponse(
-      'INVALID_CREDENTIALS',
-      'The provided API token is invalid, unrecognized, or expired.',
+      'UNAUTHORIZED',
+      'Could not determine organization context for caller.',
       401,
       requestId
     );
   }
-
-  if (tokenData.revoked_at) {
-    return errorResponse(
-      'TOKEN_REVOKED',
-      'The provided API token has been revoked.',
-      401,
-      requestId
-    );
-  }
-
-  if (tokenData.expires_at && new Date(tokenData.expires_at) < new Date()) {
-    return errorResponse(
-      'TOKEN_EXPIRED',
-      'The provided API token has expired.',
-      401,
-      requestId
-    );
-  }
-
-  if (tokenData.app && tokenData.app.is_active === false) {
-    return errorResponse(
-      'APP_INACTIVE',
-      'The application associated with this token is inactive.',
-      403,
-      requestId
-    );
-  }
-
-  const grantedScopes: string[] = Array.isArray(tokenData.scopes) ? tokenData.scopes : [];
-  const companyId = tokenData.company_id;
-  const userId = tokenData.user_id;
 
   // 3. Server-Side Distributed Rate Limiting
-  const maxRpm = tokenData.rate_limit_rpm || DEFAULT_RATE_LIMIT_RPM;
-  const rateLimitKey = `token:${tokenData.id}`;
-
+  const maxRpm = rateLimitRPM;
   let rateLimitResult = { allowed: true, remaining: maxRpm, reset_seconds: 60 };
   try {
     const { data: rlData, error: rlErr } = await supabase.rpc('check_api_rate_limit', {
@@ -894,6 +949,322 @@ serve(async (req) => {
       }
 
       return errorResponse('RESOURCE_NOT_FOUND', 'Source resource not found or inaccessible.', 404, requestId);
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // ROUTE: /api/v1/apps (GET, POST)
+    // ══════════════════════════════════════════════════════════════
+    if (subpath === '/apps' || subpath === '/api/v1/apps') {
+      if (!hasScope(SCOPES.APPS_MANAGE)) {
+        return errorResponse('FORBIDDEN', 'Insufficient scope: apps:manage required.', 403, requestId);
+      }
+
+      if (req.method === 'GET') {
+        const { data: appsList, error: listErr } = await supabase
+          .from('clipad_v3_connect_apps')
+          .select('id, company_id, created_by, name, description, client_id, redirect_uris, is_active, created_at, updated_at')
+          .eq('company_id', companyId)
+          .order('created_at', { ascending: false });
+
+        if (listErr) throw listErr;
+        logAudit('api.apps.list', { count: appsList?.length || 0 });
+        return successResponse(appsList || [], { request_id: requestId }, 200, rateLimitHeaders);
+      }
+
+      if (req.method === 'POST') {
+        const body = await req.json().catch(() => ({}));
+        const name = typeof body.name === 'string' ? body.name.trim() : '';
+        if (!name) {
+          return errorResponse('BAD_REQUEST', "The 'name' field is required.", 400, requestId);
+        }
+
+        const clientId = `client_${crypto.randomUUID().replace(/-/g, '')}`;
+        const rawSecret = `secret_${crypto.randomUUID().replace(/-/g, '')}`;
+        const secretHash = await sha256Hash(rawSecret);
+
+        const { data: newApp, error: createErr } = await supabase
+          .from('clipad_v3_connect_apps')
+          .insert([{
+            company_id: companyId,
+            created_by: userId,
+            name,
+            description: body.description || null,
+            client_id: clientId,
+            client_secret_hash: secretHash,
+            redirect_uris: Array.isArray(body.redirect_uris) ? body.redirect_uris : [],
+            is_active: body.is_active !== false,
+          }])
+          .select('id, company_id, created_by, name, description, client_id, redirect_uris, is_active, created_at, updated_at')
+          .single();
+
+        if (createErr) throw createErr;
+        logAudit('api.apps.create', { app_id: newApp.id, name });
+
+        return successResponse(
+          {
+            ...newApp,
+            client_secret: rawSecret, // Plain secret returned ONLY once at creation
+          },
+          { request_id: requestId, warning: 'Store client_secret securely. It will never be displayed again.' },
+          201,
+          rateLimitHeaders
+        );
+      }
+
+      return errorResponse('METHOD_NOT_ALLOWED', 'Supported methods are GET, POST.', 405, requestId);
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // ROUTE: /api/v1/apps/:id/rotate-secret (POST)
+    // ══════════════════════════════════════════════════════════════
+    const rotateMatch = subpath.match(/^(?:\/api\/v1)?\/apps\/([0-9a-fA-F-]+)\/rotate-secret$/);
+    if (rotateMatch) {
+      if (req.method !== 'POST') {
+        return errorResponse('METHOD_NOT_ALLOWED', 'Endpoint requires POST.', 405, requestId);
+      }
+      if (!hasScope(SCOPES.APPS_MANAGE)) {
+        return errorResponse('FORBIDDEN', 'Insufficient scope: apps:manage required.', 403, requestId);
+      }
+
+      const targetAppId = rotateMatch[1];
+      const { data: existingApp, error: fetchErr } = await supabase
+        .from('clipad_v3_connect_apps')
+        .select('id, company_id')
+        .eq('id', targetAppId)
+        .eq('company_id', companyId)
+        .single();
+
+      if (fetchErr || !existingApp) {
+        return errorResponse('RESOURCE_NOT_FOUND', 'Application not found or inaccessible.', 404, requestId);
+      }
+
+      const newSecret = `secret_${crypto.randomUUID().replace(/-/g, '')}`;
+      const newSecretHash = await sha256Hash(newSecret);
+
+      const { data: updatedApp, error: updateErr } = await supabase
+        .from('clipad_v3_connect_apps')
+        .update({
+          client_secret_hash: newSecretHash,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', targetAppId)
+        .eq('company_id', companyId)
+        .select('id, client_id, name, updated_at')
+        .single();
+
+      if (updateErr) throw updateErr;
+      logAudit('api.apps.rotate_secret', { app_id: targetAppId });
+
+      return successResponse(
+        {
+          id: updatedApp.id,
+          client_id: updatedApp.client_id,
+          client_secret: newSecret,
+          rotated_at: updatedApp.updated_at,
+        },
+        { request_id: requestId, warning: 'Store new client_secret securely. Old secret is immediately invalid.' },
+        200,
+        rateLimitHeaders
+      );
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // ROUTE: /api/v1/apps/:id (GET, PATCH, DELETE)
+    // ══════════════════════════════════════════════════════════════
+    const singleAppMatch = subpath.match(/^(?:\/api\/v1)?\/apps\/([0-9a-fA-F-]+)$/);
+    if (singleAppMatch) {
+      if (!hasScope(SCOPES.APPS_MANAGE)) {
+        return errorResponse('FORBIDDEN', 'Insufficient scope: apps:manage required.', 403, requestId);
+      }
+
+      const targetAppId = singleAppMatch[1];
+
+      if (req.method === 'GET') {
+        const { data: appRecord, error: getErr } = await supabase
+          .from('clipad_v3_connect_apps')
+          .select('id, company_id, created_by, name, description, client_id, redirect_uris, is_active, created_at, updated_at')
+          .eq('id', targetAppId)
+          .eq('company_id', companyId)
+          .single();
+
+        if (getErr || !appRecord) {
+          return errorResponse('RESOURCE_NOT_FOUND', 'Application not found.', 404, requestId);
+        }
+        logAudit('api.apps.get', { app_id: targetAppId });
+        return successResponse(appRecord, { request_id: requestId }, 200, rateLimitHeaders);
+      }
+
+      if (req.method === 'PATCH') {
+        const body = await req.json().catch(() => ({}));
+        const updates: Record<string, any> = { updated_at: new Date().toISOString() };
+        if (typeof body.name === 'string' && body.name.trim()) updates.name = body.name.trim();
+        if (body.description !== undefined) updates.description = body.description;
+        if (Array.isArray(body.redirect_uris)) updates.redirect_uris = body.redirect_uris;
+        if (typeof body.is_active === 'boolean') updates.is_active = body.is_active;
+
+        const { data: updatedApp, error: patchErr } = await supabase
+          .from('clipad_v3_connect_apps')
+          .update(updates)
+          .eq('id', targetAppId)
+          .eq('company_id', companyId)
+          .select('id, company_id, created_by, name, description, client_id, redirect_uris, is_active, created_at, updated_at')
+          .single();
+
+        if (patchErr || !updatedApp) {
+          return errorResponse('RESOURCE_NOT_FOUND', 'Application not found or update failed.', 404, requestId);
+        }
+        logAudit('api.apps.patch', { app_id: targetAppId, updates: Object.keys(updates) });
+        return successResponse(updatedApp, { request_id: requestId }, 200, rateLimitHeaders);
+      }
+
+      if (req.method === 'DELETE') {
+        const { error: delErr } = await supabase
+          .from('clipad_v3_connect_apps')
+          .delete()
+          .eq('id', targetAppId)
+          .eq('company_id', companyId);
+
+        if (delErr) throw delErr;
+        logAudit('api.apps.delete', { app_id: targetAppId });
+        return successResponse({ deleted: true, id: targetAppId }, { request_id: requestId }, 200, rateLimitHeaders);
+      }
+
+      return errorResponse('METHOD_NOT_ALLOWED', 'Supported methods are GET, PATCH, DELETE.', 405, requestId);
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // ROUTE: /api/v1/tokens (GET, POST)
+    // ══════════════════════════════════════════════════════════════
+    if (subpath === '/tokens' || subpath === '/api/v1/tokens') {
+      if (!hasScope(SCOPES.APPS_MANAGE)) {
+        return errorResponse('FORBIDDEN', 'Insufficient scope: apps:manage required.', 403, requestId);
+      }
+
+      if (req.method === 'GET') {
+        const appIdFilter = url.searchParams.get('app_id');
+        let queryBuilder = supabase
+          .from('clipad_v3_connect_tokens')
+          .select('id, app_id, user_id, company_id, scopes, expires_at, revoked_at, rate_limit_rpm, last_used_at, created_at')
+          .eq('company_id', companyId)
+          .order('created_at', { ascending: false });
+
+        if (appIdFilter) {
+          queryBuilder = queryBuilder.eq('app_id', appIdFilter);
+        }
+
+        const { data: tokensList, error: tokListErr } = await queryBuilder;
+        if (tokListErr) throw tokListErr;
+        logAudit('api.tokens.list', { count: tokensList?.length || 0 });
+        return successResponse(tokensList || [], { request_id: requestId }, 200, rateLimitHeaders);
+      }
+
+      if (req.method === 'POST') {
+        const body = await req.json().catch(() => ({}));
+        const appId = body.app_id;
+        if (!appId) {
+          return errorResponse('BAD_REQUEST', "The 'app_id' field is required.", 400, requestId);
+        }
+
+        // Verify application belongs to caller company
+        const { data: targetApp, error: appCheckErr } = await supabase
+          .from('clipad_v3_connect_apps')
+          .select('id, company_id, is_active')
+          .eq('id', appId)
+          .eq('company_id', companyId)
+          .single();
+
+        if (appCheckErr || !targetApp) {
+          return errorResponse('RESOURCE_NOT_FOUND', 'Application not found for your organization.', 404, requestId);
+        }
+
+        if (!targetApp.is_active) {
+          return errorResponse('APP_INACTIVE', 'Cannot issue token for inactive application.', 403, requestId);
+        }
+
+        // Validate scopes
+        const requestedScopes: string[] = Array.isArray(body.scopes) && body.scopes.length > 0
+          ? body.scopes
+          : ['search:read', 'memory:read', 'context:read'];
+
+        const validScopeValues = Object.values(SCOPES);
+        for (const s of requestedScopes) {
+          if (!validScopeValues.includes(s as any)) {
+            return errorResponse('BAD_REQUEST', `Invalid scope requested: '${s}'. Valid scopes: ${validScopeValues.join(', ')}`, 400, requestId);
+          }
+        }
+
+        const rawTokenStr = `cpd_${crypto.randomUUID().replace(/-/g, '')}`;
+        const tokenHash = await sha256Hash(rawTokenStr);
+        const rateLimitRpm = Math.min(Math.max(1, Number(body.rate_limit_rpm) || 120), 1000);
+        const expiresAt = body.expires_at ? new Date(body.expires_at).toISOString() : null;
+
+        const { data: newToken, error: tokInsertErr } = await supabase
+          .from('clipad_v3_connect_tokens')
+          .insert([{
+            app_id: appId,
+            user_id: userId,
+            company_id: companyId,
+            token_hash: tokenHash,
+            scopes: requestedScopes,
+            rate_limit_rpm: rateLimitRpm,
+            expires_at: expiresAt,
+          }])
+          .select('id, app_id, user_id, company_id, scopes, expires_at, revoked_at, rate_limit_rpm, created_at')
+          .single();
+
+        if (tokInsertErr) throw tokInsertErr;
+        logAudit('api.tokens.create', { app_id: appId, scopes: requestedScopes });
+
+        return successResponse(
+          {
+            ...newToken,
+            access_token: rawTokenStr, // Plain access token returned ONLY once
+          },
+          { request_id: requestId, warning: 'Store access_token securely. It will never be shown again.' },
+          201,
+          rateLimitHeaders
+        );
+      }
+
+      return errorResponse('METHOD_NOT_ALLOWED', 'Supported methods are GET, POST.', 405, requestId);
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // ROUTE: /api/v1/tokens/:id/revoke (POST)
+    // ══════════════════════════════════════════════════════════════
+    const revokeTokenMatch = subpath.match(/^(?:\/api\/v1)?\/tokens\/([0-9a-fA-F-]+)\/revoke$/);
+    if (revokeTokenMatch) {
+      if (req.method !== 'POST') {
+        return errorResponse('METHOD_NOT_ALLOWED', 'Endpoint requires POST.', 405, requestId);
+      }
+      if (!hasScope(SCOPES.APPS_MANAGE)) {
+        return errorResponse('FORBIDDEN', 'Insufficient scope: apps:manage required.', 403, requestId);
+      }
+
+      const targetTokenId = revokeTokenMatch[1];
+      const { data: revokedToken, error: revokeErr } = await supabase
+        .from('clipad_v3_connect_tokens')
+        .update({ revoked_at: new Date().toISOString() })
+        .eq('id', targetTokenId)
+        .eq('company_id', companyId)
+        .select('id, app_id, revoked_at')
+        .single();
+
+      if (revokeErr || !revokedToken) {
+        return errorResponse('RESOURCE_NOT_FOUND', 'Token not found or already revoked.', 404, requestId);
+      }
+
+      logAudit('api.tokens.revoke', { token_id: targetTokenId });
+      return successResponse(
+        {
+          id: revokedToken.id,
+          revoked: true,
+          revoked_at: revokedToken.revoked_at,
+        },
+        { request_id: requestId },
+        200,
+        rateLimitHeaders
+      );
     }
 
     // Endpoint not recognized

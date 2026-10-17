@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/AuthContext';
 import { supabase } from '@/api/supabaseClient';
-import { createConnectApp, revokeToken } from '@/lib/clipadOAuthService';
+import { createConnectApp, revokeToken, rotateClientSecret, grantAccessToken } from '@/lib/clipadOAuthService';
 import { registerWebhook, getWebhooks, deleteWebhook } from '@/lib/clipadWebhookService';
 import { isV3FeatureEnabled, V3_FLAGS } from '@/lib/clipadV3Flags';
-import { Loader2, Webhook, KeyRound, Globe, Trash2, Plus, TerminalSquare, AlertCircle, ShieldCheck, Cpu, Code2, Copy, CheckCircle2 } from 'lucide-react';
+import { Loader2, Webhook, KeyRound, Globe, Trash2, Plus, TerminalSquare, AlertCircle, ShieldCheck, Cpu, Code2, Copy, CheckCircle2, RefreshCw, Key, Shield } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -12,17 +12,33 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
+const AVAILABLE_SCOPES = [
+  { id: 'search:read', label: 'search:read', desc: 'Execute semantic queries' },
+  { id: 'memory:read', label: 'memory:read', desc: 'Read organizational memories' },
+  { id: 'context:read', label: 'context:read', desc: 'Read context sessions and timeline' },
+  { id: 'captures:read', label: 'captures:read', desc: 'Read captures and queue status' },
+  { id: 'moments:read', label: 'moments:read', desc: 'Read detected smart moments' },
+  { id: 'entities:read', label: 'entities:read', desc: 'Read knowledge graph entities' },
+  { id: 'sources:read', label: 'sources:read', desc: 'Read source provenance metadata' },
+  { id: 'apps:manage', label: 'apps:manage', desc: 'Manage applications and credentials' },
+];
+
 export default function ConnectSettings() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [apps, setApps] = useState([]);
+  const [tokens, setTokens] = useState([]);
   const [webhooks, setWebhooks] = useState([]);
   const [loading, setLoading] = useState(true);
   
-  // Forms
+  // Forms & Modals
   const [newAppName, setNewAppName] = useState('');
   const [newWebhookUrl, setNewWebhookUrl] = useState('');
   const [createdSecret, setCreatedSecret] = useState(null);
+  const [createdToken, setCreatedToken] = useState(null);
+  const [selectedAppForToken, setSelectedAppForToken] = useState(null);
+  const [selectedScopes, setSelectedScopes] = useState(['search:read', 'memory:read', 'context:read']);
+  const [rotatingAppId, setRotatingAppId] = useState(null);
 
   const companyId = user?.user_metadata?.company_id || user?.company_id;
   const isConnectEnabled = isV3FeatureEnabled(V3_FLAGS.CONNECT_ENABLED, user);
@@ -44,8 +60,17 @@ export default function ConnectSettings() {
       const { data: appsData } = await supabase
         .from('clipad_v3_connect_apps')
         .select('*')
-        .eq('company_id', companyId);
+        .eq('company_id', companyId)
+        .order('created_at', { ascending: false });
       setApps(appsData || []);
+
+      // Load Tokens
+      const { data: tokensData } = await supabase
+        .from('clipad_v3_connect_tokens')
+        .select('*, app:app_id ( id, name )')
+        .eq('company_id', companyId)
+        .order('created_at', { ascending: false });
+      setTokens(tokensData || []);
 
       // Load Webhooks
       if (isWebhooksEnabled) {
@@ -69,12 +94,58 @@ export default function ConnectSettings() {
         description: 'Created via Integrations Hub',
         redirectUris: []
       });
-      setCreatedSecret({ id: result.id, client_id: result.client_id, secret: result.plain_secret });
+      setCreatedSecret({ id: result.id, name: result.name, client_id: result.client_id, secret: result.raw_secret });
       toast({ title: "App Created", description: "Save your client secret now." });
       setNewAppName('');
       await loadData();
     } catch (e) {
       toast({ title: "Error", description: e.message, variant: "destructive" });
+    }
+  };
+
+  const handleRotateSecret = async (app) => {
+    if (!window.confirm(`Are you sure you want to rotate the secret for "${app.name}"? Any services using the previous secret will immediately lose access.`)) {
+      return;
+    }
+    setRotatingAppId(app.id);
+    try {
+      const result = await rotateClientSecret(app.id, companyId);
+      setCreatedSecret({ id: result.id, name: result.name, client_id: result.client_id, secret: result.raw_secret, rotated: true });
+      toast({ title: "Secret Rotated", description: "Save your new client secret now." });
+      await loadData();
+    } catch (e) {
+      toast({ title: "Rotation Failed", description: e.message, variant: "destructive" });
+    } finally {
+      setRotatingAppId(null);
+    }
+  };
+
+  const handleGenerateToken = async (e) => {
+    e.preventDefault();
+    if (!selectedAppForToken) return;
+    try {
+      const result = await grantAccessToken(user.id, companyId, selectedAppForToken.id, selectedScopes);
+      setCreatedToken({
+        token: result.access_token,
+        appName: selectedAppForToken.name,
+        scopes: selectedScopes
+      });
+      toast({ title: "Token Generated", description: "Copy your API access token now." });
+      setSelectedAppForToken(null);
+      await loadData();
+    } catch (e) {
+      toast({ title: "Token Generation Failed", description: e.message, variant: "destructive" });
+    }
+  };
+
+  const handleRevokeToken = async (tokenId) => {
+    if (!window.confirm("Are you sure you want to revoke this API token? It will immediately stop working.")) return;
+    try {
+      await revokeToken(tokenId);
+      toast({ title: "Token Revoked", description: "API token has been revoked successfully." });
+      await loadData();
+    } catch (e) {
+      toast({ title: "Revocation Failed", description: e.message, variant: "destructive" });
     }
   };
 
@@ -335,10 +406,15 @@ export default function ConnectSettings() {
                 apps.map(app => (
                   <div key={app.id} className="p-4 rounded-lg border bg-card shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-3">
-                      <h4 className="font-bold">{app.name}</h4>
-                      <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">Active</Badge>
+                      <div>
+                        <h4 className="font-bold text-sm">{app.name}</h4>
+                        {app.description && <p className="text-xs text-muted-foreground mt-0.5">{app.description}</p>}
+                      </div>
+                      <Badge variant="outline" className={app.is_active ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" : "bg-red-500/10 text-red-600 border-red-500/20"}>
+                        {app.is_active ? "Active" : "Inactive"}
+                      </Badge>
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       <div className="flex flex-col gap-1">
                         <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">Client ID</span>
                         <code className="text-xs font-mono bg-secondary px-2 py-1.5 rounded text-foreground flex items-center justify-between group">
@@ -355,13 +431,175 @@ export default function ConnectSettings() {
                           </button>
                         </code>
                       </div>
+
+                      <div className="flex items-center gap-2 pt-1 border-t border-border/50">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-7 text-xs flex items-center gap-1.5"
+                          onClick={() => setSelectedAppForToken(app)}
+                        >
+                          <Key className="w-3 h-3 text-primary" />
+                          Generate Token
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-7 text-xs flex items-center gap-1.5 text-amber-600 dark:text-amber-400 hover:bg-amber-500/10"
+                          disabled={rotatingAppId === app.id}
+                          onClick={() => handleRotateSecret(app)}
+                        >
+                          <RefreshCw className={`w-3 h-3 ${rotatingAppId === app.id ? 'animate-spin' : ''}`} />
+                          Rotate Secret
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 ))
               )}
             </div>
+
+            {/* Token Generation Dialog Box */}
+            {selectedAppForToken && (
+              <div className="p-4 bg-primary/5 border border-primary/20 rounded-xl space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h5 className="text-sm font-bold flex items-center gap-1.5">
+                      <Key className="w-4 h-4 text-primary" />
+                      Generate Token for "{selectedAppForToken.name}"
+                    </h5>
+                    <p className="text-xs text-muted-foreground">Select scopes to grant to this API token.</p>
+                  </div>
+                  <Button variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={() => setSelectedAppForToken(null)}>✕</Button>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 text-xs pt-1">
+                  {AVAILABLE_SCOPES.map(s => {
+                    const isChecked = selectedScopes.includes(s.id);
+                    return (
+                      <label key={s.id} className="flex items-start gap-2 p-2 rounded border bg-background hover:bg-secondary/20 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedScopes([...selectedScopes, s.id]);
+                            } else {
+                              setSelectedScopes(selectedScopes.filter(id => id !== s.id));
+                            }
+                          }}
+                          className="mt-0.5"
+                        />
+                        <div>
+                          <span className="font-mono font-medium block">{s.label}</span>
+                          <span className="text-[10px] text-muted-foreground">{s.desc}</span>
+                        </div>
+                      </label>
+                    );
+                  })}
+                </div>
+
+                <div className="flex justify-end gap-2 pt-2">
+                  <Button variant="outline" size="sm" onClick={() => setSelectedAppForToken(null)}>Cancel</Button>
+                  <Button size="sm" onClick={handleGenerateToken} disabled={selectedScopes.length === 0}>Generate Access Token</Button>
+                </div>
+              </div>
+            )}
+
+            {/* Display Newly Created Token */}
+            {createdToken && (
+              <div className="p-4 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-300 dark:border-emerald-800 rounded-lg space-y-2">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-bold text-emerald-800 dark:text-emerald-400">Token Generated for {createdToken.appName}!</p>
+                  <Button variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={() => setCreatedToken(null)}>✕</Button>
+                </div>
+                <p className="text-xs text-emerald-700 dark:text-emerald-500">Copy this bearer token now. It will not be visible again in full.</p>
+                <div className="font-mono text-xs p-2 bg-emerald-100/50 dark:bg-emerald-900/40 rounded border border-emerald-200 dark:border-emerald-700 break-all select-all flex items-center justify-between">
+                  <span>{createdToken.token}</span>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-6 px-2 text-xs" 
+                    onClick={() => {
+                      navigator.clipboard.writeText(createdToken.token);
+                      toast({ title: "Copied", description: "API Token copied to clipboard" });
+                    }}
+                  >
+                    <Copy className="w-3.5 h-3.5" />
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {createdToken.scopes.map(s => (
+                    <Badge key={s} variant="secondary" className="text-[10px] bg-emerald-100 dark:bg-emerald-900/60">{s}</Badge>
+                  ))}
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
+
+        {/* Column 2: Active API Tokens List */}
+        <Card className="shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Key className="w-5 h-5 text-primary" />
+              API Access Tokens
+            </CardTitle>
+            <CardDescription>Active credentials issued to applications and integrations.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {tokens.length === 0 ? (
+              <div className="p-6 rounded-lg bg-secondary/20 border border-dashed flex flex-col items-center justify-center text-center">
+                <Key className="w-8 h-8 text-muted-foreground mb-2 opacity-50" />
+                <p className="text-sm text-muted-foreground">No active tokens issued yet.</p>
+                <p className="text-xs text-muted-foreground mt-1">Click "Generate Token" on any application to create a scoped token.</p>
+              </div>
+            ) : (
+              tokens.map(tok => {
+                const isRevoked = Boolean(tok.revoked_at);
+                const isExpired = tok.expires_at && new Date(tok.expires_at) < new Date();
+                return (
+                  <div key={tok.id} className="p-3.5 rounded-lg border bg-card shadow-xs space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-xs text-foreground">{tok.app?.name || 'Custom Application'}</span>
+                        {isRevoked ? (
+                          <Badge variant="outline" className="bg-red-500/10 text-red-600 border-red-500/20 text-[10px]">Revoked</Badge>
+                        ) : isExpired ? (
+                          <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-amber-500/20 text-[10px]">Expired</Badge>
+                        ) : (
+                          <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-[10px]">Active</Badge>
+                        )}
+                      </div>
+                      {!isRevoked && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 px-2 text-xs text-red-500 hover:text-red-600 hover:bg-red-500/10"
+                          onClick={() => handleRevokeToken(tok.id)}
+                        >
+                          Revoke
+                        </Button>
+                      )}
+                    </div>
+                    <div className="flex flex-wrap gap-1">
+                      {(tok.scopes || []).map(s => (
+                        <Badge key={s} variant="secondary" className="text-[10px] font-mono">{s}</Badge>
+                      ))}
+                    </div>
+                    <div className="text-[10px] text-muted-foreground flex items-center justify-between pt-1 border-t border-border/40">
+                      <span>Rate limit: {tok.rate_limit_rpm || 120} RPM</span>
+                      <span>Created: {new Date(tok.created_at).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 gap-8">
 
         <Card className="shadow-sm">
           <CardHeader>

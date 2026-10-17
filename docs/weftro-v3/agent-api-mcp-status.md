@@ -3,10 +3,10 @@
 **Agent ID:** `AGENT-API-MCP`  
 **Agent Name:** API & MCP Engineering Agent  
 **Workstream:** API / MCP / Developer Platform  
-**Current Phase:** Phase 3: Unified REST API Gateway & Production API Foundation  
+**Current Phase:** Phase 4: Developer Identity, Applications, Credentials & Scopes  
 **Status:** `AWAITING MANUAL TESTING`  
 **Current Branch:** `main`  
-**Last Verified Commit:** `14877b3`  
+**Last Verified Commit:** `4040cb1`  
 **Target Edge Function:** `https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect`  
 **Deployment Region:** `eu-west-3`
 
@@ -15,10 +15,12 @@
 ## 1. Assigned Responsibilities
 - REST API gateway routes under `/api/v1/*`.
 - Token authentication, cryptographic hashing (`SHA-256`), and scope verification.
+- Developer application management (`/api/v1/apps`, `/api/v1/apps/:id`, `/api/v1/apps/:id/rotate-secret`).
+- Scoped API access token issuance and revocation (`/api/v1/tokens`, `/api/v1/tokens/:id/revoke`).
 - Server-side distributed rate limiting (`clipad_v3_api_rate_limits`, `check_api_rate_limit`).
 - Tenant isolation and permission enforcement.
 - OpenAPI 3.1 specification (`docs/openapi.yaml`).
-- Developer credentials UI, application management, and developer dashboard (Upcoming Phase 4).
+- Developer credentials UI, application management, and developer dashboard (`ConnectSettings.jsx`).
 - Production MCP server (Upcoming Phase 5).
 - Webhook delivery engine (Upcoming Phase 6).
 
@@ -29,18 +31,18 @@
 |---|---|---|---|
 | **Phase 1** | Baseline & Integrity Fixes | `APPROVED` | Verified baseline, restored queries, tests active |
 | **Phase 2** | Durable Capture Queue & Worker | `APPROVED` | Deployed `process-capture`, PG queue active |
-| **Phase 3** | Unified REST API Gateway | `AWAITING MANUAL TESTING` | Deployed `connect`, 29/29 automated live tests passed (`14877b3`) |
-| **Phase 4** | Developer Credentials & Apps | `PLANNING` | Proposed next phase; awaiting Phase 3 approval |
-| **Phase 5** | Production MCP Server | `BLOCKED` | Awaiting Phase 4 completion |
+| **Phase 3** | Unified REST API Gateway | `APPROVED` | Deployed `connect`, 29/29 automated live tests passed (`14877b3`) |
+| **Phase 4** | Developer Identity, Apps & Scopes | `AWAITING MANUAL TESTING` | Deployed `connect`, 18/18 live acceptance tests passed, 29/29 Phase 3 regression tests passed |
+| **Phase 5** | Production MCP Server | `BLOCKED` | Awaiting Phase 4 user verification & approval |
 | **Phase 6** | Webhook Delivery Engine | `BLOCKED` | Awaiting Phase 5 completion |
 
 ---
 
 ## 3. Verified Artifacts & Documentation
 - **OpenAPI 3.1 Contract:** `docs/openapi.yaml`
-- **Manual Test Guide:** `docs/weftro-v3/testing/phase-03-manual-test-guide.md`
-- **Live Acceptance Suite Script:** `scripts/phase3_acceptance_suite.cjs`
-- **Phase 3 Acceptance Report:** `C:\Users\USER\.gemini\antigravity\brain\...\WEFTRO_V3_PHASE_3_ACCEPTANCE_TEST_REPORT.md`
+- **Phase 4 In-App Manual Test Guide:** `docs/weftro-v3/testing/phase-04-in-app-manual-test-guide.md`
+- **Live Acceptance Suite Script:** `scripts/phase4_acceptance_suite.cjs` (18/18 PASSED)
+- **Phase 3 Live Regression Suite:** `scripts/phase3_acceptance_suite.cjs` (29/29 PASSED)
 
 ---
 
@@ -49,9 +51,12 @@
 - `clipad_v3_captures`: Capture repository and provenance metadata.
 - `clipad_v3_smart_moments`: Meeting and video insight nodes.
 - `clipad_v3_context_sessions`: Context binding.
+- `clipad_v3_connect_apps`: Application registry and client metadata.
+- `clipad_v3_connect_tokens`: Scoped access tokens and rate limit parameters.
 - `clipad_v3_events`: Audit trail for intelligence queries and API access.
 
 ---
 
 ## 5. Next Permitted Action
-Awaiting user manual testing results and explicit phase approval for Phase 3. No Phase 4 code may be written until authorized.
+Awaiting user in-app manual testing results and explicit phase approval for Phase 4. No Phase 5 (MCP) code may be written until authorized.
+

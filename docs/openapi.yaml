@@ -39,6 +39,201 @@ paths:
               schema:
                 $ref: '#/components/schemas/CapabilitiesResponse'
 
+  /api/v1/apps:
+    get:
+      summary: List Developer Applications
+      description: Lists registered applications belonging to the caller's organization.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of developer applications.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      summary: Register Developer Application
+      description: Creates a new developer application, returning the client_id and a one-time unhashed client_secret.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  example: "Internal Analytics Dashboard"
+                description:
+                  type: string
+                redirect_uris:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '201':
+          description: Application successfully created.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/v1/apps/{id}:
+    get:
+      summary: Get Application Details
+      description: Retrieves details of an existing application.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Application record.
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      summary: Update Application
+      description: Updates application metadata, redirect URIs, or active status.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                redirect_uris:
+                  type: array
+                  items:
+                    type: string
+                is_active:
+                  type: boolean
+      responses:
+        '200':
+          description: Updated application record.
+    delete:
+      summary: Delete Application
+      description: Deletes an application and cascades to all its associated tokens.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Application deleted.
+
+  /api/v1/apps/{id}/rotate-secret:
+    post:
+      summary: Rotate Client Secret
+      description: Generates a new client secret, invalidates the existing secret immediately, and returns the new secret once.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: New client secret generated.
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/v1/tokens:
+    get:
+      summary: List API Tokens
+      description: Lists issued API tokens for the organization, optionally filtered by application.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: app_id
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of API tokens with granted scopes and metadata.
+    post:
+      summary: Issue API Access Token
+      description: Issues a scoped personal or service API token (cpd_...) for an authorized application.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - app_id
+              properties:
+                app_id:
+                  type: string
+                scopes:
+                  type: array
+                  items:
+                    type: string
+                  example: ["search:read", "memory:read", "context:read"]
+                rate_limit_rpm:
+                  type: integer
+                  default: 120
+                expires_at:
+                  type: string
+                  format: date-time
+      responses:
+        '201':
+          description: API token issued with one-time plain access_token string.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/v1/tokens/{id}/revoke:
+    post:
+      summary: Revoke API Access Token
+      description: Revokes an active token immediately.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Token revoked.
+        '404':
+          $ref: '#/components/responses/NotFound'
+
   /api/v1/search:
     post:
       summary: Grounded Organizational Search

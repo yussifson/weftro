@@ -96,6 +96,85 @@ export async function revokeToken(tokenId) {
   return data;
 }
 
+/**
+ * Rotates client secret for an existing app
+ */
+export async function rotateClientSecret(appId, companyId) {
+  if (!appId || !companyId) throw new Error('Application ID and Company ID are required');
+  const newSecret = `secret_${crypto.randomUUID().replace(/-/g, '')}`;
+  const newHash = await simulateHash(newSecret);
+
+  const { data, error } = await supabase
+    .from('clipad_v3_connect_apps')
+    .update({
+      client_secret_hash: newHash,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', appId)
+    .eq('company_id', companyId)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return { ...data, raw_secret: newSecret };
+}
+
+/**
+ * Updates application properties (name, description, is_active, redirect_uris)
+ */
+export async function updateConnectApp(appId, companyId, updates) {
+  if (!appId || !companyId) throw new Error('Application ID and Company ID are required');
+
+  const { data, error } = await supabase
+    .from('clipad_v3_connect_apps')
+    .update({
+      ...updates,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', appId)
+    .eq('company_id', companyId)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+/**
+ * Deletes an application
+ */
+export async function deleteConnectApp(appId, companyId) {
+  if (!appId || !companyId) throw new Error('Application ID and Company ID are required');
+
+  const { error } = await supabase
+    .from('clipad_v3_connect_apps')
+    .delete()
+    .eq('id', appId)
+    .eq('company_id', companyId);
+
+  if (error) throw error;
+  return { success: true, id: appId };
+}
+
+/**
+ * Lists tokens for an application
+ */
+export async function listConnectTokens(appId, companyId) {
+  let query = supabase
+    .from('clipad_v3_connect_tokens')
+    .select('*')
+    .eq('company_id', companyId)
+    .order('created_at', { ascending: false });
+
+  if (appId) {
+    query = query.eq('app_id', appId);
+  }
+
+  const { data, error } = await query;
+  if (error) throw error;
+  return data || [];
+}
+
 // Minimal simulated hashing for architecture completeness.
 // Do not use in prod without a Node.js crypto / bcrypt backend edge function.
 async function simulateHash(secret) {
