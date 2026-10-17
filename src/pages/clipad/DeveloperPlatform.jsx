@@ -8,6 +8,8 @@ import DeveloperApiExplorer from '@/components/clipad/features/DeveloperApiExplo
 import DeveloperDocs from '@/components/clipad/features/DeveloperDocs';
 import DeveloperLogs from '@/components/clipad/features/DeveloperLogs';
 
+import DeveloperMcp from '@/components/clipad/features/DeveloperMcp';
+
 import {
   Code2,
   TerminalSquare,
@@ -28,9 +30,10 @@ export default function DeveloperPlatform() {
   const location = useLocation();
 
   // Determine active sub-tab from URL pathname
-  // Supported subpaths: /developers, /developers/assistant, /developers/explorer, /developers/docs, /developers/logs
+  // Supported subpaths: /developers, /developers/mcp, /developers/assistant, /developers/explorer, /developers/docs, /developers/logs
   const getActiveTab = () => {
     const path = location.pathname;
+    if (path.includes('/developers/mcp')) return 'mcp';
     if (path.includes('/developers/assistant')) return 'assistant';
     if (path.includes('/developers/explorer')) return 'explorer';
     if (path.includes('/developers/docs')) return 'docs';
@@ -86,6 +89,18 @@ export default function DeveloperPlatform() {
             </button>
 
             <button
+              onClick={() => navigate('/developers/mcp')}
+              className={`pb-3 px-3 font-semibold border-b-2 transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+                activeTab === 'mcp'
+                  ? 'border-primary text-foreground'
+                  : 'border-transparent text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              <Cpu className="w-3.5 h-3.5 text-primary" />
+              MCP Server
+            </button>
+
+            <button
               onClick={() => navigate('/developers/assistant')}
               className={`pb-3 px-3 font-semibold border-b-2 transition-colors flex items-center gap-1.5 whitespace-nowrap ${
                 activeTab === 'assistant'
@@ -138,7 +153,9 @@ export default function DeveloperPlatform() {
 
       {/* Main Content Body */}
       <div className="max-w-6xl mx-auto px-4 md:px-6 mt-8">
-        {activeTab === 'assistant' ? (
+        {activeTab === 'mcp' ? (
+          <DeveloperMcp />
+        ) : activeTab === 'assistant' ? (
           <DeveloperAIAssistant />
         ) : activeTab === 'explorer' ? (
           <DeveloperApiExplorer />

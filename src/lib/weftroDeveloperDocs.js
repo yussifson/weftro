@@ -154,23 +154,31 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
     }
   ],
   mcp_support: {
-    protocol_version: "1.0.0",
+    protocol_version: "2024-11-05",
+    server_package: "@weftro/mcp-server",
+    transport: "stdio",
     client_config_sample: `{
   "mcpServers": {
     "weftro": {
-      "command": "npx",
-      "args": ["-y", "@weftro/mcp-server"],
+      "command": "node",
+      "args": ["packages/weftro-mcp/index.js"],
       "env": {
         "WEFTRO_API_URL": "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect",
-        "WEFTRO_TOKEN": "<YOUR_CONNECT_TOKEN>"
+        "WEFTRO_TOKEN": "<YOUR_SCOPED_CONNECT_TOKEN>"
       }
     }
   }
 }`,
     tools: [
-      { name: "search_memory", desc: "Search organizational decisions and knowledge" },
-      { name: "capture_context", desc: "Stream code snippets or terminal traces into memory" },
-      { name: "query_graph", desc: "Traverse knowledge graph entity relationships" }
+      { name: "search_organizational_memory", scope: "search:read", desc: "Execute semantic search across memories and technical notes" },
+      { name: "query_organizational_context", scope: "context:read", desc: "Retrieve context sessions and chronologically bound captures" },
+      { name: "get_memory_by_id", scope: "memory:read", desc: "Retrieve specific memory record content and metadata by UUID" },
+      { name: "list_organizational_memories", scope: "memory:read", desc: "List paginated organizational memories with status filters" },
+      { name: "get_entity_by_id", scope: "entities:read", desc: "Retrieve knowledge graph entity node and relationships" },
+      { name: "list_captures", scope: "captures:read", desc: "List captures, source types, and processing states" },
+      { name: "get_capture_by_id", scope: "captures:read", desc: "Retrieve specific capture transcript and queue status" },
+      { name: "list_smart_moments", scope: "moments:read", desc: "List extracted smart moments, decisions, and action items" },
+      { name: "get_source_provenance", scope: "sources:read", desc: "Retrieve full source provenance and creator metadata" }
     ]
   },
   rate_limits: {
@@ -188,7 +196,7 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
     500: "INTERNAL_SERVER_ERROR"
   },
   roadmap: {
-    phase_5: "Production MCP Server with high-throughput persistent streams",
+    phase_5: "Production MCP Server (Completed & Live)",
     phase_6: "Outbound Webhook Delivery Engine with HMAC signatures and retry queue",
     phase_7: "Developer Experience & Production Hardening"
   }

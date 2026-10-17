@@ -3,10 +3,10 @@
 **Agent ID:** `AGENT-API-MCP`  
 **Agent Name:** API & MCP Engineering Agent  
 **Workstream:** API / MCP / Developer Platform  
-**Current Phase:** Phase 4: Developer Identity, Applications, Credentials & Scopes  
+**Current Phase:** Phase 5: Model Context Protocol (MCP) Server  
 **Status:** `AWAITING MANUAL TESTING`  
 **Current Branch:** `main`  
-**Last Verified Commit:** `4040cb1`  
+**Last Verified Commit:** `202e12e`  
 **Target Edge Function:** `https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect`  
 **Deployment Region:** `eu-west-3`
 
@@ -21,7 +21,7 @@
 - Tenant isolation and permission enforcement.
 - OpenAPI 3.1 specification (`docs/openapi.yaml`).
 - Developer credentials UI, application management, and developer dashboard (`ConnectSettings.jsx`).
-- Production MCP server (Upcoming Phase 5).
+- Model Context Protocol (MCP) server package (`packages/weftro-mcp`) and Developer MCP UI (`DeveloperMcp.jsx`).
 - Webhook delivery engine (Upcoming Phase 6).
 
 ---
@@ -32,9 +32,9 @@
 | **Phase 1** | Baseline & Integrity Fixes | `APPROVED` | Verified baseline, restored queries, tests active |
 | **Phase 2** | Durable Capture Queue & Worker | `APPROVED` | Deployed `process-capture`, PG queue active |
 | **Phase 3** | Unified REST API Gateway | `APPROVED` | Deployed `connect`, 29/29 automated live tests passed (`14877b3`) |
-| **Phase 4** | Developer Identity, Apps & Scopes | `AWAITING MANUAL TESTING` | Deployed `connect`, 18/18 live acceptance tests passed, 29/29 Phase 3 regression tests passed |
-| **Phase 5** | Production MCP Server | `BLOCKED` | Awaiting Phase 4 user verification & approval |
-| **Phase 6** | Webhook Delivery Engine | `BLOCKED` | Awaiting Phase 5 completion |
+| **Phase 4** | Developer Identity, Apps & Scopes | `APPROVED` | Deployed `connect`, 18/18 live acceptance tests passed, 29/29 Phase 3 regression tests passed |
+| **Phase 5** | Production MCP Server | `AWAITING MANUAL TESTING` | Implemented `@weftro/mcp-server`, 18/18 Phase 5 live tests passed, 18/18 Phase 4 tests passed, 29/29 Phase 3 tests passed |
+| **Phase 6** | Webhook Delivery Engine | `BLOCKED` | Awaiting Phase 5 approval |
 
 ---
 

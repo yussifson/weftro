@@ -1,0 +1,28 @@
+{
+  "name": "@weftro/mcp-server",
+  "version": "1.0.0",
+  "description": "Official Model Context Protocol (MCP) server for Weftro Organizational Memory & Intelligence",
+  "type": "module",
+  "main": "index.js",
+  "bin": {
+    "weftro-mcp": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "test": "node ../../scripts/phase5_mcp_test_suite.cjs"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "weftro",
+    "ai",
+    "organizational-memory"
+  ],
+  "author": "Weftro Engineering",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "dotenv": "^18.0.8",
+    "zod": "^4.6.7"
+  }
+}

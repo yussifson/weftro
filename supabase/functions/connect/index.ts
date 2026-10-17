@@ -337,6 +337,21 @@ serve(async (req) => {
           { path: '/api/v1/smart-moments', method: 'GET', scope: 'moments:read', description: 'List extracted smart moments' },
           { path: '/api/v1/sources/:id', method: 'GET', scope: 'sources:read', description: 'Retrieve source metadata and provenance' },
         ],
+        mcp: {
+          server_package: '@weftro/mcp-server',
+          supported_transport: ['stdio'],
+          supported_tools: [
+            'search_organizational_memory',
+            'query_organizational_context',
+            'get_memory_by_id',
+            'list_organizational_memories',
+            'get_entity_by_id',
+            'list_captures',
+            'get_capture_by_id',
+            'list_smart_moments',
+            'get_source_provenance'
+          ]
+        }
       },
       { request_id: requestId }
     );

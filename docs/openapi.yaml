@@ -569,6 +569,21 @@ components:
               type: array
               items:
                 type: object
+            mcp:
+              type: object
+              properties:
+                server_package:
+                  type: string
+                  example: "@weftro/mcp-server"
+                supported_transport:
+                  type: array
+                  items:
+                    type: string
+                  example: ["stdio"]
+                supported_tools:
+                  type: array
+                  items:
+                    type: string
 
     SearchResponse:
       type: object
