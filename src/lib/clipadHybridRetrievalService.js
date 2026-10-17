@@ -11,6 +11,7 @@
 //    are strictly preserved even under RPC failure or fallback.
 
 import { supabase } from '@/api/supabaseClient';
+import { searchKnowledgeChunks } from './clipadChunkIngestionService';
 
 /**
  * Standard Reciprocal Rank Fusion (RRF) Constant
@@ -206,7 +207,8 @@ export async function searchMemoriesHybrid({
   tier = null,
   spaceId = null,
   limit = 20,
-  enableSemantic = true
+  enableSemantic = true,
+  includeChunks = false
 }) {
   if (!queryText || !queryText.trim() || !companyId) {
     return [];
@@ -250,6 +252,34 @@ export async function searchMemoriesHybrid({
       return [];
     })
   );
+
+  // Optional Channel 3: Granular Knowledge Chunks (Phase 4 Extension)
+  if (includeChunks && queryEmbedding) {
+    promises.push(
+      searchKnowledgeChunks({
+        queryEmbedding,
+        companyId,
+        matchThreshold: 0.4,
+        matchCount: 10
+      }).then(chunks => {
+        return chunks.map(c => ({
+          id: c.chunk_id || c.id,
+          title: c.title ? `${c.title} (Chunk #${c.chunk_index + 1})` : `Chunk #${c.chunk_index + 1}`,
+          content: c.content,
+          summary: c.ai_summary,
+          memory_tier: 'organizational',
+          memory_type: 'CHUNK',
+          source_type: 'knowledge_chunk',
+          source_id: c.id,
+          similarity: c.similarity,
+          source_channel: 'semantic_chunk'
+        }));
+      }).catch(err => {
+        console.warn('[HybridRetrieval] Channel 3 chunk error:', err);
+        return [];
+      })
+    );
+  }
 
   const [semanticResults, lexicalResults] = await Promise.all(promises);
 
