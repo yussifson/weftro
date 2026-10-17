@@ -251,29 +251,28 @@ export default function ConnectSettings() {
         <CardHeader className="pb-3">
           <CardTitle className="text-lg flex items-center gap-2">
             <TerminalSquare className="w-5 h-5 text-primary" />
-            Direct REST API Access & Authorization
+            Weftro V3 Unified REST API Gateway (/api/v1)
           </CardTitle>
           <CardDescription>
-            Authenticate with Bearer tokens or your OAuth Client credentials to query decisions and stream captures.
+            Authenticate with Bearer Connect Tokens to query organizational intelligence, memories, captures, and smart moments with full provenance.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <span className="text-xs font-semibold uppercase text-muted-foreground">1. Query Memory & Decisions (cURL)</span>
+              <span className="text-xs font-semibold uppercase text-muted-foreground">1. Grounded Semantic Search (/api/v1/search)</span>
               <pre className="font-mono text-xs bg-secondary/40 p-3 rounded-lg border border-border overflow-x-auto text-foreground">
-{`curl -X GET "${import.meta.env.VITE_SUPABASE_URL || 'https://api.clipad.com'}/rest/v1/clipad_v3_memories?company_id=eq.${companyId || 'COMPANY_ID'}" \\
-  -H "apikey: <YOUR_API_KEY>" \\
-  -H "Authorization: Bearer <USER_ACCESS_TOKEN>"`}
+{`curl -X POST "${import.meta.env.VITE_SUPABASE_URL || 'https://wmabgiafwamxkcgxyhee.supabase.co'}/functions/v1/connect/api/v1/search" \\
+  -H "Authorization: Bearer <CONNECT_TOKEN>" \\
+  -H "Content-Type: application/json" \\
+  -d '{"query": "roadmap decisions", "limit": 10}'`}
               </pre>
             </div>
             <div className="space-y-2">
-              <span className="text-xs font-semibold uppercase text-muted-foreground">2. Ingest Context Capture (cURL)</span>
+              <span className="text-xs font-semibold uppercase text-muted-foreground">2. Query Memories with Provenance (/api/v1/memories)</span>
               <pre className="font-mono text-xs bg-secondary/40 p-3 rounded-lg border border-border overflow-x-auto text-foreground">
-{`curl -X POST "${import.meta.env.VITE_SUPABASE_URL || 'https://api.clipad.com'}/rest/v1/clipad_v3_captures" \\
-  -H "apikey: <YOUR_API_KEY>" \\
-  -H "Content-Type: application/json" \\
-  -d '{"company_id":"${companyId || 'COMPANY_ID'}","source_type":"API","capture_type":"NOTE","title":"API Integration","content":"Ingested via API"}'`}
+{`curl -X GET "${import.meta.env.VITE_SUPABASE_URL || 'https://wmabgiafwamxkcgxyhee.supabase.co'}/functions/v1/connect/api/v1/memories?limit=20" \\
+  -H "Authorization: Bearer <CONNECT_TOKEN>"`}
               </pre>
             </div>
           </div>
