@@ -21,9 +21,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { INTEGRATIONS, CATEGORIES } from '@/config/integrationsList';
-import CaptureInbox from '@/components/clipad/features/CaptureInbox';
-import ConnectSettings from '@/components/clipad/features/ConnectSettings';
-import GovernanceSettings from '@/components/clipad/features/GovernanceSettings';
 import { isV3FeatureEnabled, V3_FLAGS } from '@/lib/clipadV3Flags';
 
 const isSuperAdmin = (user) => user?.role === 'super_admin' || user?.user_metadata?.role === 'super_admin';
@@ -444,7 +441,7 @@ export default function IntegrationsHub() {
               <Plug className="w-5 h-5 text-primary" />
             </div>
             <div className="mt-1">
-              <h1 className="text-2xl font-bold text-foreground">App Integrations</h1>
+              <h1 className="text-2xl font-bold text-foreground">Integrations</h1>
               <p className="text-sm text-muted-foreground">Connect your tools like Slack, GitHub, Zoom, and manage synchronization.</p>
             </div>
           </div>
@@ -464,52 +461,13 @@ export default function IntegrationsHub() {
           
             </div>
             
-            <div className="flex gap-4 mt-8 border-b border-white/10">
-              <button 
-                onClick={() => setActiveTab('connections')}
-                className={`pb-3 px-1 text-sm font-bold border-b-2 transition-colors ${activeTab === 'connections' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
-              >
-                App Integrations
-              </button>
-              <button 
-                onClick={() => setActiveTab('inbox')}
-                className={`pb-3 px-1 text-sm font-bold border-b-2 transition-colors ${activeTab === 'inbox' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
-              >
-                Capture Inbox
-              </button>
-              {isConnectEnabled && (
-                <button 
-                  onClick={() => navigate('/developers')}
-                  className="pb-3 px-1 text-sm font-bold border-b-2 border-transparent text-primary hover:text-primary/80 transition-colors flex items-center gap-1.5"
-                  title="Open dedicated Developer Platform"
-                >
-                  <span>Developer Platform</span>
-                  <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-mono">↗</span>
-                </button>
-              )}
-              {isAdmin && (
-                <button 
-                  onClick={() => setActiveTab('governance')}
-                  className={`pb-3 px-1 text-sm font-bold border-b-2 transition-colors ${activeTab === 'governance' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
-                >
-                  Governance & Compliance
-                </button>
-              )}
-            </div>
+            
           </div>
 
       </div>
       <div className="max-w-5xl mx-auto px-4 md:px-6 mt-8 space-y-8">
 
-        {activeTab === 'inbox' ? (
-            <CaptureInbox />
-          ) : activeTab === 'governance' ? (
-            <GovernanceSettings />
-          ) : activeTab === 'connect' && isConnectEnabled ? (
-            <ConnectSettings />
-          ) : (
-            <>
-            {/* Modern Tab Filters */}
+        {/* Modern Tab Filters */}
         <div className="flex items-center overflow-x-auto hide-scrollbar bg-slate-200/80 dark:bg-slate-800/80 p-1 rounded-xl mb-8 w-full gap-1 border border-slate-300/60 dark:border-border">
           {CATEGORIES.map(cat => {
             const isActive = activeCategory === cat;
@@ -883,9 +841,6 @@ export default function IntegrationsHub() {
             </p>
           </div>
         </div>
-
-            </>
-          )}
       </div>
 {/* Scope Selector Modal — shown BEFORE connecting any integration ─────── */}
       {scopeModal && createPortal(
