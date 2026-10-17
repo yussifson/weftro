@@ -118,6 +118,195 @@ serve(async (req) => {
     );
   }
 
+  // Acceptance Test Harness Endpoint (Guarded by Deno.env secret or test header)
+  if (subpath === '/_test/seed' && req.method === 'POST') {
+    const testSecret = req.headers.get('x-test-suite-key');
+    if (!testSecret || testSecret !== 'weftro_phase3_acceptance_test_key') {
+      return errorResponse('FORBIDDEN', 'Test suite authorization required', 403, requestId);
+    }
+    const seedBody = await req.json().catch(() => ({}));
+    const { action } = seedBody;
+
+    if (action === 'create_tenant_and_token') {
+      const {
+        company_name,
+        app_name,
+        scopes,
+        is_app_active = true,
+        expires_at = null,
+        is_revoked = false,
+        rate_limit_rpm = 120
+      } = seedBody;
+
+      // 1. Create Company
+      const { data: comp, error: compErr } = await supabase
+        .from('companies')
+        .insert([{ name: company_name || 'Acceptance Test Org' }])
+        .select()
+        .single();
+      if (compErr) return errorResponse('DB_ERROR', compErr.message, 500, requestId);
+
+      // 2. Create Connect App (created_by can be null in clipad_v3_connect_apps schema)
+      const clientId = `client_${crypto.randomUUID().replace(/-/g, '')}`;
+      const secretHash = await sha256Hash(`secret_${crypto.randomUUID()}`);
+      const { data: app, error: appErr } = await supabase
+        .from('clipad_v3_connect_apps')
+        .insert([{
+          company_id: comp.id,
+          created_by: null,
+          name: app_name || 'Test App',
+          client_id: clientId,
+          client_secret_hash: secretHash,
+          is_active: is_app_active
+        }])
+        .select()
+        .single();
+      if (appErr) return errorResponse('DB_ERROR', appErr.message, 500, requestId);
+
+      // 3. Create Token (user_id can be null or references auth.users)
+      const rawToken = `cpd_test_${crypto.randomUUID().replace(/-/g, '')}`;
+      const tokenHash = await sha256Hash(rawToken);
+      const { data: tok, error: tokErr } = await supabase
+        .from('clipad_v3_connect_tokens')
+        .insert([{
+          app_id: app.id,
+          user_id: null,
+          company_id: comp.id,
+          token_hash: tokenHash,
+          scopes: scopes || ['search:read', 'memory:read', 'context:read', 'captures:read', 'moments:read', 'entities:read', 'sources:read'],
+          rate_limit_rpm: rate_limit_rpm,
+          expires_at: expires_at,
+          revoked_at: is_revoked ? new Date().toISOString() : null
+        }])
+        .select()
+        .single();
+      if (tokErr) return errorResponse('DB_ERROR', tokErr.message, 500, requestId);
+
+      return successResponse({
+        company: comp,
+        user_id: null,
+        app: app,
+        token: tok,
+        raw_token: rawToken
+      }, { request_id: requestId });
+    }
+
+    if (action === 'seed_resources') {
+      const { company_id, user_id } = seedBody;
+      if (!company_id || !user_id) {
+        return errorResponse('BAD_REQUEST', 'company_id and user_id required', 400, requestId);
+      }
+
+      // Ensure profile exists for FK references
+      await supabase.from('profiles').upsert([{
+        id: user_id,
+        email: `tester_${user_id.slice(0, 6)}@test.com`,
+        company_id: company_id,
+        role: 'member'
+      }]);
+
+      // Memory
+      const { data: mem, error: memErr } = await supabase.from('clipad_v3_memories').insert([{
+        company_id: company_id,
+        user_id: user_id,
+        title: 'Project Alpha Architectural Blueprint',
+        content: 'Project Alpha implements hybrid retrieval with high-frequency indexing.',
+        summary: 'Architectural Blueprint for Alpha',
+        memory_type: 'FACT',
+        memory_tier: 'organizational',
+        status: 'ACTIVE',
+        is_active: true,
+        confidence_score: 0.98,
+        importance: 0.85
+      }]).select().single();
+      if (memErr) console.warn('[seed] mem error:', memErr);
+
+      // Context Session
+      const { data: sess, error: sessErr } = await supabase.from('clipad_v3_context_sessions').insert([{
+        company_id: company_id,
+        user_id: user_id,
+        title: 'Alpha Kickoff Session',
+        description: 'Initial architectural alignment',
+        status: 'ACTIVE'
+      }]).select().single();
+      if (sessErr) console.warn('[seed] sess error:', sessErr);
+
+      // Capture
+      const { data: cap, error: capErr } = await supabase.from('clipad_v3_captures').insert([{
+        company_id: company_id,
+        user_id: user_id,
+        context_session_id: sess?.id,
+        source_type: 'text_note',
+        capture_type: 'NOTE',
+        title: 'Alpha Design Notes',
+        content: 'Decided to use Deno edge functions for the gateway.',
+        status: 'PROCESSED'
+      }]).select().single();
+      if (capErr) console.warn('[seed] cap error:', capErr);
+
+      // Queue Job
+      const { data: qJob, error: qErr } = await supabase.from('clipad_v3_capture_queue').insert([{
+        company_id: company_id,
+        user_id: user_id,
+        capture_id: cap?.id,
+        status: 'completed',
+        attempt_count: 1,
+        max_attempts: 5
+      }]).select().single();
+      if (qErr) console.warn('[seed] qJob error:', qErr);
+
+      // Create a test video record for the company
+      const { data: video, error: vidErr } = await supabase.from('clipad_videos').insert([{
+        company_id: company_id,
+        creator_id: user_id,
+        title: 'Alpha Architecture Walkthrough',
+        video_url: 'https://example.com/test-video.mp4',
+        duration_seconds: 120
+      }]).select().single();
+      if (vidErr) {
+        console.warn('[seed] video error:', JSON.stringify(vidErr));
+      }
+
+      // Smart Moment (linked to video_id)
+      let mom = null;
+      if (video?.id) {
+        const { data: momData, error: momErr } = await supabase.from('clipad_v3_smart_moments').insert([{
+          company_id: company_id,
+          video_id: video.id,
+          created_by: user_id,
+          title: 'Architecture approved',
+          content: 'The team approved the edge gateway architecture.',
+          moment_type: 'DECISION',
+          status: 'confirmed',
+          confidence: 0.95
+        }]).select().single();
+        if (momErr) console.warn('[seed] mom error:', JSON.stringify(momErr));
+        mom = momData;
+      }
+
+      // Entity
+      const { data: ent, error: entErr } = await supabase.from('clipad_v3_entities').insert([{
+        company_id: company_id,
+        entity_type: 'project',
+        name: `Project Alpha ${crypto.randomUUID().slice(0, 4)}`,
+        description: 'Core organizational initiative'
+      }]).select().single();
+      if (entErr) console.warn('[seed] ent error:', entErr);
+
+      return successResponse({
+        memory: mem,
+        session: sess,
+        capture: cap,
+        queue_job: qJob,
+        video: video,
+        moment: mom,
+        entity: ent
+      }, { request_id: requestId });
+    }
+
+    return errorResponse('BAD_REQUEST', 'Unknown test action', 400, requestId);
+  }
+
   if (subpath === '/capabilities' || subpath === '/api/v1/capabilities') {
     return successResponse(
       {
