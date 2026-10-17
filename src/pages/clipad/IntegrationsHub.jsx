@@ -444,8 +444,8 @@ export default function IntegrationsHub() {
               <Plug className="w-5 h-5 text-primary" />
             </div>
             <div className="mt-1">
-              <h1 className="text-2xl font-bold text-foreground">Integrations & Connect</h1>
-              <p className="text-sm text-muted-foreground">Connect your tools, configure REST APIs, MCP Protocol, OAuth, and Webhooks.</p>
+              <h1 className="text-2xl font-bold text-foreground">App Integrations</h1>
+              <p className="text-sm text-muted-foreground">Connect your tools like Slack, GitHub, Zoom, and manage synchronization.</p>
             </div>
           </div>
           {/* Stats row */}
@@ -479,10 +479,12 @@ export default function IntegrationsHub() {
               </button>
               {isConnectEnabled && (
                 <button 
-                  onClick={() => setActiveTab('connect')}
-                  className={`pb-3 px-1 text-sm font-bold border-b-2 transition-colors ${activeTab === 'connect' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
+                  onClick={() => navigate('/developers')}
+                  className="pb-3 px-1 text-sm font-bold border-b-2 border-transparent text-primary hover:text-primary/80 transition-colors flex items-center gap-1.5"
+                  title="Open dedicated Developer Platform"
                 >
-                  Developer API & MCP
+                  <span>Developer Platform</span>
+                  <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-mono">↗</span>
                 </button>
               )}
               {isAdmin && (

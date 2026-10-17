@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Folder, Shield, BarChart2, Network, Clock, Scale, CheckSquare, Map as MapIcon, Plug, Search, Settings, HelpCircle, PanelLeftClose, PanelLeft, ChevronUp, ChevronDown, Activity, LogOut, Target, TrendingUp, GitMerge, HeartPulse, Sparkles, Home, Inbox } from 'lucide-react';
+import { Code2, Folder, Shield, BarChart2, Network, Clock, Scale, CheckSquare, Map as MapIcon, Plug, Search, Settings, HelpCircle, PanelLeftClose, PanelLeft, ChevronUp, ChevronDown, Activity, LogOut, Target, TrendingUp, GitMerge, HeartPulse, Sparkles, Home, Inbox } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CliPadLogo } from '@/components/ui/CliPadLogo';
 import { useAuth } from '@/lib/AuthContext';
@@ -65,6 +65,7 @@ export default function ClipadSidebar({ forceMobile }) {
   const intelligenceItems = [
     { label: 'Capture', path: '/capture', icon: Inbox },
     { label: 'Integrations', path: '/integrations', icon: Plug },
+    { label: 'Developers', path: '/developers', icon: Code2 },
     ...(isUserAdmin ? [
       { label: 'Analytics', path: '/integration-analytics', icon: BarChart2 },
     ] : []),

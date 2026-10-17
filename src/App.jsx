@@ -57,6 +57,7 @@ const CliPadCustomPricing = safeLazy(() => import('@/pages/clipad/CliPadCustomPr
 const CustomRequests = safeLazy(() => import('@/pages/clipad/admin/CustomRequests'));
 
 const IntegrationsHub = safeLazy(() => import('@/pages/clipad/IntegrationsHub'));
+const DeveloperPlatform = safeLazy(() => import('@/pages/clipad/DeveloperPlatform'));
 const CapturePage = safeLazy(() => import('@/pages/clipad/CapturePage'));
 const SearchHub = safeLazy(() => import('@/pages/clipad/SearchHub'));
 const DecisionReplay = safeLazy(() => import('@/pages/clipad/DecisionReplay'));
@@ -142,6 +143,8 @@ function App() {
                           <Route path="/chat" element={<ClipadChat />} />
                           <Route path="/capture" element={<CapturePage />} />
                           <Route path="/integrations" element={<IntegrationsHub />} />
+                          <Route path="/developers" element={<DeveloperPlatform />} />
+                          <Route path="/developers/*" element={<DeveloperPlatform />} />
                           <Route path="/search" element={<SearchHub />} />
                           <Route path="/settings" element={<CliPadSettings />} />
                           
