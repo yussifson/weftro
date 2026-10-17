@@ -188,17 +188,7 @@ export default function CaptureInbox() {
         }
       });
 
-      // Enqueue to durable server queue
-      if (newCap?.id) {
-        await enqueueCaptureForProcessing({
-          companyId,
-          userId: user.id,
-          captureId: newCap.id,
-          payload: { capture_type: newCap.capture_type, title: newCap.title }
-        });
-      }
-
-      toast({ title: "Capture Saved & Queued", description: "Your capture was saved and queued for server processing." });
+      // 1. Close modal and reset form immediately so the UI does not hang or wait
       setIsCreateCaptureOpen(false);
       setCaptureForm({
         title: '',
@@ -207,8 +197,19 @@ export default function CaptureInbox() {
         visibility: 'ORGANIZATIONAL',
         contextSessionId: 'none'
       });
+      toast({ title: "Capture Saved & Queued", description: "Your capture was saved and queued for server processing." });
 
-      await loadData();
+      // 2. Enqueue to durable server queue
+      if (newCap?.id) {
+        await enqueueCaptureForProcessing({
+          companyId,
+          userId: user.id,
+          captureId: newCap.id,
+          payload: { capture_type: newCap.capture_type, title: newCap.title }
+        }).catch(qErr => console.warn('Background enqueue warning:', qErr));
+      }
+
+      await loadData().catch(() => {});
     } catch (err) {
       console.error(err);
       toast({ title: "Capture Failed", description: err.message, variant: "destructive" });
