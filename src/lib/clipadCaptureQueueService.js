@@ -47,14 +47,17 @@ export async function enqueueCaptureForProcessing({
   }
 
   // 2. Update the parent capture status to QUEUED
-  await supabase
-    .from('clipad_v3_captures')
-    .update({ 
-      status: 'QUEUED',
-      updated_at: new Date().toISOString() 
-    })
-    .eq('id', captureId)
-    .catch(err => console.warn('[clipadCaptureQueueService] Parent status update warning:', err));
+  try {
+    await supabase
+      .from('clipad_v3_captures')
+      .update({ 
+        status: 'QUEUED',
+        updated_at: new Date().toISOString() 
+      })
+      .eq('id', captureId);
+  } catch (err) {
+    console.warn('[clipadCaptureQueueService] Parent status update warning:', err);
+  }
 
   // 3. Dispatch an asynchronous non-blocking invocation to the server worker
   // If the Edge function invocation fails or network drops, the job remains safely 'queued' in PostgreSQL
