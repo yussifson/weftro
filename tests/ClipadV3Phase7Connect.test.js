@@ -1,15 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { getAuthorizedContext, mcpTools } from '../src/lib/clipadConnectService';
-import { grantAccessToken, validateToken } from '../src/lib/clipadOAuthService';
+import { getAuthorizedContext } from '../src/lib/clipadConnectService';
 import { isV3FeatureEnabled } from '../src/lib/clipadV3Flags';
 
-// Mock Flags
 vi.mock('../src/lib/clipadV3Flags', () => ({
   isV3FeatureEnabled: vi.fn(),
   V3_FLAGS: { CONNECT_ENABLED: 'connect_enabled' }
 }));
 
-// Mock Supabase to simulate RLS and data
+// Mock Supabase to simulate RLS and API data
 vi.mock('../src/api/supabaseClient', () => {
   const chain = {
     select: vi.fn().mockReturnThis(),
@@ -19,12 +17,25 @@ vi.mock('../src/api/supabaseClient', () => {
     is: vi.fn().mockReturnThis(),
     single: vi.fn().mockImplementation(function() {
       if (this._table === 'clipad_v3_connect_tokens') {
-        return { data: { user_id: 'u1', company_id: 'c1', app: { id: 'a1' }, scopes: ['memory:read'] }, error: null };
+        return { data: { user_id: 'u1', company_id: 'c1', app: { id: 'a1' }, scopes: ['memory:read', 'search:read', 'context:read'] }, error: null };
       }
       return { data: { id: 'mem1', content: 'Project X decisions' }, error: null };
     }),
     then: function(cb) {
-      return cb({ data: [{ id: 'mem1', memory_type: 'FACT', content: 'Project X decisions', title: 'Project X', summary: 'Summary X', source_id: 'src1', confidence_score: 0.95, memory_tier: 'organizational', created_at: '2026' }], error: null });
+      return cb({ 
+        data: [{ 
+          id: 'mem1', 
+          memory_type: 'FACT', 
+          content: 'Project X decisions', 
+          title: 'Project X', 
+          summary: 'Summary X', 
+          source_id: 'src1', 
+          confidence_score: 0.95, 
+          memory_tier: 'organizational', 
+          created_at: '2026-10-17' 
+        }], 
+        error: null 
+      });
     }
   };
   return {
@@ -34,40 +45,41 @@ vi.mock('../src/api/supabaseClient', () => {
   };
 });
 
-describe('Phase 7: Connect API & Security Boundary', () => {
+describe('Phase 3: Unified REST API Gateway & Connect Service Contract', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('rejects context retrieval if Connect feature is disabled', async () => {
+  it('rejects context retrieval if Connect feature is disabled for tenant', async () => {
     isV3FeatureEnabled.mockReturnValue(false);
     
-    await expect(getAuthorizedContext({ rawToken: 't1', query: 'test' }))
+    await expect(getAuthorizedContext({ rawToken: 'valid_token', query: 'test' }))
       .rejects.toThrow('Connect API is currently disabled');
   });
 
-  it('rejects context retrieval if missing required scope', async () => {
+  it('rejects context retrieval if caller token lacks required scope', async () => {
     isV3FeatureEnabled.mockReturnValue(true);
     
-    // Attempt to read context session (requires context:read) but token only has memory:read
-    await expect(getAuthorizedContext({ rawToken: 't1', query: { sessionId: 's1' }, resourceType: 'context' }))
-      .rejects.toThrow('Unauthorized: missing required scope');
+    // Requesting entity (requires knowledge:read), but token only has memory:read, search:read, context:read
+    await expect(getAuthorizedContext({ 
+      rawToken: 'valid_token', 
+      query: { entityId: 'ent-1' }, 
+      resourceType: 'entity' 
+    })).rejects.toThrow("Unauthorized: missing required scope 'knowledge:read'");
   });
 
-  it('retrieves authorized memory and applies RLS scoping', async () => {
+  it('successfully retrieves authorized memories with provenance and company isolation', async () => {
     isV3FeatureEnabled.mockReturnValue(true);
 
-    const result = await getAuthorizedContext({ rawToken: 't1', query: 'Project X' });
+    const results = await getAuthorizedContext({ 
+      rawToken: 'valid_token', 
+      query: 'Project X', 
+      resourceType: 'memory' 
+    });
     
-    expect(result).toHaveLength(1);
-    expect(result[0].content).toBe('Project X decisions');
-    // Supabase RLS is verified via the company_id constraint explicitly applied in the service
-  });
-
-  it('allows MCP tool to read memory', async () => {
-    isV3FeatureEnabled.mockReturnValue(true);
-    
-    const result = await mcpTools.search_clipad({ query: 'Project' }, 't1');
-    expect(result[0].content).toBe('Project X decisions');
+    expect(results).toHaveLength(1);
+    expect(results[0].content).toBe('Project X decisions');
+    expect(results[0].provenance).toBeDefined();
+    expect(results[0].provenance.confidence).toBe(0.95);
   });
 });

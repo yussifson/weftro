@@ -1,0 +1,458 @@
+openapi: 3.1.0
+info:
+  title: Weftro V3 Unified REST API Gateway
+  description: >
+    Production-grade, versioned REST API gateway exposing Weftro's organizational
+    intelligence, memories, captures, entities, and smart moments to authorized applications.
+  version: 1.0.0
+servers:
+  - url: https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect
+    description: Production Supabase Edge Gateway
+
+security:
+  - BearerAuth: []
+
+paths:
+  /api/v1/health:
+    get:
+      summary: API Gateway Health Check
+      description: Returns the health status and current API gateway version without exposing internal infrastructure details.
+      security: []
+      responses:
+        '200':
+          description: Service is healthy.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /api/v1/capabilities:
+    get:
+      summary: Discover Capabilities
+      description: Lists the supported API version, authentication schemes, scopes, and active routes.
+      security: []
+      responses:
+        '200':
+          description: Supported capabilities.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CapabilitiesResponse'
+
+  /api/v1/search:
+    post:
+      summary: Grounded Organizational Search
+      description: Executes permission-aware search across organizational memories with full provenance and confidence scores.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - query
+              properties:
+                query:
+                  type: string
+                  description: Search term or concept
+                  example: "Q3 architectural roadmap"
+                limit:
+                  type: integer
+                  minimum: 1
+                  maximum: 50
+                  default: 10
+                offset:
+                  type: integer
+                  minimum: 0
+                  default: 0
+      responses:
+        '200':
+          description: Search results matching query with provenance.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+
+  /api/v1/context/query:
+    post:
+      summary: Context Session Query
+      description: Retrieves context session details and chronologically bound captures within the authorized organization.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - session_id
+              properties:
+                session_id:
+                  type: string
+                  format: uuid
+                  example: "a0000000-0000-0000-0000-000000000001"
+      responses:
+        '200':
+          description: Context session and associated captures.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContextQueryResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/v1/memories:
+    get:
+      summary: List Memories
+      description: Paginated retrieval of organizational memories filtered by tier and type.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: tier
+          in: query
+          schema:
+            type: string
+            enum: [personal, team, organizational]
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [FACT, DECISION, COMMITMENT, PREFERENCE, PROCESS, POLICY, PROJECT_CONTEXT, INSIGHT, SUMMARY]
+      responses:
+        '200':
+          description: List of memories.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemoryListResponse'
+
+  /api/v1/memories/{id}:
+    get:
+      summary: Get Memory by ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Memory record details.
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/v1/entities/{id}:
+    get:
+      summary: Get Organizational Entity
+      description: Retrieve normalized entity node and connected graph relationships.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Entity node and relationships.
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/v1/captures:
+    get:
+      summary: List Captures
+      description: Paginated list of recent captures.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: List of capture records.
+
+  /api/v1/captures/{id}:
+    get:
+      summary: Get Capture Details
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Capture record.
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/v1/captures/{id}/status:
+    get:
+      summary: Get Capture Processing & Queue Status
+      description: Check the live processing status and durable queue attempt details for a capture.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Capture processing and queue state.
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/v1/smart-moments:
+    get:
+      summary: List Smart Moments
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: type
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of smart moments.
+
+  /api/v1/sources/{id}:
+    get:
+      summary: Get Source Provenance
+      description: Retrieve source record details (capture or video) backing an organizational memory or smart moment.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Source metadata.
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Token
+      description: API Connect Token issued via Developer Application
+
+  responses:
+    BadRequest:
+      description: Malformed or invalid request parameters.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Unauthorized:
+      description: Missing, invalid, expired, or revoked API token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Forbidden:
+      description: Insufficient scope or inactive application.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    NotFound:
+      description: Resource not found or belonging to another organization.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    RateLimited:
+      description: Rate limit exceeded.
+      headers:
+        Retry-After:
+          schema:
+            type: integer
+          description: Seconds until the rate limit bucket resets.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            status:
+              type: string
+              example: "healthy"
+            service:
+              type: string
+              example: "weftro-v3-api-gateway"
+            version:
+              type: string
+              example: "v1"
+        meta:
+          type: object
+          properties:
+            request_id:
+              type: string
+            timestamp:
+              type: string
+
+    CapabilitiesResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            api_version:
+              type: string
+            authentication:
+              type: array
+              items:
+                type: string
+            supported_scopes:
+              type: array
+              items:
+                type: string
+            endpoints:
+              type: array
+              items:
+                type: object
+
+    SearchResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              title:
+                type: string
+              content:
+                type: string
+              summary:
+                type: string
+              confidence:
+                type: number
+              provenance:
+                type: object
+        meta:
+          type: object
+          properties:
+            request_id:
+              type: string
+            count:
+              type: integer
+            query:
+              type: string
+
+    ContextQueryResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            session:
+              type: object
+            captures:
+              type: array
+              items:
+                type: object
+        meta:
+          type: object
+
+    MemoryListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+        meta:
+          type: object
+          properties:
+            total:
+              type: integer
+            limit:
+              type: integer
+            offset:
+              type: integer
+
+    ErrorEnvelope:
+      type: object
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+            - request_id
+          properties:
+            code:
+              type: string
+              example: "INVALID_CREDENTIALS"
+            message:
+              type: string
+              example: "The provided API token is invalid, unrecognized, or expired."
+            request_id:
+              type: string
+              example: "req_a1b2c3d4e5f6"
