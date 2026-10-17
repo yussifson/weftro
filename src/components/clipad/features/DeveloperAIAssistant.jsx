@@ -2,9 +2,26 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/lib/AuthContext';
 import { generateText } from '@/lib/cloudflareAI';
 import { DEVELOPER_PLATFORM_KNOWLEDGE } from '@/lib/weftroDeveloperDocs';
-import { Bot, Send, User, Sparkles, TerminalSquare, ShieldAlert, Copy, CheckCircle2, Loader2, RotateCcw } from 'lucide-react';
+import {
+  Bot,
+  Send,
+  User,
+  Sparkles,
+  TerminalSquare,
+  Copy,
+  CheckCircle2,
+  Loader2,
+  RotateCcw,
+  BookOpen,
+  Cpu,
+  KeyRound,
+  ShieldCheck,
+  ChevronRight,
+  Code2,
+  Layers,
+  ArrowRight
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -24,13 +41,43 @@ const INITIAL_MESSAGES = [
     role: 'assistant',
     content: `👋 **Welcome to the Weftro Developer Assistant!**
 
-I am specifically dedicated to helping you build and integrate applications with Weftro:
-* **Connect REST API (/api/v1):** Authentication, headers, pagination, rate limits, and errors.
+I am your dedicated technical advisor for the Weftro Developer Platform & Connect ecosystem:
+* **Connect REST API (\`/api/v1\`):** Authentication, headers, pagination, rate limits, and errors.
 * **Credentials & Scopes:** Managing Client IDs, Client Secrets, and granular token scopes.
 * **Model Context Protocol (MCP):** Configuring Cursor, Claude Desktop, and AI agents.
 * **Examples & Troubleshooting:** Formulating cURL commands and debugging HTTP status codes.
 
-How can I assist your integration today?`
+Choose a quick prompt on the right or type your question below to get started.`
+  }
+];
+
+const QUICK_TOPICS = [
+  {
+    category: 'API & Authentication',
+    icon: KeyRound,
+    prompts: [
+      { label: 'How do I authenticate with Bearer tokens?', query: 'How do I authenticate with Bearer tokens in the Connect API?' },
+      { label: 'How do I rotate my client secret?', query: 'How do I rotate my client secret without breaking production?' },
+      { label: 'Explain all available API scopes', query: 'Explain all available API scopes for application tokens.' }
+    ]
+  },
+  {
+    category: 'MCP & Agent Integrations',
+    icon: Cpu,
+    prompts: [
+      { label: 'Show me the Cursor MCP config', query: 'Show me how to configure Cursor IDE to connect to Weftro MCP.' },
+      { label: 'How do I query memories via MCP?', query: 'Which MCP tools are available to search and retrieve memories?' },
+      { label: 'Configure Claude Desktop MCP', query: 'How do I configure Claude Desktop with Weftro MCP?' }
+    ]
+  },
+  {
+    category: 'Endpoints & Retrieval',
+    icon: TerminalSquare,
+    prompts: [
+      { label: 'How do I search memories via API?', query: 'Show me an example cURL request to POST /api/v1/search.' },
+      { label: 'How does context session query work?', query: 'How do I query a context session and linked captures via /api/v1/context/query?' },
+      { label: 'What rate limits are enforced?', query: 'What rate limits and headers are enforced on the API Gateway?' }
+    ]
   }
 ];
 
@@ -41,6 +88,7 @@ export default function DeveloperAIAssistant() {
   const [isLoading, setIsLoading] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState(null);
   const messagesEndRef = useRef(null);
+  const inputRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -50,9 +98,9 @@ export default function DeveloperAIAssistant() {
     scrollToBottom();
   }, [messages, isLoading]);
 
-  const handleSend = async (e) => {
+  const handleSend = async (e, directText = null) => {
     e?.preventDefault();
-    const query = input.trim();
+    const query = (directText || input).trim();
     if (!query || isLoading) return;
 
     // Redact any user-pasted sensitive token before saving to message history
@@ -70,13 +118,13 @@ VERIFIED CAPABILITIES KNOWLEDGE BASE:
 ${JSON.stringify(DEVELOPER_PLATFORM_KNOWLEDGE, null, 2)}
 
 STRICT OPERATING INSTRUCTIONS:
-1. ONLY describe endpoints, routes, scopes, and tools that exist in the knowledge base above (/api/v1/*).
+1. ONLY describe endpoints, routes, scopes, and tools that exist in the knowledge base above (/api/v1/* and MCP).
 2. Base URL: https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect
 3. Authentication requires Bearer tokens ("Authorization: Bearer cpd_...").
-4. If asked about features in future phases (e.g., Phase 5 production MCP streaming, Phase 6 webhook delivery worker), state clearly that they are planned for upcoming releases.
+4. If asked about features in future phases, state clearly that they are planned for upcoming releases.
 5. NEVER ask for or output raw secrets, API tokens, passwords, or company internal database passwords.
-6. Provide clear, runnable cURL and code snippets when requested.
-7. Format your response cleanly using Markdown and code blocks.`;
+6. Provide clear, runnable cURL, JSON, and code snippets when requested.
+7. Format your response cleanly using Markdown and code blocks with syntax highlighting.`;
 
       const promptPayload = [
         { role: 'system', content: systemPrompt },
@@ -110,142 +158,216 @@ STRICT OPERATING INSTRUCTIONS:
   };
 
   return (
-    <div className="flex flex-col h-[750px] bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
-      {/* Header */}
-      <div className="p-4 border-b border-border bg-muted/30 flex items-center justify-between shrink-0">
+    <div className="h-[calc(100vh-140px)] min-h-[580px] flex flex-col bg-background text-foreground">
+      {/* Top Banner / Status */}
+      <div className="flex items-center justify-between px-6 py-3.5 border-b border-border bg-card/60 backdrop-blur-sm shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
-            <TerminalSquare className="w-5 h-5" />
+          <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+            <Bot className="w-4 h-4" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="font-bold text-sm text-foreground">Weftro Developer AI Assistant</h3>
-              <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-600 border-emerald-500/20 font-mono">
+              <h2 className="text-sm font-semibold tracking-tight">Developer AI Assistant</h2>
+              <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 font-mono">
                 API v1 Grounded
               </Badge>
             </div>
-            <p className="text-xs text-muted-foreground">Technical advisor for Weftro REST API, MCP, and application development</p>
+            <p className="text-xs text-muted-foreground">Ask architecture, endpoint specs, authentication rules, or MCP config</p>
           </div>
         </div>
 
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-8 text-xs text-muted-foreground hover:text-foreground flex items-center gap-1.5"
-          onClick={() => setMessages(INITIAL_MESSAGES)}
-        >
-          <RotateCcw className="w-3.5 h-3.5" />
-          Reset Chat
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setMessages(INITIAL_MESSAGES)}
+            className="h-8 text-xs text-muted-foreground hover:text-foreground gap-1.5"
+            title="Reset conversation"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Reset Chat</span>
+          </Button>
+        </div>
       </div>
 
-      {/* Suggested Quick Questions */}
-      <div className="px-4 py-2.5 bg-secondary/30 border-b border-border/60 flex items-center gap-2 overflow-x-auto text-xs shrink-0">
-        <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider shrink-0">Quick prompts:</span>
-        {[
-          "How do I search memories via API?",
-          "How do I rotate my client secret?",
-          "Explain available API scopes",
-          "Show me the Cursor MCP config"
-        ].map((prompt, i) => (
-          <button
-            key={i}
-            onClick={() => { setInput(prompt); }}
-            className="px-2.5 py-1 rounded-full bg-background border border-border hover:border-primary/50 text-muted-foreground hover:text-foreground whitespace-nowrap transition-colors"
-          >
-            {prompt}
-          </button>
-        ))}
-      </div>
+      {/* Main Responsive Two-Column Layout */}
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden">
+        {/* Left / Center Column: Chat Messages & Input (8 cols on lg) */}
+        <div className="lg:col-span-8 flex flex-col h-full border-r border-border overflow-hidden bg-card/30">
+          {/* Scrollable Messages Area */}
+          <div className="flex-1 overflow-y-auto px-4 md:px-6 py-5 space-y-5 scrollbar-thin">
+            {messages.map((msg, idx) => {
+              const isAssistant = msg.role === 'assistant';
+              return (
+                <div
+                  key={idx}
+                  className={`flex items-start gap-3.5 ${isAssistant ? 'justify-start' : 'justify-end'}`}
+                >
+                  {isAssistant && (
+                    <div className="w-7 h-7 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0 mt-0.5 shadow-sm">
+                      <Bot className="w-3.5 h-3.5" />
+                    </div>
+                  )}
 
-      {/* Messages Scroll Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin">
-        {messages.map((msg, idx) => (
-          <div
-            key={idx}
-            className={`flex items-start gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-          >
-            {msg.role === 'assistant' && (
-              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0 mt-0.5">
-                <Bot className="w-4 h-4" />
-              </div>
-            )}
-
-            <div
-              className={`max-w-[85%] rounded-2xl p-4 text-sm ${
-                msg.role === 'user'
-                  ? 'bg-primary text-primary-foreground font-medium rounded-tr-none'
-                  : 'bg-muted/40 border border-border text-foreground rounded-tl-none space-y-2'
-              }`}
-            >
-              {msg.role === 'user' ? (
-                <p className="whitespace-pre-wrap">{msg.content}</p>
-              ) : (
-                <div className="prose prose-sm dark:prose-invert max-w-none break-words">
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {msg.content}
-                  </ReactMarkdown>
-                </div>
-              )}
-
-              {msg.role === 'assistant' && idx > 0 && (
-                <div className="flex items-center justify-end pt-1 mt-1 border-t border-border/40">
-                  <button
-                    onClick={() => copyToClipboard(msg.content, idx)}
-                    className="text-[11px] text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
+                  <div
+                    className={`max-w-[88%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+                      isAssistant
+                        ? 'bg-card border border-border/80 text-foreground shadow-sm rounded-tl-sm'
+                        : 'bg-primary text-primary-foreground font-medium rounded-tr-sm shadow-sm'
+                    }`}
                   >
-                    {copiedIndex === idx ? (
-                      <>
-                        <CheckCircle2 className="w-3 h-3 text-emerald-500" />
-                        <span>Copied</span>
-                      </>
+                    {isAssistant ? (
+                      <div className="prose prose-sm dark:prose-invert max-w-none break-words [&>p]:mb-2 [&>p:last-child]:mb-0 [&>ul]:my-2 [&>ol]:my-2 [&>pre]:my-2 [&>pre]:bg-secondary/60 [&>pre]:p-3 [&>pre]:rounded-lg [&>pre]:border [&>pre]:border-border/60 [&_code]:text-xs [&_code]:font-mono">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {msg.content}
+                        </ReactMarkdown>
+                      </div>
                     ) : (
-                      <>
-                        <Copy className="w-3 h-3" />
-                        <span>Copy answer</span>
-                      </>
+                      <p className="whitespace-pre-wrap">{msg.content}</p>
                     )}
-                  </button>
-                </div>
-              )}
-            </div>
 
-            {msg.role === 'user' && (
-              <div className="w-8 h-8 rounded-lg bg-[#fad503] flex items-center justify-center text-[#006065] shrink-0 font-bold text-xs mt-0.5">
-                {user?.email ? user.email[0].toUpperCase() : <User className="w-4 h-4" />}
+                    {isAssistant && idx > 0 && (
+                      <div className="flex items-center justify-end pt-2 mt-2 border-t border-border/40">
+                        <button
+                          onClick={() => copyToClipboard(msg.content, idx)}
+                          className="text-[11px] text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
+                        >
+                          {copiedIndex === idx ? (
+                            <>
+                              <CheckCircle2 className="w-3 h-3 text-emerald-500" />
+                              <span className="text-emerald-500 font-medium">Copied to clipboard</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3 h-3" />
+                              <span>Copy response</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {!isAssistant && (
+                    <div className="w-7 h-7 rounded-lg bg-[#fad503] flex items-center justify-center text-[#006065] shrink-0 font-bold text-xs mt-0.5 shadow-sm">
+                      {user?.email ? user.email[0].toUpperCase() : <User className="w-3.5 h-3.5" />}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+
+            {isLoading && (
+              <div className="flex items-start gap-3">
+                <div className="w-7 h-7 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0 animate-pulse">
+                  <Bot className="w-3.5 h-3.5" />
+                </div>
+                <div className="px-4 py-3 rounded-2xl rounded-tl-sm bg-card border border-border/80 flex items-center gap-2.5 text-xs text-muted-foreground shadow-sm">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" />
+                  <span>Synthesizing verified technical answer...</span>
+                </div>
               </div>
             )}
+            <div ref={messagesEndRef} />
           </div>
-        ))}
 
-        {isLoading && (
-          <div className="flex items-start gap-3">
-            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0 animate-pulse">
-              <Bot className="w-4 h-4" />
-            </div>
-            <div className="p-3.5 rounded-2xl bg-muted/40 border border-border flex items-center gap-2 text-xs text-muted-foreground">
-              <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" />
-              Generating verified technical answer...
-            </div>
+          {/* Quick chips bar directly above input on mobile / tablet */}
+          <div className="lg:hidden px-4 py-2 bg-muted/40 border-t border-border/60 flex items-center gap-2 overflow-x-auto text-xs shrink-0 hide-scrollbar">
+            <span className="text-[11px] font-medium text-muted-foreground whitespace-nowrap">Try:</span>
+            {[
+              "Bearer auth example",
+              "Cursor MCP config",
+              "Rotate client secret",
+              "POST /api/v1/search"
+            ].map((p, i) => (
+              <button
+                key={i}
+                onClick={() => handleSend(null, p)}
+                className="px-2.5 py-1 rounded-full bg-background border border-border hover:border-primary text-xs text-muted-foreground hover:text-foreground whitespace-nowrap transition-colors"
+              >
+                {p}
+              </button>
+            ))}
           </div>
-        )}
-        <div ref={messagesEndRef} />
+
+          {/* Bottom Prompt Input Area */}
+          <form
+            onSubmit={(e) => handleSend(e)}
+            className="p-4 border-t border-border bg-card/80 backdrop-blur-sm shrink-0 flex items-center gap-3"
+          >
+            <div className="relative flex-1">
+              <input
+                ref={inputRef}
+                type="text"
+                placeholder="Ask about endpoints, token scopes, MCP integration, or code snippets..."
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                disabled={isLoading}
+                className="w-full h-11 px-4 pr-10 text-sm bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all disabled:opacity-50"
+              />
+            </div>
+            <Button
+              type="submit"
+              disabled={!input.trim() || isLoading}
+              className="h-11 px-5 rounded-xl font-medium shadow-sm flex items-center gap-2"
+            >
+              <span>Send</span>
+              <Send className="w-4 h-4" />
+            </Button>
+          </form>
+        </div>
+
+        {/* Right Column: Quick Actions & Knowledge Hub (4 cols on lg, scrollable) */}
+        <div className="hidden lg:flex lg:col-span-4 flex-col h-full bg-card/50 overflow-y-auto p-5 space-y-5 scrollbar-thin">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-primary" />
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Instant Inquiries
+            </h3>
+          </div>
+
+          {/* Categorized Quick Links */}
+          <div className="space-y-4">
+            {QUICK_TOPICS.map((topic, tIdx) => {
+              const Icon = topic.icon;
+              return (
+                <div key={tIdx} className="space-y-2">
+                  <div className="flex items-center gap-1.5 text-xs font-medium text-foreground">
+                    <Icon className="w-3.5 h-3.5 text-primary" />
+                    <span>{topic.category}</span>
+                  </div>
+                  <div className="space-y-1.5">
+                    {topic.prompts.map((item, pIdx) => (
+                      <button
+                        key={pIdx}
+                        onClick={() => handleSend(null, item.query)}
+                        disabled={isLoading}
+                        className="w-full text-left px-3 py-2 text-xs rounded-lg border border-border/70 bg-card hover:bg-secondary hover:border-primary/40 transition-all flex items-center justify-between group disabled:opacity-50"
+                      >
+                        <span className="text-muted-foreground group-hover:text-foreground line-clamp-1">
+                          {item.label}
+                        </span>
+                        <ArrowRight className="w-3 h-3 text-muted-foreground group-hover:text-primary transition-transform group-hover:translate-x-0.5 shrink-0 ml-2" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Quick Context Card */}
+          <div className="mt-auto p-3.5 rounded-xl border border-border/80 bg-secondary/30 space-y-2">
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+              <span>Grounded Knowledge Base</span>
+            </div>
+            <p className="text-[11px] text-muted-foreground leading-relaxed">
+              Responses are strictly anchored to the live Weftro Connect API v1 OpenAPI schema and MCP tool definitions. All credentials and secrets are automatically redacted.
+            </p>
+          </div>
+        </div>
       </div>
-
-      {/* Input Area */}
-      <form onSubmit={handleSend} className="p-3.5 border-t border-border bg-background flex items-center gap-2 shrink-0">
-        <Input
-          placeholder="Ask about Weftro APIs, scopes, MCP configuration, rate limits..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          disabled={isLoading}
-          className="flex-1 bg-secondary/30 text-sm"
-        />
-        <Button type="submit" disabled={!input.trim() || isLoading} className="h-10 px-4 flex items-center gap-1.5">
-          <Send className="w-4 h-4" />
-          <span>Ask</span>
-        </Button>
-      </form>
     </div>
   );
 }

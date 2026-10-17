@@ -1680,11 +1680,20 @@ serve(async (req) => {
           },
           body: payloadString,
           signal: controller.signal,
+          redirect: 'manual', // Strictly do not follow redirects (SSRF mitigation)
         });
 
         clearTimeout(timeoutId);
         statusCode = webhookRes.status;
-        deliveryStatus = webhookRes.ok ? 'delivered' : 'failed';
+
+        // Reject redirects (3xx) explicitly as unsafe / unpermitted delivery targets
+        if (statusCode >= 300 && statusCode < 400) {
+          deliveryStatus = 'failed';
+          errorMessage = `Webhook delivery rejected redirect response (HTTP ${statusCode}). Automatic redirects are prohibited for security.`;
+        } else {
+          deliveryStatus = webhookRes.ok ? 'delivered' : 'failed';
+        }
+
         responseBody = (await webhookRes.text().catch(() => '')).slice(0, 1000);
       } catch (dispErr: any) {
         errorMessage = dispErr.name === 'AbortError' ? 'Webhook delivery timed out after 10000ms' : dispErr.message;
@@ -1789,6 +1798,7 @@ serve(async (req) => {
 
       let deliveryStatus = 'failed';
       let statusCode = 0;
+      let retryError = null;
       try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000);
@@ -1803,12 +1813,19 @@ serve(async (req) => {
           },
           body: payloadString,
           signal: controller.signal,
+          redirect: 'manual', // Strictly do not follow redirects (SSRF mitigation)
         });
         clearTimeout(timeoutId);
         statusCode = retryRes.status;
-        deliveryStatus = retryRes.ok ? 'delivered' : 'failed';
-      } catch (_e) {
+        if (statusCode >= 300 && statusCode < 400) {
+          deliveryStatus = 'failed';
+          retryError = `Webhook retry rejected redirect response (HTTP ${statusCode}). Automatic redirects are prohibited for security.`;
+        } else {
+          deliveryStatus = retryRes.ok ? 'delivered' : 'failed';
+        }
+      } catch (e: any) {
         deliveryStatus = 'failed';
+        retryError = e.name === 'AbortError' ? 'Webhook delivery timed out after 10000ms' : e.message;
       }
 
       logAudit('webhooks.retry', { delivery_id: deliveryId, status: deliveryStatus, response_status: statusCode });
@@ -1819,6 +1836,7 @@ serve(async (req) => {
           original_delivery_id: deliveryId,
           status: deliveryStatus,
           response_status: statusCode,
+          error_message: retryError,
         },
         { request_id: requestId },
         200,

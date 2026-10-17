@@ -193,6 +193,37 @@ async function runPhase6Suite() {
       `Status: ${invalidEventRes.statusCode}, Message: ${invalidEventRes.data?.error?.message}`
     );
 
+    // 2.5 Outbound Redirect Protection: Verify that a 3xx redirect response is strictly rejected as delivery failure and not followed
+    const redirectHookRes = await request('/api/v1/webhooks', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token1}` }
+    }, {
+      // httpbin.org/redirect-to returns 302 redirecting to internal/specified destination
+      endpoint_url: 'https://httpbin.org/redirect-to?url=http%3A%2F%2F127.0.0.1%3A80%2Fsecret&status_code=302',
+      events: ['memory.created']
+    });
+    const redirectHook = redirectHookRes.data?.data;
+    if (redirectHook?.id) {
+      const testRedirectRes = await request(`/api/v1/webhooks/${redirectHook.id}/test`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token1}` }
+      });
+      const redirectDeliveryData = testRedirectRes.data?.data;
+      assert(
+        testRedirectRes.statusCode === 200 &&
+        redirectDeliveryData?.delivered === false &&
+        redirectDeliveryData?.status === 'failed' &&
+        (redirectDeliveryData?.response_status === 302 || redirectDeliveryData?.error_message?.includes('redirect')),
+        'Outbound test-ping strictly rejects HTTP 302 redirect and does not follow to internal loopback target',
+        `Delivered: ${redirectDeliveryData?.delivered}, Status: ${redirectDeliveryData?.status}, HTTP: ${redirectDeliveryData?.response_status}, Error: ${redirectDeliveryData?.error_message}`
+      );
+      // Clean up test redirect webhook
+      await request(`/api/v1/webhooks/${redirectHook.id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token1}` }
+      });
+    }
+
     // ─── Test Group 3: Webhook Registration & Secret Lifecycle ───────────────
     console.log('\n--- Test Group 3: Webhook Registration & Secret Lifecycle ---');
 
