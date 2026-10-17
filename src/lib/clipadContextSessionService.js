@@ -74,6 +74,26 @@ export async function getContextSession(id) {
 }
 
 /**
+ * Pauses an active context session
+ */
+export async function pauseContextSession(id) {
+  return updateContextSession(id, { 
+    status: CONTEXT_SESSION_STATUS.PAUSED,
+    metadata: { paused_at: new Date().toISOString() }
+  });
+}
+
+/**
+ * Resumes a paused context session
+ */
+export async function resumeContextSession(id) {
+  return updateContextSession(id, { 
+    status: CONTEXT_SESSION_STATUS.ACTIVE,
+    metadata: { resumed_at: new Date().toISOString() }
+  });
+}
+
+/**
  * Completes a context session
  */
 export async function completeContextSession(id) {
@@ -88,6 +108,28 @@ export async function completeContextSession(id) {
  */
 export async function archiveContextSession(id) {
   return updateContextSession(id, { status: CONTEXT_SESSION_STATUS.ARCHIVED });
+}
+
+/**
+ * Append audit event record to session metadata
+ */
+export async function appendSessionAudit(id, eventType, details = {}) {
+  const current = await getContextSession(id);
+  const existingAudit = current?.metadata?.audit_trail || [];
+  const updatedAudit = [
+    ...existingAudit,
+    {
+      event_type: eventType,
+      timestamp: new Date().toISOString(),
+      details
+    }
+  ];
+  return updateContextSession(id, {
+    metadata: {
+      ...(current?.metadata || {}),
+      audit_trail: updatedAudit
+    }
+  });
 }
 
 /**

@@ -26,6 +26,7 @@ export const V3_FLAGS = {
   ORGANIZATIONAL_ANALYTICS_ENABLED: 'organizational_analytics_enabled',
   ORGANIZATIONAL_LEARNING_ENABLED: 'organizational_learning_enabled',
   DOCUMENT_CHUNKING_INGESTION_ENABLED: 'document_chunking_ingestion_enabled',
+  RAG_SYNTHESIS_ENABLED: 'rag_synthesis_enabled',
 };
 
 // Default flag states for safe V3 staged rollout
@@ -50,6 +51,7 @@ const DEFAULT_V3_FLAG_DEFAULTS = {
   [V3_FLAGS.ORGANIZATIONAL_ANALYTICS_ENABLED]: true,
   [V3_FLAGS.ORGANIZATIONAL_LEARNING_ENABLED]: true,
   [V3_FLAGS.DOCUMENT_CHUNKING_INGESTION_ENABLED]: false, // Phase 4: Disabled by default for production safety
+  [V3_FLAGS.RAG_SYNTHESIS_ENABLED]: false, // Phase 5: Disabled by default for production safety
 };
 
 /**
