@@ -159,37 +159,6 @@ STRICT OPERATING INSTRUCTIONS:
 
   return (
     <div className="h-full w-full flex flex-col bg-background text-foreground overflow-hidden">
-      {/* Top Banner / Status */}
-      <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-border bg-card/60 backdrop-blur-sm shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
-            <Bot className="w-4 h-4" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-sm font-semibold tracking-tight">Developer AI Assistant</h2>
-              <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 font-mono">
-                API v1 Grounded
-              </Badge>
-            </div>
-            <p className="text-xs text-muted-foreground hidden sm:block">Ask architecture, endpoint specs, authentication rules, or MCP config</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setMessages(INITIAL_MESSAGES)}
-            className="h-8 text-xs text-muted-foreground hover:text-foreground gap-1.5"
-            title="Reset conversation"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Reset Chat</span>
-          </Button>
-        </div>
-      </div>
-
       {/* Main Responsive Two-Column Layout */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 min-h-0 overflow-hidden">
         {/* Left / Center Column: Chat Messages & Input (8 cols on lg) */}

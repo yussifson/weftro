@@ -55,8 +55,8 @@ const SIDEBAR_TABS = [
     path: '/developers/assistant',
     matchPaths: ['/developers/assistant'],
     icon: Bot,
-    label: 'Developer AI Assistant',
-    description: 'Interactive technical guidance'
+    label: 'Copilot',
+    description: 'AI assistant & technical advisor'
   },
   {
     id: 'explorer',
@@ -106,7 +106,7 @@ export default function DeveloperPlatform() {
   const currentTabObj = SIDEBAR_TABS.find(t => t.id === activeTab) || SIDEBAR_TABS[0];
 
   return (
-    <div style={{ fontFamily: "'Inter', sans-serif" }} className="flex h-screen bg-slate-50 dark:bg-background overflow-hidden text-slate-900 dark:text-slate-100">
+    <div style={{ fontFamily: "'Inter', sans-serif" }} className="flex h-[calc(100vh-64px)] max-h-[calc(100vh-64px)] bg-slate-50 dark:bg-background overflow-hidden text-slate-900 dark:text-slate-100">
       {/* SIDEBAR NAVIGATION (Matching SpaceDashboard pattern) */}
       <aside className={`bg-white dark:bg-card border-r border-slate-200 dark:border-border flex-col hidden md:flex shrink-0 transition-all duration-300 ${sidebarOpen ? 'w-64' : 'w-20'}`}>
         {/* Sidebar Header: Back button and expand/collapse button, top name area left empty */}
