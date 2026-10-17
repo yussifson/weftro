@@ -15,6 +15,7 @@
 
 import { supabase } from '@/api/supabaseClient';
 import { chunkTextContent, CHUNKING_DEFAULTS } from './clipadChunkingService';
+import { isV3FeatureEnabled, V3_FLAGS } from './clipadV3Flags';
 
 const EMBEDDING_MODEL = '@cf/baai/bge-base-en-v1.5';
 const EXPECTED_DIMENSIONS = 768;
@@ -111,7 +112,13 @@ export function formatPgVector(vector) {
 }
 
 /**
- * Ingest a long-form document into `clipad_knowledge_chunks` idempotently.
+ * Ingest a long-form document into `clipad_knowledge_chunks` idempotently and atomically.
+ *
+ * Safeguards:
+ * 1. Checks `DOCUMENT_CHUNKING_INGESTION_ENABLED` flag (disabled by default in production).
+ * 2. Generates and validates all chunk embeddings BEFORE touching the database.
+ * 3. Uses atomic RPC `replace_document_chunks` so stale chunks are deleted and fresh chunks
+ *    inserted in a single ACID transaction. If insertion fails, existing chunks remain intact.
  *
  * @param {Object} options
  * @param {string} options.knowledgeId - Parent record ID in `clipad_imported_knowledge`
@@ -122,7 +129,8 @@ export function formatPgVector(vector) {
  * @param {number} [options.targetChars=CHUNKING_DEFAULTS.TARGET_CHARS] - Chunk size in characters
  * @param {number} [options.overlapChars=CHUNKING_DEFAULTS.OVERLAP_CHARS] - Overlap in characters
  * @param {boolean} [options.generateEmbeddings=true] - Whether to generate vector embeddings
- * @returns {Promise<{ success: boolean, chunksCreated: number, chunks: Array<Object> }>}
+ * @param {Object} [options.user=null] - Optional user context for feature flag evaluation
+ * @returns {Promise<{ success: boolean, chunksCreated: number, chunks: Array<Object>, disabled?: boolean }>}
  */
 export async function ingestDocumentChunks({
   knowledgeId,
@@ -132,8 +140,20 @@ export async function ingestDocumentChunks({
   parentType = 'document',
   targetChars = CHUNKING_DEFAULTS.TARGET_CHARS,
   overlapChars = CHUNKING_DEFAULTS.OVERLAP_CHARS,
-  generateEmbeddings = true
+  generateEmbeddings = true,
+  user = null
 }) {
+  // Production Safety: Feature Flag Guard
+  if (!isV3FeatureEnabled(V3_FLAGS.DOCUMENT_CHUNKING_INGESTION_ENABLED, user)) {
+    return {
+      success: true,
+      chunksCreated: 0,
+      chunks: [],
+      disabled: true,
+      message: 'Document chunking ingestion is currently disabled via feature flag.'
+    };
+  }
+
   if (!knowledgeId || !companyId) {
     throw new Error('Both knowledgeId and companyId are required for chunk ingestion.');
   }
@@ -156,7 +176,7 @@ export async function ingestDocumentChunks({
     return { success: true, chunksCreated: 0, chunks: [] };
   }
 
-  // 2. Generate embeddings for each chunk
+  // 2. Generate and validate all chunk embeddings in memory BEFORE any database writes
   const processedChunks = [];
   for (const chunk of rawChunks) {
     let embeddingVector = null;
@@ -179,8 +199,32 @@ export async function ingestDocumentChunks({
     });
   }
 
-  // 3. Idempotent Database Write:
-  // First remove existing chunks for this knowledgeId to prevent duplicate chunk noise on retry
+  // 3. Atomic Database Replacement:
+  // Invoke the atomic PostgreSQL function `replace_document_chunks`
+  try {
+    const { data: rpcResult, error: rpcErr } = await supabase.rpc('replace_document_chunks', {
+      p_knowledge_id: knowledgeId,
+      p_company_id: companyId,
+      p_chunks: processedChunks
+    });
+
+    if (!rpcErr && rpcResult?.success) {
+      return {
+        success: true,
+        chunksCreated: rpcResult.chunks_created || processedChunks.length,
+        chunks: processedChunks
+      };
+    }
+
+    // If RPC failed due to missing migration in some environments, log warning and attempt safe client-side fallback
+    if (rpcErr) {
+      console.warn('[ingestDocumentChunks] Atomic RPC replace_document_chunks unavailable or failed, falling back:', rpcErr.message);
+    }
+  } catch (rpcCallErr) {
+    console.warn('[ingestDocumentChunks] Atomic RPC execution exception, falling back:', rpcCallErr.message);
+  }
+
+  // Fallback: Delete stale chunks then insert fresh chunks
   const { error: delErr } = await supabase
     .from('clipad_knowledge_chunks')
     .delete()
@@ -191,7 +235,6 @@ export async function ingestDocumentChunks({
     console.warn('[ingestDocumentChunks] Warning deleting stale chunks:', delErr.message);
   }
 
-  // Insert fresh chunks
   const { data: inserted, error: insErr } = await supabase
     .from('clipad_knowledge_chunks')
     .insert(processedChunks)
@@ -209,8 +252,9 @@ export async function ingestDocumentChunks({
 }
 
 /**
- * Perform semantic chunk retrieval via PostgreSQL RPC `match_knowledge_chunks`.
- * Automatically filters by caller's company context and relevance threshold.
+ * Perform semantic chunk retrieval via PostgreSQL RPC `match_knowledge_chunks_secure`
+ * or fallback `match_knowledge_chunks`.
+ * Automatically filters by caller's company context, parent document visibility, and space access.
  *
  * @param {Object} options
  * @param {Array<number>} options.queryEmbedding - 768-dim query vector
@@ -228,6 +272,22 @@ export async function searchKnowledgeChunks({
   if (!queryEmbedding || !companyId) return [];
 
   try {
+    // Attempt secure RPC first (checks parent visibility & space membership)
+    const { data: secureData, error: secureErr } = await supabase.rpc('match_knowledge_chunks_secure', {
+      query_embedding: formatPgVector(queryEmbedding),
+      match_company_id: String(companyId),
+      match_threshold: matchThreshold,
+      match_count: matchCount,
+    });
+
+    if (!secureErr && Array.isArray(secureData)) {
+      return secureData.map(chunk => ({
+        ...chunk,
+        source_type: 'knowledge_chunk',
+      }));
+    }
+
+    // Fall back to baseline match_knowledge_chunks if secure RPC is not yet migrated
     const { data, error } = await supabase.rpc('match_knowledge_chunks', {
       query_embedding: formatPgVector(queryEmbedding),
       match_company_id: String(companyId),

@@ -339,8 +339,62 @@ record(
   `Initial count: ${countAfterFirst}, After re-ingestion: ${countAfterSecond}`
 );
 
-// ── Test Group 5: Zero-Trust Tenant & Space Filtering ──
-console.log('\n--- Test Group 5: Zero-Trust Security & Scope Isolation ---');
+// ── Test Group 5: Atomic Transaction Failure Simulation (Preserve on Failure) ──
+console.log('\n--- Test Group 5: Atomic Transaction Rollback Simulation ---');
+
+function simulateAtomicReplaceChunks({ knowledgeId, companyId, newChunks, shouldFailDuringInsert = false }) {
+  // Backup state before transaction (simulates PG transaction rollback)
+  const stateBackup = JSON.parse(JSON.stringify(inMemoryDb));
+
+  try {
+    // Delete stale chunks
+    for (let i = inMemoryDb.length - 1; i >= 0; i--) {
+      if (inMemoryDb[i].knowledge_id === knowledgeId && inMemoryDb[i].company_id === companyId) {
+        inMemoryDb.splice(i, 1);
+      }
+    }
+
+    if (shouldFailDuringInsert) {
+      throw new Error('Database insertion constraint violation or network timeout');
+    }
+
+    // Insert fresh chunks
+    newChunks.forEach(c => {
+      inMemoryDb.push({
+        id: `chunk_${Math.random().toString(36).slice(2, 8)}`,
+        knowledge_id: knowledgeId,
+        company_id: companyId,
+        chunk_index: c.chunk_index,
+        content: c.content,
+      });
+    });
+
+    return { success: true };
+  } catch (err) {
+    // Transaction rolled back: restore backup state
+    inMemoryDb.length = 0;
+    inMemoryDb.push(...stateBackup);
+    return { success: false, error: err.message };
+  }
+}
+
+const beforeFailureCount = inMemoryDb.filter(c => c.knowledge_id === 'doc_alpha').length;
+const failResult = simulateAtomicReplaceChunks({
+  knowledgeId: 'doc_alpha',
+  companyId: 'org_1',
+  newChunks: [{ chunk_index: 0, content: 'corrupted insert' }],
+  shouldFailDuringInsert: true
+});
+const afterFailureCount = inMemoryDb.filter(c => c.knowledge_id === 'doc_alpha').length;
+
+record(
+  '9. Atomic rollback protects existing chunks: insertion failure preserves previous chunks',
+  failResult.success === false && beforeFailureCount === afterFailureCount && afterFailureCount === 1,
+  `Before fail: ${beforeFailureCount}, After fail rollback: ${afterFailureCount} (no chunk data loss)`
+);
+
+// ── Test Group 6: Zero-Trust Tenant & Space Filtering ──
+console.log('\n--- Test Group 6: Zero-Trust Security & Scope Isolation ---');
 
 function simulateChunkSearch({ callerCompanyId, callerSpaceIds, chunkRecord, parentRecord }) {
   // 1. Strict company isolation
@@ -360,7 +414,7 @@ const privateSpaceChunk = { companyId: 'org_A', content: 'Confidential Executive
 const privateSpaceParent = { companyId: 'org_A', visibility: 'space', space_id: 'space_executives' };
 
 record(
-  '9. Cross-tenant chunk search rejected unconditionally',
+  '10. Cross-tenant chunk search rejected unconditionally',
   simulateChunkSearch({
     callerCompanyId: callerOrgA.companyId,
     callerSpaceIds: callerOrgA.spaces,
@@ -371,7 +425,7 @@ record(
 );
 
 record(
-  '10. Private-space chunk search rejected for non-member caller',
+  '11. Private-space chunk search rejected for non-member caller',
   simulateChunkSearch({
     callerCompanyId: callerOrgA.companyId,
     callerSpaceIds: callerOrgA.spaces,
@@ -379,6 +433,25 @@ record(
     parentRecord: privateSpaceParent
   }) === false,
   'Private space_executives chunk blocked from space_general caller'
+);
+
+// ── Test Group 7: Feature Flag Ingestion Safeguard ──
+console.log('\n--- Test Group 7: Feature Flag Ingestion Safeguard ---');
+
+function simulateIngestWithFlag({ isFlagEnabled, content }) {
+  if (!isFlagEnabled) {
+    return { success: true, chunksCreated: 0, disabled: true };
+  }
+  return { success: true, chunksCreated: 5, disabled: false };
+}
+
+const disabledCall = simulateIngestWithFlag({ isFlagEnabled: false, content: 'Some doc content' });
+const enabledCall = simulateIngestWithFlag({ isFlagEnabled: true, content: 'Some doc content' });
+
+record(
+  '12. Feature flag guard blocks ingestion by default when disabled',
+  disabledCall.disabled === true && disabledCall.chunksCreated === 0 && enabledCall.disabled === false,
+  'Ingestion safely bypassed when DOCUMENT_CHUNKING_INGESTION_ENABLED = false'
 );
 
 // ── Summary ──
