@@ -61,9 +61,10 @@ serve(async (req) => {
       }
       
       const { data, error } = await supabase
-        .from('clipad_v3_organizational_memory')
+        .from('clipad_v3_memories')
         .select('*')
         .eq('company_id', tokenData.company_id)
+        .eq('is_active', true)
         .ilike('content', \`%\${body.query}%\`)
         .limit(10);
         

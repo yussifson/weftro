@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
 import { contextualizeCapture } from '@/lib/clipadContextualizationService';
+import { enqueueCaptureForProcessing, retryCaptureJob } from '@/lib/clipadCaptureQueueService';
 import { isV3FeatureEnabled, V3_FLAGS } from '@/lib/clipadV3Flags';
 import BrowserCaptureSettings from './BrowserCaptureSettings';
 import { updateCapture, createCapture } from '@/lib/clipadCaptureService';
@@ -125,12 +126,21 @@ export default function CaptureInbox() {
   const handleProcess = async (capture) => {
     setProcessingId(capture.id);
     try {
-      await contextualizeCapture(capture.id);
-      toast({ title: "Success", description: "Capture processed into organizational memory." });
+      if (capture.status === 'FAILED') {
+        await retryCaptureJob(capture.id);
+        toast({ title: "Job Re-queued", description: "Capture re-queued for server processing." });
+      } else {
+        await enqueueCaptureForProcessing({
+          companyId: capture.company_id || companyId,
+          userId: user.id,
+          captureId: capture.id
+        });
+        toast({ title: "Queued", description: "Capture queued for server processing." });
+      }
       await loadData();
     } catch (e) {
       console.error(e);
-      toast({ title: "Processing Failed", description: e.message, variant: "destructive" });
+      toast({ title: "Queueing Failed", description: e.message, variant: "destructive" });
     } finally {
       setProcessingId(null);
     }
@@ -178,7 +188,17 @@ export default function CaptureInbox() {
         }
       });
 
-      toast({ title: "Capture Created", description: "Starting background AI contextualization..." });
+      // Enqueue to durable server queue
+      if (newCap?.id) {
+        await enqueueCaptureForProcessing({
+          companyId,
+          userId: user.id,
+          captureId: newCap.id,
+          payload: { capture_type: newCap.capture_type, title: newCap.title }
+        });
+      }
+
+      toast({ title: "Capture Saved & Queued", description: "Your capture was saved and queued for server processing." });
       setIsCreateCaptureOpen(false);
       setCaptureForm({
         title: '',
@@ -189,15 +209,6 @@ export default function CaptureInbox() {
       });
 
       await loadData();
-
-      // Trigger automatic contextualization in background
-      if (newCap?.id) {
-        contextualizeCapture(newCap.id).then(() => {
-          loadData();
-        }).catch(err => {
-          console.warn('Auto contextualization error:', err);
-        });
-      }
     } catch (err) {
       console.error(err);
       toast({ title: "Capture Failed", description: err.message, variant: "destructive" });
@@ -243,6 +254,7 @@ export default function CaptureInbox() {
   const getStatusBadge = (status) => {
     switch(status) {
       case 'CREATED': return <Badge variant="secondary" className="bg-blue-500/10 text-blue-500 hover:bg-blue-500/20">Ready</Badge>;
+      case 'QUEUED': return <Badge variant="secondary" className="bg-indigo-500/10 text-indigo-500 hover:bg-indigo-500/20 border-indigo-500/20"><Clock className="w-3 h-3 mr-1" /> Queued</Badge>;
       case 'PROCESSING': return <Badge variant="secondary" className="bg-amber-500/10 text-amber-500 hover:bg-amber-500/20"><Loader2 className="w-3 h-3 mr-1 animate-spin" /> Processing</Badge>;
       case 'PROCESSED':
       case 'CONTEXTUALIZED':
@@ -473,19 +485,21 @@ export default function CaptureInbox() {
                           <Eye className="w-3.5 h-3.5 mr-1" /> View
                         </Button>
 
-                        {['CREATED', 'FAILED'].includes(capture.status) ? (
+                        {['CREATED', 'QUEUED', 'FAILED'].includes(capture.status) ? (
                           <Button
                             onClick={() => handleProcess(capture)}
-                            disabled={processingId === capture.id}
+                            disabled={processingId === capture.id || capture.status === 'QUEUED'}
                             size="sm"
                             className="w-full sm:w-auto h-8 text-xs font-semibold"
                           >
                             {processingId === capture.id ? (
                               <Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" />
+                            ) : capture.status === 'QUEUED' ? (
+                              <Clock className="w-3.5 h-3.5 mr-2" />
                             ) : (
                               <BrainCircuit className="w-3.5 h-3.5 mr-2" />
                             )}
-                            Process Context
+                            {capture.status === 'QUEUED' ? 'In Queue' : capture.status === 'FAILED' ? 'Retry Job' : 'Process Context'}
                           </Button>
                         ) : (
                           <Button

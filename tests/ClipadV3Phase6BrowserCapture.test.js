@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ingestBrowserCapture, getUserCaptureSettings } from '../src/lib/clipadBrowserCaptureService';
 import { createCapture } from '../src/lib/clipadCaptureService';
-import { contextualizeCapture } from '../src/lib/clipadContextualizationService';
+import { enqueueCaptureForProcessing } from '../src/lib/clipadCaptureQueueService';
 import { isV3FeatureEnabled } from '../src/lib/clipadV3Flags';
 
 // Mock dependencies
@@ -10,8 +10,8 @@ vi.mock('../src/lib/clipadCaptureService', () => ({
   CAPTURE_VISIBILITY: { PERSONAL: 'PERSONAL' }
 }));
 
-vi.mock('../src/lib/clipadContextualizationService', () => ({
-  contextualizeCapture: vi.fn().mockResolvedValue({})
+vi.mock('../src/lib/clipadCaptureQueueService', () => ({
+  enqueueCaptureForProcessing: vi.fn().mockResolvedValue({ id: 'queue_job_123' })
 }));
 
 vi.mock('../src/lib/clipadV3Flags', () => ({
@@ -91,7 +91,11 @@ describe('Phase 6: Browser Extension Capture', () => {
     expect(createCallArgs.content).toContain('Selected Content:');
     expect(createCallArgs.content).toContain('Some interesting insight');
 
-    // Contextualization triggered asynchronously
-    expect(contextualizeCapture).toHaveBeenCalledWith('cap_123');
+    // Durable queueing triggered
+    expect(enqueueCaptureForProcessing).toHaveBeenCalledWith(expect.objectContaining({
+      captureId: 'cap_123',
+      companyId: user.company_id,
+      userId: user.id
+    }));
   });
 });

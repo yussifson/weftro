@@ -83,25 +83,29 @@ Return a JSON object with a "moments" array. Each item MUST have:
     const typeKey = (item.moment_type || '').toUpperCase();
     const momentType = Object.values(MOMENT_TYPES).includes(typeKey) ? typeKey : MOMENT_TYPES.INSIGHT;
 
-    const moment = await createSmartMoment({
-      companyId,
-      teamSpaceId,
-      meetingId,
-      videoId,
-      momentType,
-      title: item.title,
-      description: item.description,
-      content: item.description || item.title,
-      confidence: item.confidence ?? 0.88,
-      importance: item.importance ?? 0.50,
-      timestampStart: item.timestamp_start || null,
-      speakerName: item.speaker_name || null,
-      status: MOMENT_STATUS.DETECTED,
-    });
+    try {
+      const moment = await createSmartMoment({
+        companyId,
+        teamSpaceId,
+        meetingId,
+        videoId,
+        momentType,
+        title: item.title,
+        description: item.description,
+        content: item.description || item.title,
+        confidence: item.confidence ?? 0.88,
+        importance: item.importance ?? 0.50,
+        timestampStart: item.timestamp_start || null,
+        speakerName: item.speaker_name || null,
+        status: MOMENT_STATUS.DETECTED,
+      });
 
-    if (moment) {
-      createdMoments.push(moment);
-      existingTitles.add(item.title.toLowerCase().trim());
+      if (moment) {
+        createdMoments.push(moment);
+        existingTitles.add(item.title.toLowerCase().trim());
+      }
+    } catch (err) {
+      console.error(`[extractSmartMomentsFromTranscript] Failed to persist moment "${item.title}":`, err.message);
     }
   }
 

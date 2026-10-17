@@ -3,7 +3,7 @@
 
 import { supabase } from '@/api/supabaseClient';
 import { createCapture, CAPTURE_VISIBILITY } from './clipadCaptureService';
-import { contextualizeCapture } from './clipadContextualizationService';
+import { enqueueCaptureForProcessing } from './clipadCaptureQueueService';
 import { isV3FeatureEnabled, V3_FLAGS } from './clipadV3Flags';
 
 /**
@@ -118,10 +118,17 @@ export async function ingestBrowserCapture(user, payload) {
     }
   });
 
-  // 4. Trigger contextualization asynchronously (non-blocking)
-  contextualizeCapture(capture.id).catch(err => {
-    console.error('Background contextualization failed for browser capture:', err);
-  });
+  // 4. Trigger durable server-side queueing
+  if (capture?.id) {
+    enqueueCaptureForProcessing({
+      companyId,
+      userId: user.id,
+      captureId: capture.id,
+      payload: { url, domain, capture_mode: captureMode }
+    }).catch(err => {
+      console.error('Queue dispatch failed for browser capture:', err);
+    });
+  }
 
   return capture;
 }

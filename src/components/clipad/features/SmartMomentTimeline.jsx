@@ -16,6 +16,7 @@ export default function SmartMomentTimeline({ companyId, meetingId, videoId, tra
   const [manualTitle, setManualTitle] = useState('');
   const [manualDesc, setManualDesc] = useState('');
   const [manualType, setManualType] = useState(MOMENT_TYPES.DECISION);
+  const [manualError, setManualError] = useState(null);
 
   // Lock body & html scroll when modal is active
   useEffect(() => {
@@ -108,6 +109,7 @@ export default function SmartMomentTimeline({ companyId, meetingId, videoId, tra
     e.preventDefault();
     if (!manualTitle.trim()) return;
 
+    setManualError(null);
     try {
       const { createSmartMoment } = await import('@/lib/clipadSmartMomentService');
       await createSmartMoment({
@@ -126,6 +128,7 @@ export default function SmartMomentTimeline({ companyId, meetingId, videoId, tra
       fetchMoments();
     } catch (err) {
       console.error('Failed to create manual smart moment:', err);
+      setManualError(err.message || 'Failed to save moment to database');
     }
   };
 
@@ -335,6 +338,13 @@ export default function SmartMomentTimeline({ companyId, meetingId, videoId, tra
             <h4 className="text-base font-bold text-slate-900 dark:text-foreground flex items-center gap-2">
               <Plus className="w-4 h-4 text-[#006065] dark:text-[#fad503]" /> Add Smart Moment
             </h4>
+
+            {manualError && (
+              <div className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{manualError}</span>
+              </div>
+            )}
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-muted-foreground mb-1">Moment Type</label>

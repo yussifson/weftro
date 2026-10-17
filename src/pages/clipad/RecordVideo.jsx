@@ -12,6 +12,7 @@ import { OmniNotificationService } from '@/services/OmniNotificationService';
 import { trackEvent } from '@/lib/posthog';
 import { createCapture } from '@/lib/clipadCaptureService';
 import { contextualizeCapture } from '@/lib/clipadContextualizationService';
+import { enqueueCaptureForProcessing } from '@/lib/clipadCaptureQueueService';
 import { generateText } from '@/lib/cloudflareAI';
 import { detectDecisions, detectCommitments, writeOrgEvent } from '@/lib/clipadIntelligence';
 import { useAuth } from '@/lib/AuthContext';
@@ -1166,8 +1167,9 @@ export default function RecordVideo() {
                 }
                 
             try {
+              const compId = user.user_metadata?.company_id || user.company_id;
               const capture = await createCapture({
-                companyId: user.user_metadata?.company_id || user.company_id,
+                companyId: compId,
                 userId: user.id,
                 sourceType: 'clipad_videos',
                 sourceId: videoRecord?.id || activeVideoId,
@@ -1177,10 +1179,17 @@ export default function RecordVideo() {
                 visibility: 'PERSONAL'
               });
               
-              // Non-blocking contextualization
-              contextualizeCapture(capture.id).catch(console.error);
+              // Durable server-side queueing
+              if (capture?.id) {
+                await enqueueCaptureForProcessing({
+                  companyId: compId,
+                  userId: user.id,
+                  captureId: capture.id,
+                  payload: { video_id: videoRecord?.id || activeVideoId, title: capture.title }
+                });
+              }
             } catch (captureErr) {
-              console.error('Failed to create v3 capture:', captureErr);
+              console.error('Failed to create or enqueue v3 capture:', captureErr);
             }
 
               if (parsed.action_items && Array.isArray(parsed.action_items) && parsed.action_items.length > 0) {
@@ -1356,8 +1365,9 @@ export default function RecordVideo() {
               }
               
             try {
+              const compId = user.user_metadata?.company_id || user.company_id;
               const capture = await createCapture({
-                companyId: user.user_metadata?.company_id || user.company_id,
+                companyId: compId,
                 userId: user.id,
                 sourceType: 'clipad_videos',
                 sourceId: videoRecord.id,
@@ -1367,10 +1377,17 @@ export default function RecordVideo() {
                 visibility: 'PERSONAL'
               });
               
-              // Non-blocking contextualization
-              contextualizeCapture(capture.id).catch(console.error);
+              // Durable server-side queueing
+              if (capture?.id) {
+                await enqueueCaptureForProcessing({
+                  companyId: compId,
+                  userId: user.id,
+                  captureId: capture.id,
+                  payload: { video_id: videoRecord.id, title: capture.title }
+                });
+              }
             } catch (captureErr) {
-              console.error('Failed to create v3 capture:', captureErr);
+              console.error('Failed to create or enqueue v3 capture:', captureErr);
             }
 
               if (parsed.action_items && Array.isArray(parsed.action_items) && parsed.action_items.length > 0) {

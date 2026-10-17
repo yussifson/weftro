@@ -73,9 +73,10 @@ export async function getAuthorizedContext({ rawToken, query, resourceType = 'me
 async function searchAuthorizedMemory(user, query) {
   const govCtx = await resolveIntelligenceContext(user);
   const { data, error } = await supabase
-    .from('clipad_v3_organizational_memory')
+    .from('clipad_v3_memories')
     .select('*')
     .eq('company_id', user.company_id)
+    .eq('is_active', true)
     .ilike('content', `%${query}%`)
     .limit(20);
 
@@ -89,11 +90,13 @@ async function searchAuthorizedMemory(user, query) {
     id: mem.id,
     type: mem.memory_type,
     content: mem.content,
+    title: mem.title,
+    summary: mem.summary,
     provenance: {
-      source_id: mem.source_capture_id,
+      source_id: mem.source_id || mem.source_capture_id,
       timestamp: mem.created_at,
-      confidence: mem.confidence,
-      permissions: mem.tier
+      confidence: mem.confidence_score ?? mem.confidence ?? 1.0,
+      permissions: mem.memory_tier ?? mem.tier
     }
   }));
 }

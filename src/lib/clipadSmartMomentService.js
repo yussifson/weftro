@@ -84,8 +84,8 @@ export async function createSmartMoment(args = {}) {
     .single();
 
   if (error) {
-    console.error('[clipadSmartMomentService.createSmartMoment] Error:', error);
-    return { id: crypto.randomUUID(), ...payload };
+    console.error('[clipadSmartMomentService.createSmartMoment] Database Error:', error.message || error);
+    throw new Error(`Failed to persist Smart Moment: ${error.message || 'Database insertion error'}`);
   }
 
   return data;

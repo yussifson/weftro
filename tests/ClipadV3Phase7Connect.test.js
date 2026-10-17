@@ -24,7 +24,7 @@ vi.mock('../src/api/supabaseClient', () => {
       return { data: { id: 'mem1', content: 'Project X decisions' }, error: null };
     }),
     then: function(cb) {
-      return cb({ data: [{ id: 'mem1', memory_type: 'FACT', content: 'Project X decisions', created_at: '2026' }], error: null });
+      return cb({ data: [{ id: 'mem1', memory_type: 'FACT', content: 'Project X decisions', title: 'Project X', summary: 'Summary X', source_id: 'src1', confidence_score: 0.95, memory_tier: 'organizational', created_at: '2026' }], error: null });
     }
   };
   return {

@@ -42,6 +42,9 @@ vi.mock('../src/api/supabaseClient', () => {
           insert: vi.fn((payload) => ({
             select: vi.fn(() => ({
               single: vi.fn(async () => {
+                if (payload.title === 'TRIGGER_DB_FAILURE') {
+                  return { data: null, error: { message: 'relation clipad_v3_smart_moments does not exist' } };
+                }
                 const item = { id: crypto.randomUUID(), ...payload };
                 store.set(item.id, item);
                 return { data: item, error: null };
@@ -104,6 +107,15 @@ describe('Clipad V3 Phase 3 — Smart Moments & Meeting/Video Intelligence', () 
       expect(moment.timestamp_start).toBe('12:34');
       expect(moment.speaker_name).toBe('Sarah Connors');
       expect(moment.status).toBe(MOMENT_STATUS.DETECTED);
+    });
+
+    it('throws error on database insertion failure instead of returning fake in-memory UUID', async () => {
+      await expect(createSmartMoment({
+        companyId,
+        meetingId,
+        momentType: MOMENT_TYPES.DECISION,
+        title: 'TRIGGER_DB_FAILURE',
+      })).rejects.toThrow('Failed to persist Smart Moment: relation clipad_v3_smart_moments does not exist');
     });
 
     it('creates ACTION, COMMITMENT, and RISK Smart Moments', async () => {

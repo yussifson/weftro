@@ -3,6 +3,7 @@ import { supabase } from '@/api/supabaseClient';
 
 export const CAPTURE_STATUS = {
   CREATED: 'CREATED',
+  QUEUED: 'QUEUED',
   PROCESSING: 'PROCESSING',
   PROCESSED: 'PROCESSED',
   CLASSIFIED: 'CLASSIFIED',
