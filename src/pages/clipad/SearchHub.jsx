@@ -4,7 +4,7 @@ import { FileText, CheckCircle, MessageSquare, Calendar, Video,
   Loader2, X, ShieldAlert, AlertTriangle, ExternalLink, Zap, Layers, Copy, CheckCheck,
   Users, ArrowUpRight, Send, Plus, Volume2, VolumeX, ThumbsUp, ThumbsDown, Edit,
   Search, Sparkles, ArrowLeft
-, BrainCircuit, Inbox} from 'lucide-react';
+, BrainCircuit, Inbox, Compass} from 'lucide-react';
 import { CliPadLogo } from '@/components/ui/CliPadLogo';
 import { supabase } from '@/api/supabaseClient';
 import { generateText } from '@/lib/cloudflareAI';
@@ -17,6 +17,7 @@ import remarkGfm from 'remark-gfm';
 import { searchMemoriesHybrid } from '@/lib/clipadHybridRetrievalService';
 import { synthesizeGroundedAnswer } from '@/lib/clipadRAGSynthesisService';
 import { isV3FeatureEnabled, V3_FLAGS } from '@/lib/clipadV3Flags';
+import { getUserContextSessions, appendSessionAudit } from '@/lib/clipadContextSessionService';
 
 const TYPE_META = {
   person:      { icon: Users,         label: 'Person',    color: 'text-primary', bg: 'bg-primary/10 border border-primary/20' },
@@ -146,6 +147,35 @@ export default function SearchHub() {
   const companyId = user?.company_id;
 
   const [activeSessionId, setActiveSessionId] = useState(null);
+
+  // Context Session Integration (Milestone 4)
+  const isContextSessionsEnabled = isV3FeatureEnabled(V3_FLAGS.CONTEXT_SESSIONS_ENABLED, user);
+  const [availableContextSessions, setAvailableContextSessions] = useState([]);
+  const [selectedContextSessionId, setSelectedContextSessionId] = useState(() => {
+    return localStorage.getItem(`search_hub_context_session_${user?.id}`) || '';
+  });
+
+  // Load active context sessions for user
+  useEffect(() => {
+    if (!user?.id || !companyId || !isContextSessionsEnabled) return;
+    getUserContextSessions(user.id, companyId)
+      .then(sessions => {
+        const active = (sessions || []).filter(s => s.status === 'ACTIVE');
+        setAvailableContextSessions(active);
+      })
+      .catch(err => {
+        console.warn('[SearchHub] Could not load context sessions:', err);
+      });
+  }, [user?.id, companyId, isContextSessionsEnabled]);
+
+  const handleSelectContextSession = (sessId) => {
+    setSelectedContextSessionId(sessId);
+    if (sessId) {
+      localStorage.setItem(`search_hub_context_session_${user?.id}`, sessId);
+    } else {
+      localStorage.removeItem(`search_hub_context_session_${user?.id}`);
+    }
+  };
 
   // Ref so the early-mounting useEffect can call runSearch after it is defined
   const runSearchRef = React.useRef(null);
@@ -442,6 +472,20 @@ export default function SearchHub() {
             }
           ]);
         }
+
+        // Attach search & synthesis audit event to active context session if selected
+        if (selectedContextSessionId && isContextSessionsEnabled) {
+          appendSessionAudit(selectedContextSessionId, 'RAG_SYNTHESIS_EXECUTED', {
+            query: q,
+            grounded: ragResult.grounded,
+            status: ragResult.status,
+            evidence_count: matchedResults.length,
+            valid_citations_count: ragResult.citations?.valid?.length || 0,
+            cited_source_ids: (ragResult.citations?.valid || []).map(c => c.id)
+          }).catch(err => {
+            console.warn('[SearchHub] Could not log audit to context session:', err);
+          });
+        }
         return;
       }
 
@@ -697,6 +741,30 @@ export default function SearchHub() {
                  </button>
                );
             })}
+
+            {/* Context Session Attachment Selector (Milestone 4) */}
+            {isContextSessionsEnabled && availableContextSessions.length > 0 && (
+              <>
+                <div className="h-5 w-px bg-slate-200 dark:bg-slate-700 mx-1 shrink-0" />
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <Compass className="w-3.5 h-3.5 text-primary shrink-0" />
+                  <span className="text-xs font-bold text-slate-500 dark:text-muted-foreground whitespace-nowrap">Session:</span>
+                  <select
+                    value={selectedContextSessionId}
+                    onChange={(e) => handleSelectContextSession(e.target.value)}
+                    className="text-xs bg-slate-100 dark:bg-secondary border border-slate-200 dark:border-border rounded-lg px-2.5 py-1 text-slate-700 dark:text-slate-200 font-medium outline-none focus:ring-1 focus:ring-primary cursor-pointer max-w-[180px] truncate"
+                    title="Attach search synthesis to an active Context Session"
+                  >
+                    <option value="">No Active Session</option>
+                    {availableContextSessions.map((sess) => (
+                      <option key={sess.id} value={sess.id}>
+                        {sess.title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </>
+            )}
           </div>
 
           {/* MAIN CONTENT AREA */}
