@@ -1,4 +1,15 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "app": {
+      "root": ".",
+      "framework": "vite"
+    },
+    "ingest-server": {
+      "root": "ingest-server",
+      "runtime": "node"
+    }
+  },
   "headers": [
     {
       "source": "/(.*)",
@@ -32,8 +43,10 @@
       "destination": "https://api.cloudflare.com/client/v4/accounts/:accountId/ai/run/:model*"
     },
     {
-      "source": "/((?!api/.*).*)",
-      "destination": "/index.html"
+      "source": "/(.*)",
+      "destination": {
+        "service": "app"
+      }
     }
   ]
 }
