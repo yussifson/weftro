@@ -401,6 +401,28 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /api/v1/webhooks/deliveries/{id}/retry:
+    post:
+      summary: Retry Webhook Delivery
+      description: Re-dispatches a previously failed or recorded webhook delivery event using the subscription's current active secret.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique delivery event ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Delivery retry dispatched successfully.
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
   /api/v1/search:
     post:
       summary: Grounded Organizational Search

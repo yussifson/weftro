@@ -57,11 +57,36 @@ const ENDPOINTS = [
     defaultBody: null,
   },
   {
+    name: 'Context Query',
+    method: 'POST',
+    path: '/api/v1/context/query',
+    scope: 'context:read',
+    defaultBody: JSON.stringify({ session_id: '00000000-0000-0000-0000-000000000000' }, null, 2),
+  },
+  {
     name: 'List Smart Moments',
     method: 'GET',
     path: '/api/v1/smart-moments',
     scope: 'moments:read',
     defaultBody: null,
+  },
+  {
+    name: 'List Webhooks',
+    method: 'GET',
+    path: '/api/v1/webhooks',
+    scope: 'webhooks:manage',
+    defaultBody: null,
+  },
+  {
+    name: 'Register Webhook',
+    method: 'POST',
+    path: '/api/v1/webhooks',
+    scope: 'webhooks:manage',
+    defaultBody: JSON.stringify({
+      endpoint_url: 'https://example.com/webhook',
+      events: ['memory.created', 'capture.processed'],
+      description: 'Production integration endpoint'
+    }, null, 2),
   },
 ];
 
