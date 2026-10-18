@@ -23,13 +23,13 @@ CREATE POLICY "Users can update their own context sessions"
     ON public.clipad_v3_context_sessions FOR UPDATE
     USING (
       auth.uid() = user_id
-      AND company_id IN (
-        SELECT company_id FROM public.profiles WHERE id = auth.uid()
+      AND company_id::text IN (
+        SELECT company_id::text FROM public.profiles WHERE id = auth.uid()
       )
     )
     WITH CHECK (
       auth.uid() = user_id
-      AND company_id IN (
-        SELECT company_id FROM public.profiles WHERE id = auth.uid()
+      AND company_id::text IN (
+        SELECT company_id::text FROM public.profiles WHERE id = auth.uid()
       )
     );

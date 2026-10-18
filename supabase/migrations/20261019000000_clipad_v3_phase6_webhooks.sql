@@ -45,5 +45,5 @@ ALTER TABLE public.clipad_v3_webhook_deliveries ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS clipad_v3_webhook_deliveries_select ON public.clipad_v3_webhook_deliveries;
 CREATE POLICY clipad_v3_webhook_deliveries_select ON public.clipad_v3_webhook_deliveries
   FOR SELECT USING (
-    company_id IN (SELECT company_id FROM public.profiles WHERE id = auth.uid())
+    company_id::text IN (SELECT company_id::text FROM public.profiles WHERE id = auth.uid())
   );
