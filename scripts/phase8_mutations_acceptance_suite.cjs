@@ -312,6 +312,37 @@ async function runPhase8Suite() {
       `Status 1: ${raceRes1.statusCode}, Status 2: ${raceRes2.statusCode}, ID 1: ${id1}, ID 2: ${id2}`
     );
 
+    // 2.6 Cross-Tenant Idempotency Key Isolation (Tenant 2 using Tenant 1's key succeeds independently)
+    const crossTenantKey = `idemp_cross_${crypto.randomUUID().slice(0, 8)}`;
+    await request('/api/v1/captures', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token1}`, 'Idempotency-Key': crossTenantKey }
+    }, { title: 'Tenant 1 Capture', content: 'Tenant 1 content' });
+
+    // Seed tenant 2 with captures:write to test cross-tenant key collision resistance
+    const org2WriteSeed = await request('/_test/seed', {
+      method: 'POST',
+      headers: { 'x-test-suite-key': TEST_KEY }
+    }, {
+      action: 'create_tenant_and_token',
+      company_name: 'Phase 8 Mutations Tenant 2 With Write',
+      app_name: 'Secondary Tenant Write App',
+      scopes: ['captures:write', 'memory:write']
+    });
+    const token2Write = org2WriteSeed.data?.data?.raw_token;
+
+    const crossTenantRes = await request('/api/v1/captures', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token2Write}`, 'Idempotency-Key': crossTenantKey }
+    }, { title: 'Tenant 2 Capture', content: 'Tenant 2 content' });
+
+    assert(
+      crossTenantRes.statusCode === 201 && crossTenantRes.data?.data?.company_id !== comp1Id,
+      'Idempotency keys are strictly scoped per-tenant without cross-tenant key collisions',
+      `Tenant 1 Company: ${comp1Id}, Tenant 2 Created Company: ${crossTenantRes.data?.data?.company_id}`
+    );
+
+
     // ─── Test Group 3: POST /api/v1/memories Mutations ────────────────────────
     console.log('\n--- Test Group 3: POST /api/v1/memories Mutations ---');
 
