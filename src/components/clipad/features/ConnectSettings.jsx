@@ -35,6 +35,7 @@ export default function ConnectSettings() {
   const [loading, setLoading] = useState(true);
   
   // Forms & Modals
+  const [showCreateApp, setShowCreateApp] = useState(false);
   const [newAppName, setNewAppName] = useState('');
   const [newAppDescription, setNewAppDescription] = useState('');
   const [newAppRedirectUris, setNewAppRedirectUris] = useState('');
@@ -45,6 +46,7 @@ export default function ConnectSettings() {
   const [selectedAppForToken, setSelectedAppForToken] = useState(null);
   const [selectedScopes, setSelectedScopes] = useState(['search:read', 'memory:read', 'context:read']);
   const [rotatingAppId, setRotatingAppId] = useState(null);
+  const [creatingApp, setCreatingApp] = useState(false);
 
   const companyId = user?.user_metadata?.company_id || user?.company_id;
   const isConnectEnabled = isV3FeatureEnabled(V3_FLAGS.CONNECT_ENABLED, user);
@@ -94,6 +96,7 @@ export default function ConnectSettings() {
   const handleCreateApp = async (e) => {
     e.preventDefault();
     if (!newAppName.trim()) return;
+    setCreatingApp(true);
     try {
       const parsedUris = newAppRedirectUris
         .split('\n')
@@ -119,9 +122,12 @@ export default function ConnectSettings() {
       setNewAppName('');
       setNewAppDescription('');
       setNewAppRedirectUris('');
+      setShowCreateApp(false);
       await loadData();
     } catch (e) {
       toast({ title: "Error", description: e.message, variant: "destructive" });
+    } finally {
+      setCreatingApp(false);
     }
   };
 
@@ -318,168 +324,226 @@ export default function ConnectSettings() {
         </div>
       )}
 
-      {/* SECTION 1: Applications (Header + Grid) */}
+      {/* SECTION 1: Applications (Header with Register Button + Spaces-style Card Grid) */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
-              <Code2 className="w-5 h-5 text-primary" />
-              Connected Applications ({apps.length})
-            </h3>
-            <p className="text-xs text-muted-foreground">Client credentials configured for your organization.</p>
+        <div className="flex items-center justify-between pb-1">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+              <Code2 className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-foreground">
+                Connected Applications ({apps.length})
+              </h3>
+              <p className="text-xs text-muted-foreground">Registered client applications and OAuth credentials.</p>
+            </div>
           </div>
+
+          <Button 
+            onClick={() => setShowCreateApp(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm rounded-lg font-semibold text-xs transition-all"
+          >
+            <Plus className="w-4 h-4" />
+            New Application
+          </Button>
         </div>
 
-        {/* Application Creation Form */}
-        <Card className="border border-border/80 shadow-xs bg-card/60 backdrop-blur-sm">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-bold text-foreground flex items-center gap-2">
-              <Plus className="w-4 h-4 text-primary" />
-              Register New Application
-            </CardTitle>
-            <CardDescription className="text-xs">
-              Generate a unique Client ID and Secret to authenticate automated jobs, MCP agents, or external tools.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleCreateApp} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="appName" className="text-xs font-semibold text-foreground">
-                  Application Name <span className="text-destructive">*</span>
-                </Label>
-                <Input 
-                  id="appName"
-                  placeholder="e.g. Ingestion Pipeline Bot" 
-                  value={newAppName}
-                  onChange={(e) => setNewAppName(e.target.value)}
-                  className="bg-background h-9 text-xs"
-                />
+        {/* Application Creation Modal Dialog (Popup) */}
+        {showCreateApp && (
+          <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in">
+            <div className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-2xl max-w-lg w-full p-6 shadow-2xl relative">
+              <div className="flex items-center justify-between pb-3 border-b border-border/60">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-indigo-600/10 text-indigo-600 flex items-center justify-center">
+                    <KeyRound className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-base text-foreground">Register Application</h3>
+                    <p className="text-xs text-muted-foreground">Generate OAuth credentials and client credentials.</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setShowCreateApp(false)}
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                >
+                  ✕
+                </button>
               </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="appDesc" className="text-xs font-semibold text-foreground">
-                  Description
-                </Label>
-                <Input 
-                  id="appDesc"
-                  placeholder="e.g. Syncs daily customer notes and transcripts" 
-                  value={newAppDescription}
-                  onChange={(e) => setNewAppDescription(e.target.value)}
-                  className="bg-background h-9 text-xs"
-                />
-              </div>
+              <form onSubmit={handleCreateApp} className="space-y-4 pt-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-600 dark:text-muted-foreground uppercase tracking-wider block">
+                    Application Name <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    value={newAppName}
+                    onChange={e => setNewAppName(e.target.value)}
+                    placeholder="e.g. Ingestion Pipeline Bot"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-foreground"
+                    autoFocus
+                  />
+                </div>
 
-              <div className="space-y-1.5 md:col-span-2">
-                <Label htmlFor="appUris" className="text-xs font-semibold text-foreground">
-                  Redirect URIs (OAuth Callbacks)
-                </Label>
-                <textarea 
-                  id="appUris"
-                  rows={2}
-                  placeholder="https://workflow.example.com/oauth/callback (one URL per line)" 
-                  value={newAppRedirectUris}
-                  onChange={(e) => setNewAppRedirectUris(e.target.value)}
-                  className="w-full text-xs font-mono p-2 rounded-md border border-input bg-background focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                />
-              </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-600 dark:text-muted-foreground uppercase tracking-wider block">
+                    Description (Optional)
+                  </label>
+                  <input
+                    value={newAppDescription}
+                    onChange={e => setNewAppDescription(e.target.value)}
+                    placeholder="e.g. Syncs daily customer notes and transcripts"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-foreground"
+                  />
+                </div>
 
-              <div className="md:col-span-2 flex justify-end">
-                <Button type="submit" disabled={!newAppName.trim()} size="sm" className="h-9 px-4 text-xs font-semibold">
-                  <Plus className="w-3.5 h-3.5 mr-1.5" />
-                  Register Application
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-600 dark:text-muted-foreground uppercase tracking-wider block">
+                    Redirect URIs (OAuth Callbacks)
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={newAppRedirectUris}
+                    onChange={e => setNewAppRedirectUris(e.target.value)}
+                    placeholder="https://workflow.example.com/oauth/callback (one URL per line)"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-border rounded-lg text-xs font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all resize-none text-foreground"
+                  />
+                  <p className="text-[11px] text-muted-foreground">Authorized callback destinations for external auth flows.</p>
+                </div>
 
-        {/* Apps Card Grid */}
+                <div className="flex items-center justify-end gap-3 pt-4 border-t border-border/50">
+                  <Button 
+                    type="button" 
+                    variant="ghost" 
+                    onClick={() => setShowCreateApp(false)} 
+                    className="text-xs"
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    type="submit" 
+                    disabled={!newAppName.trim() || creatingApp} 
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs px-5 shadow-sm flex items-center gap-2"
+                  >
+                    {creatingApp && <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
+                    Register Application
+                  </Button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Apps Card Grid - Styled cleanly matching SpacesList cards */}
         {apps.length === 0 ? (
-          <div className="p-8 rounded-xl bg-card border border-dashed flex flex-col items-center justify-center text-center">
-            <KeyRound className="w-10 h-10 text-muted-foreground mb-3 opacity-40" />
-            <p className="text-sm font-semibold text-foreground">No applications registered</p>
-            <p className="text-xs text-muted-foreground mt-1 max-w-sm">
-              Register an application above to obtain a Client ID and start issuing scoped API tokens.
+          <div className="flex flex-col items-center justify-center py-16 bg-white dark:bg-card border border-dashed border-slate-200 dark:border-border rounded-2xl text-center">
+            <div className="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 flex items-center justify-center mb-3">
+              <KeyRound className="w-7 h-7" />
+            </div>
+            <h4 className="text-base font-bold text-foreground mb-1">No applications registered</h4>
+            <p className="text-xs text-muted-foreground max-w-sm mb-4">
+              Click "New Application" to register your first client credentials and start issuing scoped API tokens.
             </p>
+            <Button 
+              onClick={() => setShowCreateApp(true)}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 shadow-sm"
+            >
+              <Plus className="w-3.5 h-3.5 mr-1.5" />
+              New Application
+            </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {apps.map(app => (
-              <Card key={app.id} className="border border-border/80 bg-card shadow-xs hover:shadow-md transition-all flex flex-col justify-between">
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0">
-                      <CardTitle className="text-sm font-bold text-foreground truncate" title={app.name}>
-                        {app.name}
-                      </CardTitle>
-                      <CardDescription className="text-xs text-muted-foreground line-clamp-2 mt-1 min-h-[32px]">
-                        {app.description || 'No description provided.'}
-                      </CardDescription>
-                    </div>
-                    <Badge variant="outline" className={`shrink-0 text-[10px] font-semibold ${app.is_active ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20" : "bg-red-500/10 text-red-600 border-red-500/20"}`}>
-                      {app.is_active ? "Active" : "Inactive"}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                
-                <CardContent className="space-y-3 pb-3">
-                  {/* Client ID Pill */}
-                  <div className="space-y-1">
-                    <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider block">Client ID</span>
-                    <div className="font-mono text-[11px] bg-secondary/50 px-2 py-1.5 rounded-md border border-border/60 flex items-center justify-between group">
-                      <span className="truncate pr-1 text-foreground">{app.client_id}</span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          navigator.clipboard.writeText(app.client_id);
-                          toast({ title: "Copied", description: "Client ID copied" });
-                        }}
-                        className="text-muted-foreground hover:text-foreground shrink-0"
-                        title="Copy Client ID"
-                      >
-                        <Copy className="w-3 h-3" />
-                      </button>
-                    </div>
-                  </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {apps.map((app, index) => {
+              const colors = [
+                'bg-blue-600',
+                'bg-indigo-600',
+                'bg-purple-600',
+                'bg-[#006065] dark:bg-[#131A2C]',
+                'bg-rose-600',
+                'bg-amber-600'
+              ];
+              const colorClass = colors[index % colors.length];
 
-                  {/* Redirect URIs list if present */}
-                  {app.redirect_uris && app.redirect_uris.length > 0 && (
-                    <div className="space-y-1">
-                      <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider block">Redirect Callbacks</span>
-                      <div className="flex flex-wrap gap-1 max-h-14 overflow-y-auto">
+              return (
+                <div 
+                  key={app.id}
+                  className="group relative bg-white dark:bg-card rounded-2xl border border-slate-200 dark:border-border overflow-hidden hover:shadow-md hover:border-slate-300 dark:hover:border-slate-700 transition-all flex flex-col justify-between"
+                >
+                  <div className="p-5 flex-1 flex flex-col">
+                    <div className="flex justify-between items-start mb-3.5">
+                      <div className={`w-11 h-11 rounded-xl ${colorClass} flex items-center justify-center text-white shadow-xs`}>
+                        <Code2 className="w-5 h-5" />
+                      </div>
+                      <Badge variant="outline" className={`text-[10px] font-semibold ${app.is_active ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20" : "bg-red-500/10 text-red-600 border-red-500/20"}`}>
+                        {app.is_active ? "Active" : "Inactive"}
+                      </Badge>
+                    </div>
+
+                    <h3 className="font-bold text-slate-900 dark:text-foreground text-sm leading-snug line-clamp-1 mb-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                      {app.name}
+                    </h3>
+                    <p className="text-xs text-slate-500 dark:text-muted-foreground line-clamp-2 mt-1 min-h-[32px]">
+                      {app.description || 'Custom developer application'}
+                    </p>
+
+                    {/* Client ID pill */}
+                    <div className="mt-3.5 pt-3 border-t border-slate-100 dark:border-border/60">
+                      <div className="flex items-center justify-between text-[11px] font-mono bg-slate-50 dark:bg-slate-900/60 p-2 rounded-lg border border-slate-200/60 dark:border-border/60">
+                        <span className="text-slate-600 dark:text-slate-300 truncate mr-2" title={app.client_id}>
+                          {app.client_id}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigator.clipboard.writeText(app.client_id);
+                            toast({ title: "Copied", description: "Client ID copied" });
+                          }}
+                          className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 shrink-0"
+                          title="Copy Client ID"
+                        >
+                          <Copy className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Redirect URIs Chips */}
+                    {app.redirect_uris && app.redirect_uris.length > 0 && (
+                      <div className="mt-2.5 flex flex-wrap gap-1">
                         {app.redirect_uris.map((uri, idx) => (
-                          <span key={idx} className="font-mono text-[10px] bg-secondary/80 px-1.5 py-0.5 rounded text-muted-foreground truncate max-w-full">
+                          <span key={idx} className="font-mono text-[10px] bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-600 dark:text-slate-300 truncate max-w-full">
                             {uri}
                           </span>
                         ))}
                       </div>
-                    </div>
-                  )}
-                </CardContent>
+                    )}
+                  </div>
 
-                <CardFooter className="pt-2 pb-3 border-t border-border/40 flex items-center justify-between gap-2 bg-muted/10">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-8 text-xs flex-1 flex items-center justify-center gap-1.5 font-medium hover:border-primary/50"
-                    onClick={() => setSelectedAppForToken(app)}
-                  >
-                    <Key className="w-3.5 h-3.5 text-primary" />
-                    Issue Token
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 text-xs px-2.5 text-amber-600 dark:text-amber-400 hover:bg-amber-500/10"
-                    disabled={rotatingAppId === app.id}
-                    onClick={() => handleRotateSecret(app)}
-                    title="Rotate Client Secret"
-                  >
-                    <RefreshCw className={`w-3.5 h-3.5 ${rotatingAppId === app.id ? 'animate-spin' : ''}`} />
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))}
+                  {/* Card Bottom Actions Bar */}
+                  <div className="px-5 py-3 border-t border-slate-100 dark:border-border bg-slate-50 dark:bg-background/40 flex items-center justify-between gap-2 mt-auto">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-8 text-xs flex-1 flex items-center justify-center gap-1.5 font-medium hover:border-indigo-400 dark:hover:border-indigo-500 transition-colors"
+                      onClick={() => setSelectedAppForToken(app)}
+                    >
+                      <Key className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+                      Issue Token
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 px-2.5 text-amber-600 dark:text-amber-400 hover:bg-amber-500/10"
+                      disabled={rotatingAppId === app.id}
+                      onClick={() => handleRotateSecret(app)}
+                      title="Rotate Client Secret"
+                    >
+                      <RefreshCw className={`w-3.5 h-3.5 ${rotatingAppId === app.id ? 'animate-spin' : ''}`} />
+                    </Button>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>

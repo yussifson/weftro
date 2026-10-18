@@ -271,34 +271,11 @@ CORE GUIDELINES:
     <div className="h-full w-full flex flex-col bg-background text-foreground overflow-hidden">
       {/* Main Responsive Two-Column Layout */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 min-h-0 overflow-hidden">
-        {/* Left / Center Column: Chat Messages & Input (8 cols on lg) */}
-        <div className="lg:col-span-8 flex flex-col h-full min-h-0 border-r border-border overflow-hidden bg-card/30 relative">
-          {/* Floating Actions: New Chat & Delete History */}
-          <div className="absolute top-3 right-4 z-20 flex items-center gap-1.5 bg-background/80 backdrop-blur-md p-1 rounded-xl border border-border/60 shadow-xs">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleStartNewChat}
-              className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 rounded-lg"
-              title="Start new conversation"
-            >
-              <PlusCircle className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline text-[11px] font-medium">New Chat</span>
-            </Button>
-
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowDeleteConfirm(true)}
-              className="h-7 w-7 p-0 text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 transition-colors rounded-lg"
-              title="Delete conversation history"
-            >
-              <Trash2 className="w-3.5 h-3.5" />
-            </Button>
-          </div>
+        {/* Left Column: Chat Messages & Input (Expanded to left: 7 cols on lg) */}
+        <div className="lg:col-span-7 flex flex-col h-full min-h-0 border-r border-border overflow-hidden bg-card/30 relative">
           {/* Scrollable Messages Area */}
           <div className="flex-1 overflow-y-auto px-4 md:px-8 py-5 space-y-4 scrollbar-thin">
-            <div className="max-w-6xl mx-auto w-full space-y-4">
+            <div className="max-w-4xl mx-auto w-full space-y-4">
             {messages.map((msg, idx) => {
               const isAssistant = msg.role === 'assistant';
               return (
@@ -399,7 +376,7 @@ CORE GUIDELINES:
             onSubmit={(e) => handleSend(e)}
             className="p-4 border-t border-border bg-card/80 backdrop-blur-sm shrink-0"
           >
-            <div className="max-w-6xl mx-auto w-full flex items-center gap-3">
+            <div className="max-w-4xl mx-auto w-full flex items-center gap-3">
               <div className="relative flex-1">
                 <input
                   ref={inputRef}
@@ -423,13 +400,40 @@ CORE GUIDELINES:
           </form>
         </div>
 
-        {/* Right Column: Quick Actions & Knowledge Hub (4 cols on lg, scrollable) */}
-        <div className="hidden lg:flex lg:col-span-4 flex-col h-full bg-card/50 overflow-y-auto p-5 space-y-5 scrollbar-thin">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-primary" />
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Instant Inquiries
-            </h3>
+        {/* Right Column: Increased width (5 cols on lg), with New Chat & Delete on top of Instant Inquiries */}
+        <div className="hidden lg:flex lg:col-span-5 flex-col h-full bg-card/50 overflow-y-auto p-5 space-y-5 scrollbar-thin">
+          {/* Header Bar with Action Controls */}
+          <div className="flex items-center justify-between pb-3 border-b border-border/60">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-primary" />
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Instant Inquiries
+              </h3>
+            </div>
+            
+            {/* New Chat and Delete placed right here on top of Instant Inquiries */}
+            <div className="flex items-center gap-1.5 bg-muted/40 p-1 rounded-lg border border-border/50">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleStartNewChat}
+                className="h-7 px-2.5 text-xs text-muted-foreground hover:text-foreground flex items-center gap-1.5 rounded-md"
+                title="Start new conversation"
+              >
+                <PlusCircle className="w-3.5 h-3.5 text-primary" />
+                <span className="text-[11px] font-medium">New Chat</span>
+              </Button>
+
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowDeleteConfirm(true)}
+                className="h-7 w-7 p-0 text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 transition-colors rounded-md"
+                title="Clear conversation history"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </Button>
+            </div>
           </div>
 
           {/* Categorized Quick Links */}
