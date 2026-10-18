@@ -181,21 +181,20 @@ async function claimIdempotencyKey(
     .maybeSingle();
 
   if (queryErr || !existing) {
-    // If the dedicated table is not yet migrated, fall back gracefully to clipad_v3_events
-    const { data: cachedEvent } = await supabase
-      .from('clipad_v3_events')
-      .select('payload')
-      .eq('company_id', companyId)
-      .filter('payload->>idempotency_key', 'eq', idempotencyKey)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
-    if (cachedEvent?.payload?.response_data) {
+    // If the query failed or table does not exist, fail safely rather than proceeding without atomic idempotency
+    const isTableMissing = queryErr && (queryErr.code === '42P01' || queryErr.message?.includes('does not exist') || queryErr.message?.includes('relation'));
+    if (isTableMissing) {
+      console.error('[CRITICAL] clipad_v3_idempotency_keys table is not migrated. Mutation halted to prevent non-atomic duplicate mutations.');
       return {
-        action: 'replay',
-        responseData: cachedEvent.payload.response_data,
-        responseStatus: 200,
+        action: 'conflict',
+        message: 'Idempotency ledger is currently unavailable (database migration 20261019120000 pending). Mutation halted to protect data integrity.',
+      };
+    }
+    // Network or transient query failure: return conflict/retry rather than proceeding un-locked
+    if (queryErr) {
+      return {
+        action: 'conflict',
+        message: `Idempotency verification encountered database error: ${queryErr.message}. Please retry.`,
       };
     }
     return { action: 'proceed' };
