@@ -225,509 +225,411 @@ export default function ConnectSettings() {
   );
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
-      <div className="flex flex-col gap-2">
-        <h2 className="text-3xl font-bold tracking-tight">Developer Connect</h2>
+    <div className="space-y-8 animate-in fade-in duration-500 max-w-6xl mx-auto">
+      {/* Top Banner / Welcome */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-border">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2.5">
+            <KeyRound className="w-6 h-6 text-primary" />
+            Apps & Credentials
+          </h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Create client applications, manage OAuth credentials, and issue scoped API access tokens.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 text-xs px-2.5 py-1 flex items-center gap-1.5 font-medium">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            REST Gateway Online
+          </Badge>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        <Card className="border border-border bg-card shadow-xs rounded-2xl">
-          <CardContent className="p-6 flex items-center justify-between">
-            <div className="flex flex-col gap-1.5">
-              <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5">
-                <TerminalSquare className="w-3.5 h-3.5 text-primary"/> REST API
-              </span>
-              <div className="flex items-center gap-2">
-                <span className="text-xl font-extrabold text-foreground tracking-tight">Active</span>
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-                  Online
-                </span>
-              </div>
-            </div>
-            <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800/80 flex items-center justify-center text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-border">
-              <Code2 className="w-5 h-5 text-primary" />
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card className="border border-border bg-card shadow-xs rounded-2xl">
-          <CardContent className="p-6 flex items-center justify-between">
-            <div className="flex flex-col gap-1.5">
-              <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5">
-                <Cpu className="w-3.5 h-3.5 text-primary"/> MCP Protocol
-              </span>
-              <div className="flex items-center gap-2">
-                <span className="text-xl font-extrabold text-foreground tracking-tight">{isMcpEnabled ? 'Operational' : 'Disabled'}</span>
-                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${isMcpEnabled ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-slate-100 dark:bg-slate-800 text-muted-foreground'}`}>
-                  {isMcpEnabled ? 'Ready' : 'Off'}
-                </span>
-              </div>
-            </div>
-            <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800/80 flex items-center justify-center text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-border">
-              <Cpu className="w-5 h-5 text-primary" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border border-border bg-card shadow-xs rounded-2xl">
-          <CardContent className="p-6 flex items-center justify-between">
-            <div className="flex flex-col gap-1.5">
-              <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5">
-                <Webhook className="w-3.5 h-3.5 text-primary"/> Event Webhooks
-              </span>
-              <div className="flex items-center gap-2">
-                <span className="text-xl font-extrabold text-foreground tracking-tight">{isWebhooksEnabled ? 'Streaming' : 'Disabled'}</span>
-                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${isWebhooksEnabled ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-slate-100 dark:bg-slate-800 text-muted-foreground'}`}>
-                  {isWebhooksEnabled ? 'Live' : 'Off'}
-                </span>
-              </div>
-            </div>
-            <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800/80 flex items-center justify-center text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-border">
-              <Webhook className="w-5 h-5 text-primary" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* MCP Quickstart Card */}
-      <Card className="border border-border bg-card shadow-xs rounded-2xl overflow-hidden">
-        <CardHeader className="pb-3 border-b border-border/60 bg-muted/20">
+      {/* Secret Creation & Rotation Alerts */}
+      {createdSecret && (
+        <div className="p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 rounded-xl space-y-2 animate-in fade-in shadow-xs">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-base font-bold flex items-center gap-2.5 text-foreground">
-              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                <Cpu className="w-4 h-4" />
-              </div>
-              Model Context Protocol (MCP) Server
+            <p className="text-sm font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              Application Created: <span className="underline">{createdSecret.name}</span>
+            </p>
+            <Button variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={() => setCreatedSecret(null)}>✕</Button>
+          </div>
+          <p className="text-xs text-emerald-700 dark:text-emerald-400">
+            Please copy your client secret now. It is stored securely as a SHA-256 hash and cannot be recovered if lost.
+          </p>
+          <div className="space-y-1.5 pt-1">
+            <span className="text-[10px] uppercase font-bold text-emerald-800/80 dark:text-emerald-300 tracking-wider">Client Secret</span>
+            <div className="font-mono text-xs p-2.5 bg-emerald-100/60 dark:bg-emerald-900/50 rounded-lg border border-emerald-200 dark:border-emerald-700 break-all select-all flex items-center justify-between">
+              <span className="font-semibold text-emerald-900 dark:text-emerald-100">{createdSecret.secret}</span>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-7 px-2.5 text-xs text-emerald-800 dark:text-emerald-200 hover:bg-emerald-200/50" 
+                onClick={() => {
+                  navigator.clipboard.writeText(createdSecret.secret);
+                  toast({ title: "Copied", description: "Client secret copied to clipboard" });
+                }}
+              >
+                <Copy className="w-3.5 h-3.5 mr-1" />
+                Copy
+              </Button>
+            </div>
+          </div>
+          <Button variant="outline" size="sm" className="mt-2 text-xs bg-white dark:bg-card" onClick={() => setCreatedSecret(null)}>
+            I have stored this secret safely
+          </Button>
+        </div>
+      )}
+
+      {rotatedSecret && (
+        <div className="p-4 bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 rounded-xl space-y-2 animate-in fade-in shadow-xs">
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-bold text-amber-800 dark:text-amber-300 flex items-center gap-2">
+              <RefreshCw className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+              Client Secret Rotated for: <span className="underline">{rotatedSecret.name}</span>
+            </p>
+            <Button variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={() => setRotatedSecret(null)}>✕</Button>
+          </div>
+          <p className="text-xs text-amber-700 dark:text-amber-400">
+            The previous secret was invalidated. External clients using the old secret must be updated immediately with this new one:
+          </p>
+          <div className="space-y-1.5 pt-1">
+            <span className="text-[10px] uppercase font-bold text-amber-800/80 dark:text-amber-300 tracking-wider">New Client Secret</span>
+            <div className="font-mono text-xs p-2.5 bg-amber-100/60 dark:bg-amber-900/50 rounded-lg border border-amber-200 dark:border-amber-700 break-all select-all flex items-center justify-between">
+              <span className="font-semibold text-amber-900 dark:text-amber-100">{rotatedSecret.secret}</span>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-7 px-2.5 text-xs text-amber-800 dark:text-amber-200 hover:bg-amber-200/50" 
+                onClick={() => {
+                  navigator.clipboard.writeText(rotatedSecret.secret);
+                  toast({ title: "Copied", description: "New secret copied to clipboard" });
+                }}
+              >
+                <Copy className="w-3.5 h-3.5 mr-1" />
+                Copy
+              </Button>
+            </div>
+          </div>
+          <Button variant="outline" size="sm" className="mt-2 text-xs bg-white dark:bg-card" onClick={() => setRotatedSecret(null)}>
+            I have updated my external client
+          </Button>
+        </div>
+      )}
+
+      {/* SECTION 1: Applications (Header + Grid) */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+              <Code2 className="w-5 h-5 text-primary" />
+              Connected Applications ({apps.length})
+            </h3>
+            <p className="text-xs text-muted-foreground">Client credentials configured for your organization.</p>
+          </div>
+        </div>
+
+        {/* Application Creation Form */}
+        <Card className="border border-border/80 shadow-xs bg-card/60 backdrop-blur-sm">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-bold text-foreground flex items-center gap-2">
+              <Plus className="w-4 h-4 text-primary" />
+              Register New Application
             </CardTitle>
-            <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 font-mono text-[11px] font-semibold px-2.5 py-0.5">
-              Protocol v1.0
-            </Badge>
-          </div>
-          <CardDescription className="text-xs text-muted-foreground mt-1">
-            Enterprise adapter connecting Cursor, Claude Desktop, Windsurf, or custom AI agents directly to your organizational knowledge graph.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="p-3.5 bg-background border border-border rounded-xl">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                <TerminalSquare className="w-3.5 h-3.5 text-primary" /> Claude Desktop & Cursor Config (claude_desktop_config.json)
-              </span>
-            </div>
-            <pre className="font-mono text-xs bg-secondary/50 p-3 rounded-lg overflow-x-auto text-foreground">
-{`{
-  "mcpServers": {
-    "clipad": {
-      "command": "npx",
-      "args": ["-y", "@clipad/mcp-server"],
-      "env": {
-        "CLIPAD_COMPANY_ID": "${companyId || 'YOUR_COMPANY_ID'}",
-        "CLIPAD_API_URL": "${import.meta.env.VITE_SUPABASE_URL || 'https://api.clipad.com'}"
-      }
-    }
-  }
-}`}
-            </pre>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-            <div className="p-3 rounded-lg bg-card border border-border">
-              <span className="font-semibold text-foreground block mb-1">🔍 Tool: search_memory</span>
-              <p className="text-muted-foreground text-[11px]">Query organizational decisions, meeting records, and synced docs with semantic search.</p>
-            </div>
-            <div className="p-3 rounded-lg bg-card border border-border">
-              <span className="font-semibold text-foreground block mb-1">⚡ Tool: capture_context</span>
-              <p className="text-muted-foreground text-[11px]">Stream code snippets, terminal traces, and architecture notes into the company memory.</p>
-            </div>
-            <div className="p-3 rounded-lg bg-card border border-border">
-              <span className="font-semibold text-foreground block mb-1">🌐 Tool: query_graph</span>
-              <p className="text-muted-foreground text-[11px]">Traverse entity relationships across teams, spaces, decisions, and external integrations.</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* REST API & cURL Explorer */}
-      <Card className="border border-border shadow-sm">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <TerminalSquare className="w-5 h-5 text-primary" />
-            Weftro V3 Unified REST API Gateway (/api/v1)
-          </CardTitle>
-          <CardDescription>
-            Authenticate with Bearer Connect Tokens to query organizational intelligence, memories, captures, and smart moments with full provenance.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <span className="text-xs font-semibold uppercase text-muted-foreground">1. Grounded Semantic Search (/api/v1/search)</span>
-              <pre className="font-mono text-xs bg-secondary/40 p-3 rounded-lg border border-border overflow-x-auto text-foreground">
-{`curl -X POST "${import.meta.env.VITE_SUPABASE_URL || 'https://wmabgiafwamxkcgxyhee.supabase.co'}/functions/v1/connect/api/v1/search" \\
-  -H "Authorization: Bearer <CONNECT_TOKEN>" \\
-  -H "Content-Type: application/json" \\
-  -d '{"query": "roadmap decisions", "limit": 10}'`}
-              </pre>
-            </div>
-            <div className="space-y-2">
-              <span className="text-xs font-semibold uppercase text-muted-foreground">2. Query Memories with Provenance (/api/v1/memories)</span>
-              <pre className="font-mono text-xs bg-secondary/40 p-3 rounded-lg border border-border overflow-x-auto text-foreground">
-{`curl -X GET "${import.meta.env.VITE_SUPABASE_URL || 'https://wmabgiafwamxkcgxyhee.supabase.co'}/functions/v1/connect/api/v1/memories?limit=20" \\
-  -H "Authorization: Bearer <CONNECT_TOKEN>"`}
-              </pre>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <Card className="shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <KeyRound className="w-5 h-5 text-primary" />
-              Developer Apps (OAuth)
-            </CardTitle>
-            <CardDescription>Register client applications to authenticate and interact with Connect APIs.</CardDescription>
+            <CardDescription className="text-xs">
+              Generate a unique Client ID and Secret to authenticate automated jobs, MCP agents, or external tools.
+            </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
-            <form onSubmit={handleCreateApp} className="space-y-3.5 p-4 bg-muted/20 rounded-xl border border-border">
+          <CardContent>
+            <form onSubmit={handleCreateApp} className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label htmlFor="appName" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                <Label htmlFor="appName" className="text-xs font-semibold text-foreground">
                   Application Name <span className="text-destructive">*</span>
                 </Label>
                 <Input 
                   id="appName"
-                  placeholder="e.g. Internal Analytics Dashboard" 
+                  placeholder="e.g. Ingestion Pipeline Bot" 
                   value={newAppName}
                   onChange={(e) => setNewAppName(e.target.value)}
-                  className="bg-background"
+                  className="bg-background h-9 text-xs"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="appDesc" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                <Label htmlFor="appDesc" className="text-xs font-semibold text-foreground">
                   Description
                 </Label>
                 <Input 
                   id="appDesc"
-                  placeholder="e.g. Ingestion service for automated meeting transcripts" 
+                  placeholder="e.g. Syncs daily customer notes and transcripts" 
                   value={newAppDescription}
                   onChange={(e) => setNewAppDescription(e.target.value)}
-                  className="bg-background"
+                  className="bg-background h-9 text-xs"
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="appUris" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <div className="space-y-1.5 md:col-span-2">
+                <Label htmlFor="appUris" className="text-xs font-semibold text-foreground">
                   Redirect URIs (OAuth Callbacks)
                 </Label>
                 <textarea 
                   id="appUris"
                   rows={2}
-                  placeholder="https://app.example.com/oauth/callback (one per line)" 
+                  placeholder="https://workflow.example.com/oauth/callback (one URL per line)" 
                   value={newAppRedirectUris}
                   onChange={(e) => setNewAppRedirectUris(e.target.value)}
-                  className="w-full text-xs font-mono p-2.5 rounded-md border border-input bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="w-full text-xs font-mono p-2 rounded-md border border-input bg-background focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                 />
-                <p className="text-[11px] text-muted-foreground">Optional. Enter authorized redirect URLs for OAuth code grants.</p>
               </div>
 
-              <Button type="submit" disabled={!newAppName.trim()} className="w-full">
-                <Plus className="w-4 h-4 mr-1.5" />
-                Create Application
-              </Button>
+              <div className="md:col-span-2 flex justify-end">
+                <Button type="submit" disabled={!newAppName.trim()} size="sm" className="h-9 px-4 text-xs font-semibold">
+                  <Plus className="w-3.5 h-3.5 mr-1.5" />
+                  Register Application
+                </Button>
+              </div>
             </form>
-
-            {/* Display Newly Created Secret */}
-            {createdSecret && (
-              <div className="p-4 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-300 dark:border-emerald-800 rounded-lg space-y-2 animate-in fade-in">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-bold text-emerald-800 dark:text-emerald-400">
-                    App Created: {createdSecret.name}
-                  </p>
-                  <Button variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={() => setCreatedSecret(null)}>✕</Button>
-                </div>
-                <p className="text-xs text-emerald-700 dark:text-emerald-500">
-                  Save your client secret now. It is hashed immediately and cannot be retrieved again.
-                </p>
-                <div className="space-y-1.5">
-                  <span className="text-[10px] uppercase font-bold text-emerald-800/80 dark:text-emerald-300 tracking-wider">Client Secret</span>
-                  <div className="font-mono text-xs p-2 bg-emerald-100/50 dark:bg-emerald-900/40 rounded border border-emerald-200 dark:border-emerald-700 break-all select-all flex items-center justify-between">
-                    <span>{createdSecret.secret}</span>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="h-6 px-2 text-xs" 
-                      onClick={() => {
-                        navigator.clipboard.writeText(createdSecret.secret);
-                        toast({ title: "Copied", description: "Secret copied to clipboard" });
-                      }}
-                    >
-                      <Copy className="w-3.5 h-3.5" />
-                    </Button>
-                  </div>
-                </div>
-                <Button variant="outline" size="sm" className="mt-2 text-xs" onClick={() => setCreatedSecret(null)}>
-                  I have saved this secret
-                </Button>
-              </div>
-            )}
-
-            {/* Display Rotated Secret */}
-            {rotatedSecret && (
-              <div className="p-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-800 rounded-lg space-y-2 animate-in fade-in">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-bold text-amber-800 dark:text-amber-400 flex items-center gap-1.5">
-                    <RefreshCw className="w-4 h-4 text-amber-600" />
-                    Secret Rotated for: {rotatedSecret.name}
-                  </p>
-                  <Button variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={() => setRotatedSecret(null)}>✕</Button>
-                </div>
-                <p className="text-xs text-amber-700 dark:text-amber-500">
-                  The previous client secret has been invalidated. Copy your new secret below:
-                </p>
-                <div className="space-y-1.5">
-                  <span className="text-[10px] uppercase font-bold text-amber-800/80 dark:text-amber-300 tracking-wider">New Client Secret</span>
-                  <div className="font-mono text-xs p-2 bg-amber-100/50 dark:bg-amber-900/40 rounded border border-amber-200 dark:border-amber-700 break-all select-all flex items-center justify-between">
-                    <span>{rotatedSecret.secret}</span>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="h-6 px-2 text-xs" 
-                      onClick={() => {
-                        navigator.clipboard.writeText(rotatedSecret.secret);
-                        toast({ title: "Copied", description: "New secret copied to clipboard" });
-                      }}
-                    >
-                      <Copy className="w-3.5 h-3.5" />
-                    </Button>
-                  </div>
-                </div>
-                <Button variant="outline" size="sm" className="mt-2 text-xs" onClick={() => setRotatedSecret(null)}>
-                  I have updated my application
-                </Button>
-              </div>
-            )}
-
-            <div className="space-y-3">
-              {apps.length === 0 ? (
-                <div className="p-6 rounded-lg bg-secondary/20 border border-dashed flex flex-col items-center justify-center text-center">
-                  <KeyRound className="w-8 h-8 text-muted-foreground mb-2 opacity-50" />
-                  <p className="text-sm text-muted-foreground">No applications created yet.</p>
-                </div>
-              ) : (
-                apps.map(app => (
-                  <div key={app.id} className="p-4 rounded-lg border bg-card shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex items-center justify-between mb-2">
-                      <div>
-                        <h4 className="font-bold text-sm text-foreground">{app.name}</h4>
-                        {app.description && <p className="text-xs text-muted-foreground mt-0.5">{app.description}</p>}
-                      </div>
-                      <Badge variant="outline" className={app.is_active ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" : "bg-red-500/10 text-red-600 border-red-500/20"}>
-                        {app.is_active ? "Active" : "Inactive"}
-                      </Badge>
-                    </div>
-
-                    {app.redirect_uris && app.redirect_uris.length > 0 && (
-                      <div className="mb-2.5">
-                        <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider block mb-1">Redirect URIs</span>
-                        <div className="flex flex-wrap gap-1">
-                          {app.redirect_uris.map((uri, idx) => (
-                            <code key={idx} className="text-[10px] font-mono bg-secondary/60 px-1.5 py-0.5 rounded text-foreground">
-                              {uri}
-                            </code>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="space-y-3">
-                      <div className="flex flex-col gap-1">
-                        <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">Client ID</span>
-                        <code className="text-xs font-mono bg-secondary px-2 py-1.5 rounded text-foreground flex items-center justify-between group">
-                          <span>{app.client_id}</span>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              navigator.clipboard.writeText(app.client_id);
-                              toast({ title: "Copied", description: "Client ID copied" });
-                            }}
-                            className="text-muted-foreground hover:text-foreground"
-                          >
-                            <Copy className="w-3.5 h-3.5" />
-                          </button>
-                        </code>
-                      </div>
-
-                      <div className="flex items-center gap-2 pt-1 border-t border-border/50">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-7 text-xs flex items-center gap-1.5"
-                          onClick={() => {
-                            setSelectedAppForToken(app);
-                            // Scroll down or open dialog smoothly
-                          }}
-                        >
-                          <Key className="w-3 h-3 text-primary" />
-                          Generate Token
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-7 text-xs flex items-center gap-1.5 text-amber-600 dark:text-amber-400 hover:bg-amber-500/10"
-                          disabled={rotatingAppId === app.id}
-                          onClick={() => handleRotateSecret(app)}
-                        >
-                          <RefreshCw className={`w-3 h-3 ${rotatingAppId === app.id ? 'animate-spin' : ''}`} />
-                          Rotate Secret
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-
-            {/* Token Generation Dialog Box */}
-            {selectedAppForToken && (
-              <div className="p-4 bg-primary/5 border border-primary/20 rounded-xl space-y-3 animate-in fade-in">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h5 className="text-sm font-bold flex items-center gap-1.5 text-foreground">
-                      <Key className="w-4 h-4 text-primary" />
-                      Generate Token for "{selectedAppForToken.name}"
-                    </h5>
-                    <p className="text-xs text-muted-foreground">Select scopes to grant to this API token.</p>
-                  </div>
-                  <Button variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={() => setSelectedAppForToken(null)}>✕</Button>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs pt-1">
-                  {AVAILABLE_SCOPES.map(s => {
-                    const isChecked = selectedScopes.includes(s.id);
-                    return (
-                      <label key={s.id} className="flex items-start gap-2 p-2 rounded border bg-background hover:bg-secondary/20 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={isChecked}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setSelectedScopes([...selectedScopes, s.id]);
-                            } else {
-                              setSelectedScopes(selectedScopes.filter(id => id !== s.id));
-                            }
-                          }}
-                          className="mt-0.5"
-                        />
-                        <div>
-                          <span className="font-mono font-medium block text-foreground">{s.label}</span>
-                          <span className="text-[10px] text-muted-foreground">{s.desc}</span>
-                        </div>
-                      </label>
-                    );
-                  })}
-                </div>
-
-                <div className="flex justify-end gap-2 pt-2">
-                  <Button variant="outline" size="sm" onClick={() => setSelectedAppForToken(null)}>Cancel</Button>
-                  <Button size="sm" onClick={handleGenerateToken} disabled={selectedScopes.length === 0}>Generate Access Token</Button>
-                </div>
-              </div>
-            )}
-
-            {/* Display Newly Created Token */}
-            {createdToken && (
-              <div className="p-4 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-300 dark:border-emerald-800 rounded-lg space-y-2 animate-in fade-in">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-bold text-emerald-800 dark:text-emerald-400">Token Generated for {createdToken.appName}!</p>
-                  <Button variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={() => setCreatedToken(null)}>✕</Button>
-                </div>
-                <p className="text-xs text-emerald-700 dark:text-emerald-500">Copy this bearer token now. It will not be visible again in full.</p>
-                <div className="font-mono text-xs p-2 bg-emerald-100/50 dark:bg-emerald-900/40 rounded border border-emerald-200 dark:border-emerald-700 break-all select-all flex items-center justify-between">
-                  <span>{createdToken.token}</span>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-6 px-2 text-xs" 
-                    onClick={() => {
-                      navigator.clipboard.writeText(createdToken.token);
-                      toast({ title: "Copied", description: "API Token copied to clipboard" });
-                    }}
-                  >
-                    <Copy className="w-3.5 h-3.5" />
-                  </Button>
-                </div>
-                <div className="flex flex-wrap gap-1 mt-1">
-                  {createdToken.scopes.map(s => (
-                    <Badge key={s} variant="secondary" className="text-[10px] bg-emerald-100 dark:bg-emerald-900/60">{s}</Badge>
-                  ))}
-                </div>
-              </div>
-            )}
           </CardContent>
         </Card>
 
-        {/* Column 2: Active API Tokens List */}
-        <Card className="shadow-sm flex flex-col">
-          <CardHeader>
+        {/* Apps Card Grid */}
+        {apps.length === 0 ? (
+          <div className="p-8 rounded-xl bg-card border border-dashed flex flex-col items-center justify-center text-center">
+            <KeyRound className="w-10 h-10 text-muted-foreground mb-3 opacity-40" />
+            <p className="text-sm font-semibold text-foreground">No applications registered</p>
+            <p className="text-xs text-muted-foreground mt-1 max-w-sm">
+              Register an application above to obtain a Client ID and start issuing scoped API tokens.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {apps.map(app => (
+              <Card key={app.id} className="border border-border/80 bg-card shadow-xs hover:shadow-md transition-all flex flex-col justify-between">
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <CardTitle className="text-sm font-bold text-foreground truncate" title={app.name}>
+                        {app.name}
+                      </CardTitle>
+                      <CardDescription className="text-xs text-muted-foreground line-clamp-2 mt-1 min-h-[32px]">
+                        {app.description || 'No description provided.'}
+                      </CardDescription>
+                    </div>
+                    <Badge variant="outline" className={`shrink-0 text-[10px] font-semibold ${app.is_active ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20" : "bg-red-500/10 text-red-600 border-red-500/20"}`}>
+                      {app.is_active ? "Active" : "Inactive"}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                
+                <CardContent className="space-y-3 pb-3">
+                  {/* Client ID Pill */}
+                  <div className="space-y-1">
+                    <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider block">Client ID</span>
+                    <div className="font-mono text-[11px] bg-secondary/50 px-2 py-1.5 rounded-md border border-border/60 flex items-center justify-between group">
+                      <span className="truncate pr-1 text-foreground">{app.client_id}</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText(app.client_id);
+                          toast({ title: "Copied", description: "Client ID copied" });
+                        }}
+                        className="text-muted-foreground hover:text-foreground shrink-0"
+                        title="Copy Client ID"
+                      >
+                        <Copy className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Redirect URIs list if present */}
+                  {app.redirect_uris && app.redirect_uris.length > 0 && (
+                    <div className="space-y-1">
+                      <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider block">Redirect Callbacks</span>
+                      <div className="flex flex-wrap gap-1 max-h-14 overflow-y-auto">
+                        {app.redirect_uris.map((uri, idx) => (
+                          <span key={idx} className="font-mono text-[10px] bg-secondary/80 px-1.5 py-0.5 rounded text-muted-foreground truncate max-w-full">
+                            {uri}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+
+                <CardFooter className="pt-2 pb-3 border-t border-border/40 flex items-center justify-between gap-2 bg-muted/10">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 text-xs flex-1 flex items-center justify-center gap-1.5 font-medium hover:border-primary/50"
+                    onClick={() => setSelectedAppForToken(app)}
+                  >
+                    <Key className="w-3.5 h-3.5 text-primary" />
+                    Issue Token
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 text-xs px-2.5 text-amber-600 dark:text-amber-400 hover:bg-amber-500/10"
+                    disabled={rotatingAppId === app.id}
+                    onClick={() => handleRotateSecret(app)}
+                    title="Rotate Client Secret"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 ${rotatingAppId === app.id ? 'animate-spin' : ''}`} />
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* SECTION 2: Token Generation Modal / Form */}
+      {selectedAppForToken && (
+        <Card className="border-2 border-primary/30 shadow-lg bg-card animate-in fade-in">
+          <CardHeader className="pb-3 border-b border-border/60 bg-primary/5">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Key className="w-5 h-5 text-primary" />
-                  API Access Tokens
+                <CardTitle className="text-base font-bold flex items-center gap-2 text-foreground">
+                  <Key className="w-4 h-4 text-primary" />
+                  Issue API Access Token for "{selectedAppForToken.name}"
                 </CardTitle>
-                <CardDescription>Active credentials issued to applications and integrations.</CardDescription>
+                <CardDescription className="text-xs text-muted-foreground">
+                  Select the granular scopes this bearer token will be permitted to access.
+                </CardDescription>
               </div>
-              {apps.length > 0 && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="text-xs flex items-center gap-1.5"
-                  onClick={() => {
-                    // Pick the first active app or the latest created
-                    setSelectedAppForToken(apps[0]);
-                  }}
-                >
-                  <Plus className="w-3.5 h-3.5 text-primary" />
-                  New Token
-                </Button>
-              )}
+              <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => setSelectedAppForToken(null)}>✕</Button>
             </div>
           </CardHeader>
-          <CardContent className="space-y-4 flex-1">
-            {tokens.length === 0 ? (
-              <div className="p-6 rounded-lg bg-secondary/20 border border-dashed flex flex-col items-center justify-center text-center">
-                <Key className="w-8 h-8 text-muted-foreground mb-2 opacity-50" />
-                <p className="text-sm text-muted-foreground">No active tokens issued yet.</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {apps.length === 0 
-                    ? "Create an application first to issue your first API access token."
-                    : 'Click "New Token" above or "Generate Token" on any application.'}
-                </p>
-              </div>
-            ) : (
-              tokens.map(tok => {
+          <CardContent className="pt-4 space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+              {AVAILABLE_SCOPES.map(s => {
+                const isChecked = selectedScopes.includes(s.id);
+                return (
+                  <label key={s.id} className={`flex items-start gap-2.5 p-2.5 rounded-lg border transition-all cursor-pointer ${isChecked ? 'bg-primary/5 border-primary/40 shadow-xs' : 'bg-background hover:bg-muted/30 border-border/60'}`}>
+                    <input
+                      type="checkbox"
+                      checked={isChecked}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedScopes([...selectedScopes, s.id]);
+                        } else {
+                          setSelectedScopes(selectedScopes.filter(id => id !== s.id));
+                        }
+                      }}
+                      className="mt-0.5 rounded border-input"
+                    />
+                    <div className="min-w-0">
+                      <span className="font-mono text-xs font-semibold block text-foreground truncate">{s.label}</span>
+                      <span className="text-[11px] text-muted-foreground line-clamp-1">{s.desc}</span>
+                    </div>
+                  </label>
+                );
+              })}
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2 border-t border-border/40">
+              <Button variant="outline" size="sm" onClick={() => setSelectedAppForToken(null)}>Cancel</Button>
+              <Button size="sm" onClick={handleGenerateToken} disabled={selectedScopes.length === 0} className="font-semibold">
+                Generate Access Token ({selectedScopes.length} Scopes)
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* SECTION 3: Newly Generated Token Banner */}
+      {createdToken && (
+        <div className="p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 rounded-xl space-y-2 animate-in fade-in shadow-xs">
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              Token Generated for {createdToken.appName}
+            </p>
+            <Button variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={() => setCreatedToken(null)}>✕</Button>
+          </div>
+          <p className="text-xs text-emerald-700 dark:text-emerald-400">
+            Copy this bearer token now. For security purposes, it will never be displayed in full again.
+          </p>
+          <div className="font-mono text-xs p-2.5 bg-emerald-100/60 dark:bg-emerald-900/50 rounded-lg border border-emerald-200 dark:border-emerald-700 break-all select-all flex items-center justify-between">
+            <span className="font-semibold text-emerald-900 dark:text-emerald-100">{createdToken.token}</span>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-7 px-2.5 text-xs text-emerald-800 dark:text-emerald-200 hover:bg-emerald-200/50" 
+              onClick={() => {
+                navigator.clipboard.writeText(createdToken.token);
+                toast({ title: "Copied", description: "API Token copied to clipboard" });
+              }}
+            >
+              <Copy className="w-3.5 h-3.5 mr-1" />
+              Copy
+            </Button>
+          </div>
+          <div className="flex flex-wrap gap-1 mt-1">
+            {createdToken.scopes.map(s => (
+              <Badge key={s} variant="secondary" className="text-[10px] font-mono bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200">{s}</Badge>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* SECTION 4: Active Issued API Tokens (Table / Card) */}
+      <Card className="border border-border/80 shadow-xs">
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-base font-bold flex items-center gap-2 text-foreground">
+                <Key className="w-4 h-4 text-primary" />
+                Active API Tokens ({tokens.length})
+              </CardTitle>
+              <CardDescription className="text-xs text-muted-foreground">
+                Live bearer credentials issued across your applications.
+              </CardDescription>
+            </div>
+            {apps.length > 0 && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="text-xs flex items-center gap-1.5 h-8 font-medium"
+                onClick={() => setSelectedAppForToken(apps[0])}
+              >
+                <Plus className="w-3.5 h-3.5 text-primary" />
+                Issue Token
+              </Button>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent>
+          {tokens.length === 0 ? (
+            <div className="p-6 rounded-lg bg-muted/20 border border-dashed flex flex-col items-center justify-center text-center">
+              <Key className="w-8 h-8 text-muted-foreground mb-2 opacity-40" />
+              <p className="text-sm font-medium text-foreground">No active tokens issued</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Click "Issue Token" to generate a scoped token for an application.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {tokens.map(tok => {
                 const isRevoked = Boolean(tok.revoked_at);
                 const isExpired = tok.expires_at && new Date(tok.expires_at) < new Date();
                 return (
-                  <div key={tok.id} className="p-3.5 rounded-lg border bg-card shadow-xs space-y-2">
+                  <div key={tok.id} className="p-3.5 rounded-xl border border-border/80 bg-card shadow-2xs space-y-2.5">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold text-xs text-foreground">{tok.app?.name || 'Custom Application'}</span>
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="font-bold text-xs text-foreground truncate">{tok.app?.name || 'Custom Integration'}</span>
                         {isRevoked ? (
-                          <Badge variant="outline" className="bg-red-500/10 text-red-600 border-red-500/20 text-[10px]">Revoked</Badge>
+                          <Badge variant="outline" className="bg-red-500/10 text-red-600 border-red-500/20 text-[10px] shrink-0">Revoked</Badge>
                         ) : isExpired ? (
-                          <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-amber-500/20 text-[10px]">Expired</Badge>
+                          <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-amber-500/20 text-[10px] shrink-0">Expired</Badge>
                         ) : (
-                          <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-[10px]">Active</Badge>
+                          <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-[10px] shrink-0">Active</Badge>
                         )}
                       </div>
                       {!isRevoked && (
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="h-6 px-2 text-xs text-red-500 hover:text-red-600 hover:bg-red-500/10"
+                          className="h-6 px-2 text-xs text-destructive hover:bg-destructive/10"
                           onClick={() => handleRevokeToken(tok.id)}
                         >
                           Revoke
@@ -739,81 +641,17 @@ export default function ConnectSettings() {
                         <Badge key={s} variant="secondary" className="text-[10px] font-mono">{s}</Badge>
                       ))}
                     </div>
-                    <div className="text-[10px] text-muted-foreground flex items-center justify-between pt-1 border-t border-border/40">
+                    <div className="text-[10px] text-muted-foreground flex items-center justify-between pt-1 border-t border-border/40 font-mono">
                       <span>Rate limit: {tok.rate_limit_rpm || 120} RPM</span>
-                      <span>Created: {new Date(tok.created_at).toLocaleDateString()}</span>
+                      <span>Issued: {new Date(tok.created_at).toLocaleDateString()}</span>
                     </div>
                   </div>
                 );
-              })
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid grid-cols-1 gap-8">
-
-        <Card className="shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Webhook className="w-5 h-5 text-primary" />
-              Event Webhooks
-            </CardTitle>
-            <CardDescription>Receive real-time intelligence updates and capture events.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {!isWebhooksEnabled ? (
-              <div className="p-6 rounded-lg bg-amber-500/10 border border-amber-500/20 flex flex-col items-center justify-center text-center">
-                <ShieldCheck className="w-8 h-8 text-amber-600 mb-2" />
-                <h4 className="text-sm font-bold text-amber-700">Webhooks Disabled</h4>
-                <p className="text-xs text-amber-600/80 mt-1">Your organization has disabled outbound webhooks for security compliance.</p>
-              </div>
-            ) : (
-              <>
-                <form onSubmit={handleCreateWebhook} className="flex flex-col gap-3">
-                  <Label htmlFor="webhookUrl" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Endpoint URL</Label>
-                  <div className="flex gap-2">
-                    <Input 
-                      id="webhookUrl"
-                      type="url"
-                      placeholder="https://your-server.com/webhook" 
-                      value={newWebhookUrl}
-                      onChange={(e) => setNewWebhookUrl(e.target.value)}
-                      className="bg-secondary/30"
-                    />
-                    <Button type="submit" disabled={!newWebhookUrl.trim()} variant="secondary">Add Endpoint</Button>
-                  </div>
-                </form>
-
-                <div className="space-y-3">
-                  {webhooks.length === 0 ? (
-                    <div className="p-6 rounded-lg bg-secondary/20 border border-dashed flex flex-col items-center justify-center text-center">
-                      <Webhook className="w-8 h-8 text-muted-foreground mb-2 opacity-50" />
-                      <p className="text-sm text-muted-foreground">No webhooks configured.</p>
-                    </div>
-                  ) : (
-                    webhooks.map(wh => (
-                      <div key={wh.id} className="p-4 rounded-lg border bg-card shadow-sm hover:shadow-md transition-shadow">
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="min-w-0">
-                            <h4 className="font-medium text-sm text-foreground truncate">{wh.endpoint_url}</h4>
-                            <div className="flex gap-2 mt-2">
-                              {wh.events.map(e => <Badge key={e} variant="secondary" className="text-[10px]">{e}</Badge>)}
-                            </div>
-                          </div>
-                          <button onClick={() => handleDeleteWebhook(wh.id)} className="text-red-500 hover:text-red-600 p-1">
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+              })}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
