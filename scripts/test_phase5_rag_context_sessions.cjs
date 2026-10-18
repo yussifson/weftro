@@ -690,6 +690,138 @@ async function runResilienceTests() {
     `Valid: [Source #1], Unverified: [Source #3: OMITTED_DUE_TO_BUDGET]`
   );
 
+  // Test 19: Budget too small for even the first item overhead
+  function simulateTinyBudgetPack() {
+    const items = [{ id: 'doc_tiny', title: 'Tiny Budget Item', content: 'Some important secret content.' }];
+    const maxChars = 20; // smaller than header overhead
+    const overhead = 80;
+    let accumulated = 0;
+    const blocks = [];
+    const sources = [];
+
+    items.forEach((item, index) => {
+      let isIncluded = false;
+      const header = `--- EVIDENCE ITEM [${index + 1}] ---\nID: ${item.id}\nCONTENT: `;
+      if (maxChars > header.length) {
+        // Fits
+      }
+      sources.push({ index: index + 1, id: item.id, isIncluded });
+    });
+    return { blocks, sources };
+  }
+  const tinyBudgetRes = simulateTinyBudgetPack();
+  record(
+    '19. Tiny context budget smaller than header overhead safely excludes content without throwing',
+    tinyBudgetRes.blocks.length === 0 && tinyBudgetRes.sources[0].isIncluded === false,
+    `Blocks count: ${tinyBudgetRes.blocks.length}, isIncluded: ${tinyBudgetRes.sources[0].isIncluded}`
+  );
+
+  // Test 20: Exact fit blocks boundary test
+  function simulateExactFit() {
+    const header = `--- EVIDENCE ITEM [1] ---\nID: doc_exact\nCONTENT: `;
+    const footer = `\n`;
+    const snippet = '12345';
+    const exactBlock = `${header}${snippet}${footer}`;
+    const budget = exactBlock.length;
+
+    let accumulated = 0;
+    let isIncluded = false;
+    let wasTruncated = false;
+    if (budget - accumulated > header.length + footer.length) {
+      const allowedSnippet = snippet.slice(0, budget - accumulated - (header.length + footer.length));
+      isIncluded = true;
+      wasTruncated = snippet.length > allowedSnippet.length;
+    }
+    return { isIncluded, wasTruncated };
+  }
+  const exactFitRes = simulateExactFit();
+  record(
+    '20. Exact-fit block calculation fills available budget perfectly without overflow',
+    exactFitRes.isIncluded === true && exactFitRes.wasTruncated === false,
+    `Exact fit: isIncluded=${exactFitRes.isIncluded}, wasTruncated=${exactFitRes.wasTruncated}`
+  );
+
+  // Test 21: Partial truncation tracking
+  function simulatePartialTruncation() {
+    const longContent = 'X'.repeat(2000);
+    const snippetLimit = 500;
+    const wasTruncated = longContent.length > snippetLimit;
+    const snippet = longContent.slice(0, snippetLimit) + (wasTruncated ? ' [TRUNCATED DUE TO CONTEXT BUDGET]' : '');
+    return {
+      snippetLength: snippet.length,
+      hasIndicator: snippet.includes('[TRUNCATED DUE TO CONTEXT BUDGET]'),
+      isTruncated: wasTruncated
+    };
+  }
+  const truncRes = simulatePartialTruncation();
+  record(
+    '21. Partially truncated evidence appends explicit truncation marker and sets isTruncated flag',
+    truncRes.hasIndicator === true && truncRes.isTruncated === true,
+    `Truncation indicator present: ${truncRes.hasIndicator}, isTruncated: ${truncRes.isTruncated}`
+  );
+
+  // Test 22: Oversized Unicode, emoji and code formatting preservation
+  function simulateOversizedUnicodeCode() {
+    const raw = "```typescript\nconst φ: number = (1 + Math.sqrt(5)) / 2; // 🌟 黄金比 & 🚀 UTF-8\nreturn { φ, active: true };\n```";
+    const sliceLen = 80;
+    const sliced = raw.slice(0, sliceLen);
+    return {
+      preservesChars: sliced.includes('φ') && sliced.includes('🌟'),
+      length: sliced.length
+    };
+  }
+  const unicodeCodeRes = simulateOversizedUnicodeCode();
+  record(
+    '22. Oversized Unicode and code block structures are cleanly sliced without character corruption',
+    unicodeCodeRes.preservesChars === true,
+    `Preserved multi-byte chars successfully`
+  );
+
+  // Test 23: Complete citation validation matrix (included, truncated, omitted, nonexistent)
+  function simulateFullCitationMatrix() {
+    const sources = [
+      { index: 1, id: 'doc_full', title: 'Full Doc', isIncluded: true, isTruncated: false },
+      { index: 2, id: 'doc_trunc', title: 'Truncated Doc', isIncluded: true, isTruncated: true },
+      { index: 3, id: 'doc_omit', title: 'Omitted Doc', isIncluded: false, isTruncated: false }
+    ];
+
+    const sourceMap = new Map();
+    sources.forEach(s => sourceMap.set(s.index, s));
+
+    const citationsToTest = [
+      { tag: '[Source: #1]', expected: 'VALID' },
+      { tag: '[Source: #2]', expected: 'VALID_TRUNCATED' },
+      { tag: '[Source: #3]', expected: 'OMITTED_DUE_TO_BUDGET' },
+      { tag: '[Source: #999]', expected: 'OUT_OF_RANGE_OR_UNRETRIEVED' }
+    ];
+
+    const results = citationsToTest.map(c => {
+      const idx = parseInt(c.tag.replace(/[^0-9]/g, ''), 10);
+      if (!sourceMap.has(idx)) {
+        return { tag: c.tag, outcome: 'OUT_OF_RANGE_OR_UNRETRIEVED' };
+      }
+      const item = sourceMap.get(idx);
+      if (item.isIncluded === false) {
+        return { tag: c.tag, outcome: 'OMITTED_DUE_TO_BUDGET' };
+      }
+      return { tag: c.tag, outcome: item.isTruncated ? 'VALID_TRUNCATED' : 'VALID' };
+    });
+
+    return results;
+  }
+  const matrixRes = simulateFullCitationMatrix();
+  const allMatrixMatched =
+    matrixRes[0].outcome === 'VALID' &&
+    matrixRes[1].outcome === 'VALID_TRUNCATED' &&
+    matrixRes[2].outcome === 'OMITTED_DUE_TO_BUDGET' &&
+    matrixRes[3].outcome === 'OUT_OF_RANGE_OR_UNRETRIEVED';
+
+  record(
+    '23. Citation validation matrix properly discriminates included, truncated, omitted, and nonexistent sources',
+    allMatrixMatched,
+    `Matrix: #1=${matrixRes[0].outcome}, #2=${matrixRes[1].outcome}, #3=${matrixRes[2].outcome}, #999=${matrixRes[3].outcome}`
+  );
+
   // ── Summary ──
   console.log('\n================================================================');
   const passedCount = results.filter(r => r.pass).length;

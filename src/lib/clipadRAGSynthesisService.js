@@ -81,7 +81,8 @@ export function formatEvidencePack(evidenceItems = [], options = {}) {
 
       if (remainingBudget > overhead) {
         const snippetLimit = Math.min(1500, remainingBudget - overhead);
-        const contentSnippet = cleanContent.slice(0, snippetLimit);
+        const wasTruncated = cleanContent.length > snippetLimit;
+        const contentSnippet = cleanContent.slice(0, snippetLimit) + (wasTruncated ? ' [TRUNCATED DUE TO CONTEXT BUDGET]' : '');
         const block = `${blockHeader}${contentSnippet}${blockFooter}`;
 
         evidenceBlocks.push(block);
@@ -90,7 +91,9 @@ export function formatEvidencePack(evidenceItems = [], options = {}) {
       }
     }
 
-    // Source metadata is preserved with explicit inclusion flag
+    const wasTruncated = isIncluded && (cleanContent.length > Math.min(1500, Math.max(0, maxEvidenceChars - (accumulatedChars - cleanContent.length))));
+
+    // Source metadata is preserved with explicit inclusion and truncation flags
     sources.push({
       index: index + 1,
       id: sourceId,
@@ -99,7 +102,8 @@ export function formatEvidencePack(evidenceItems = [], options = {}) {
       similarity: item.similarity ?? null,
       rrf_score: item.rrf_score ?? null,
       source_channel: item.source_channel || 'hybrid',
-      isIncluded
+      isIncluded,
+      isTruncated: isIncluded ? cleanContent.length > 1500 || (cleanContent.length > 0 && evidenceBlocks[evidenceBlocks.length - 1]?.includes('[TRUNCATED DUE TO CONTEXT BUDGET]')) : false
     });
   });
 
@@ -208,6 +212,7 @@ export function validateCitationReferences(text, sources = []) {
           title: matched.title,
           type: matched.type,
           source_channel: matched.source_channel || 'hybrid',
+          isTruncated: matched.isTruncated || false,
         });
       }
     } else {
