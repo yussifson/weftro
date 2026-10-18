@@ -15,6 +15,8 @@ import { useToast } from '@/components/ui/use-toast';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { searchMemoriesHybrid } from '@/lib/clipadHybridRetrievalService';
+import { synthesizeGroundedAnswer } from '@/lib/clipadRAGSynthesisService';
+import { isV3FeatureEnabled, V3_FLAGS } from '@/lib/clipadV3Flags';
 
 const TYPE_META = {
   person:      { icon: Users,         label: 'Person',    color: 'text-primary', bg: 'bg-primary/10 border border-primary/20' },
@@ -109,6 +111,7 @@ export default function SearchHub() {
   const [followUpInput, setFollowUpInput] = useState('');
   const [hasPerformedSearch, setHasPerformedSearch] = useState(false);
   const chatBottomRef = React.useRef(null);
+  const ragResultSourcesRef = React.useRef([]);
 
   const [isSpeakingMsgIndex, setIsSpeakingMsgIndex] = useState(null);
   const [copiedMsgIndex, setCopiedMsgIndex] = useState(null);
@@ -385,6 +388,64 @@ export default function SearchHub() {
     setChatHistory([]);
 
     try {
+      // Feature Flag Check: Use Grounded RAG Synthesis Service if enabled
+      const isRAGEnabled = isV3FeatureEnabled(V3_FLAGS.RAG_SYNTHESIS_ENABLED, user);
+
+      if (isRAGEnabled) {
+        // Grounded RAG Synthesis Pathway
+        let fullText = '';
+        const ragResult = await synthesizeGroundedAnswer({
+          query: q,
+          retrievedEvidence: matchedResults,
+          user,
+          onStream: (streamedText) => {
+            if (synthSessionRef.current !== sessionId) return;
+            fullText = streamedText;
+            setChatHistory([{
+              role: 'assistant',
+              content: streamedText,
+              sources: ragResultSourcesRef.current || [],
+              citations: null
+            }]);
+          }
+        });
+
+        if (synthSessionRef.current !== sessionId) return;
+
+        const finalContent = ragResult.answer || fullText;
+        setChatHistory([{
+          role: 'assistant',
+          content: finalContent,
+          sources: ragResult.sources || [],
+          citations: ragResult.citations || null,
+          status: ragResult.status,
+          grounded: ragResult.grounded
+        }]);
+
+        const sid = await getOrCreateSession();
+        if (sid) {
+          await supabase.from('orbit_chat_messages').delete().eq('session_id', sid);
+          await supabase.from('orbit_chat_messages').insert([
+            {
+              id: crypto.randomUUID(),
+              session_id: sid,
+              role: 'user',
+              content: q,
+              created_at: new Date().toISOString()
+            },
+            {
+              id: crypto.randomUUID(),
+              session_id: sid,
+              role: 'assistant',
+              content: finalContent,
+              created_at: new Date().toISOString()
+            }
+          ]);
+        }
+        return;
+      }
+
+      // Existing Baseline Synthesis Fallback (when RAG_SYNTHESIS_ENABLED is disabled)
       const orgCtx = await buildOrgContext({
         limit: 25,
         companyId: user?.company_id,
@@ -416,9 +477,7 @@ export default function SearchHub() {
           .replace(/<(think|thought)>[\s\S]*?<\/\1>/gi, '')
           .replace(/<(think|thought)>[\s\S]*$/gi, '')
           .replace(/<\/(think|thought)>/gi, '')
-          // Clean up raw backslash escaped quotes, braces, brackets, and raw backslash characters
           .replace(/\\([\`*_{}[\]()#+\-.!])/g, '$1')
-          // Strip out typical malformed token artifacts or corrupt byte markers sometimes outputted by LLMs
           .replace(/[\uFFFD\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '')
           .trim();
       };
@@ -428,7 +487,6 @@ export default function SearchHub() {
         if (synthSessionRef.current !== sessionId) return; // stale stream
         const clean = cleanText(accumulated);
         fullText = clean;
-        // Update chatHistory in real-time so streaming text is visible immediately
         setChatHistory([{ role: 'assistant', content: clean }]);
       });
 
@@ -670,6 +728,7 @@ export default function SearchHub() {
 
                         return (
                           <div
+                            id={`result-card-${item.id}`}
                             key={`${item.type}-${item.id}`}
                             onClick={() => setSelectedResult(item)}
                             className={`p-4 rounded-xl border transition-all cursor-pointer ${isSelected ? 'bg-primary/5 dark:bg-indigo-900/10 border-indigo-200 dark:border-indigo-800 shadow-sm ring-1 ring-indigo-500/20' : 'bg-white dark:bg-card border-slate-200 dark:border-border hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-sm'}`}
@@ -768,12 +827,82 @@ export default function SearchHub() {
                                
                                <div className={`text-sm leading-relaxed ${msg.role === 'user' ? 'px-5 py-3 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-foreground shadow-sm rounded-3xl rounded-tr-sm' : 'py-2 text-slate-800 dark:text-slate-200'}`}>
                                   {msg.role === 'assistant' ? (
+                                    <>
                                      <ReactMarkdown 
                                        remarkPlugins={[remarkGfm]}
                                        className="prose prose-sm dark:prose-invert max-w-none prose-p:leading-relaxed prose-pre:bg-slate-900 prose-pre:border prose-pre:border-slate-700 prose-code:text-slate-900 dark:prose-code:text-slate-200 prose-code:bg-slate-100 dark:prose-code:bg-slate-800 prose-code:px-1 prose-code:rounded prose-code:before:content-none prose-code:after:content-none prose-a:text-primary"
+                                       components={{
+                                         p: ({ children }) => {
+                                           const renderWithCitations = (child) => {
+                                             if (typeof child !== 'string') return child;
+                                             const parts = child.split(/(\[Source:\s*#?\d+\])/gi);
+                                             if (parts.length === 1) return child;
+                                             return parts.map((part, pIdx) => {
+                                               const match = part.match(/\[Source:\s*#?(\d+)\]/i);
+                                               if (!match) return part;
+                                               const sourceIndex = parseInt(match[1], 10);
+                                               const validCitation = msg.citations?.valid?.find(c => c.index === sourceIndex);
+                                               const isVerified = !!validCitation;
+                                               const targetRecord = msg.sources?.find(s => s.index === sourceIndex);
+
+                                               return (
+                                                 <button
+                                                   key={pIdx}
+                                                   type="button"
+                                                   onClick={() => {
+                                                     if (targetRecord) {
+                                                       const foundInResults = results.find(r => r.id === targetRecord.id);
+                                                       if (foundInResults) {
+                                                         setSelectedResult(foundInResults);
+                                                         const el = document.getElementById(`result-card-${foundInResults.id}`);
+                                                         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                                       }
+                                                     }
+                                                   }}
+                                                   className={`inline-flex items-center gap-1 mx-1 px-1.5 py-0.5 rounded text-[11px] font-bold font-mono transition-all cursor-pointer shadow-xs active:scale-95 ${isVerified ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800 hover:bg-emerald-100' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 border border-slate-300 dark:border-slate-700 hover:bg-slate-200'}`}
+                                                   title={isVerified ? `Verified source: ${validCitation.title}` : `Unverified citation index #${sourceIndex}`}
+                                                 >
+                                                   <span>{isVerified ? '✓' : '?'}</span>
+                                                   <span>Source #{sourceIndex}</span>
+                                                 </button>
+                                               );
+                                             });
+                                           };
+
+                                           return <p>{React.Children.map(children, renderWithCitations)}</p>;
+                                         }
+                                       }}
                                      >
                                         {msg.content}
                                      </ReactMarkdown>
+
+                                     {/* Validated Evidence Provenance Bar */}
+                                     {msg.citations && msg.citations.valid && msg.citations.valid.length > 0 && (
+                                       <div className="mt-3 pt-2.5 border-t border-slate-200/70 dark:border-slate-800 flex flex-wrap items-center gap-1.5">
+                                         <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-muted-foreground mr-1">
+                                           Verified Sources:
+                                         </span>
+                                         {msg.citations.valid.map((cite) => (
+                                           <button
+                                             key={cite.index}
+                                             type="button"
+                                             onClick={() => {
+                                               const found = results.find(r => r.id === cite.id);
+                                               if (found) {
+                                                 setSelectedResult(found);
+                                                 const el = document.getElementById(`result-card-${found.id}`);
+                                                 if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                               }
+                                             }}
+                                             className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800/80 hover:bg-primary/10 text-slate-700 dark:text-slate-300 text-[11px] font-medium border border-slate-200 dark:border-slate-700 hover:border-primary/30 transition-colors"
+                                           >
+                                             <span className="font-mono text-primary font-bold">#{cite.index}</span>
+                                             <span className="max-w-[140px] truncate">{cite.title}</span>
+                                           </button>
+                                         ))}
+                                       </div>
+                                     )}
+                                    </>
                                   ) : (
                                      <span>{msg.content}</span>
                                   )}
