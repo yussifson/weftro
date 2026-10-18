@@ -269,10 +269,10 @@ CORE GUIDELINES:
 
   return (
     <div className="h-full w-full flex flex-col bg-background text-foreground overflow-hidden">
-      {/* Main Responsive Layout: Chat response section takes generous width */}
+      {/* Main Responsive Two-Column Layout */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 min-h-0 overflow-hidden">
-        {/* Left / Center Column: Chat Messages & Input (10 cols on xl, 9 on lg) */}
-        <div className="lg:col-span-9 xl:col-span-10 flex flex-col h-full min-h-0 border-r border-border overflow-hidden bg-card/30 relative">
+        {/* Left / Center Column: Chat Messages & Input (8 cols on lg) */}
+        <div className="lg:col-span-8 flex flex-col h-full min-h-0 border-r border-border overflow-hidden bg-card/30 relative">
           {/* Floating Actions: New Chat & Delete History */}
           <div className="absolute top-3 right-4 z-20 flex items-center gap-1.5 bg-background/80 backdrop-blur-md p-1 rounded-xl border border-border/60 shadow-xs">
             <Button
@@ -423,11 +423,11 @@ CORE GUIDELINES:
           </form>
         </div>
 
-        {/* Right Column: Quick Actions & Knowledge Hub (2 cols on xl, 3 on lg) */}
-        <div className="hidden lg:flex lg:col-span-3 xl:col-span-2 flex-col h-full bg-card/50 overflow-y-auto p-3.5 space-y-3.5 scrollbar-thin">
+        {/* Right Column: Quick Actions & Knowledge Hub (4 cols on lg, scrollable) */}
+        <div className="hidden lg:flex lg:col-span-4 flex-col h-full bg-card/50 overflow-y-auto p-5 space-y-5 scrollbar-thin">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-primary" />
-            <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Instant Inquiries
             </h3>
           </div>
