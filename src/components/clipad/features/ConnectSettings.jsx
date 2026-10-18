@@ -15,12 +15,15 @@ import { Label } from '@/components/ui/label';
 const AVAILABLE_SCOPES = [
   { id: 'search:read', label: 'search:read', desc: 'Execute semantic queries' },
   { id: 'memory:read', label: 'memory:read', desc: 'Read organizational memories' },
+  { id: 'memory:write', label: 'memory:write', desc: 'Create and update verified memories' },
   { id: 'context:read', label: 'context:read', desc: 'Read context sessions and timeline' },
   { id: 'captures:read', label: 'captures:read', desc: 'Read captures and queue status' },
+  { id: 'captures:write', label: 'captures:write', desc: 'Ingest content to capture pipeline' },
   { id: 'moments:read', label: 'moments:read', desc: 'Read detected smart moments' },
   { id: 'entities:read', label: 'entities:read', desc: 'Read knowledge graph entities' },
   { id: 'sources:read', label: 'sources:read', desc: 'Read source provenance metadata' },
   { id: 'apps:manage', label: 'apps:manage', desc: 'Manage applications and credentials' },
+  { id: 'webhooks:manage', label: 'webhooks:manage', desc: 'Manage webhook subscriptions' },
 ];
 
 export default function ConnectSettings() {
@@ -33,8 +36,11 @@ export default function ConnectSettings() {
   
   // Forms & Modals
   const [newAppName, setNewAppName] = useState('');
+  const [newAppDescription, setNewAppDescription] = useState('');
+  const [newAppRedirectUris, setNewAppRedirectUris] = useState('');
   const [newWebhookUrl, setNewWebhookUrl] = useState('');
   const [createdSecret, setCreatedSecret] = useState(null);
+  const [rotatedSecret, setRotatedSecret] = useState(null);
   const [createdToken, setCreatedToken] = useState(null);
   const [selectedAppForToken, setSelectedAppForToken] = useState(null);
   const [selectedScopes, setSelectedScopes] = useState(['search:read', 'memory:read', 'context:read']);
@@ -89,14 +95,30 @@ export default function ConnectSettings() {
     e.preventDefault();
     if (!newAppName.trim()) return;
     try {
+      const parsedUris = newAppRedirectUris
+        .split('\n')
+        .map(u => u.trim())
+        .filter(Boolean);
+
       const result = await createConnectApp(user.id, companyId, {
-        name: newAppName,
-        description: 'Created via Integrations Hub',
-        redirectUris: []
+        name: newAppName.trim(),
+        description: newAppDescription.trim() || 'Custom Developer Application',
+        redirectUris: parsedUris
       });
-      setCreatedSecret({ id: result.id, name: result.name, client_id: result.client_id, secret: result.raw_secret });
+
+      // Clear any prior rotated secret state and set newly created secret
+      setRotatedSecret(null);
+      setCreatedSecret({
+        id: result.id,
+        name: result.name,
+        client_id: result.client_id,
+        secret: result.raw_secret,
+        timestamp: Date.now()
+      });
       toast({ title: "App Created", description: "Save your client secret now." });
       setNewAppName('');
+      setNewAppDescription('');
+      setNewAppRedirectUris('');
       await loadData();
     } catch (e) {
       toast({ title: "Error", description: e.message, variant: "destructive" });
@@ -110,8 +132,16 @@ export default function ConnectSettings() {
     setRotatingAppId(app.id);
     try {
       const result = await rotateClientSecret(app.id, companyId);
-      setCreatedSecret({ id: result.id, name: result.name, client_id: result.client_id, secret: result.raw_secret, rotated: true });
-      toast({ title: "Secret Rotated", description: "Save your new client secret now." });
+      // Explicitly set rotated secret state
+      setCreatedSecret(null);
+      setRotatedSecret({
+        id: result.id,
+        name: result.name,
+        client_id: result.client_id,
+        secret: result.raw_secret,
+        timestamp: Date.now()
+      });
+      toast({ title: "Secret Rotated", description: "New client secret generated successfully." });
       await loadData();
     } catch (e) {
       toast({ title: "Rotation Failed", description: e.message, variant: "destructive" });
@@ -121,14 +151,15 @@ export default function ConnectSettings() {
   };
 
   const handleGenerateToken = async (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
     if (!selectedAppForToken) return;
     try {
       const result = await grantAccessToken(user.id, companyId, selectedAppForToken.id, selectedScopes);
       setCreatedToken({
         token: result.access_token,
         appName: selectedAppForToken.name,
-        scopes: selectedScopes
+        scopes: selectedScopes,
+        timestamp: Date.now()
       });
       toast({ title: "Token Generated", description: "Copy your API access token now." });
       setSelectedAppForToken(null);
@@ -356,42 +387,125 @@ export default function ConnectSettings() {
               <KeyRound className="w-5 h-5 text-primary" />
               Developer Apps (OAuth)
             </CardTitle>
-            <CardDescription>Create clients to authenticate on behalf of your users.</CardDescription>
+            <CardDescription>Register client applications to authenticate and interact with Connect APIs.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <form onSubmit={handleCreateApp} className="flex flex-col gap-3">
-              <Label htmlFor="appName" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">New Application Name</Label>
-              <div className="flex gap-2">
+            <form onSubmit={handleCreateApp} className="space-y-3.5 p-4 bg-muted/20 rounded-xl border border-border">
+              <div className="space-y-1.5">
+                <Label htmlFor="appName" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Application Name <span className="text-destructive">*</span>
+                </Label>
                 <Input 
                   id="appName"
                   placeholder="e.g. Internal Analytics Dashboard" 
                   value={newAppName}
                   onChange={(e) => setNewAppName(e.target.value)}
-                  className="bg-secondary/30"
+                  className="bg-background"
                 />
-                <Button type="submit" disabled={!newAppName.trim()}>Create App</Button>
               </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="appDesc" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Description
+                </Label>
+                <Input 
+                  id="appDesc"
+                  placeholder="e.g. Ingestion service for automated meeting transcripts" 
+                  value={newAppDescription}
+                  onChange={(e) => setNewAppDescription(e.target.value)}
+                  className="bg-background"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="appUris" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Redirect URIs (OAuth Callbacks)
+                </Label>
+                <textarea 
+                  id="appUris"
+                  rows={2}
+                  placeholder="https://app.example.com/oauth/callback (one per line)" 
+                  value={newAppRedirectUris}
+                  onChange={(e) => setNewAppRedirectUris(e.target.value)}
+                  className="w-full text-xs font-mono p-2.5 rounded-md border border-input bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                />
+                <p className="text-[11px] text-muted-foreground">Optional. Enter authorized redirect URLs for OAuth code grants.</p>
+              </div>
+
+              <Button type="submit" disabled={!newAppName.trim()} className="w-full">
+                <Plus className="w-4 h-4 mr-1.5" />
+                Create Application
+              </Button>
             </form>
 
+            {/* Display Newly Created Secret */}
             {createdSecret && (
-              <div className="p-4 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-300 dark:border-emerald-800 rounded-lg">
-                <p className="text-sm font-bold text-emerald-800 dark:text-emerald-400 mb-1">App Created Successfully!</p>
-                <p className="text-xs text-emerald-700 dark:text-emerald-500 mb-2">Copy this secret now. It will not be shown again.</p>
-                <div className="font-mono text-xs p-2 bg-emerald-100/50 dark:bg-emerald-900/40 rounded border border-emerald-200 dark:border-emerald-700 break-all select-all flex items-center justify-between">
-                  <span>{createdSecret.secret}</span>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-6 px-2 text-xs" 
-                    onClick={() => {
-                      navigator.clipboard.writeText(createdSecret.secret);
-                      toast({ title: "Copied", description: "Secret copied to clipboard" });
-                    }}
-                  >
-                    <Copy className="w-3.5 h-3.5" />
-                  </Button>
+              <div className="p-4 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-300 dark:border-emerald-800 rounded-lg space-y-2 animate-in fade-in">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-bold text-emerald-800 dark:text-emerald-400">
+                    App Created: {createdSecret.name}
+                  </p>
+                  <Button variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={() => setCreatedSecret(null)}>✕</Button>
                 </div>
-                <Button variant="outline" size="sm" className="mt-2 text-xs" onClick={() => setCreatedSecret(null)}>I have saved it</Button>
+                <p className="text-xs text-emerald-700 dark:text-emerald-500">
+                  Save your client secret now. It is hashed immediately and cannot be retrieved again.
+                </p>
+                <div className="space-y-1.5">
+                  <span className="text-[10px] uppercase font-bold text-emerald-800/80 dark:text-emerald-300 tracking-wider">Client Secret</span>
+                  <div className="font-mono text-xs p-2 bg-emerald-100/50 dark:bg-emerald-900/40 rounded border border-emerald-200 dark:border-emerald-700 break-all select-all flex items-center justify-between">
+                    <span>{createdSecret.secret}</span>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-6 px-2 text-xs" 
+                      onClick={() => {
+                        navigator.clipboard.writeText(createdSecret.secret);
+                        toast({ title: "Copied", description: "Secret copied to clipboard" });
+                      }}
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                    </Button>
+                  </div>
+                </div>
+                <Button variant="outline" size="sm" className="mt-2 text-xs" onClick={() => setCreatedSecret(null)}>
+                  I have saved this secret
+                </Button>
+              </div>
+            )}
+
+            {/* Display Rotated Secret */}
+            {rotatedSecret && (
+              <div className="p-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-800 rounded-lg space-y-2 animate-in fade-in">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-bold text-amber-800 dark:text-amber-400 flex items-center gap-1.5">
+                    <RefreshCw className="w-4 h-4 text-amber-600" />
+                    Secret Rotated for: {rotatedSecret.name}
+                  </p>
+                  <Button variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={() => setRotatedSecret(null)}>✕</Button>
+                </div>
+                <p className="text-xs text-amber-700 dark:text-amber-500">
+                  The previous client secret has been invalidated. Copy your new secret below:
+                </p>
+                <div className="space-y-1.5">
+                  <span className="text-[10px] uppercase font-bold text-amber-800/80 dark:text-amber-300 tracking-wider">New Client Secret</span>
+                  <div className="font-mono text-xs p-2 bg-amber-100/50 dark:bg-amber-900/40 rounded border border-amber-200 dark:border-amber-700 break-all select-all flex items-center justify-between">
+                    <span>{rotatedSecret.secret}</span>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-6 px-2 text-xs" 
+                      onClick={() => {
+                        navigator.clipboard.writeText(rotatedSecret.secret);
+                        toast({ title: "Copied", description: "New secret copied to clipboard" });
+                      }}
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                    </Button>
+                  </div>
+                </div>
+                <Button variant="outline" size="sm" className="mt-2 text-xs" onClick={() => setRotatedSecret(null)}>
+                  I have updated my application
+                </Button>
               </div>
             )}
 
@@ -404,15 +518,29 @@ export default function ConnectSettings() {
               ) : (
                 apps.map(app => (
                   <div key={app.id} className="p-4 rounded-lg border bg-card shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center justify-between mb-2">
                       <div>
-                        <h4 className="font-bold text-sm">{app.name}</h4>
+                        <h4 className="font-bold text-sm text-foreground">{app.name}</h4>
                         {app.description && <p className="text-xs text-muted-foreground mt-0.5">{app.description}</p>}
                       </div>
                       <Badge variant="outline" className={app.is_active ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" : "bg-red-500/10 text-red-600 border-red-500/20"}>
                         {app.is_active ? "Active" : "Inactive"}
                       </Badge>
                     </div>
+
+                    {app.redirect_uris && app.redirect_uris.length > 0 && (
+                      <div className="mb-2.5">
+                        <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider block mb-1">Redirect URIs</span>
+                        <div className="flex flex-wrap gap-1">
+                          {app.redirect_uris.map((uri, idx) => (
+                            <code key={idx} className="text-[10px] font-mono bg-secondary/60 px-1.5 py-0.5 rounded text-foreground">
+                              {uri}
+                            </code>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     <div className="space-y-3">
                       <div className="flex flex-col gap-1">
                         <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">Client ID</span>
@@ -436,7 +564,10 @@ export default function ConnectSettings() {
                           variant="outline"
                           size="sm"
                           className="h-7 text-xs flex items-center gap-1.5"
-                          onClick={() => setSelectedAppForToken(app)}
+                          onClick={() => {
+                            setSelectedAppForToken(app);
+                            // Scroll down or open dialog smoothly
+                          }}
                         >
                           <Key className="w-3 h-3 text-primary" />
                           Generate Token
@@ -460,10 +591,10 @@ export default function ConnectSettings() {
 
             {/* Token Generation Dialog Box */}
             {selectedAppForToken && (
-              <div className="p-4 bg-primary/5 border border-primary/20 rounded-xl space-y-3">
+              <div className="p-4 bg-primary/5 border border-primary/20 rounded-xl space-y-3 animate-in fade-in">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h5 className="text-sm font-bold flex items-center gap-1.5">
+                    <h5 className="text-sm font-bold flex items-center gap-1.5 text-foreground">
                       <Key className="w-4 h-4 text-primary" />
                       Generate Token for "{selectedAppForToken.name}"
                     </h5>
@@ -472,7 +603,7 @@ export default function ConnectSettings() {
                   <Button variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={() => setSelectedAppForToken(null)}>✕</Button>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 text-xs pt-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs pt-1">
                   {AVAILABLE_SCOPES.map(s => {
                     const isChecked = selectedScopes.includes(s.id);
                     return (
@@ -490,7 +621,7 @@ export default function ConnectSettings() {
                           className="mt-0.5"
                         />
                         <div>
-                          <span className="font-mono font-medium block">{s.label}</span>
+                          <span className="font-mono font-medium block text-foreground">{s.label}</span>
                           <span className="text-[10px] text-muted-foreground">{s.desc}</span>
                         </div>
                       </label>
@@ -507,7 +638,7 @@ export default function ConnectSettings() {
 
             {/* Display Newly Created Token */}
             {createdToken && (
-              <div className="p-4 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-300 dark:border-emerald-800 rounded-lg space-y-2">
+              <div className="p-4 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-300 dark:border-emerald-800 rounded-lg space-y-2 animate-in fade-in">
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-bold text-emerald-800 dark:text-emerald-400">Token Generated for {createdToken.appName}!</p>
                   <Button variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={() => setCreatedToken(null)}>✕</Button>
@@ -538,20 +669,42 @@ export default function ConnectSettings() {
         </Card>
 
         {/* Column 2: Active API Tokens List */}
-        <Card className="shadow-sm">
+        <Card className="shadow-sm flex flex-col">
           <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Key className="w-5 h-5 text-primary" />
-              API Access Tokens
-            </CardTitle>
-            <CardDescription>Active credentials issued to applications and integrations.</CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Key className="w-5 h-5 text-primary" />
+                  API Access Tokens
+                </CardTitle>
+                <CardDescription>Active credentials issued to applications and integrations.</CardDescription>
+              </div>
+              {apps.length > 0 && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="text-xs flex items-center gap-1.5"
+                  onClick={() => {
+                    // Pick the first active app or the latest created
+                    setSelectedAppForToken(apps[0]);
+                  }}
+                >
+                  <Plus className="w-3.5 h-3.5 text-primary" />
+                  New Token
+                </Button>
+              )}
+            </div>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 flex-1">
             {tokens.length === 0 ? (
               <div className="p-6 rounded-lg bg-secondary/20 border border-dashed flex flex-col items-center justify-center text-center">
                 <Key className="w-8 h-8 text-muted-foreground mb-2 opacity-50" />
                 <p className="text-sm text-muted-foreground">No active tokens issued yet.</p>
-                <p className="text-xs text-muted-foreground mt-1">Click "Generate Token" on any application to create a scoped token.</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {apps.length === 0 
+                    ? "Create an application first to issue your first API access token."
+                    : 'Click "New Token" above or "Generate Token" on any application.'}
+                </p>
               </div>
             ) : (
               tokens.map(tok => {
