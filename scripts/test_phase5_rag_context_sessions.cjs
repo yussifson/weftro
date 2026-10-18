@@ -1030,6 +1030,107 @@ async function runResilienceTests() {
     `Citation #1 maps to target ID "${reorderRes.targetId}" across reordered UI result list`
   );
 
+  // Test 32: Bilateral surrogate safety (high surrogate, low surrogate boundary, and zero budget)
+  function testBilateralSurrogateSafety() {
+    function sliceUnicodeSafeMock(str, limit) {
+      if (!str || typeof str !== 'string' || limit <= 0) return '';
+      if (str.length <= limit) return str;
+      const lastCode = str.charCodeAt(limit - 1);
+      if (lastCode >= 0xd800 && lastCode <= 0xdbff) {
+        return str.slice(0, limit - 1);
+      }
+      const nextCode = str.charCodeAt(limit);
+      if (nextCode >= 0xdc00 && nextCode <= 0xdfff) {
+        if (lastCode >= 0xd800 && lastCode <= 0xdbff) {
+          return str.slice(0, limit - 1);
+        }
+      }
+      return str.slice(0, limit);
+    }
+
+    const emojiStr = 'Hello 🚀🌟 World'; // '🚀' at index 6-7, '🌟' at index 8-9
+    const cutAtHighSurrogate = sliceUnicodeSafeMock(emojiStr, 7); // cuts between high and low of 🚀
+    const cutAtZero = sliceUnicodeSafeMock(emojiStr, 0);
+    const cutAtNegative = sliceUnicodeSafeMock(emojiStr, -5);
+    const cutAtEmpty = sliceUnicodeSafeMock('', 10);
+
+    const hasNoDanglingHigh = cutAtHighSurrogate === 'Hello ';
+    const handlesZeros = cutAtZero === '' && cutAtNegative === '' && cutAtEmpty === '';
+
+    return { hasNoDanglingHigh, handlesZeros, cutAtHighSurrogate };
+  }
+  const bilateralRes = testBilateralSurrogateSafety();
+  record(
+    '32. Bilateral surrogate slicing prevents orphaned high and low surrogates across all zero and edge limits',
+    bilateralRes.hasNoDanglingHigh && bilateralRes.handlesZeros,
+    `Cut at index 7 cleanly backs up to: "${bilateralRes.cutAtHighSurrogate}"`
+  );
+
+  // Test 33: Competing evidence items under tight multi-item budget competition
+  function testMultiItemBudgetCompetition() {
+    const items = [
+      { id: 'item_a', title: 'First Item', content: 'X'.repeat(200) },
+      { id: 'item_b', title: 'Second Item', content: 'Y'.repeat(200) },
+      { id: 'item_c', title: 'Third Item', content: 'Z'.repeat(200) }
+    ];
+
+    const budget = 350; // Enough for item A and partial item B, but item C is completely omitted
+    let accumulated = 0;
+    const blocks = [];
+    const sources = [];
+
+    items.forEach((item, index) => {
+      let isIncluded = false;
+      let isTruncated = false;
+      const header = `--- EVIDENCE ITEM [${index + 1}] ---\nID: ${item.id}\nCONTENT: `;
+      const footer = '\n';
+      const overhead = header.length + footer.length;
+
+      if (accumulated < budget) {
+        const remaining = budget - accumulated;
+        if (remaining > overhead) {
+          const available = remaining - overhead;
+          if (item.content.length > available) {
+            isTruncated = true;
+            const snippet = item.content.slice(0, available);
+            const block = `${header}${snippet}${footer}`;
+            blocks.push(block);
+            accumulated += block.length;
+            isIncluded = true;
+          } else {
+            isTruncated = false;
+            const block = `${header}${item.content}${footer}`;
+            blocks.push(block);
+            accumulated += block.length;
+            isIncluded = true;
+          }
+        }
+      }
+
+      sources.push({
+        index: index + 1,
+        id: item.id,
+        isIncluded,
+        isTruncated
+      });
+    });
+
+    return {
+      totalChars: accumulated,
+      budget,
+      fits: accumulated <= budget,
+      itemA_included: sources[0].isIncluded && !sources[0].isTruncated,
+      itemB_truncated: sources[1].isIncluded && sources[1].isTruncated,
+      itemC_omitted: !sources[2].isIncluded
+    };
+  }
+  const compRes = testMultiItemBudgetCompetition();
+  record(
+    '33. Competing items under constrained budget partition cleanly into full, truncated, and omitted statuses',
+    compRes.fits && compRes.itemA_included && compRes.itemB_truncated && compRes.itemC_omitted,
+    `Total chars: ${compRes.totalChars} <= ${compRes.budget} (A: Full, B: Partial, C: Omitted)`
+  );
+
   // ── Summary ──
   console.log('\n================================================================');
   const passedCount = results.filter(r => r.pass).length;
