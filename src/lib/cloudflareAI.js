@@ -39,11 +39,17 @@ envKeys.forEach(key => {
 
 let currentAccountIndex = 0;
 
+import { AI_MODELS, TASK_TYPES } from './ai/models';
+import { selectModelForRequest, getAdapter, getFallbackModel } from './ai/modelRouter';
+
+export { AI_MODELS, TASK_TYPES };
+
 const MODELS = {
-  // Preferred model — the edge function cascades automatically:
-  //   moonshotai/kimi-k3 → moonshotai/kimi-k2.5 → @cf/qwen/qwq-32b → DeepSeek-R1 → GLM-4.7 → Llama
-  text: "moonshotai/kimi-k3",
-  vision: "@cf/zai-org/glm-4.7-flash", // GLM-4.7 supports vision + 131k context
+  primary: AI_MODELS.PRIMARY_REASONING,
+  agent: AI_MODELS.LONG_CONTEXT_AGENT,
+  text: AI_MODELS.PRIMARY_REASONING,
+  embedding: AI_MODELS.EMBEDDING,
+  vision: AI_MODELS.VISION,
 };
 
 // ── Environment constants for production streaming ──
@@ -183,13 +189,31 @@ export async function generateText(input, onStream = null, options = {}) {
     typeof window !== 'undefined' && 
     (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
 
-  const selectedModel = options.fast ? "@cf/zai-org/glm-4.7-flash" : MODELS.text;
-  const maxTokens = options.fast ? 800 : 2500;
+  // Resolve optimal model via task-aware routing
+  const routing = selectModelForRequest({
+    task: options.task || (options.fast ? TASK_TYPES.GENERAL : TASK_TYPES.REASONING),
+    messages,
+    tools: options.tools || null,
+    responseFormat: options.responseFormat || null,
+    modelOverride: options.model || (options.fast ? "@cf/zai-org/glm-4.7-flash" : null),
+  });
+
+  const selectedModel = routing.model;
+  const adapter = getAdapter(selectedModel);
+  const maxTokens = options.maxTokens || (options.fast ? 800 : 2500);
 
   // ── REAL STREAMING PATH ────────────────────────────────────────────────────
   if (useStream) {
     try {
       let response;
+      const formattedPayload = adapter.formatPayload({
+        messages,
+        maxTokens,
+        temperature: options.temperature,
+        tools: options.tools,
+        responseFormat: options.responseFormat,
+        stream: true
+      });
 
       if (isLocalProxy) {
         // Local dev: call Cloudflare directly via Vite proxy with stream:true
@@ -201,7 +225,7 @@ export async function generateText(input, onStream = null, options = {}) {
             "Authorization": `Bearer ${accountConfig.token}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ messages, max_tokens: maxTokens, stream: true }),
+          body: JSON.stringify(formattedPayload),
         });
       } else {
         // Production: call Supabase edge function via raw fetch
@@ -217,7 +241,7 @@ export async function generateText(input, onStream = null, options = {}) {
           },
           body: JSON.stringify({
             model: selectedModel,
-            payload: { messages, max_tokens: maxTokens },
+            payload: formattedPayload,
             stream: true,
           }),
         });
@@ -239,16 +263,37 @@ export async function generateText(input, onStream = null, options = {}) {
 
   // ── NON-STREAMING PATH (used for background AI tasks: summaries, extraction) ──
   try {
-    const result = await runAI(selectedModel, { messages, max_tokens: maxTokens });
+    const formattedPayload = adapter.formatPayload({
+      messages,
+      maxTokens,
+      temperature: options.temperature,
+      tools: options.tools,
+      responseFormat: options.responseFormat,
+      reasoningEffort: options.reasoningEffort,
+      stream: false
+    });
 
-    let finalText = result?.response || '';
-    if (result?.choices && result.choices.length > 0) {
-      if (result.choices[0].message && result.choices[0].message.content) {
-        finalText = result.choices[0].message.content;
-      } else if (result.choices[0].text) {
-        finalText = result.choices[0].text;
-      }
+    let result;
+    try {
+      result = await runAI(selectedModel, formattedPayload);
+    } catch (firstErr) {
+      // Cascading fallback
+      const fallback = getFallbackModel(selectedModel);
+      console.warn(`[ModelRouter] Model ${selectedModel} failed. Falling back to ${fallback}:`, firstErr.message);
+      const fallbackAdapter = getAdapter(fallback);
+      const fallbackPayload = fallbackAdapter.formatPayload({
+        messages,
+        maxTokens,
+        temperature: options.temperature,
+        tools: options.tools,
+        responseFormat: options.responseFormat,
+        stream: false
+      });
+      result = await runAI(fallback, fallbackPayload);
     }
+
+    const normalized = adapter.normalizeResponse(result);
+    let finalText = normalized.text;
     if (!finalText && typeof result === 'string') finalText = result;
 
     // Strip ALL <think>...</think> tags and orphan </think> tags from non-streaming responses.

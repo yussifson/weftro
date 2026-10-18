@@ -3,12 +3,14 @@
 // Unifies LLM generation, streaming, embeddings, entity extraction, and classification.
 
 import { generateText } from '@/lib/cloudflareAI';
+import { AI_MODELS, TASK_TYPES } from '@/lib/ai/models';
 
 export class AIProvider {
   constructor(config = {}) {
-    this.providerName = config.providerName || 'Cloudflare-KimiCascade';
-    this.defaultModel = config.defaultModel || 'moonshotai/kimi-k3';
-    this.visionModel = config.visionModel || '@cf/zai-org/glm-4.7-flash';
+    this.providerName = config.providerName || 'Cloudflare-WorkersAI-Orchestrator';
+    this.defaultModel = config.defaultModel || AI_MODELS.PRIMARY_REASONING;
+    this.agentModel = config.agentModel || AI_MODELS.LONG_CONTEXT_AGENT;
+    this.visionModel = config.visionModel || AI_MODELS.VISION;
   }
 
   /**
@@ -16,7 +18,8 @@ export class AIProvider {
    */
   async generate(messages, options = {}) {
     try {
-      const response = await generateText(messages, options);
+      const task = options.task || TASK_TYPES.REASONING;
+      const response = await generateText(messages, null, { task, ...options });
       return {
         text: response,
         provider: this.providerName,
@@ -65,7 +68,7 @@ export class AIProvider {
   async classify(text, categories = [], options = {}) {
     if (!text || categories.length === 0) return categories[0] || 'Unclassified';
     const prompt = `Classify the following text into ONE of these categories: ${categories.join(', ')}.\nText: "${text.substring(0, 2000)}"\nRespond ONLY with the exact category name.`;
-    const res = await this.generate([{ role: 'user', content: prompt }]);
+    const res = await this.generate([{ role: 'user', content: prompt }], { task: TASK_TYPES.CLASSIFICATION, ...options });
     const matched = categories.find(c => c.toLowerCase() === (res.text || '').trim().toLowerCase());
     return matched || categories[0];
   }
@@ -78,7 +81,7 @@ export class AIProvider {
     const res = await this.generate([
       { role: 'system', content: 'You are an extraction AI. Output strictly raw valid JSON.' },
       { role: 'user', content: prompt }
-    ]);
+    ], { task: TASK_TYPES.STRUCTURED_EXTRACTION, ...options });
     try {
       const cleaned = (res.text || '').replace(/```json|```/g, '').trim();
       return JSON.parse(cleaned);
@@ -93,7 +96,11 @@ export class AIProvider {
   async structuredOutput(messages, jsonSchema, options = {}) {
     const prompt = `Fulfill the request and output ONLY valid JSON matching this schema:\n${JSON.stringify(jsonSchema, null, 2)}`;
     const fullMessages = [...messages, { role: 'user', content: prompt }];
-    const res = await this.generate(fullMessages, options);
+    const res = await this.generate(fullMessages, {
+      task: TASK_TYPES.STRUCTURED_EXTRACTION,
+      responseFormat: { type: 'json_object', json_schema: jsonSchema },
+      ...options
+    });
     try {
       return JSON.parse((res.text || '').replace(/```json|```/g, '').trim());
     } catch {

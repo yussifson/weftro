@@ -10,7 +10,7 @@
 // 5. Zero-Hallucination Guardrail: Explicitly decline to fabricate unsupported claims when evidence is absent.
 // 6. Security & Authorization: Propagates company isolation and access boundaries through every synthesis step.
 
-import { generateText } from '@/lib/cloudflareAI';
+import { generateText, TASK_TYPES } from '@/lib/cloudflareAI';
 import { isV3FeatureEnabled, V3_FLAGS } from '@/lib/clipadV3Flags';
 
 export const SYNTHESIS_STATUS = {
@@ -311,10 +311,10 @@ export async function synthesizeGroundedAnswer({
         await generateText(promptMessages, (chunk) => {
           accumulated = chunk;
           onStream(chunk);
-        });
+        }, { task: TASK_TYPES.RAG_SYNTHESIS });
         return accumulated;
       } else {
-        return await generateText(promptMessages);
+        return await generateText(promptMessages, null, { task: TASK_TYPES.RAG_SYNTHESIS });
       }
     })();
 

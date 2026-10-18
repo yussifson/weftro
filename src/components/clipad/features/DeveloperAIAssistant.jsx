@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useAuth } from '@/lib/AuthContext';
-import { generateText } from '@/lib/cloudflareAI';
+import { generateText, TASK_TYPES } from '@/lib/cloudflareAI';
 import { DEVELOPER_PLATFORM_KNOWLEDGE } from '@/lib/weftroDeveloperDocs';
 import {
   Bot,
@@ -203,7 +203,7 @@ CORE GUIDELINES:
         streamBuffer = token;
         const cleaned = sanitizeAssistantOutput(streamBuffer);
         setMessages([...newMessages, { role: 'assistant', content: cleaned }]);
-      });
+      }, { task: TASK_TYPES.CODING });
 
       if (!streamBuffer) {
         setMessages([...newMessages, {

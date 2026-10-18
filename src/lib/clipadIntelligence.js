@@ -3,7 +3,7 @@
 // All AI extraction and event-writing utilities live here.
 
 import { supabase } from '@/api/supabaseClient';
-import { generateText } from '@/lib/cloudflareAI';
+import { generateText, TASK_TYPES } from '@/lib/cloudflareAI';
 import { getMemories, MEMORY_STATUS } from '@/lib/clipadMemoryService';
 
 // ──────────────────────────────────────────────────────────────────
@@ -17,7 +17,7 @@ async function extractJSON(prompt) {
         'You are a data extraction AI. Always respond with ONLY valid JSON — no explanation, no markdown, no code fences. If nothing is detected, return an empty array [].',
     },
     { role: 'user', content: prompt },
-  ]);
+  ], null, { task: TASK_TYPES.STRUCTURED_EXTRACTION });
   try {
     const cleaned = (raw || '').replace(/```json|```/g, '').trim();
     return JSON.parse(cleaned);
