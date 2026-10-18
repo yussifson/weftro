@@ -595,7 +595,13 @@ export default function SearchHub() {
       const messages = [
         {
           role: 'system',
-          content: `You are Orbit AI. The user searched for: "${lastQueryRef.current || 'unknown'}". Answer their follow-up question based on the conversation context. Use clear markdown formatting.`
+          content: `You are Orbit AI, an elite enterprise intelligence advisor and executive copilot.
+Deliver structured, polished, and comprehensive responses comparable to top-tier AI assistants (e.g., ChatGPT-4o).
+Guidelines:
+1. Format with elegant, readable Markdown: bold key terms, use clean bullet points, numbered steps where sequential, and structured headers (###).
+2. If displaying comparison data, schedules, or scopes, present them in clean GitHub-Flavored Markdown tables.
+3. Be professional, clear, and direct. Avoid generic filler words or robotic self-referencing.
+4. Base your answers accurately on organizational knowledge and the conversation context regarding "${lastQueryRef.current || 'the query'}".`
         },
         // Include prior conversation (exclude system messages that might be in history)
         ...updatedHistory.filter(m => m.role === 'user' || m.role === 'assistant')
@@ -717,38 +723,27 @@ export default function SearchHub() {
             {/* Removed top header search bar per user request */}
 
           
-            {/* FILTER TABS & SEARCH BAR */}
-            <div className="shrink-0 bg-white dark:bg-card border-b border-slate-200 dark:border-border px-4 md:px-8 py-2 overflow-x-auto hide-scrollbar flex items-center gap-3">
-              <button
-                onClick={handleNewSearch}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-colors bg-primary text-white shadow-sm hover:bg-primary/90"
-              >
-                <ArrowLeft className="w-3.5 h-3.5" /> New Search
-              </button>
+            {/* CLEAN COMPACT TOP HEADER */}
+            <div className="shrink-0 bg-white dark:bg-card border-b border-slate-200 dark:border-border px-4 md:px-6 py-2.5 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={handleNewSearch}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-colors bg-primary text-white shadow-xs hover:bg-primary/90"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" /> New Search
+                </button>
+                {query && (
+                  <span className="text-xs text-slate-500 dark:text-muted-foreground hidden sm:inline">
+                    Query: <strong className="text-slate-800 dark:text-slate-200">"{query}"</strong>
+                  </span>
+                )}
+              </div>
 
-              <div className="h-5 w-px bg-slate-200 dark:bg-slate-700 mx-1 shrink-0" />
-              
-              {FILTER_TABS.map(tab => {
-               const Icon = tab.icon;
-               const isActive = activeFilter === tab.id;
-               return (
-                 <button
-                   key={tab.id}
-                   onClick={() => setActiveFilter(tab.id)}
-                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors ${isActive ? 'bg-primary text-primary-foreground font-bold shadow-sm border border-[#006065] dark:border-border' : 'bg-slate-100 dark:bg-secondary text-slate-600 dark:text-muted-foreground hover:bg-slate-200 dark:bg-slate-800 dark:text-muted-foreground dark:hover:bg-accent'}`}
-                 >
-                   <Icon className="w-3.5 h-3.5" /> {tab.label}
-                 </button>
-               );
-            })}
-
-            {/* Context Session Attachment Selector (Milestone 4) */}
-            {isContextSessionsEnabled && availableContextSessions.length > 0 && (
-              <>
-                <div className="h-5 w-px bg-slate-200 dark:bg-slate-700 mx-1 shrink-0" />
+              {/* Context Session Attachment Selector (Milestone 4) */}
+              {isContextSessionsEnabled && availableContextSessions.length > 0 && (
                 <div className="flex items-center gap-1.5 shrink-0">
                   <Compass className="w-3.5 h-3.5 text-primary shrink-0" />
-                  <span className="text-xs font-bold text-slate-500 dark:text-muted-foreground whitespace-nowrap">Session:</span>
+                  <span className="text-xs font-bold text-slate-500 dark:text-muted-foreground whitespace-nowrap hidden sm:inline">Session:</span>
                   <select
                     value={selectedContextSessionId}
                     onChange={(e) => handleSelectContextSession(e.target.value)}
@@ -763,105 +758,15 @@ export default function SearchHub() {
                     ))}
                   </select>
                 </div>
-              </>
-            )}
-          </div>
+              )}
+            </div>
 
-          {/* MAIN CONTENT AREA */}
-          <div className="flex-1 w-full max-w-screen-2xl mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 h-full overflow-hidden">
+          {/* MAIN CONTENT AREA: Responsive Split. Chat on Left, Results + Right Filters on Right */}
+          <div className={`flex-1 w-full ${hasResults ? 'max-w-screen-2xl' : 'max-w-5xl'} mx-auto p-3 md:p-6 grid grid-cols-1 ${hasResults ? 'lg:grid-cols-12' : 'lg:grid-cols-1'} gap-6 h-full overflow-hidden transition-all duration-300`}>
              
-             {/* LEFT SIDE: SEARCH RESULTS */}
-             <div className="col-span-1 lg:col-span-5 flex flex-col h-full overflow-hidden">
-                <div className="flex items-center justify-between mb-3 shrink-0 px-1">
-                   <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-muted-foreground">Results</h2>
-                   <span className="text-xs font-semibold bg-slate-200 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-600 dark:text-muted-foreground">{filteredResults.length} found</span>
-                </div>
+             {/* LEFT SIDE: ORBIT AI CHAT (Takes full width if no results, 7-8 cols if results exist) */}
+             <div className={`${hasResults ? 'col-span-1 lg:col-span-7 xl:col-span-8' : 'col-span-1 w-full'} flex flex-col h-full bg-white dark:bg-card border border-slate-200 dark:border-border rounded-2xl shadow-xs overflow-hidden relative`}>
                 
-                <div className="flex-1 overflow-y-auto space-y-3 pr-2 pb-6 scrollbar-hide">
-                   {isSearching ? (
-                      <div className="flex flex-col items-center justify-center h-40">
-                         <Loader2 className="w-6 h-6 text-primary animate-spin mb-2" />
-                         <span className="text-xs text-slate-500 dark:text-muted-foreground">Searching workspace...</span>
-                      </div>
-                   ) : filteredResults.length === 0 ? (
-                      <div className="flex flex-col items-center justify-center p-8 text-center bg-white dark:bg-card border border-slate-200 dark:border-border border-dashed rounded-xl h-40">
-                         <Search className="w-6 h-6 text-slate-300 mb-2" />
-                         <span className="text-sm text-slate-500 dark:text-muted-foreground">No results found for your query.</span>
-                      </div>
-                   ) : (
-                      filteredResults.map(item => {
-                        const meta = TYPE_META[item.type] || TYPE_META.doc;
-                        const Icon = meta.icon;
-                        const isSelected = selectedResult?.id === item.id;
-
-                        return (
-                          <div
-                            id={`result-card-${item.id}`}
-                            key={`${item.type}-${item.id}`}
-                            onClick={() => setSelectedResult(item)}
-                            className={`p-4 rounded-xl border transition-all cursor-pointer ${isSelected ? 'bg-primary/5 dark:bg-indigo-900/10 border-indigo-200 dark:border-indigo-800 shadow-sm ring-1 ring-indigo-500/20' : 'bg-white dark:bg-card border-slate-200 dark:border-border hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-sm'}`}
-                          >
-                            <div className="flex items-start justify-between gap-3 mb-2">
-                               <div className="flex items-center gap-2">
-                                  <span className={`flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider shrink-0 ${meta.bg} ${meta.color}`}>
-                                    <Icon className="w-3 h-3" /> {meta.label}
-                                  </span>
-                                  {item.provider && (
-                                     <span className="text-[10px] font-mono text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">
-                                       {item.provider}
-                                     </span>
-                                  )}
-                               </div>
-                               {item.created_at && (
-                                  <span className="text-[10px] text-slate-400 font-medium">
-                                    {new Date(item.created_at).toLocaleDateString()}
-                                  </span>
-                               )}
-                            </div>
-                            <h4 className={`font-bold text-sm leading-snug mb-1.5 line-clamp-1 ${isSelected ? 'text-indigo-900 dark:text-indigo-100' : 'text-slate-900 dark:text-foreground'}`}>
-                              {item.label}
-                            </h4>
-                            {item.snippet && (
-                              <p className="text-xs text-slate-500 dark:text-muted-foreground line-clamp-2 leading-relaxed">
-                                {item.snippet}
-                              </p>
-                            )}
-                          </div>
-                        );
-                      })
-                   )}
-                </div>
-                
-                {/* Selected Result Detail (Pinned at bottom of list) */}
-                {selectedResult && (
-                   <div className="shrink-0 mt-4 bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl p-5 shadow-lg animate-in slide-in-from-bottom-4 duration-300">
-                      <div className="flex items-center justify-between mb-3 border-b border-slate-100 dark:border-border pb-3">
-                         <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-muted-foreground">Record Preview</span>
-                         {TYPE_META[selectedResult.type]?.route && (
-                            <button
-                              onClick={() => {
-                                const route = TYPE_META[selectedResult.type].route(selectedResult.id, selectedResult.space_id);
-                                if (route) navigate(route);
-                              }}
-                              className="flex items-center gap-1 text-[11px] font-bold text-primary hover:bg-primary/5 dark:hover:bg-indigo-900/30 px-2 py-1 rounded transition-colors"
-                            >
-                              Open <ArrowUpRight className="w-3 h-3" />
-                            </button>
-                         )}
-                      </div>
-                      <h3 className="font-bold text-sm text-slate-900 dark:text-foreground mb-2 leading-snug">{selectedResult.label}</h3>
-                      <div className="text-xs text-slate-600 dark:text-muted-foreground max-h-32 overflow-y-auto pr-2">
-                        {selectedResult.snippet || 'No content preview available.'}
-                      </div>
-                   </div>
-                )}
-             </div>
-             
-             {/* RIGHT SIDE: ORBIT AI CHAT */}
-             <div className="col-span-1 lg:col-span-7 flex flex-col h-full bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl shadow-sm overflow-hidden relative">
-                
-                
-
                 {/* Chat Messages */}
                 <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
                    {chatHistory.length === 0 && !isSynthesizing ? (
@@ -869,132 +774,132 @@ export default function SearchHub() {
                          <div className="w-16 h-16 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center mb-4 border border-slate-100 dark:border-border">
                            <Sparkles className="w-8 h-8 text-slate-300 dark:text-slate-600 dark:text-muted-foreground" />
                          </div>
-                         <h3 className="font-bold text-slate-900 dark:text-foreground mb-2">No active synthesis</h3>
-                         <p className="text-sm text-slate-500 dark:text-muted-foreground">Ask a question above and Orbit AI will analyze your organizational knowledge to synthesize an answer.</p>
+                         <h3 className="font-bold text-slate-900 dark:text-foreground mb-2">Ready to assist</h3>
+                         <p className="text-sm text-slate-500 dark:text-muted-foreground">Ask any question and Orbit AI will analyze organizational knowledge to synthesize an answer.</p>
                       </div>
                    ) : (
                       chatHistory.map((msg, idx) => (
-                         <div key={idx} className={`flex gap-4 max-w-3xl ${msg.role === 'user' ? 'ml-auto flex-row-reverse' : 'mr-auto'}`}>
+                         <div key={idx} className={`flex gap-4 ${msg.role === 'user' ? 'ml-auto flex-row-reverse max-w-2xl' : 'mr-auto w-full max-w-4xl'}`}>
                             
                             <div className="shrink-0 mt-1">
                                {msg.role === 'user' ? (
-                                  <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center border border-slate-300 dark:border-slate-600">
-                                    <span className="text-xs font-bold text-slate-600 dark:text-muted-foreground">{firstName.charAt(0)}</span>
+                                  <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center border border-slate-300 dark:border-slate-600 font-bold text-xs text-slate-600 dark:text-muted-foreground">
+                                    {firstName.charAt(0)}
                                   </div>
                                ) : (
-                                  <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center shadow-md">
-       <CliPadLogo size={18} color="#ffffff" />
-     </div>
+                                  <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center shadow-xs">
+                                    <CliPadLogo size={18} color="#ffffff" />
+                                  </div>
                                )}
                             </div>
 
-                            <div className={`flex flex-col gap-1.5 ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
+                            <div className={`flex flex-col gap-1.5 flex-1 min-w-0 ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-1">
                                  {msg.role === 'user' ? 'You' : 'Orbit AI'}
-                               </span>
+                                </span>
                                
-                               <div className={`text-sm leading-relaxed ${msg.role === 'user' ? 'px-5 py-3 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-foreground shadow-sm rounded-3xl rounded-tr-sm' : 'py-2 text-slate-800 dark:text-slate-200'}`}>
-                                  {msg.role === 'assistant' ? (
-                                    <>
-                                     <ReactMarkdown 
-                                       remarkPlugins={[remarkGfm]}
-                                       className="prose prose-sm dark:prose-invert max-w-none prose-p:leading-relaxed prose-pre:bg-slate-900 prose-pre:border prose-pre:border-slate-700 prose-code:text-slate-900 dark:prose-code:text-slate-200 prose-code:bg-slate-100 dark:prose-code:bg-slate-800 prose-code:px-1 prose-code:rounded prose-code:before:content-none prose-code:after:content-none prose-a:text-primary"
-                                       components={{
-                                         p: ({ children }) => {
-                                           const renderWithCitations = (child) => {
-                                             if (typeof child !== 'string') return child;
-                                             const parts = child.split(/(\[Source:\s*#?\d+\])/gi);
-                                             if (parts.length === 1) return child;
-                                             return parts.map((part, pIdx) => {
-                                               const match = part.match(/\[Source:\s*#?(\d+)\]/i);
-                                               if (!match) return part;
-                                               const sourceIndex = parseInt(match[1], 10);
-                                               const validCitation = msg.citations?.valid?.find(c => c.index === sourceIndex);
-                                               const isVerified = !!validCitation;
-                                               const targetRecord = msg.sources?.find(s => s.index === sourceIndex);
+                                <div className={`text-sm leading-relaxed ${msg.role === 'user' ? 'px-5 py-3 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-foreground shadow-xs rounded-3xl rounded-tr-sm' : 'py-2 text-slate-800 dark:text-slate-200 w-full'}`}>
+                                   {msg.role === 'assistant' ? (
+                                     <>
+                                      <ReactMarkdown 
+                                        remarkPlugins={[remarkGfm]}
+                                        className="prose prose-sm dark:prose-invert max-w-none prose-p:leading-relaxed prose-pre:bg-slate-950 prose-pre:border prose-pre:border-slate-800 prose-code:text-slate-900 dark:prose-code:text-slate-200 prose-code:bg-slate-100 dark:prose-code:bg-slate-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none prose-a:text-primary"
+                                        components={{
+                                          p: ({ children }) => {
+                                            const renderWithCitations = (child) => {
+                                              if (typeof child !== 'string') return child;
+                                              const parts = child.split(/(\[Source:\s*#?\d+\])/gi);
+                                              if (parts.length === 1) return child;
+                                              return parts.map((part, pIdx) => {
+                                                const match = part.match(/\[Source:\s*#?(\d+)\]/i);
+                                                if (!match) return part;
+                                                const sourceIndex = parseInt(match[1], 10);
+                                                const validCitation = msg.citations?.valid?.find(c => c.index === sourceIndex);
+                                                const isVerified = !!validCitation;
+                                                const targetRecord = msg.sources?.find(s => s.index === sourceIndex);
 
-                                               return (
-                                                 <button
-                                                   key={pIdx}
-                                                   type="button"
-                                                   onClick={() => {
-                                                     if (targetRecord) {
-                                                       const foundInResults = results.find(r => r.id === targetRecord.id);
-                                                       if (foundInResults) {
-                                                         setSelectedResult(foundInResults);
-                                                         const el = document.getElementById(`result-card-${foundInResults.id}`);
-                                                         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                                       }
-                                                     }
-                                                   }}
-                                                   className={`inline-flex items-center gap-1 mx-1 px-1.5 py-0.5 rounded text-[11px] font-bold font-mono transition-all cursor-pointer shadow-xs active:scale-95 ${isVerified ? (validCitation?.isTruncated ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-300 dark:border-amber-800 hover:bg-amber-100' : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800 hover:bg-emerald-100') : 'bg-slate-100 dark:bg-slate-800 text-slate-500 border border-slate-300 dark:border-slate-700 hover:bg-slate-200'}`}
-                                                   title={isVerified ? (validCitation?.isTruncated ? `Partial source excerpt: ${validCitation.title || 'Untitled'}` : `Source included: ${validCitation.title || 'Untitled'}`) : `Unresolved citation index #${sourceIndex}`}
-                                                 >
-                                                   <span>{isVerified ? (validCitation?.isTruncated ? '⚠' : '✓') : '?'}</span>
-                                                   <span>{validCitation?.isTruncated ? `Partial excerpt #${sourceIndex}` : `Source #${sourceIndex}`}</span>
-                                                 </button>
-                                               );
-                                             });
-                                           };
+                                                return (
+                                                  <button
+                                                    key={pIdx}
+                                                    type="button"
+                                                    onClick={() => {
+                                                      if (targetRecord) {
+                                                        const foundInResults = results.find(r => r.id === targetRecord.id);
+                                                        if (foundInResults) {
+                                                          setSelectedResult(foundInResults);
+                                                          const el = document.getElementById(`result-card-${foundInResults.id}`);
+                                                          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                                        }
+                                                      }
+                                                    }}
+                                                    className={`inline-flex items-center gap-1 mx-1 px-1.5 py-0.5 rounded text-[11px] font-bold font-mono transition-all cursor-pointer shadow-xs active:scale-95 ${isVerified ? (validCitation?.isTruncated ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-300 dark:border-amber-800 hover:bg-amber-100' : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800 hover:bg-emerald-100') : 'bg-slate-100 dark:bg-slate-800 text-slate-500 border border-slate-300 dark:border-slate-700 hover:bg-slate-200'}`}
+                                                    title={isVerified ? (validCitation?.isTruncated ? `Partial source excerpt: ${validCitation.title || 'Untitled'}` : `Source included: ${validCitation.title || 'Untitled'}`) : `Unresolved citation index #${sourceIndex}`}
+                                                  >
+                                                    <span>{isVerified ? (validCitation?.isTruncated ? '⚠' : '✓') : '?'}</span>
+                                                    <span>{validCitation?.isTruncated ? `Partial excerpt #${sourceIndex}` : `Source #${sourceIndex}`}</span>
+                                                  </button>
+                                                );
+                                              });
+                                            };
 
-                                           return <p>{React.Children.map(children, renderWithCitations)}</p>;
-                                         }
-                                       }}
-                                     >
-                                        {msg.content}
-                                     </ReactMarkdown>
+                                            return <p>{React.Children.map(children, renderWithCitations)}</p>;
+                                          }
+                                        }}
+                                      >
+                                         {msg.content}
+                                      </ReactMarkdown>
 
-                                     {/* Validated Evidence Provenance Bar */}
-                                     {msg.citations && msg.citations.valid && msg.citations.valid.length > 0 && (
-                                       <div className="mt-3 pt-2.5 border-t border-slate-200/70 dark:border-slate-800 flex flex-wrap items-center gap-1.5">
-                                         <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-muted-foreground mr-1">
-                                           Included Sources:
-                                         </span>
-                                         {msg.citations.valid.map((cite) => (
-                                           <button
-                                             key={cite.index}
-                                             type="button"
-                                             onClick={() => {
-                                               const found = results.find(r => r.id === cite.id);
-                                               if (found) {
-                                                 setSelectedResult(found);
-                                                 const el = document.getElementById(`result-card-${found.id}`);
-                                                 if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                               }
-                                             }}
-                                             className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium border transition-colors ${cite.isTruncated ? 'bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-800 hover:border-amber-400' : 'bg-slate-100 dark:bg-slate-800/80 hover:bg-primary/10 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-primary/30'}`}
-                                             title={cite.isTruncated ? `Partial source excerpt included in prompt: ${cite.title || 'Untitled'}` : `Full source included in prompt: ${cite.title || 'Untitled'}`}
-                                           >
-                                             <span className={`font-mono font-bold ${cite.isTruncated ? 'text-amber-600 dark:text-amber-400' : 'text-primary'}`}>#{cite.index}</span>
-                                             <span className="max-w-[140px] truncate">{cite.title}</span>
-                                             {cite.isTruncated && <span className="text-[9px] uppercase px-1 rounded bg-amber-200/60 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 font-bold">partial</span>}
-                                           </button>
-                                         ))}
-                                       </div>
-                                     )}
-                                    </>
-                                  ) : (
-                                     <span>{msg.content}</span>
-                                  )}
-                               </div>
+                                      {/* Validated Evidence Provenance Bar */}
+                                      {msg.citations && msg.citations.valid && msg.citations.valid.length > 0 && (
+                                        <div className="mt-3 pt-2.5 border-t border-slate-200/70 dark:border-slate-800 flex flex-wrap items-center gap-1.5">
+                                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-muted-foreground mr-1">
+                                            Included Sources:
+                                          </span>
+                                          {msg.citations.valid.map((cite) => (
+                                            <button
+                                              key={cite.index}
+                                              type="button"
+                                              onClick={() => {
+                                                const found = results.find(r => r.id === cite.id);
+                                                if (found) {
+                                                  setSelectedResult(found);
+                                                  const el = document.getElementById(`result-card-${found.id}`);
+                                                  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                                }
+                                              }}
+                                              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium border transition-colors ${cite.isTruncated ? 'bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-800 hover:border-amber-400' : 'bg-slate-100 dark:bg-slate-800/80 hover:bg-primary/10 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-primary/30'}`}
+                                              title={cite.isTruncated ? `Partial source excerpt included in prompt: ${cite.title || 'Untitled'}` : `Full source included in prompt: ${cite.title || 'Untitled'}`}
+                                            >
+                                              <span className={`font-mono font-bold ${cite.isTruncated ? 'text-amber-600 dark:text-amber-400' : 'text-primary'}`}>#{cite.index}</span>
+                                              <span className="max-w-[140px] truncate">{cite.title}</span>
+                                              {cite.isTruncated && <span className="text-[9px] uppercase px-1 rounded bg-amber-200/60 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 font-bold">partial</span>}
+                                            </button>
+                                          ))}
+                                        </div>
+                                      )}
+                                     </>
+                                   ) : (
+                                      <span>{msg.content}</span>
+                                   )}
+                                </div>
 
-                               {msg.role === 'assistant' && (
-                                  <div className="flex items-center gap-1 mt-1">
-                                     <button onClick={() => handleCopy(msg.content, idx)} className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded hover:bg-slate-100 dark:hover:bg-accent transition-colors" title="Copy text">
-                                        {copiedMsgIndex === idx ? <CheckCheck className="w-3.5 h-3.5 text-primary" /> : <Copy className="w-3.5 h-3.5" />}
-                                     </button>
-                                     <button onClick={() => handleSpeak(msg.content, idx)} className={`p-1.5 rounded hover:bg-slate-100 dark:hover:bg-accent transition-colors ${isSpeakingMsgIndex === idx ? 'text-primary bg-primary/5 dark:bg-indigo-900/30' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`} title={isSpeakingMsgIndex === idx ? "Stop speaking" : "Read aloud"}>
-                                        {isSpeakingMsgIndex === idx ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
-                                     </button>
-                                     <div className="w-px h-3 bg-slate-200 dark:bg-slate-700 mx-1" />
-                                     <button onClick={() => setVotedMsgState(p => ({...p, [idx]: 'up'}))} className={`p-1.5 rounded hover:bg-slate-100 dark:hover:bg-accent transition-colors ${votedMsgState[idx] === 'up' ? 'text-primary' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}>
-                                        <ThumbsUp className="w-3.5 h-3.5" />
-                                     </button>
-                                     <button onClick={() => setVotedMsgState(p => ({...p, [idx]: 'down'}))} className={`p-1.5 rounded hover:bg-slate-100 dark:hover:bg-accent transition-colors ${votedMsgState[idx] === 'down' ? 'text-rose-500' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}>
-                                        <ThumbsDown className="w-3.5 h-3.5" />
-                                     </button>
-                                  </div>
-                               )}
+                                {msg.role === 'assistant' && (
+                                   <div className="flex items-center gap-1 mt-1">
+                                      <button onClick={() => handleCopy(msg.content, idx)} className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded hover:bg-slate-100 dark:hover:bg-accent transition-colors" title="Copy text">
+                                         {copiedMsgIndex === idx ? <CheckCheck className="w-3.5 h-3.5 text-primary" /> : <Copy className="w-3.5 h-3.5" />}
+                                      </button>
+                                      <button onClick={() => handleSpeak(msg.content, idx)} className={`p-1.5 rounded hover:bg-slate-100 dark:hover:bg-accent transition-colors ${isSpeakingMsgIndex === idx ? 'text-primary bg-primary/5 dark:bg-indigo-900/30' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`} title={isSpeakingMsgIndex === idx ? "Stop speaking" : "Read aloud"}>
+                                         {isSpeakingMsgIndex === idx ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+                                      </button>
+                                      <div className="w-px h-3 bg-slate-200 dark:bg-slate-700 mx-1" />
+                                      <button onClick={() => setVotedMsgState(p => ({...p, [idx]: 'up'}))} className={`p-1.5 rounded hover:bg-slate-100 dark:hover:bg-accent transition-colors ${votedMsgState[idx] === 'up' ? 'text-primary' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}>
+                                         <ThumbsUp className="w-3.5 h-3.5" />
+                                      </button>
+                                      <button onClick={() => setVotedMsgState(p => ({...p, [idx]: 'down'}))} className={`p-1.5 rounded hover:bg-slate-100 dark:hover:bg-accent transition-colors ${votedMsgState[idx] === 'down' ? 'text-rose-500' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}>
+                                         <ThumbsDown className="w-3.5 h-3.5" />
+                                      </button>
+                                   </div>
+                                )}
                             </div>
                          </div>
                       ))
@@ -1004,8 +909,8 @@ export default function SearchHub() {
                       <div className="flex gap-4 max-w-3xl mr-auto">
                          <div className="shrink-0 mt-1">
                             <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center shadow-md animate-pulse">
-       <CliPadLogo size={18} color="#ffffff" />
-     </div>
+                              <CliPadLogo size={18} color="#ffffff" />
+                            </div>
                          </div>
                          <div className="flex flex-col gap-1.5 items-start">
                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-1">Orbit AI</span>
@@ -1021,7 +926,7 @@ export default function SearchHub() {
                 
                 {/* Chat Input */}
                 <div className="p-4 bg-white dark:bg-card border-t border-slate-100 dark:border-border shrink-0">
-                   <form onSubmit={handleFollowUp} className="relative flex items-center bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-border rounded-xl px-2 py-1.5 focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-[#006065] dark:border-border transition-all shadow-sm">
+                   <form onSubmit={handleFollowUp} className="relative flex items-center bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-border rounded-xl px-2 py-1.5 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary transition-all shadow-xs">
                       <input
                         value={followUpInput}
                         onChange={e => setFollowUpInput(e.target.value)}
@@ -1031,17 +936,136 @@ export default function SearchHub() {
                       <button
                         type="submit"
                         disabled={!followUpInput.trim() || isSynthesizing}
-                        className="p-2 rounded-lg bg-[#006065] hover:bg-[#004e52] text-white disabled:opacity-40 transition-colors shrink-0 shadow-sm"
+                        className="p-2 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground disabled:opacity-40 transition-colors shrink-0 shadow-xs"
                       >
                          {isSynthesizing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4 ml-0.5" />}
                       </button>
                    </form>
                    <p className="text-center text-[10px] text-slate-400 font-medium mt-2">
-                      Orbit AI can make mistakes. Consider verifying important organizational facts.
+                      Orbit AI synthesizes across live organizational memory and documents. Verify critical items directly with sources.
                    </p>
                 </div>
 
              </div>
+
+             {/* RIGHT SIDE: SEARCH RESULTS & SIDEBAR FILTERS (Automatically opens when results exist, closes when none) */}
+             {hasResults && (
+               <div className="col-span-1 lg:col-span-5 xl:col-span-4 flex flex-col h-full overflow-hidden bg-white dark:bg-card border border-slate-200 dark:border-border rounded-2xl shadow-xs p-4 animate-in fade-in slide-in-from-right-4 duration-300">
+                  {/* Results Header with Count & Filter Pills */}
+                  <div className="flex items-center justify-between mb-3 shrink-0">
+                     <div className="flex items-center gap-2">
+                       <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-muted-foreground">Related Records</h2>
+                       <span className="text-[11px] font-bold bg-primary/10 text-primary px-2 py-0.5 rounded-full">{filteredResults.length}</span>
+                     </div>
+                  </div>
+
+                  {/* Horizontal Scrollable Category Filter Chips on the Right Side */}
+                  <div className="flex items-center gap-1.5 pb-2.5 mb-3 border-b border-slate-100 dark:border-border overflow-x-auto hide-scrollbar shrink-0">
+                    {FILTER_TABS.map(tab => {
+                      const Icon = tab.icon;
+                      const isActive = activeFilter === tab.id;
+                      return (
+                        <button
+                          key={tab.id}
+                          onClick={() => setActiveFilter(tab.id)}
+                          className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-colors shrink-0 ${
+                            isActive
+                              ? 'bg-primary text-primary-foreground font-bold shadow-2xs'
+                              : 'bg-slate-100 dark:bg-secondary text-slate-600 dark:text-muted-foreground hover:bg-slate-200 dark:hover:bg-accent'
+                          }`}
+                        >
+                          <Icon className="w-3 h-3" />
+                          <span>{tab.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  
+                  {/* Results Scrollable List */}
+                  <div className="flex-1 overflow-y-auto space-y-2.5 pr-1 pb-4 scrollbar-thin">
+                     {isSearching ? (
+                        <div className="flex flex-col items-center justify-center h-40">
+                           <Loader2 className="w-6 h-6 text-primary animate-spin mb-2" />
+                           <span className="text-xs text-slate-500 dark:text-muted-foreground">Searching workspace...</span>
+                        </div>
+                     ) : filteredResults.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center p-6 text-center bg-slate-50 dark:bg-secondary/40 border border-slate-200 dark:border-border border-dashed rounded-xl h-36">
+                           <Search className="w-5 h-5 text-slate-300 mb-1.5" />
+                           <span className="text-xs text-slate-500 dark:text-muted-foreground">No matches for current category filter.</span>
+                        </div>
+                     ) : (
+                        filteredResults.map(item => {
+                          const meta = TYPE_META[item.type] || TYPE_META.doc;
+                          const Icon = meta.icon;
+                          const isSelected = selectedResult?.id === item.id;
+
+                          return (
+                            <div
+                              id={`result-card-${item.id}`}
+                              key={`${item.type}-${item.id}`}
+                              onClick={() => setSelectedResult(item)}
+                              className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
+                                isSelected
+                                  ? 'bg-primary/5 dark:bg-primary/10 border-primary/40 shadow-xs ring-1 ring-primary/20'
+                                  : 'bg-white dark:bg-card border-slate-200 dark:border-border hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-xs'
+                              }`}
+                            >
+                              <div className="flex items-start justify-between gap-2 mb-1.5">
+                                 <div className="flex items-center gap-1.5">
+                                    <span className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider shrink-0 ${meta.bg} ${meta.color}`}>
+                                      <Icon className="w-2.5 h-2.5" /> {meta.label}
+                                    </span>
+                                    {item.provider && (
+                                       <span className="text-[9px] font-mono text-slate-400 bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded">
+                                         {item.provider}
+                                       </span>
+                                    )}
+                                 </div>
+                                 {item.created_at && (
+                                    <span className="text-[10px] text-slate-400 font-medium">
+                                      {new Date(item.created_at).toLocaleDateString()}
+                                    </span>
+                                 )}
+                              </div>
+                              <h4 className={`font-semibold text-xs leading-snug mb-1 line-clamp-1 ${isSelected ? 'text-primary font-bold' : 'text-slate-900 dark:text-foreground'}`}>
+                                {item.label}
+                              </h4>
+                              {item.snippet && (
+                                <p className="text-[11px] text-slate-500 dark:text-muted-foreground line-clamp-2 leading-relaxed">
+                                  {item.snippet}
+                                </p>
+                              )}
+                            </div>
+                          );
+                        })
+                     )}
+                  </div>
+                  
+                  {/* Selected Result Detail (Pinned at bottom of list) */}
+                  {selectedResult && (
+                     <div className="shrink-0 mt-2 bg-slate-50 dark:bg-secondary/40 border border-slate-200 dark:border-border rounded-xl p-3.5 shadow-xs animate-in slide-in-from-bottom-2 duration-200">
+                        <div className="flex items-center justify-between mb-2 border-b border-slate-200/60 dark:border-border pb-2">
+                           <span className="text-[9px] font-bold uppercase tracking-widest text-slate-500 dark:text-muted-foreground">Preview</span>
+                           {TYPE_META[selectedResult.type]?.route && (
+                              <button
+                                onClick={() => {
+                                  const route = TYPE_META[selectedResult.type].route(selectedResult.id, selectedResult.space_id);
+                                  if (route) navigate(route);
+                                }}
+                                className="flex items-center gap-1 text-[10px] font-bold text-primary hover:underline"
+                              >
+                                Open Record <ArrowUpRight className="w-3 h-3" />
+                              </button>
+                           )}
+                        </div>
+                        <h3 className="font-bold text-xs text-slate-900 dark:text-foreground mb-1 leading-snug line-clamp-1">{selectedResult.label}</h3>
+                        <div className="text-[11px] text-slate-600 dark:text-muted-foreground max-h-24 overflow-y-auto pr-1">
+                          {selectedResult.snippet || 'No preview available.'}
+                        </div>
+                     </div>
+                  )}
+               </div>
+             )}
           </div>
         </div>
       )}
