@@ -108,7 +108,7 @@ export default function DeveloperPlatform() {
   return (
     <div style={{ fontFamily: "'Inter', sans-serif" }} className="flex h-[calc(100vh-64px)] max-h-[calc(100vh-64px)] bg-slate-50 dark:bg-background overflow-hidden text-slate-900 dark:text-slate-100">
       {/* SIDEBAR NAVIGATION: Slim, compact width to give maximum space to the main content & Copilot */}
-      <aside className={`bg-white dark:bg-card border-r border-slate-200 dark:border-border flex-col hidden md:flex shrink-0 transition-all duration-300 ${sidebarOpen ? 'w-52' : 'w-16'}`}>
+      <aside className={`bg-white dark:bg-card border-r border-slate-200 dark:border-border flex-col hidden md:flex shrink-0 transition-all duration-300 ${sidebarOpen ? 'w-48' : 'w-14'}`}>
         {/* Sidebar Header: Back button and expand/collapse button, top name area left empty */}
         <div className="h-14 flex items-center px-3 border-b border-slate-200 dark:border-border gap-2 shrink-0 justify-between">
           <div className="flex items-center gap-2 overflow-hidden">

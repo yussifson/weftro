@@ -271,8 +271,8 @@ CORE GUIDELINES:
     <div className="h-full w-full flex flex-col bg-background text-foreground overflow-hidden">
       {/* Main Responsive Layout: Chat response section takes generous width */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 min-h-0 overflow-hidden">
-        {/* Left / Center Column: Chat Messages & Input (9 cols on lg, 9.5 cols on xl) */}
-        <div className="lg:col-span-9 xl:col-span-9 flex flex-col h-full min-h-0 border-r border-border overflow-hidden bg-card/30 relative">
+        {/* Left / Center Column: Chat Messages & Input (10 cols on xl, 9 on lg) */}
+        <div className="lg:col-span-9 xl:col-span-10 flex flex-col h-full min-h-0 border-r border-border overflow-hidden bg-card/30 relative">
           {/* Floating Actions: New Chat & Delete History */}
           <div className="absolute top-3 right-4 z-20 flex items-center gap-1.5 bg-background/80 backdrop-blur-md p-1 rounded-xl border border-border/60 shadow-xs">
             <Button
@@ -298,7 +298,7 @@ CORE GUIDELINES:
           </div>
           {/* Scrollable Messages Area */}
           <div className="flex-1 overflow-y-auto px-4 md:px-8 py-5 space-y-4 scrollbar-thin">
-            <div className="max-w-5xl mx-auto w-full space-y-4">
+            <div className="max-w-6xl mx-auto w-full space-y-4">
             {messages.map((msg, idx) => {
               const isAssistant = msg.role === 'assistant';
               return (
@@ -315,8 +315,8 @@ CORE GUIDELINES:
                   <div
                     className={`w-full ${
                       isAssistant
-                        ? 'max-w-[96%] md:max-w-[94%] bg-card border border-border/80 text-foreground shadow-xs rounded-2xl rounded-tl-sm px-5 py-4'
-                        : 'max-w-[85%] md:max-w-[75%] bg-primary text-primary-foreground font-medium rounded-2xl rounded-tr-sm px-4 py-3 shadow-xs'
+                        ? 'max-w-[98%] bg-card border border-border/80 text-foreground shadow-xs rounded-2xl rounded-tl-sm px-5 py-4'
+                        : 'max-w-[85%] md:max-w-[70%] bg-primary text-primary-foreground font-medium rounded-2xl rounded-tr-sm px-4 py-3 shadow-xs'
                     } text-sm leading-relaxed`}
                   >
                     {isAssistant ? (
@@ -399,7 +399,7 @@ CORE GUIDELINES:
             onSubmit={(e) => handleSend(e)}
             className="p-4 border-t border-border bg-card/80 backdrop-blur-sm shrink-0"
           >
-            <div className="max-w-5xl mx-auto w-full flex items-center gap-3">
+            <div className="max-w-6xl mx-auto w-full flex items-center gap-3">
               <div className="relative flex-1">
                 <input
                   ref={inputRef}
@@ -423,11 +423,11 @@ CORE GUIDELINES:
           </form>
         </div>
 
-        {/* Right Column: Quick Actions & Knowledge Hub (3 cols on lg, scrollable) */}
-        <div className="hidden lg:flex lg:col-span-3 xl:col-span-3 flex-col h-full bg-card/50 overflow-y-auto p-4 space-y-4 scrollbar-thin">
+        {/* Right Column: Quick Actions & Knowledge Hub (2 cols on xl, 3 on lg) */}
+        <div className="hidden lg:flex lg:col-span-3 xl:col-span-2 flex-col h-full bg-card/50 overflow-y-auto p-3.5 space-y-3.5 scrollbar-thin">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-primary" />
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
               Instant Inquiries
             </h3>
           </div>
