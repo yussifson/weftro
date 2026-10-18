@@ -1,0 +1,39 @@
+{
+  "name": "@weftro/sdk",
+  "version": "1.0.0",
+  "description": "Official TypeScript/JavaScript SDK for Weftro Organizational Memory & Connect API",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test test/*.test.js"
+  },
+  "keywords": [
+    "weftro",
+    "sdk",
+    "organizational-memory",
+    "ai",
+    "connect-api",
+    "knowledge-graph"
+  ],
+  "author": "Weftro Engineering",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
