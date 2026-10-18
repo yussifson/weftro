@@ -38,8 +38,8 @@
 | **Phase 4** | Developer Identity, Apps & Scopes | `APPROVED` | Deployed `connect`, 18/18 live acceptance tests passed, 29/29 Phase 3 regression tests passed |
 | **Phase 5** | Production MCP Server | `APPROVED` | Implemented `@weftro/mcp-server`, 18/18 Phase 5 live tests passed, 18/18 Phase 4 tests passed, 29/29 Phase 3 tests passed |
 | **Phase 6** | Webhook Delivery Engine | `APPROVED` | Deployed `connect`, SSRF filter, manual redirect rejection, 19/19 live tests passed, 0 regressions across Phase 3/4/5 suites |
-| **Phase 7** | Developer Experience & Hardening | `APPROVED` | 19/19 Phase 7 E2E tests passed, OpenAPI 3.1 + Docs synchronized (30/30 routes), MCP README added, API Explorer enhanced |
-| **Phase 8** | Deferred Write & Act Mutations | `APPROVED & VERIFIED` | 16/16 Phase 8 mutation acceptance tests passed on isolated test gateway (`7904f2b`), 103/103 live regression tests passed, zero production deployment boundary maintained |
+| **Phase 7** | Developer Experience & Hardening | `APPROVED` | 19/19 Phase 7 E2E tests passed live, OpenAPI 3.1 + Docs synchronized (30/30 routes), MCP README added, API Explorer enhanced |
+| **Phase 8** | Deferred Write & Act Mutations | `IMPLEMENTED & CONTRACT-TESTED` (Pending Live Gateway Deployment) | Source implemented in `connect/index.ts` (`1236e06`, `dcc9379`); 16/16 contract & simulation tests passed against local test gateway (`7904f2b`); 103/103 live integration regression tests passed; atomic database idempotency constraints identified for Phase 9 migration; zero unauthorized production deployments |
 
 ---
 
@@ -70,6 +70,15 @@
 
 ---
 
-## 5. Next Permitted Action
-Phase 8 local validation is complete with 16/16 Phase 8 acceptance tests passing and 103/103 regression tests passing. Ready to proceed to next roadmap phase (Phase 9: Production Release Preparation, SDK Packaging, or Advanced Rate Limiting) pending formal production deployment window.
+## 5. Phase 8 Detailed Validation Tiers
+- **Implemented in Source**: `POST /api/v1/captures` and `POST /api/v1/memories` in `supabase/functions/connect/index.ts` (lines 925–1045, 1162–1295), OpenAPI 3.1 (`docs/openapi.yaml`), and MCP mutation tools (`packages/weftro-mcp/index.js`).
+- **Unit / Contract Tested**: 16/16 automated test assertions in `scripts/phase8_mutations_acceptance_suite.cjs` passed against the isolated test gateway (`scripts/local_test_gateway.cjs`). Covers scope enforcement, input validation, queue scheduling, tenant spoofing prevention, cross-tenant key isolation, and MCP stdio invocation.
+- **Integration Tested (Live Production Gateway)**: 103/103 tests passing across Phases 3, 4, 5, 6, and 7 suites without regression.
+- **Production Deployment Pending**: Live Supabase Edge Function build is `ae943d9` (pre-Phase 8). The Phase 8 edge function and atomic database idempotency constraints remain undeployed pending formal release authorization.
+
+---
+
+## 6. Next Permitted Action
+Advance Phase 9 planning and TypeScript SDK package design (`@weftro/sdk`) in parallel. Maintain zero production deployment boundary until explicit approval is granted.
+
 
