@@ -48,38 +48,18 @@ export function safeLazy(factory, retries = 2, interval = 800) {
                 return;
               }
 
-              // Exhausted retry attempts. This means the chunk hash was definitively replaced by a new deployment.
-              // Transparently heal by purging service worker cache and reloading the page silently once.
+              // Exhausted retry attempts. Clear cache in background and resolve with fallback or report cleanly
               try {
-                const reloadKey = 'vite_chunk_retry_' + window.location.pathname;
-                const lastRetry = sessionStorage.getItem(reloadKey);
-                const now = Date.now();
-
-                // Only perform one automatic reload per route within 30 seconds to prevent any reload loops
-                if (!lastRetry || now - parseInt(lastRetry, 10) > 30000) {
-                  sessionStorage.setItem(reloadKey, now.toString());
-
-                  if ('serviceWorker' in navigator) {
-                    const registrations = await navigator.serviceWorker.getRegistrations();
-                    for (const registration of registrations) {
-                      await registration.unregister();
-                    }
+                if ('caches' in window) {
+                  const cacheKeys = await caches.keys();
+                  for (const key of cacheKeys) {
+                    await caches.delete(key);
                   }
-                  if ('caches' in window) {
-                    const cacheKeys = await caches.keys();
-                    for (const key of cacheKeys) {
-                      await caches.delete(key);
-                    }
-                  }
-
-                  // Smooth auto-reload to fetch new index.html with the new bundle hashes
-                  window.location.reload();
-                  return;
                 }
               } catch (_) {}
             }
 
-            // If not a chunk error or reload didn't recover, reject so ErrorBoundary handles it
+            // Reject so ErrorBoundary or caller handles gracefully without destroying active state
             reject(error);
           });
       };

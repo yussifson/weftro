@@ -46,31 +46,21 @@ window.addEventListener('app:refresh', async () => {
   }
 });
 
-// Listen for Vite chunk loading errors and seamlessly recover without crash screens
-window.addEventListener('vite:preloadError', async (event) => {
+// Handle dynamic module and chunk loading gracefully without abruptly crashing or reloading the active session
+window.addEventListener('vite:preloadError', (event) => {
   event.preventDefault?.();
-  const lastReload = sessionStorage.getItem('vite-auto-heal');
-  const now = Date.now();
-  if (lastReload && now - parseInt(lastReload, 10) < 30000) {
-    return;
-  }
-  sessionStorage.setItem('vite-auto-heal', now.toString());
+  console.warn('[Deployment Sync] New asset chunk detected. Caches will be synced in the background.');
+  // Purge outdated service worker / cache entries silently in the background
   try {
-    if ('serviceWorker' in navigator) {
-      const registrations = await navigator.serviceWorker.getRegistrations();
-      for (const registration of registrations) {
-        await registration.unregister();
-      }
-    }
     if ('caches' in window) {
-      const keys = await caches.keys();
-      for (const k of keys) await caches.delete(k);
+      caches.keys().then((keys) => {
+        for (const k of keys) caches.delete(k);
+      }).catch(() => {});
     }
   } catch (_) {}
-  window.location.reload();
 });
 
-window.addEventListener('unhandledrejection', async (event) => {
+window.addEventListener('unhandledrejection', (event) => {
   const msg = (event.reason?.message || event.reason?.toString() || '').toLowerCase();
 
   if (
@@ -80,25 +70,14 @@ window.addEventListener('unhandledrejection', async (event) => {
     msg.includes('loading chunk')
   ) {
     event.preventDefault?.();
-    const lastReload = sessionStorage.getItem('vite-auto-heal');
-    const now = Date.now();
-    if (lastReload && now - parseInt(lastReload, 10) < 30000) {
-      return;
-    }
-    sessionStorage.setItem('vite-auto-heal', now.toString());
+    console.warn('[Deployment Sync] Handled dynamic import error gracefully without interrupting user session.');
     try {
-      if ('serviceWorker' in navigator) {
-        const registrations = await navigator.serviceWorker.getRegistrations();
-        for (const registration of registrations) {
-          await registration.unregister();
-        }
-      }
       if ('caches' in window) {
-        const keys = await caches.keys();
-        for (const k of keys) await caches.delete(k);
+        caches.keys().then((keys) => {
+          for (const k of keys) caches.delete(k);
+        }).catch(() => {});
       }
     } catch (_) {}
-    window.location.reload();
   }
 });
 

@@ -19,8 +19,8 @@ export class ErrorBoundary extends React.Component {
       errorMsg.includes('loading chunk');
 
     if (isChunkMismatch) {
-      // Keep state clean while auto-reload triggers
-      return { hasError: false, isHealing: true };
+      // Avoid jarring full-screen crash while keeping active session intact
+      return { hasError: true, isChunkMismatch: true, error };
     }
     return { hasError: true, error };
   }
@@ -36,37 +36,41 @@ export class ErrorBoundary extends React.Component {
       errorMsg.includes('loading chunk');
 
     if (isChunkMismatch) {
-      const now = Date.now();
-      const lastAutoReload = sessionStorage.getItem('eb_auto_chunk_heal');
-      if (!lastAutoReload || now - parseInt(lastAutoReload, 10) > 30000) {
-        sessionStorage.setItem('eb_auto_chunk_heal', now.toString());
-        (async () => {
-          try {
-            if ('serviceWorker' in navigator) {
-              const registrations = await navigator.serviceWorker.getRegistrations();
-              for (const r of registrations) await r.unregister();
-            }
-            if ('caches' in window) {
-              const keys = await caches.keys();
-              for (const k of keys) await caches.delete(k);
-            }
-          } catch (_) {}
-          window.location.reload();
-        })();
-        return;
-      }
+      // Clear cache in background so subsequent user interactions fetch the newest assets
+      (async () => {
+        try {
+          if ('caches' in window) {
+            const keys = await caches.keys();
+            for (const k of keys) await caches.delete(k);
+          }
+        } catch (_) {}
+      })();
     }
 
     this.setState({ error, errorInfo });
   }
 
   render() {
-    if (this.state.isHealing) {
+    if (this.state.isChunkMismatch) {
       return (
-        <div className="min-h-screen w-full flex items-center justify-center bg-background font-sans">
-          <div className="flex flex-col items-center gap-3 text-muted-foreground">
-            <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-            <span className="text-xs font-medium">Updating to latest version...</span>
+        <div className="min-h-screen w-full flex flex-col items-center justify-center bg-slate-50 dark:bg-background p-6 font-sans">
+          <div className="max-w-md w-full bg-white dark:bg-card border border-slate-200 dark:border-border rounded-3xl p-8 text-center shadow-lg transition-all duration-200">
+            <div className="w-16 h-16 bg-primary/10 text-primary rounded-2xl flex items-center justify-center mx-auto mb-5">
+              <RefreshCcw className="w-8 h-8" />
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-foreground tracking-tight mb-2">
+              New Update Available
+            </h2>
+            <p className="text-slate-600 dark:text-muted-foreground text-sm font-medium leading-relaxed mb-6">
+              A new version of the app has been published. Click below to load the latest features.
+            </p>
+            <Button 
+              onClick={() => window.location.reload()}
+              className="w-full bg-primary hover:bg-primary/90 text-white rounded-xl py-5 font-semibold text-base shadow-sm"
+            >
+              <RefreshCcw className="w-4 h-4 mr-2" />
+              Update Now
+            </Button>
           </div>
         </div>
       );

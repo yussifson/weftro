@@ -40,6 +40,7 @@ const FILTER_TABS = [
   { id: 'doc', label: 'Documents', icon: FileText },
   { id: 'task', label: 'Tasks', icon: CheckCircle },
   { id: 'meeting', label: 'Meetings', icon: Calendar },
+  { id: 'video', label: 'Videos', icon: Video },
   { id: 'decision', label: 'Decisions', icon: ShieldAlert },
   { id: 'message', label: 'Conversations', icon: MessageSquare },
   { id: 'capture', label: 'Captures', icon: Inbox },
@@ -58,7 +59,8 @@ const FILTER_TYPE_MAP = {
   person: ['person'],
   doc: ['doc', 'integration'],
   task: ['task', 'blocker', 'standup'],
-  meeting: ['meeting', 'video'],
+  meeting: ['meeting'],
+  video: ['video'],
   decision: ['decision', 'blocker'],
   message: ['message'],
   capture: ['capture', 'memory'],
@@ -763,10 +765,10 @@ Guidelines:
             </div>
 
           {/* MAIN CONTENT AREA: Responsive Split. Chat on Left, Results + Right Filters on Right */}
-          <div className={`flex-1 w-full ${hasResults ? 'max-w-screen-2xl' : 'max-w-5xl'} mx-auto p-3 md:p-6 grid grid-cols-1 ${hasResults ? 'lg:grid-cols-12' : 'lg:grid-cols-1'} gap-6 h-full overflow-hidden transition-all duration-300`}>
+          <div className="flex-1 w-full max-w-screen-2xl mx-auto p-3 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 h-full overflow-hidden transition-all duration-300">
              
-             {/* LEFT SIDE: ORBIT AI CHAT (Takes full width if no results, 7-8 cols if results exist) */}
-             <div className={`${hasResults ? 'col-span-1 lg:col-span-7 xl:col-span-8' : 'col-span-1 w-full'} flex flex-col h-full bg-white dark:bg-card border border-slate-200 dark:border-border rounded-2xl shadow-xs overflow-hidden relative`}>
+             {/* LEFT SIDE: ORBIT AI CHAT (Takes 7-8 columns, full width on mobile) */}
+             <div className="col-span-1 lg:col-span-7 xl:col-span-8 flex flex-col h-full bg-white dark:bg-card border border-slate-200 dark:border-border rounded-2xl shadow-xs overflow-hidden relative">
                 
                 {/* Chat Messages */}
                 <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
@@ -949,124 +951,147 @@ Guidelines:
 
              </div>
 
-             {/* RIGHT SIDE: SEARCH RESULTS & SIDEBAR FILTERS (Automatically opens when results exist, closes when none) */}
-             {hasResults && (
-               <div className="col-span-1 lg:col-span-5 xl:col-span-4 flex flex-col h-full overflow-hidden bg-white dark:bg-card border border-slate-200 dark:border-border rounded-2xl shadow-xs p-4 animate-in fade-in slide-in-from-right-4 duration-300">
-                  {/* Results Header with Count & Filter Pills */}
-                  <div className="flex items-center justify-between mb-3 shrink-0">
-                     <div className="flex items-center gap-2">
-                       <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-muted-foreground">Related Records</h2>
-                       <span className="text-[11px] font-bold bg-primary/10 text-primary px-2 py-0.5 rounded-full">{filteredResults.length}</span>
+              {/* RIGHT SIDE: SIDEBAR CATEGORY FILTERS & SEARCH RESULTS */}
+              {/* Category filters are PERMANENTLY accessible on the right side. The results list automatically opens when results exist, closes when none. */}
+              <div className="col-span-1 lg:col-span-5 xl:col-span-4 flex flex-col h-full overflow-hidden bg-white dark:bg-card border border-slate-200 dark:border-border rounded-2xl shadow-xs p-4 animate-in fade-in duration-300">
+                 {/* Right Sidebar Header: Category Filters / Quick Links */}
+                 <div className="flex items-center justify-between mb-3 shrink-0">
+                    <div className="flex items-center gap-2">
+                      <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-muted-foreground">Filters & Categories</h2>
+                      {results.length > 0 && (
+                        <span className="text-[11px] font-bold bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                          {filteredResults.length} {filteredResults.length === 1 ? 'result' : 'results'}
+                        </span>
+                      )}
+                    </div>
+                 </div>
+
+                 {/* Horizontal Scrollable Category Filter Chips on the Right Side */}
+                 <div className="flex items-center gap-1.5 pb-2.5 mb-3 border-b border-slate-100 dark:border-border overflow-x-auto hide-scrollbar shrink-0">
+                   {FILTER_TABS.map(tab => {
+                     const Icon = tab.icon;
+                     const isActive = activeFilter === tab.id;
+                     return (
+                       <button
+                         key={tab.id}
+                         onClick={() => setActiveFilter(tab.id)}
+                         className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-colors shrink-0 ${
+                           isActive
+                             ? 'bg-primary text-primary-foreground font-bold shadow-2xs'
+                             : 'bg-slate-100 dark:bg-secondary text-slate-600 dark:text-muted-foreground hover:bg-slate-200 dark:hover:bg-accent'
+                         }`}
+                       >
+                         <Icon className="w-3 h-3" />
+                         <span>{tab.label}</span>
+                       </button>
+                     );
+                   })}
+                 </div>
+
+                 {/* Results Section: Opens when there are search results or active search, otherwise shows clean empty helper state */}
+                 {hasResults ? (
+                   <div className="flex-1 flex flex-col min-h-0 overflow-hidden animate-in fade-in duration-200">
+                     <div className="text-[11px] font-semibold text-slate-500 dark:text-muted-foreground mb-2 px-0.5">
+                       Matching records ({filteredResults.length})
                      </div>
-                  </div>
 
-                  {/* Horizontal Scrollable Category Filter Chips on the Right Side */}
-                  <div className="flex items-center gap-1.5 pb-2.5 mb-3 border-b border-slate-100 dark:border-border overflow-x-auto hide-scrollbar shrink-0">
-                    {FILTER_TABS.map(tab => {
-                      const Icon = tab.icon;
-                      const isActive = activeFilter === tab.id;
-                      return (
-                        <button
-                          key={tab.id}
-                          onClick={() => setActiveFilter(tab.id)}
-                          className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-colors shrink-0 ${
-                            isActive
-                              ? 'bg-primary text-primary-foreground font-bold shadow-2xs'
-                              : 'bg-slate-100 dark:bg-secondary text-slate-600 dark:text-muted-foreground hover:bg-slate-200 dark:hover:bg-accent'
-                          }`}
-                        >
-                          <Icon className="w-3 h-3" />
-                          <span>{tab.label}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                  
-                  {/* Results Scrollable List */}
-                  <div className="flex-1 overflow-y-auto space-y-2.5 pr-1 pb-4 scrollbar-thin">
-                     {isSearching ? (
-                        <div className="flex flex-col items-center justify-center h-40">
-                           <Loader2 className="w-6 h-6 text-primary animate-spin mb-2" />
-                           <span className="text-xs text-slate-500 dark:text-muted-foreground">Searching workspace...</span>
-                        </div>
-                     ) : filteredResults.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center p-6 text-center bg-slate-50 dark:bg-secondary/40 border border-slate-200 dark:border-border border-dashed rounded-xl h-36">
-                           <Search className="w-5 h-5 text-slate-300 mb-1.5" />
-                           <span className="text-xs text-slate-500 dark:text-muted-foreground">No matches for current category filter.</span>
-                        </div>
-                     ) : (
-                        filteredResults.map(item => {
-                          const meta = TYPE_META[item.type] || TYPE_META.doc;
-                          const Icon = meta.icon;
-                          const isSelected = selectedResult?.id === item.id;
+                     {/* Results Scrollable List */}
+                     <div className="flex-1 overflow-y-auto space-y-2.5 pr-1 pb-2 scrollbar-thin">
+                        {isSearching ? (
+                           <div className="flex flex-col items-center justify-center h-40">
+                              <Loader2 className="w-6 h-6 text-primary animate-spin mb-2" />
+                              <span className="text-xs text-slate-500 dark:text-muted-foreground">Searching workspace...</span>
+                           </div>
+                        ) : filteredResults.length === 0 ? (
+                           <div className="flex flex-col items-center justify-center p-6 text-center bg-slate-50 dark:bg-secondary/40 border border-slate-200 dark:border-border border-dashed rounded-xl h-36">
+                              <Search className="w-5 h-5 text-slate-300 mb-1.5" />
+                              <span className="text-xs text-slate-500 dark:text-muted-foreground">No matches for current category filter.</span>
+                           </div>
+                        ) : (
+                           filteredResults.map(item => {
+                             const meta = TYPE_META[item.type] || TYPE_META.doc;
+                             const Icon = meta.icon;
+                             const isSelected = selectedResult?.id === item.id;
 
-                          return (
-                            <div
-                              id={`result-card-${item.id}`}
-                              key={`${item.type}-${item.id}`}
-                              onClick={() => setSelectedResult(item)}
-                              className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
-                                isSelected
-                                  ? 'bg-primary/5 dark:bg-primary/10 border-primary/40 shadow-xs ring-1 ring-primary/20'
-                                  : 'bg-white dark:bg-card border-slate-200 dark:border-border hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-xs'
-                              }`}
-                            >
-                              <div className="flex items-start justify-between gap-2 mb-1.5">
-                                 <div className="flex items-center gap-1.5">
-                                    <span className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider shrink-0 ${meta.bg} ${meta.color}`}>
-                                      <Icon className="w-2.5 h-2.5" /> {meta.label}
-                                    </span>
-                                    {item.provider && (
-                                       <span className="text-[9px] font-mono text-slate-400 bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded">
-                                         {item.provider}
+                             return (
+                               <div
+                                 id={`result-card-${item.id}`}
+                                 key={`${item.type}-${item.id}`}
+                                 onClick={() => setSelectedResult(item)}
+                                 className={`p-3 rounded-xl border transition-all cursor-pointer ${
+                                   isSelected
+                                     ? 'bg-primary/5 dark:bg-primary/10 border-primary/40 shadow-xs ring-1 ring-primary/20'
+                                     : 'bg-white dark:bg-card border-slate-200 dark:border-border hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-xs'
+                                 }`}
+                               >
+                                 <div className="flex items-start justify-between gap-2 mb-1">
+                                    <div className="flex items-center gap-1.5">
+                                       <span className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider shrink-0 ${meta.bg} ${meta.color}`}>
+                                         <Icon className="w-2.5 h-2.5" /> {meta.label}
+                                       </span>
+                                       {item.provider && (
+                                          <span className="text-[9px] font-mono text-slate-400 bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded">
+                                            {item.provider}
+                                          </span>
+                                       )}
+                                    </div>
+                                    {item.created_at && (
+                                       <span className="text-[10px] text-slate-400 font-medium">
+                                         {new Date(item.created_at).toLocaleDateString()}
                                        </span>
                                     )}
                                  </div>
-                                 {item.created_at && (
-                                    <span className="text-[10px] text-slate-400 font-medium">
-                                      {new Date(item.created_at).toLocaleDateString()}
-                                    </span>
+                                 <h4 className={`font-semibold text-xs leading-snug mb-1 line-clamp-1 ${isSelected ? 'text-primary font-bold' : 'text-slate-900 dark:text-foreground'}`}>
+                                   {item.label}
+                                 </h4>
+                                 {item.snippet && (
+                                   <p className="text-[11px] text-slate-500 dark:text-muted-foreground line-clamp-2 leading-relaxed">
+                                     {item.snippet}
+                                   </p>
                                  )}
-                              </div>
-                              <h4 className={`font-semibold text-xs leading-snug mb-1 line-clamp-1 ${isSelected ? 'text-primary font-bold' : 'text-slate-900 dark:text-foreground'}`}>
-                                {item.label}
-                              </h4>
-                              {item.snippet && (
-                                <p className="text-[11px] text-slate-500 dark:text-muted-foreground line-clamp-2 leading-relaxed">
-                                  {item.snippet}
-                                </p>
-                              )}
-                            </div>
-                          );
-                        })
-                     )}
-                  </div>
-                  
-                  {/* Selected Result Detail (Pinned at bottom of list) */}
-                  {selectedResult && (
-                     <div className="shrink-0 mt-2 bg-slate-50 dark:bg-secondary/40 border border-slate-200 dark:border-border rounded-xl p-3.5 shadow-xs animate-in slide-in-from-bottom-2 duration-200">
-                        <div className="flex items-center justify-between mb-2 border-b border-slate-200/60 dark:border-border pb-2">
-                           <span className="text-[9px] font-bold uppercase tracking-widest text-slate-500 dark:text-muted-foreground">Preview</span>
-                           {TYPE_META[selectedResult.type]?.route && (
-                              <button
-                                onClick={() => {
-                                  const route = TYPE_META[selectedResult.type].route(selectedResult.id, selectedResult.space_id);
-                                  if (route) navigate(route);
-                                }}
-                                className="flex items-center gap-1 text-[10px] font-bold text-primary hover:underline"
-                              >
-                                Open Record <ArrowUpRight className="w-3 h-3" />
-                              </button>
-                           )}
-                        </div>
-                        <h3 className="font-bold text-xs text-slate-900 dark:text-foreground mb-1 leading-snug line-clamp-1">{selectedResult.label}</h3>
-                        <div className="text-[11px] text-slate-600 dark:text-muted-foreground max-h-24 overflow-y-auto pr-1">
-                          {selectedResult.snippet || 'No preview available.'}
-                        </div>
+                               </div>
+                             );
+                           })
+                        )}
                      </div>
-                  )}
-               </div>
-             )}
+                     
+                     {/* Selected Result Detail (Pinned at bottom of list) */}
+                     {selectedResult && (
+                        <div className="shrink-0 mt-2 bg-slate-50 dark:bg-secondary/40 border border-slate-200 dark:border-border rounded-xl p-3 shadow-xs animate-in slide-in-from-bottom-2 duration-200">
+                           <div className="flex items-center justify-between mb-1.5 border-b border-slate-200/60 dark:border-border pb-1.5">
+                              <span className="text-[9px] font-bold uppercase tracking-widest text-slate-500 dark:text-muted-foreground">Preview</span>
+                              {TYPE_META[selectedResult.type]?.route && (
+                                 <button
+                                   onClick={() => {
+                                     const route = TYPE_META[selectedResult.type].route(selectedResult.id, selectedResult.space_id);
+                                     if (route) navigate(route);
+                                   }}
+                                   className="flex items-center gap-1 text-[10px] font-bold text-primary hover:underline"
+                                 >
+                                   Open Record <ArrowUpRight className="w-3 h-3" />
+                                 </button>
+                              )}
+                           </div>
+                           <h3 className="font-bold text-xs text-slate-900 dark:text-foreground mb-1 leading-snug line-clamp-1">{selectedResult.label}</h3>
+                           <div className="text-[11px] text-slate-600 dark:text-muted-foreground max-h-20 overflow-y-auto pr-1">
+                             {selectedResult.snippet || 'No preview available.'}
+                           </div>
+                        </div>
+                     )}
+                   </div>
+                 ) : (
+                   /* When no results are active, show a helpful quiet helper state while keeping category filters ready */
+                   <div className="flex-1 flex flex-col items-center justify-center p-6 text-center bg-slate-50/50 dark:bg-secondary/20 border border-slate-200/60 dark:border-border/60 rounded-xl">
+                      <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3">
+                        <Sparkles className="w-5 h-5 text-slate-400" />
+                      </div>
+                      <h4 className="text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Knowledge Filters</h4>
+                      <p className="text-[11px] text-slate-500 dark:text-muted-foreground max-w-xs">
+                        Select any category above to filter results when querying organizational knowledge.
+                      </p>
+                   </div>
+                 )}
+              </div>
           </div>
         </div>
       )}
