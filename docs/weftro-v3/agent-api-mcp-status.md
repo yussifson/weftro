@@ -40,13 +40,17 @@
 | **Phase 6** | Webhook Delivery Engine | `APPROVED` | Deployed `connect`, SSRF filter, manual redirect rejection, 19/19 live tests passed, 0 regressions across Phase 3/4/5 suites |
 | **Phase 7** | Developer Experience & Hardening | `APPROVED` | 19/19 Phase 7 E2E tests passed live, OpenAPI 3.1 + Docs synchronized (30/30 routes), MCP README added, API Explorer enhanced |
 | **Phase 8** | Deferred Write & Act Mutations | `IMPLEMENTED & CONTRACT-TESTED` (Pending Live Gateway Deployment) | Source implemented in `connect/index.ts` (`1236e06`, `dcc9379`); 16/16 contract & simulation tests passed against local test gateway (`7904f2b`); 103/103 live integration regression tests passed; atomic database idempotency constraints identified for Phase 9 migration; zero unauthorized production deployments |
+| **Phase 9** | Official TypeScript SDK (`@weftro/sdk`) & Explorer Integration | `IMPLEMENTED & VERIFIED` | 18/18 mock unit, coverage, and UI snippet tests passed; 100% OpenAPI 3.1 route coverage verified; sample TypeScript consumer typechecked; Explorer integrated; zero production deployments |
 
 ---
 
 ## 3. Verified Artifacts & Documentation
+- **Official TypeScript SDK:** `packages/weftro-sdk/` (typed client covering all 32 OpenAPI routes, 18/18 unit tests passed)
+- **SDK Consumer Verification:** `packages/weftro-sdk/test/consumer-sample/` (verified against `.d.ts` declaration maps)
 - **OpenAPI 3.1 Contract:** `docs/openapi.yaml` (32 versioned endpoints documented)
 - **Developer Knowledge Base:** `src/lib/weftroDeveloperDocs.js` (32 endpoints, 11 scopes, 11 MCP tools, webhooks contract)
 - **Official MCP Server Package & Guide:** `packages/weftro-mcp/README.md`
+- **Phase 9 Atomic Idempotency Spec:** `supabase/migrations/20261019000000_clipad_v3_phase9_atomic_idempotency_spec.sql`
 - **Phase 8 Acceptance Suite Script:** `scripts/phase8_mutations_acceptance_suite.cjs` (16/16 PASSED)
 - **Phase 8 Isolated Test Gateway Harness:** `scripts/local_test_gateway.cjs`
 - **Phase 8 Manual Test Guide:** `docs/weftro-v3/testing/phase-08-mutations-manual-test-guide.md`
@@ -57,6 +61,7 @@
 - **Phase 3 Live Regression Suite:** `scripts/phase3_acceptance_suite.cjs` (29/29 PASSED)
 
 ---
+
 
 ## 4. Shared Dependencies with AGENT-RAG
 - `clipad_v3_memories`: Memory storage and retrieval. AGENT-RAG manages chunking, embedding, and hybrid retrieval; AGENT-API-MCP exposes the read-only and write mutation contract.
