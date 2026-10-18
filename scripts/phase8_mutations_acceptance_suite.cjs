@@ -272,8 +272,10 @@ async function runPhase8Suite() {
         'Idempotency-Key': idempotencyKeyCap
       }
     }, {
-      title: 'Attempt Duplicate',
-      content: 'Attempting duplicate write with same idempotency key'
+      title: 'Phase 8 Live Ingest Test',
+      content: 'Edge gateway mutation pipeline verification note with background queue job.',
+      source_type: 'cli_tool',
+      capture_type: 'NOTE'
     });
 
     assert(
@@ -281,6 +283,24 @@ async function runPhase8Suite() {
       duplicateCapRes.data?.data?.id === createdCapture?.id,
       'Idempotent retry returns previously created capture without creating duplicates',
       `Original ID: ${createdCapture?.id}, Returned ID: ${duplicateCapRes.data?.data?.id}`
+    );
+
+    // 2.4b Mismatched payload with same idempotency key is rejected with 409 Conflict
+    const conflictCapRes = await request('/api/v1/captures', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token1}`,
+        'Idempotency-Key': idempotencyKeyCap
+      }
+    }, {
+      title: 'Conflicting Title Sent With Same Key',
+      content: 'Completely different content payload attempting to reuse key.'
+    });
+
+    assert(
+      conflictCapRes.statusCode === 409,
+      'Reusing an Idempotency-Key with a different payload is rejected with 409 Conflict',
+      `Status: ${conflictCapRes.statusCode}, Error Code: ${conflictCapRes.data?.error?.code}`
     );
 
     // 2.5 Concurrent duplicate requests race test
@@ -405,7 +425,7 @@ async function runPhase8Suite() {
       `Memory ID: ${createdMemory?.id}, Status: ${createdMemory?.status}, Tier: ${createdMemory?.memory_tier}`
     );
 
-    // 3.4 Memory Idempotent Replay
+    // 3.4 Memory Idempotent Replay (identical payload returns original memory)
     const duplicateMemRes = await request('/api/v1/memories', {
       method: 'POST',
       headers: {
@@ -413,8 +433,12 @@ async function runPhase8Suite() {
         'Idempotency-Key': idempotencyKeyMem
       }
     }, {
-      title: 'Duplicate Attempt',
-      content: 'This should replay original result'
+      title: 'Edge Idempotency Architecture Decision',
+      content: 'Mutations use client-supplied Idempotency-Key validated against durable event logs to enforce exactly-once execution.',
+      memory_type: 'DECISION',
+      memory_tier: 'organizational',
+      importance: 0.9,
+      confidence_score: 0.99
     });
 
     assert(
@@ -422,6 +446,24 @@ async function runPhase8Suite() {
       duplicateMemRes.data?.data?.id === createdMemory?.id,
       'Idempotent memory retry returns previously created memory',
       `Original ID: ${createdMemory?.id}, Returned ID: ${duplicateMemRes.data?.data?.id}`
+    );
+
+    // 3.5 Memory Mismatched Payload Rejection (409 Conflict)
+    const conflictMemRes = await request('/api/v1/memories', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token1}`,
+        'Idempotency-Key': idempotencyKeyMem
+      }
+    }, {
+      title: 'Conflicting Title Sent With Same Memory Key',
+      content: 'Different content attempting to reuse key.'
+    });
+
+    assert(
+      conflictMemRes.statusCode === 409,
+      'Reusing memory Idempotency-Key with different payload is rejected with 409 Conflict',
+      `Status: ${conflictMemRes.statusCode}, Error Code: ${conflictMemRes.data?.error?.code}`
     );
 
     // ─── Test Group 4: MCP stdio Write Tools ─────────────────────────────────

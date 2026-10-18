@@ -18,6 +18,7 @@ const db = {
   captures: [],
   captureQueue: [],
   memories: [],
+  idempotencyKeys: new Map(), // (company_id:key) -> { status, request_hash, response_status, response_body }
   tokenCache: new Map(), // token -> { company_id, user_id, scopes, is_active }
 };
 
@@ -240,20 +241,34 @@ const server = http.createServer((req, res) => {
         return tenantMutex.lock(async () => {
           // Concurrency-safe Idempotency check with transaction-level locking
           if (idempotencyKey) {
-            const cachedEvent = db.events.find(
-              e => e.company_id === tokenContext.company_id &&
-                   e.event_type === 'api.captures.create' &&
-                   e.payload?.idempotency_key === idempotencyKey
-            );
+            const keyRecord = db.idempotencyKeys.get(`${tokenContext.company_id}:${idempotencyKey}`);
+            const bodyHash = crypto.createHash('sha256').update(JSON.stringify(body || {})).digest('hex');
 
-            if (cachedEvent?.payload?.response_data) {
-              return successResponse(
-                cachedEvent.payload.response_data,
-                { request_id: requestId, idempotent_replay: true },
-                200,
-                { 'X-Idempotency-Replay': 'true' }
-              );
+            if (keyRecord) {
+              if (keyRecord.request_hash && keyRecord.request_hash !== bodyHash) {
+                return errorResponse(
+                  'IDEMPOTENCY_CONFLICT',
+                  `Idempotency key '${idempotencyKey}' was previously submitted with different request parameters. Concurrent or mismatched payloads with the same key are prohibited.`,
+                  409
+                );
+              }
+              if (keyRecord.status === 'RESOLVED' && keyRecord.response_body) {
+                return successResponse(
+                  keyRecord.response_body,
+                  { request_id: requestId, idempotent_replay: true },
+                  keyRecord.response_status || 200,
+                  { 'X-Idempotency-Replay': 'true' }
+                );
+              }
             }
+
+            // Reserve IN_PROGRESS
+            db.idempotencyKeys.set(`${tokenContext.company_id}:${idempotencyKey}`, {
+              status: 'IN_PROGRESS',
+              request_hash: bodyHash,
+              response_status: null,
+              response_body: null
+            });
           }
 
           const sourceType = typeof body.source_type === 'string' && body.source_type.trim() ? body.source_type.trim() : 'text_note';
@@ -318,6 +333,15 @@ const server = http.createServer((req, res) => {
             created_at: new Date().toISOString()
           });
 
+          if (idempotencyKey) {
+            db.idempotencyKeys.set(`${tokenContext.company_id}:${idempotencyKey}`, {
+              status: 'RESOLVED',
+              request_hash: crypto.createHash('sha256').update(JSON.stringify(body || {})).digest('hex'),
+              response_status: 201,
+              response_body: responseData
+            });
+          }
+
           return successResponse(responseData, { request_id: requestId }, 201);
         });
       }
@@ -345,20 +369,34 @@ const server = http.createServer((req, res) => {
 
         return tenantMutex.lock(async () => {
           if (idempotencyKey) {
-            const cachedEvent = db.events.find(
-              e => e.company_id === tokenContext.company_id &&
-                   e.event_type === 'api.memories.create' &&
-                   e.payload?.idempotency_key === idempotencyKey
-            );
+            const keyRecord = db.idempotencyKeys.get(`${tokenContext.company_id}:${idempotencyKey}`);
+            const bodyHash = crypto.createHash('sha256').update(JSON.stringify(body || {})).digest('hex');
 
-            if (cachedEvent?.payload?.response_data) {
-              return successResponse(
-                cachedEvent.payload.response_data,
-                { request_id: requestId, idempotent_replay: true },
-                200,
-                { 'X-Idempotency-Replay': 'true' }
-              );
+            if (keyRecord) {
+              if (keyRecord.request_hash && keyRecord.request_hash !== bodyHash) {
+                return errorResponse(
+                  'IDEMPOTENCY_CONFLICT',
+                  `Idempotency key '${idempotencyKey}' was previously submitted with different request parameters. Concurrent or mismatched payloads with the same key are prohibited.`,
+                  409
+                );
+              }
+              if (keyRecord.status === 'RESOLVED' && keyRecord.response_body) {
+                return successResponse(
+                  keyRecord.response_body,
+                  { request_id: requestId, idempotent_replay: true },
+                  keyRecord.response_status || 200,
+                  { 'X-Idempotency-Replay': 'true' }
+                );
+              }
             }
+
+            // Reserve IN_PROGRESS
+            db.idempotencyKeys.set(`${tokenContext.company_id}:${idempotencyKey}`, {
+              status: 'IN_PROGRESS',
+              request_hash: bodyHash,
+              response_status: null,
+              response_body: null
+            });
           }
 
           const title = typeof body.title === 'string' ? body.title.trim() : '';
@@ -422,6 +460,15 @@ const server = http.createServer((req, res) => {
             },
             created_at: new Date().toISOString()
           });
+
+          if (idempotencyKey) {
+            db.idempotencyKeys.set(`${tokenContext.company_id}:${idempotencyKey}`, {
+              status: 'RESOLVED',
+              request_hash: crypto.createHash('sha256').update(JSON.stringify(body || {})).digest('hex'),
+              response_status: 201,
+              response_body: newMemory
+            });
+          }
 
           return successResponse(newMemory, { request_id: requestId }, 201);
         });

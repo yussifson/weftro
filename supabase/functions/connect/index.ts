@@ -133,6 +133,126 @@ async function hmacSha256Signature(secret: string, payload: string): Promise<str
   return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
+// ══════════════════════════════════════════════════════════════════════════════
+// ATOMIC DISTRIBUTED IDEMPOTENCY LEDGER ENGINE
+// ══════════════════════════════════════════════════════════════════════════════
+interface IdempotencyClaimResult {
+  action: 'proceed' | 'replay' | 'in_progress' | 'conflict';
+  responseData?: any;
+  responseStatus?: number;
+  message?: string;
+}
+
+async function claimIdempotencyKey(
+  supabase: any,
+  companyId: string,
+  idempotencyKey: string,
+  requestPath: string,
+  rawPayload: any
+): Promise<IdempotencyClaimResult> {
+  const requestHash = await sha256Hash(JSON.stringify(rawPayload || {}));
+
+  // Attempt atomic reservation in clipad_v3_idempotency_keys
+  const { data: inserted, error: insertErr } = await supabase
+    .from('clipad_v3_idempotency_keys')
+    .insert([{
+      company_id: companyId,
+      idempotency_key: idempotencyKey,
+      request_path: requestPath,
+      request_hash: requestHash,
+      status: 'IN_PROGRESS',
+      created_at: new Date().toISOString(),
+      expires_at: new Date(Date.now() + 86400000).toISOString(),
+    }])
+    .select('id, status, request_hash, response_status, response_body')
+    .maybeSingle();
+
+  // If successfully inserted, caller owns the execution lock
+  if (!insertErr && inserted) {
+    return { action: 'proceed' };
+  }
+
+  // Conflict or existing record detected: query existing state
+  const { data: existing, error: queryErr } = await supabase
+    .from('clipad_v3_idempotency_keys')
+    .select('id, status, request_hash, response_status, response_body, created_at')
+    .eq('company_id', companyId)
+    .eq('idempotency_key', idempotencyKey)
+    .maybeSingle();
+
+  if (queryErr || !existing) {
+    // If the dedicated table is not yet migrated, fall back gracefully to clipad_v3_events
+    const { data: cachedEvent } = await supabase
+      .from('clipad_v3_events')
+      .select('payload')
+      .eq('company_id', companyId)
+      .filter('payload->>idempotency_key', 'eq', idempotencyKey)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (cachedEvent?.payload?.response_data) {
+      return {
+        action: 'replay',
+        responseData: cachedEvent.payload.response_data,
+        responseStatus: 200,
+      };
+    }
+    return { action: 'proceed' };
+  }
+
+  // Payload mismatch check: reusing key with different parameters is rejected
+  if (existing.request_hash && existing.request_hash !== requestHash) {
+    return {
+      action: 'conflict',
+      message: `Idempotency key '${idempotencyKey}' was previously submitted with different request parameters. Concurrent or mismatched payloads with the same key are prohibited.`,
+    };
+  }
+
+  // Resolved: return cached replay
+  if (existing.status === 'RESOLVED' && existing.response_body) {
+    return {
+      action: 'replay',
+      responseData: existing.response_body,
+      responseStatus: existing.response_status || 200,
+    };
+  }
+
+  // In progress: active concurrent worker currently executing
+  if (existing.status === 'IN_PROGRESS') {
+    return {
+      action: 'in_progress',
+      message: `An operation with idempotency key '${idempotencyKey}' is currently in progress. Please retry after a brief delay.`,
+    };
+  }
+
+  // Failed state: allow re-execution
+  return { action: 'proceed' };
+}
+
+async function resolveIdempotencyKey(
+  supabase: any,
+  companyId: string,
+  idempotencyKey: string | null,
+  responseStatus: number,
+  responseBody: any
+): Promise<void> {
+  if (!idempotencyKey) return;
+  try {
+    await supabase
+      .from('clipad_v3_idempotency_keys')
+      .update({
+        status: responseStatus >= 200 && responseStatus < 300 ? 'RESOLVED' : 'FAILED',
+        response_status: responseStatus,
+        response_body: responseBody,
+      })
+      .eq('company_id', companyId)
+      .eq('idempotency_key', idempotencyKey);
+  } catch (err: any) {
+    console.warn('[resolveIdempotencyKey] Ledger update warning:', err.message);
+  }
+}
+
 // Background Webhook Event Dispatcher
 async function dispatchWebhookEvent(
   supabase: any,
@@ -930,24 +1050,30 @@ serve(async (req) => {
         const body = await req.json().catch(() => ({}));
         const idempotencyKey = req.headers.get('Idempotency-Key') || body.idempotency_key || null;
 
-        // Idempotency check: look for an existing successful event within 24 hours
+        // Concurrency-Safe Atomic Idempotency Check & Lock
         if (idempotencyKey) {
-          const { data: cachedEvent } = await supabase
-            .from('clipad_v3_events')
-            .select('payload')
-            .eq('company_id', companyId)
-            .eq('event_type', 'api.memories.create')
-            .filter('payload->>idempotency_key', 'eq', idempotencyKey)
-            .order('created_at', { ascending: false })
-            .limit(1)
-            .maybeSingle();
+          const claim = await claimIdempotencyKey(
+            supabase,
+            companyId,
+            idempotencyKey,
+            '/api/v1/memories',
+            body
+          );
 
-          if (cachedEvent?.payload?.response_data) {
+          if (claim.action === 'conflict') {
+            return errorResponse('IDEMPOTENCY_CONFLICT', claim.message || 'Conflicting payload for idempotency key.', 409, requestId);
+          }
+
+          if (claim.action === 'in_progress') {
+            return errorResponse('OPERATION_IN_PROGRESS', claim.message || 'Operation currently in progress. Please retry.', 425, requestId);
+          }
+
+          if (claim.action === 'replay' && claim.responseData) {
             return successResponse(
-              cachedEvent.payload.response_data,
+              claim.responseData,
               { request_id: requestId, idempotent_replay: true },
-              200,
-              rateLimitHeaders
+              claim.responseStatus || 200,
+              { ...rateLimitHeaders, 'X-Idempotency-Replay': 'true' }
             );
           }
         }
@@ -1036,6 +1162,9 @@ serve(async (req) => {
           idempotency_key: idempotencyKey,
           response_data: createdMemory,
         });
+
+        // Resolve atomic idempotency ledger
+        await resolveIdempotencyKey(supabase, companyId, idempotencyKey, 201, createdMemory);
 
         // Trigger webhook notification
         dispatchWebhookEvent(supabase, companyId, 'memory.created', {
@@ -1167,24 +1296,30 @@ serve(async (req) => {
         const body = await req.json().catch(() => ({}));
         const idempotencyKey = req.headers.get('Idempotency-Key') || body.idempotency_key || null;
 
-        // Idempotency check: look for an existing successful event within 24 hours
+        // Concurrency-Safe Atomic Idempotency Check & Lock
         if (idempotencyKey) {
-          const { data: cachedEvent } = await supabase
-            .from('clipad_v3_events')
-            .select('payload')
-            .eq('company_id', companyId)
-            .eq('event_type', 'api.captures.create')
-            .filter('payload->>idempotency_key', 'eq', idempotencyKey)
-            .order('created_at', { ascending: false })
-            .limit(1)
-            .maybeSingle();
+          const claim = await claimIdempotencyKey(
+            supabase,
+            companyId,
+            idempotencyKey,
+            '/api/v1/captures',
+            body
+          );
 
-          if (cachedEvent?.payload?.response_data) {
+          if (claim.action === 'conflict') {
+            return errorResponse('IDEMPOTENCY_CONFLICT', claim.message || 'Conflicting payload for idempotency key.', 409, requestId);
+          }
+
+          if (claim.action === 'in_progress') {
+            return errorResponse('OPERATION_IN_PROGRESS', claim.message || 'Operation currently in progress. Please retry.', 425, requestId);
+          }
+
+          if (claim.action === 'replay' && claim.responseData) {
             return successResponse(
-              cachedEvent.payload.response_data,
+              claim.responseData,
               { request_id: requestId, idempotent_replay: true },
-              200,
-              rateLimitHeaders
+              claim.responseStatus || 200,
+              { ...rateLimitHeaders, 'X-Idempotency-Replay': 'true' }
             );
           }
         }
@@ -1278,6 +1413,9 @@ serve(async (req) => {
           idempotency_key: idempotencyKey,
           response_data: responseData,
         });
+
+        // Resolve atomic idempotency ledger
+        await resolveIdempotencyKey(supabase, companyId, idempotencyKey, 201, responseData);
 
         // Trigger webhook notification
         dispatchWebhookEvent(supabase, companyId, 'capture.created', {

@@ -656,7 +656,8 @@ Guidelines:
 
   const firstName = user?.full_name?.split(' ')[0] || user?.user_metadata?.full_name?.split(' ')[0] || 'there';
   const filteredResults = useMemo(() => results.filter(r => matchesFilter(r.type, activeFilter)), [results, activeFilter]);
-  const showLeftPanel = isSearching || filteredResults.length > 0;
+  const hasResults = isSearching || filteredResults.length > 0;
+  const showLeftPanel = hasResults;
   return (
     <div className="flex flex-col h-screen bg-slate-50 dark:bg-background font-sans text-slate-900 dark:text-slate-100 overflow-hidden">
       
