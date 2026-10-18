@@ -107,12 +107,12 @@ export default function DeveloperPlatform() {
 
   return (
     <div style={{ fontFamily: "'Inter', sans-serif" }} className="flex h-[calc(100vh-64px)] max-h-[calc(100vh-64px)] bg-slate-50 dark:bg-background overflow-hidden text-slate-900 dark:text-slate-100">
-      {/* SIDEBAR NAVIGATION (Matching SpaceDashboard pattern) */}
-      <aside className={`bg-white dark:bg-card border-r border-slate-200 dark:border-border flex-col hidden md:flex shrink-0 transition-all duration-300 ${sidebarOpen ? 'w-64' : 'w-20'}`}>
+      {/* SIDEBAR NAVIGATION: Slim, compact width to give maximum space to the main content & Copilot */}
+      <aside className={`bg-white dark:bg-card border-r border-slate-200 dark:border-border flex-col hidden md:flex shrink-0 transition-all duration-300 ${sidebarOpen ? 'w-52' : 'w-16'}`}>
         {/* Sidebar Header: Back button and expand/collapse button, top name area left empty */}
-        <div className="h-16 flex items-center px-4 border-b border-slate-200 dark:border-border gap-3 shrink-0 justify-between">
-          <div className="flex items-center gap-3 overflow-hidden">
-            {sidebarOpen && <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Developer</span>}
+        <div className="h-14 flex items-center px-3 border-b border-slate-200 dark:border-border gap-2 shrink-0 justify-between">
+          <div className="flex items-center gap-2 overflow-hidden">
+            {sidebarOpen && <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Developer</span>}
           </div>
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -128,10 +128,10 @@ export default function DeveloperPlatform() {
         </div>
 
         {/* Sidebar Nav Links */}
-        <div className="flex-1 overflow-y-auto py-4 px-3 space-y-1 scrollbar-hide">
+        <div className="flex-1 overflow-y-auto py-3 px-2 space-y-1 scrollbar-hide">
           {sidebarOpen && (
-            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3 px-3 transition-opacity">
-              Developer Platform
+            <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2 px-2.5 transition-opacity">
+              Platform
             </div>
           )}
 
@@ -143,20 +143,20 @@ export default function DeveloperPlatform() {
                 key={tab.id}
                 onClick={() => navigate(tab.path)}
                 title={!sidebarOpen ? tab.label : ''}
-                className={`flex items-center py-2 rounded-md transition-all ${
-                  sidebarOpen ? 'w-full gap-3 px-3 text-sm' : 'justify-center w-12 h-12 mx-auto'
+                className={`flex items-center py-2 rounded-lg transition-all ${
+                  sidebarOpen ? 'w-full gap-2.5 px-2.5 text-xs' : 'justify-center w-10 h-10 mx-auto'
                 } ${
                   isActive
-                    ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-foreground font-medium'
+                    ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-foreground font-semibold shadow-2xs'
                     : 'text-slate-600 dark:text-muted-foreground hover:bg-slate-50 dark:hover:bg-accent/50 hover:text-slate-900 dark:hover:text-slate-200'
                 }`}
               >
                 <Icon
-                  className={`shrink-0 ${sidebarOpen ? 'w-4 h-4' : 'w-5 h-5'} ${
-                    isActive ? 'text-slate-900 dark:text-foreground' : 'text-slate-400'
+                  className={`shrink-0 ${sidebarOpen ? 'w-4 h-4' : 'w-4 h-4'} ${
+                    isActive ? 'text-primary' : 'text-slate-400'
                   }`}
                 />
-                {sidebarOpen && <span className="truncate">{tab.label}</span>}
+                {sidebarOpen && <span className="truncate text-xs">{tab.label}</span>}
               </button>
             );
           })}

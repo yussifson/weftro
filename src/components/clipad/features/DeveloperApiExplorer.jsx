@@ -188,8 +188,102 @@ export default function DeveloperApiExplorer() {
     }
   };
 
+  const [snippetFormat, setSnippetFormat] = useState('curl'); // 'curl' | 'ts'
+
   const generatedCurl = `curl -X ${selectedEndpoint.method} "${BASE_URL}${selectedEndpoint.path}" \\
   -H "Authorization: Bearer ${tokenInput ? '<YOUR_TOKEN>' : '<TOKEN>'}"${selectedEndpoint.method !== 'GET' && requestBody ? ` \\\n  -H "Content-Type: application/json" \\\n  -d '${requestBody.replace(/\n\s*/g, ' ')}'` : ''}`;
+
+  const generateTsSnippet = () => {
+    const isMutation = selectedEndpoint.path === '/api/v1/captures' && selectedEndpoint.method === 'POST';
+    const isMemoryCreate = selectedEndpoint.path === '/api/v1/memories' && selectedEndpoint.method === 'POST';
+    const isSearch = selectedEndpoint.path === '/api/v1/search';
+
+    if (selectedEndpoint.path === '/api/v1/health') {
+      return `import { WeftroClient } from '@weftro/sdk';
+
+const client = new WeftroClient({ apiKey: process.env.WEFTRO_TOKEN! });
+const response = await client.health();
+console.log(response.data);`;
+    }
+
+    if (selectedEndpoint.path === '/api/v1/capabilities') {
+      return `import { WeftroClient } from '@weftro/sdk';
+
+const client = new WeftroClient({ apiKey: process.env.WEFTRO_TOKEN! });
+const capabilities = await client.capabilities();
+console.log(capabilities.data.supported_scopes);`;
+    }
+
+    if (isSearch) {
+      let parsedQuery = 'architecture roadmap';
+      try {
+        const parsed = JSON.parse(requestBody);
+        if (parsed.query) parsedQuery = parsed.query;
+      } catch (_) {}
+      return `import { WeftroClient } from '@weftro/sdk';
+
+const client = new WeftroClient({ apiKey: process.env.WEFTRO_TOKEN! });
+const results = await client.search({
+  query: '${parsedQuery}',
+  limit: 5
+});
+console.log(results.data);`;
+    }
+
+    if (isMutation) {
+      return `import { WeftroClient } from '@weftro/sdk';
+
+const client = new WeftroClient({ apiKey: process.env.WEFTRO_TOKEN! });
+const capture = await client.captures.create({
+  title: 'External Ingest Note',
+  content: 'Captured via Weftro TypeScript SDK',
+  source_type: 'cli_integration'
+}, {
+  idempotencyKey: 'idemp_' + crypto.randomUUID().slice(0, 8) // Optional caller idempotency key
+});
+console.log(capture.data.id, capture.data.status);`;
+    }
+
+    if (isMemoryCreate) {
+      return `import { WeftroClient } from '@weftro/sdk';
+
+const client = new WeftroClient({ apiKey: process.env.WEFTRO_TOKEN! });
+const memory = await client.memories.create({
+  title: 'Architecture Blueprint',
+  content: 'Verified organizational knowledge ingested via SDK',
+  memory_type: 'DECISION',
+  memory_tier: 'organizational',
+  importance: 0.9
+}, {
+  idempotencyKey: 'idemp_' + crypto.randomUUID().slice(0, 8)
+});
+console.log(memory.data.id, memory.data.status);`;
+    }
+
+    if (selectedEndpoint.path.startsWith('/api/v1/memories')) {
+      return `import { WeftroClient } from '@weftro/sdk';
+
+const client = new WeftroClient({ apiKey: process.env.WEFTRO_TOKEN! });
+const memories = await client.memories.list({ limit: 10 });
+console.log(memories.data);`;
+    }
+
+    if (selectedEndpoint.path.startsWith('/api/v1/captures')) {
+      return `import { WeftroClient } from '@weftro/sdk';
+
+const client = new WeftroClient({ apiKey: process.env.WEFTRO_TOKEN! });
+const captures = await client.captures.list({ limit: 10 });
+console.log(captures.data);`;
+    }
+
+    return `import { WeftroClient } from '@weftro/sdk';
+
+const client = new WeftroClient({ apiKey: process.env.WEFTRO_TOKEN! });
+// Call verified client method for ${selectedEndpoint.path}`;
+  };
+
+  const activeSnippet = snippetFormat === 'curl' ? generatedCurl : generateTsSnippet();
+
 
   return (
     <div className="space-y-6">
@@ -277,13 +371,34 @@ export default function DeveloperApiExplorer() {
                 </div>
               )}
 
-              {/* Generated cURL command */}
-              <div className="p-3 bg-muted/40 border border-border rounded-xl space-y-1.5">
+              {/* Generated Code Snippet (cURL / TypeScript SDK) */}
+              <div className="p-3 bg-muted/40 border border-border rounded-xl space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">cURL Equivalent</span>
+                  <div className="flex items-center gap-1 bg-secondary/50 p-0.5 rounded-lg border border-border/50">
+                    <button
+                      onClick={() => setSnippetFormat('curl')}
+                      className={`text-[10px] font-bold px-2 py-0.5 rounded-md transition-all ${
+                        snippetFormat === 'curl'
+                          ? 'bg-primary text-primary-foreground shadow-xs'
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      cURL
+                    </button>
+                    <button
+                      onClick={() => setSnippetFormat('ts')}
+                      className={`text-[10px] font-bold px-2 py-0.5 rounded-md transition-all ${
+                        snippetFormat === 'ts'
+                          ? 'bg-primary text-primary-foreground shadow-xs'
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      TypeScript SDK
+                    </button>
+                  </div>
                   <button
                     onClick={() => {
-                      navigator.clipboard.writeText(generatedCurl);
+                      navigator.clipboard.writeText(activeSnippet);
                       setCopied(true);
                       setTimeout(() => setCopied(false), 2000);
                     }}
@@ -293,10 +408,11 @@ export default function DeveloperApiExplorer() {
                     <span>{copied ? 'Copied' : 'Copy'}</span>
                   </button>
                 </div>
-                <pre className="font-mono text-[11px] overflow-x-auto text-muted-foreground">{generatedCurl}</pre>
+                <pre className="font-mono text-[11px] overflow-x-auto text-muted-foreground whitespace-pre leading-relaxed">{activeSnippet}</pre>
               </div>
             </CardContent>
           </Card>
+
 
           {/* Response Pane */}
           {responseOutput && (

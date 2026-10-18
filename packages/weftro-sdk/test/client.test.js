@@ -195,4 +195,62 @@ describe('WeftroClient SDK Unit Tests (Mocked HTTP)', () => {
     assert.doesNotMatch(err.stack || '', new RegExp(secretKey));
   });
 
+  it('handles malformed non-JSON responses from gateway gracefully', async () => {
+    const mockFetch = async () => {
+      return new Response('<html>502 Bad Gateway</html>', {
+        status: 502,
+        headers: { 'Content-Type': 'text/html' }
+      });
+    };
+
+    const client = new WeftroClient({ apiKey: 'token', fetch: mockFetch });
+
+    await assert.rejects(
+      async () => client.health(),
+      (err) => {
+        assert(err instanceof WeftroApiError);
+        assert.equal(err.status, 502);
+        assert.match(err.message, /502/);
+        return true;
+      }
+    );
+  });
+
+  it('maps low-level fetch failures to WeftroNetworkError', async () => {
+    const mockFetch = async () => {
+      throw new Error('fetch failed: getaddrinfo ENOTFOUND api.weftro.com');
+    };
+
+    const client = new WeftroClient({ apiKey: 'token', fetch: mockFetch });
+
+    await assert.rejects(
+      async () => client.health(),
+      /Weftro Network Error/
+    );
+  });
+
+  it('raises WeftroTimeoutError when request exceeds configured timeoutMs', async () => {
+    const mockFetch = async (_url, options) => {
+      return new Promise((_resolve, reject) => {
+        options.signal.addEventListener('abort', () => {
+          const err = new Error('The operation was aborted due to timeout.');
+          err.name = 'AbortError';
+          reject(err);
+        });
+      });
+    };
+
+    const client = new WeftroClient({ apiKey: 'token', timeoutMs: 20, fetch: mockFetch });
+
+    await assert.rejects(
+      async () => client.health(),
+      (err) => {
+        assert(err instanceof WeftroTimeoutError);
+        assert.equal(err.timeoutMs, 20);
+        return true;
+      }
+    );
+  });
+
 });
+
