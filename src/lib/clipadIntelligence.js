@@ -607,8 +607,16 @@ export async function buildOrgContext(options = {}) {
     contextText.push(...topologicalMap);
   }
 
+  // Enterprise Token Budgeting (Milestone 5)
+  // Standard context budget: default 24,000 characters (~6,000 tokens)
+  const maxCharsBudget = options.maxChars || 24000;
+  let fullContextString = contextText.filter(Boolean).join('\n');
+  if (fullContextString.length > maxCharsBudget) {
+    fullContextString = fullContextString.slice(0, maxCharsBudget) + '\n\n... [Context truncated to stay within token budget]';
+  }
+
   return {
-    contextText: contextText.filter(Boolean).join('\n'),
+    contextText: fullContextString,
     sourceMap,
     meetings,
     decisions,
