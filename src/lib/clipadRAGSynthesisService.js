@@ -54,12 +54,23 @@ export function sliceUnicodeSafe(str, limit) {
   if (!str || typeof str !== 'string' || limit <= 0) return '';
   if (str.length <= limit) return str;
 
-  // If the character at limit - 1 is a high surrogate (0xD800 to 0xDBFF),
-  // do not include it alone without its trailing low surrogate.
-  const lastCharCode = str.charCodeAt(limit - 1);
-  if (lastCharCode >= 0xd800 && lastCharCode <= 0xdbff) {
+  // Case 1: If char at limit - 1 is a high surrogate (0xD800 - 0xDBFF),
+  // including it alone would orphan it without its low surrogate. Back up by 1.
+  const lastCode = str.charCodeAt(limit - 1);
+  if (lastCode >= 0xd800 && lastCode <= 0xdbff) {
     return str.slice(0, limit - 1);
   }
+
+  // Case 2: If char at limit is a low surrogate (0xDC00 - 0xDFFF) and char at limit - 1
+  // is its high surrogate, taking only limit chars would split the pair.
+  // Back up limit - 1 to drop the orphan high surrogate.
+  const nextCode = str.charCodeAt(limit);
+  if (nextCode >= 0xdc00 && nextCode <= 0xdfff) {
+    if (lastCode >= 0xd800 && lastCode <= 0xdbff) {
+      return str.slice(0, limit - 1);
+    }
+  }
+
   return str.slice(0, limit);
 }
 
@@ -117,10 +128,15 @@ export function formatEvidencePack(evidenceItems = [], options = {}) {
 
         if (cleanContent.length > maxSnippetChars) {
           isTruncated = true;
-          // When truncated, ensure the truncation marker itself fits within availableContentChars
-          const textBudget = Math.max(0, maxSnippetChars - truncationMarker.length);
-          const slicedText = sliceUnicodeSafe(cleanContent, textBudget);
-          const contentSnippet = `${slicedText}${truncationMarker}`;
+          // When truncated, only append the truncation marker if availableContentChars can accommodate it
+          let contentSnippet = '';
+          if (maxSnippetChars >= truncationMarker.length) {
+            const textBudget = maxSnippetChars - truncationMarker.length;
+            const slicedText = sliceUnicodeSafe(cleanContent, textBudget);
+            contentSnippet = `${slicedText}${truncationMarker}`;
+          } else {
+            contentSnippet = sliceUnicodeSafe(cleanContent, maxSnippetChars);
+          }
           const block = `${blockHeader}${contentSnippet}${blockFooter}`;
 
           evidenceBlocks.push(block);
@@ -259,9 +275,9 @@ export function validateCitationReferences(text, sources = []) {
           type: matched.type,
           source_channel: matched.source_channel || 'hybrid',
           isTruncated: matched.isTruncated || false,
-          // Explicit provenance guarantee: verified as authorized and present in evidence pack,
+          // Explicit provenance guarantee: certified as authorized and included in evidence pack,
           // without claiming independent semantic factual proof beyond the provided source text.
-          verificationStatus: matched.isTruncated ? 'VALID_TRUNCATED' : 'VALID',
+          verificationStatus: matched.isTruncated ? 'PARTIAL_SOURCE_EXCERPT' : 'SOURCE_INCLUDED',
         });
       }
     } else {
