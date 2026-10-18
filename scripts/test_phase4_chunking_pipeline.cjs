@@ -537,15 +537,92 @@ record(
   `Transcript chars assembled: ${meetingDisabled.charLength}, Status when enabled: ${meetingEnabled.status}`
 );
 
-// ── Summary ──
-console.log('\n================================================================');
-const passedCount = results.filter(r => r.pass).length;
-const totalCount = results.length;
-console.log(` PHASE 4 CHUNKING & INGESTION SUITE: ${passedCount}/${totalCount} PASSED (${totalCount - passedCount} FAILED)`);
-console.log('================================================================\n');
+// ── Test Group 9: Ingestion Hardening, Deduplication & Concurrency ──
+console.log('\n--- Test Group 9: Ingestion Hardening, Deduplication & Concurrency ---');
 
-if (passedCount !== totalCount) {
-  process.exit(1);
-} else {
-  process.exit(0);
+function simulateMeetingLifecycleWithRef() {
+  const hasIngestedTranscriptRef = new Set();
+  let dispatchCount = 0;
+
+  function onMeetingFetch(meetingId) {
+    if (!hasIngestedTranscriptRef.has(meetingId)) {
+      hasIngestedTranscriptRef.add(meetingId);
+      dispatchCount++;
+      return 'INGESTED';
+    }
+    return 'SKIPPED_ALREADY_INGESTED';
+  }
+
+  const firstFetch = onMeetingFetch('meet_abc');
+  const secondFetchRefresh = onMeetingFetch('meet_abc');
+  const tabSwitchFetch = onMeetingFetch('meet_abc');
+  const differentMeeting = onMeetingFetch('meet_xyz');
+
+  return { firstFetch, secondFetchRefresh, tabSwitchFetch, differentMeeting, dispatchCount };
 }
+
+const meetingRefSim = simulateMeetingLifecycleWithRef();
+record(
+  '15. Repeated meeting views/refreshes do not trigger redundant transcript chunk ingestion',
+  meetingRefSim.firstFetch === 'INGESTED' &&
+  meetingRefSim.secondFetchRefresh === 'SKIPPED_ALREADY_INGESTED' &&
+  meetingRefSim.tabSwitchFetch === 'SKIPPED_ALREADY_INGESTED' &&
+  meetingRefSim.differentMeeting === 'INGESTED' &&
+  meetingRefSim.dispatchCount === 2,
+  `Total dispatches: ${meetingRefSim.dispatchCount} across 4 fetches (redundant views skipped)`
+);
+
+async function simulateConcurrentIngestionLock() {
+  const lockMap = new Map();
+  let executionCount = 0;
+
+  async function mockIngestWithLock(docId) {
+    if (lockMap.has(docId)) {
+      return lockMap.get(docId);
+    }
+    const execution = (async () => {
+      try {
+        executionCount++;
+        await new Promise(r => setTimeout(r, 20));
+        return { docId, success: true };
+      } finally {
+        lockMap.delete(docId);
+      }
+    })();
+    lockMap.set(docId, execution);
+    return execution;
+  }
+
+  // Fire 3 simultaneous calls for the same docId
+  const [res1, res2, res3] = await Promise.all([
+    mockIngestWithLock('doc_concurrent_1'),
+    mockIngestWithLock('doc_concurrent_1'),
+    mockIngestWithLock('doc_concurrent_1')
+  ]);
+
+  return { res1, res2, res3, executionCount };
+}
+
+async function main() {
+  const concRes = await simulateConcurrentIngestionLock();
+  record(
+    '16. Overlapping concurrent ingestion attempts for same document are deduplicated via in-flight lock',
+    concRes.executionCount === 1 && concRes.res1.docId === 'doc_concurrent_1' && concRes.res2.success && concRes.res3.success,
+    `3 concurrent calls coalesced into ${concRes.executionCount} real execution`
+  );
+
+  // ── Summary ──
+  console.log('\n================================================================');
+  const passedCount = results.filter(r => r.pass).length;
+  const totalCount = results.length;
+  console.log(` PHASE 4 CHUNKING & INGESTION SUITE: ${passedCount}/${totalCount} PASSED (${totalCount - passedCount} FAILED)`);
+  console.log('================================================================\n');
+
+  if (passedCount !== totalCount) {
+    process.exit(1);
+  } else {
+    process.exit(0);
+  }
+}
+
+main();

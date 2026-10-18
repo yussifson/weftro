@@ -111,6 +111,9 @@ export function formatPgVector(vector) {
   return `[${vector.join(',')}]`;
 }
 
+// Concurrency lock to prevent concurrent or overlapping ingestion jobs on the same parent record
+const _inFlightIngestions = new Map();
+
 /**
  * Ingest a long-form document into `clipad_knowledge_chunks` idempotently and atomically.
  *
@@ -158,11 +161,19 @@ export async function ingestDocumentChunks({
     throw new Error('Both knowledgeId and companyId are required for chunk ingestion.');
   }
 
-  if (!content || typeof content !== 'string' || !content.trim()) {
-    return { success: true, chunksCreated: 0, chunks: [] };
+  // Prevent overlapping concurrent ingestion attempts on the same knowledge record
+  const lockKey = `${companyId}:${knowledgeId}`;
+  if (_inFlightIngestions.has(lockKey)) {
+    return _inFlightIngestions.get(lockKey);
   }
 
-  // 1. Structure-Aware Chunking
+  const ingestionExecution = (async () => {
+    try {
+      if (!content || typeof content !== 'string' || !content.trim()) {
+        return { success: true, chunksCreated: 0, chunks: [] };
+      }
+
+      // 1. Structure-Aware Chunking
   const rawChunks = chunkTextContent({
     content,
     title,
@@ -249,6 +260,13 @@ export async function ingestDocumentChunks({
     chunksCreated: (inserted || []).length,
     chunks: inserted || [],
   };
+    } finally {
+      _inFlightIngestions.delete(lockKey);
+    }
+  })();
+
+  _inFlightIngestions.set(lockKey, ingestionExecution);
+  return ingestionExecution;
 }
 
 /**

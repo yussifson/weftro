@@ -333,14 +333,20 @@ export default function IntegrationsHub() {
       // Trigger AI reprocessing & structure-aware chunk ingestion for imported items
       setTimeout(async () => {
         try {
+          // Ingest only documents belonging to this connection with valid, non-empty text
           const { data: unprocessed } = await supabase
             .from('clipad_imported_knowledge')
-            .select('id, external_id, title, content, provider')
+            .select('id, external_id, title, content, provider, company_id')
             .eq('integration_id', conn.id)
+            .not('content', 'is', null)
+            .order('imported_at', { ascending: false })
             .limit(20);
 
           if (unprocessed?.length > 0) {
             for (const item of unprocessed) {
+              const textContent = typeof item.content === 'string' ? item.content.trim() : '';
+              if (!textContent) continue;
+
               // 1. Edge function AI summary trigger
               supabase.functions.invoke('integration-ai-processor', {
                 body: { integrationId: conn.id, provider: integration.id, externalId: item.external_id }
@@ -348,11 +354,12 @@ export default function IntegrationsHub() {
 
               // 2. Chunk Ingestion Pipeline Integration (Milestone 3)
               // Safe: guarded by DOCUMENT_CHUNKING_INGESTION_ENABLED flag inside service
-              if (item.content && companyId) {
+              const targetCompanyId = item.company_id || companyId;
+              if (targetCompanyId) {
                 ingestDocumentChunks({
                   knowledgeId: item.id,
-                  companyId,
-                  content: item.content,
+                  companyId: targetCompanyId,
+                  content: textContent,
                   title: item.title || '',
                   parentType: item.provider || 'integration',
                   user

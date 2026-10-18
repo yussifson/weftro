@@ -135,6 +135,9 @@ export default function MeetingRecord() {
   const [memType, setMemType] = useState('DECISION');
   const [savingMemory, setSavingMemory] = useState(false);
 
+  // Ingestion deduplication ref to prevent repeated chunking on every fetch/refresh
+  const hasIngestedTranscriptRef = React.useRef(new Set());
+
   const { toast } = useToast();
 
   // Prevent background scrolling when any modal is open
@@ -236,7 +239,13 @@ export default function MeetingRecord() {
         setTranscript(transcriptRes.data);
         // Structure-aware transcript chunk ingestion (Milestone 3)
         // Safe: guarded by DOCUMENT_CHUNKING_INGESTION_ENABLED flag inside service
-        if (transcriptRes.data.length > 0 && meetingRes.data?.company_id) {
+        // Deduped: skips redundant re-ingestion if this meeting was already processed in the current session
+        if (
+          transcriptRes.data.length > 0 &&
+          meetingRes.data?.company_id &&
+          !hasIngestedTranscriptRef.current.has(meetingId)
+        ) {
+          hasIngestedTranscriptRef.current.add(meetingId);
           const fullTranscriptText = transcriptRes.data
             .map(t => `[${t.speaker || 'Speaker'} @ ${t.start_time || '00:00'}] ${t.text}`)
             .join('\n');
