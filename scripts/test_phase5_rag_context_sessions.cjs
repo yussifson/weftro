@@ -136,6 +136,113 @@ record(
   `Final status: ${completedSession.status}, ended_at: ${completedSession.ended_at}`
 );
 
+// ── Test Subgroup 1B: RLS Invariant Policy Simulation (Owner & Tenant Immutability) ──
+function simulateContextSessionUpdateRLS({
+  sessionRow,
+  callerUid,
+  callerCompanyId,
+  updates
+}) {
+  // 1. SELECT/UPDATE eligibility (USING clause)
+  if (sessionRow.user_id !== callerUid || sessionRow.company_id !== callerCompanyId) {
+    return { success: false, error: 'Row not found or access denied (RLS USING rejected)' };
+  }
+
+  // Calculate prospective updated row
+  const updatedRow = { ...sessionRow, ...updates };
+
+  // 2. Prospective update validation (WITH CHECK clause)
+  if (updatedRow.user_id !== callerUid) {
+    return { success: false, error: 'Forbidden: Cannot transfer session ownership to another user (RLS WITH CHECK rejected)' };
+  }
+
+  if (updatedRow.company_id !== callerCompanyId) {
+    return { success: false, error: 'Forbidden: Cannot transfer session to another tenant organization (RLS WITH CHECK rejected)' };
+  }
+
+  // Legitimate update
+  Object.assign(sessionRow, updates);
+  return { success: true, updatedRow };
+}
+
+const testSessionRow = {
+  id: 'sess_sec_test',
+  user_id: 'usr_alice',
+  company_id: 'org_acme',
+  title: 'Original Title',
+  status: 'ACTIVE'
+};
+
+// Test A1: Legitimate update by owner within same organization
+const legitUpdateRes = simulateContextSessionUpdateRLS({
+  sessionRow: { ...testSessionRow },
+  callerUid: 'usr_alice',
+  callerCompanyId: 'org_acme',
+  updates: { title: 'Updated Title', description: 'Allowed edit' }
+});
+
+record(
+  '5A. Owner updating allowed session field succeeds [MOCK RLS]',
+  legitUpdateRes.success === true && legitUpdateRes.updatedRow.title === 'Updated Title',
+  'Allowed update accepted under matching user_id & company_id'
+);
+
+// Test A2: Owner attempting to transfer user_id
+const transferUserRes = simulateContextSessionUpdateRLS({
+  sessionRow: { ...testSessionRow },
+  callerUid: 'usr_alice',
+  callerCompanyId: 'org_acme',
+  updates: { user_id: 'usr_malicious_attacker' }
+});
+
+record(
+  '5B. Owner attempting to transfer user_id is rejected by WITH CHECK [MOCK RLS]',
+  transferUserRes.success === false && transferUserRes.error.includes('Cannot transfer session ownership'),
+  transferUserRes.error
+);
+
+// Test A3: Owner attempting to change company_id
+const transferCompanyRes = simulateContextSessionUpdateRLS({
+  sessionRow: { ...testSessionRow },
+  callerUid: 'usr_alice',
+  callerCompanyId: 'org_acme',
+  updates: { company_id: 'org_foreign_competitor' }
+});
+
+record(
+  '5C. Owner attempting to change company_id is rejected by WITH CHECK [MOCK RLS]',
+  transferCompanyRes.success === false && transferCompanyRes.error.includes('Cannot transfer session to another tenant'),
+  transferCompanyRes.error
+);
+
+// Test A4: Another user attempting to update the session
+const foreignUserRes = simulateContextSessionUpdateRLS({
+  sessionRow: { ...testSessionRow },
+  callerUid: 'usr_bob',
+  callerCompanyId: 'org_acme',
+  updates: { title: 'Tampered Title' }
+});
+
+record(
+  '5D. Another user attempting to update session is rejected by USING [MOCK RLS]',
+  foreignUserRes.success === false && foreignUserRes.error.includes('RLS USING rejected'),
+  foreignUserRes.error
+);
+
+// Test A5: Cross-tenant caller attempting to update the session
+const crossTenantRes = simulateContextSessionUpdateRLS({
+  sessionRow: { ...testSessionRow },
+  callerUid: 'usr_alice',
+  callerCompanyId: 'org_foreign',
+  updates: { title: 'Cross Tenant Tampering' }
+});
+
+record(
+  '5E. Cross-tenant caller attempting to update session is rejected [MOCK RLS]',
+  crossTenantRes.success === false && crossTenantRes.error.includes('RLS USING rejected'),
+  crossTenantRes.error
+);
+
 // ──────────────────────────────────────────────────────────────────
 // Test Group 2: Zero-Trust Security & Evidence Filtering (In-Memory Simulation)
 // ──────────────────────────────────────────────────────────────────
@@ -271,6 +378,137 @@ record(
   '13. Grounded evidence synthesizes accurate answer with source index attribution [Source: #1]',
   groundedResult.status === 'GROUNDED' && groundedResult.grounded === true && groundedResult.answer.includes('[Source: #1]'),
   `Answer: "${groundedResult.answer}", Source count: ${groundedResult.sources.length}`
+);
+
+// ── Test Group 4B: Citation Reference Post-Validation Matrix ──
+console.log('\n--- Test Group 4B: Citation Reference Post-Validation Matrix ---');
+
+function validateCitationReferences(text, sources = []) {
+  if (!text || typeof text !== 'string') {
+    return {
+      citedIndices: [],
+      validCitations: [],
+      unverifiedCitations: [],
+      hasUnverifiedCitations: false,
+    };
+  }
+
+  const citationPattern = /\[Source:\s*#?([^\s\]]+)\]/gi;
+  const matches = [...text.matchAll(citationPattern)];
+
+  const citedIndices = [];
+  const validCitationsMap = new Map();
+  const unverifiedCitations = [];
+
+  const sourceIndexMap = new Map();
+  (sources || []).forEach((src) => {
+    if (src && typeof src.index === 'number') {
+      sourceIndexMap.set(src.index, src);
+    }
+  });
+
+  matches.forEach((match) => {
+    const rawTag = match[0];
+    const rawIndexStr = match[1];
+    const parsedIndex = parseInt(rawIndexStr, 10);
+
+    if (isNaN(parsedIndex) || !Number.isInteger(parsedIndex)) {
+      unverifiedCitations.push({
+        raw: rawTag,
+        index: null,
+        reason: 'MALFORMED_INDEX',
+      });
+      return;
+    }
+
+    citedIndices.push(parsedIndex);
+
+    if (sourceIndexMap.has(parsedIndex)) {
+      const matched = sourceIndexMap.get(parsedIndex);
+      if (!validCitationsMap.has(parsedIndex)) {
+        validCitationsMap.set(parsedIndex, {
+          index: parsedIndex,
+          id: matched.id,
+          title: matched.title,
+          type: matched.type || 'document',
+        });
+      }
+    } else {
+      unverifiedCitations.push({
+        raw: rawTag,
+        index: parsedIndex,
+        reason: 'OUT_OF_RANGE_OR_UNRETRIEVED',
+      });
+    }
+  });
+
+  return {
+    citedIndices,
+    validCitations: Array.from(validCitationsMap.values()),
+    unverifiedCitations,
+    hasUnverifiedCitations: unverifiedCitations.length > 0,
+  };
+}
+
+const testEvidenceSources = [
+  { index: 1, id: 'mem_101', title: 'Q4 Budget Allocations', type: 'memory' },
+  { index: 2, id: 'chunk_202', title: 'Security Audit Transcript', type: 'knowledge_chunk' }
+];
+
+// Test B1: Valid citations mapping to exact evidence
+const validCiteRes = validateCitationReferences('As stated in [Source: #1] and [Source: #2], budgets and audits are ready.', testEvidenceSources);
+record(
+  '13A. Valid citations map to exact retrieved source IDs and types',
+  validCiteRes.validCitations.length === 2 && validCiteRes.validCitations[0].id === 'mem_101' && !validCiteRes.hasUnverifiedCitations,
+  `Valid citations: ${validCiteRes.validCitations.map(c => `${c.title} (#${c.index} -> ${c.id})`).join(', ')}`
+);
+
+// Test B2: Out-of-range fabricated citation
+const outOfRangeRes = validateCitationReferences('According to [Source: #99], all systems are offline.', testEvidenceSources);
+record(
+  '13B. Out-of-range citation #99 is detected and isolated as unverified',
+  outOfRangeRes.hasUnverifiedCitations && outOfRangeRes.unverifiedCitations[0].index === 99 && outOfRangeRes.validCitations.length === 0,
+  `Unverified reason: ${outOfRangeRes.unverifiedCitations[0].reason} for index ${outOfRangeRes.unverifiedCitations[0].index}`
+);
+
+// Test B3: Malformed citation tag
+const malformedRes = validateCitationReferences('Check [Source: #invalid_tag] for details.', testEvidenceSources);
+record(
+  '13C. Malformed non-numeric citation tag is safely caught without throwing',
+  malformedRes.hasUnverifiedCitations && malformedRes.unverifiedCitations[0].reason === 'MALFORMED_INDEX',
+  `Caught raw: ${malformedRes.unverifiedCitations[0].raw}, reason: ${malformedRes.unverifiedCitations[0].reason}`
+);
+
+// Test B4: Duplicate citations in text deduplicated cleanly in valid list
+const duplicateCiteRes = validateCitationReferences('First mention [Source: #1], second mention [Source: #1].', testEvidenceSources);
+record(
+  '13D. Duplicate citations in text map to single unique valid citation metadata entry',
+  duplicateCiteRes.citedIndices.length === 2 && duplicateCiteRes.validCitations.length === 1 && duplicateCiteRes.validCitations[0].id === 'mem_101',
+  `Cited count: ${duplicateCiteRes.citedIndices.length}, Unique valid count: ${duplicateCiteRes.validCitations.length}`
+);
+
+// Test B5: Mixed valid and invalid citations
+const mixedCiteRes = validateCitationReferences('Valid [Source: #1] but invalid [Source: #77].', testEvidenceSources);
+record(
+  '13E. Mixed valid and invalid citations are segregated without discarding valid evidence',
+  mixedCiteRes.validCitations.length === 1 && mixedCiteRes.unverifiedCitations.length === 1 && mixedCiteRes.validCitations[0].id === 'mem_101',
+  `Valid ID: ${mixedCiteRes.validCitations[0].id}, Unverified: #${mixedCiteRes.unverifiedCitations[0].index}`
+);
+
+// Test B6: Empty evidence pack with citations in response
+const emptyEvidenceCiteRes = validateCitationReferences('Claims fact [Source: #1].', []);
+record(
+  '13F. Citations referencing empty evidence pack are marked unverified',
+  emptyEvidenceCiteRes.hasUnverifiedCitations && emptyEvidenceCiteRes.validCitations.length === 0,
+  'Unverified list length: ' + emptyEvidenceCiteRes.unverifiedCitations.length
+);
+
+// Test B7: Model response with no citations
+const noCiteRes = validateCitationReferences('General knowledge answer with zero citations.', testEvidenceSources);
+record(
+  '13G. Model response with zero citations returns safe empty arrays without error',
+  !noCiteRes.hasUnverifiedCitations && noCiteRes.validCitations.length === 0 && noCiteRes.citedIndices.length === 0,
+  'Cited indices: 0, Valid citations: 0'
 );
 
 // ──────────────────────────────────────────────────────────────────

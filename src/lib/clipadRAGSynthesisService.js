@@ -113,6 +113,93 @@ Provide a grounded, factual answer based strictly on the evidence above.`;
 }
 
 /**
+ * Validate model-generated citation tags `[Source: #X]` against the actual evidence pack.
+ *
+ * Guarantees:
+ * - Deterministic cross-reference against 1-based index of retrieved evidence.
+ * - Categorizes citations into `validCitations` (matching an authorized retrieved item)
+ *   and `unverifiedCitations` (out-of-range, unknown, or malformed indices).
+ * - Distinguishes between model-claimed citations and application-verified citations.
+ * - Explicitly avoids making factual verification claims beyond index provenance.
+ *
+ * @param {string} text - Generated answer text
+ * @param {Array<Object>} sources - Supplied authorized evidence sources
+ * @returns {{
+ *   citedIndices: Array<number>,
+ *   validCitations: Array<{ index: number, id: string, title: string, type: string }>,
+ *   unverifiedCitations: Array<{ raw: string, index: number|null, reason: string }>,
+ *   hasUnverifiedCitations: boolean
+ * }}
+ */
+export function validateCitationReferences(text, sources = []) {
+  if (!text || typeof text !== 'string') {
+    return {
+      citedIndices: [],
+      validCitations: [],
+      unverifiedCitations: [],
+      hasUnverifiedCitations: false,
+    };
+  }
+
+  const citationPattern = /\[Source:\s*#?([^\s\]]+)\]/gi;
+  const matches = [...text.matchAll(citationPattern)];
+
+  const citedIndices = [];
+  const validCitationsMap = new Map();
+  const unverifiedCitations = [];
+
+  const sourceIndexMap = new Map();
+  (sources || []).forEach((src) => {
+    if (src && typeof src.index === 'number') {
+      sourceIndexMap.set(src.index, src);
+    }
+  });
+
+  matches.forEach((match) => {
+    const rawTag = match[0];
+    const rawIndexStr = match[1];
+    const parsedIndex = parseInt(rawIndexStr, 10);
+
+    if (isNaN(parsedIndex) || !Number.isInteger(parsedIndex)) {
+      unverifiedCitations.push({
+        raw: rawTag,
+        index: null,
+        reason: 'MALFORMED_INDEX',
+      });
+      return;
+    }
+
+    citedIndices.push(parsedIndex);
+
+    if (sourceIndexMap.has(parsedIndex)) {
+      const matched = sourceIndexMap.get(parsedIndex);
+      if (!validCitationsMap.has(parsedIndex)) {
+        validCitationsMap.set(parsedIndex, {
+          index: parsedIndex,
+          id: matched.id,
+          title: matched.title,
+          type: matched.type,
+          source_channel: matched.source_channel || 'hybrid',
+        });
+      }
+    } else {
+      unverifiedCitations.push({
+        raw: rawTag,
+        index: parsedIndex,
+        reason: 'OUT_OF_RANGE_OR_UNRETRIEVED',
+      });
+    }
+  });
+
+  return {
+    citedIndices,
+    validCitations: Array.from(validCitationsMap.values()),
+    unverifiedCitations,
+    hasUnverifiedCitations: unverifiedCitations.length > 0,
+  };
+}
+
+/**
  * Execute grounded RAG synthesis for an authenticated enterprise user.
  *
  * @param {Object} options
@@ -124,6 +211,11 @@ Provide a grounded, factual answer based strictly on the evidence above.`;
  * @returns {Promise<{
  *   answer: string,
  *   sources: Array<Object>,
+ *   citations: {
+ *     valid: Array<Object>,
+ *     unverified: Array<Object>,
+ *     hasUnverified: boolean
+ *   },
  *   status: string,
  *   grounded: boolean
  * }>}
@@ -139,6 +231,7 @@ export async function synthesizeGroundedAnswer({
     return {
       answer: 'Please provide a valid question.',
       sources: [],
+      citations: { valid: [], unverified: [], hasUnverified: false },
       status: SYNTHESIS_STATUS.INSUFFICIENT_EVIDENCE,
       grounded: false
     };
@@ -149,6 +242,7 @@ export async function synthesizeGroundedAnswer({
     return {
       answer: 'RAG synthesis is currently disabled via feature flag.',
       sources: [],
+      citations: { valid: [], unverified: [], hasUnverified: false },
       status: SYNTHESIS_STATUS.DISABLED,
       grounded: false
     };
@@ -161,6 +255,7 @@ export async function synthesizeGroundedAnswer({
     return {
       answer: emptyAnswer,
       sources: [],
+      citations: { valid: [], unverified: [], hasUnverified: false },
       status: SYNTHESIS_STATUS.INSUFFICIENT_EVIDENCE,
       grounded: false
     };
@@ -194,9 +289,17 @@ export async function synthesizeGroundedAnswer({
 
     const isInsufficient = /insufficient evidence|no available records|cannot confirm/i.test(synthesizedText);
 
+    // Validate citation references strictly against supplied evidence pack
+    const citationValidation = validateCitationReferences(synthesizedText, sources);
+
     return {
       answer: synthesizedText.trim(),
       sources,
+      citations: {
+        valid: citationValidation.validCitations,
+        unverified: citationValidation.unverifiedCitations,
+        hasUnverified: citationValidation.hasUnverifiedCitations
+      },
       status: isInsufficient ? SYNTHESIS_STATUS.PARTIAL : SYNTHESIS_STATUS.GROUNDED,
       grounded: !isInsufficient
     };
@@ -207,6 +310,7 @@ export async function synthesizeGroundedAnswer({
     return {
       answer: fallbackAnswer,
       sources,
+      citations: { valid: [], unverified: [], hasUnverified: false },
       status: SYNTHESIS_STATUS.PROVIDER_ERROR,
       grounded: false,
       error: err.message
