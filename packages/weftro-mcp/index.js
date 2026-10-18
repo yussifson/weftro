@@ -371,7 +371,11 @@ const TOOLS = [
 
 // Tool Discovery Handler
 server.setRequestHandler(ListToolsRequestSchema, async () => {
-  return { tools: TOOLS };
+  const enableMutations = process.env.WEFTRO_ENABLE_MUTATIONS === 'true' || process.env.WEFTRO_WRITE_TOOLS === 'true';
+  const toolsToReturn = enableMutations
+    ? TOOLS
+    : TOOLS.filter(t => t.name !== 'create_capture' && t.name !== 'create_organizational_memory');
+  return { tools: toolsToReturn };
 });
 
 // Tool Invocation Handler
