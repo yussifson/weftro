@@ -39,16 +39,18 @@
 | **Phase 5** | Production MCP Server | `APPROVED` | Implemented `@weftro/mcp-server`, 18/18 Phase 5 live tests passed, 18/18 Phase 4 tests passed, 29/29 Phase 3 tests passed |
 | **Phase 6** | Webhook Delivery Engine | `APPROVED` | Deployed `connect`, SSRF filter, manual redirect rejection, 19/19 live tests passed, 0 regressions across Phase 3/4/5 suites |
 | **Phase 7** | Developer Experience & Hardening | `APPROVED` | 19/19 Phase 7 E2E tests passed, OpenAPI 3.1 + Docs synchronized (30/30 routes), MCP README added, API Explorer enhanced |
-| **Phase 8** | Deferred Write & Act Mutations | `IMPLEMENTED & VERIFIED` | `POST /api/v1/captures` & `POST /api/v1/memories` implemented with idempotency, queue scheduling, MCP write tools (`create_capture`, `create_organizational_memory`), and full regression verification |
+| **Phase 8** | Deferred Write & Act Mutations | `APPROVED & VERIFIED` | 16/16 Phase 8 mutation acceptance tests passed on isolated test gateway (`7904f2b`), 103/103 live regression tests passed, zero production deployment boundary maintained |
 
 ---
 
 ## 3. Verified Artifacts & Documentation
-- **OpenAPI 3.1 Contract:** `docs/openapi.yaml` (30 versioned endpoints documented)
-- **Developer Knowledge Base:** `src/lib/weftroDeveloperDocs.js` (30 endpoints, 9 scopes, 9 MCP tools, webhooks contract)
+- **OpenAPI 3.1 Contract:** `docs/openapi.yaml` (32 versioned endpoints documented)
+- **Developer Knowledge Base:** `src/lib/weftroDeveloperDocs.js` (32 endpoints, 11 scopes, 11 MCP tools, webhooks contract)
 - **Official MCP Server Package & Guide:** `packages/weftro-mcp/README.md`
+- **Phase 8 Acceptance Suite Script:** `scripts/phase8_mutations_acceptance_suite.cjs` (16/16 PASSED)
+- **Phase 8 Isolated Test Gateway Harness:** `scripts/local_test_gateway.cjs`
+- **Phase 8 Manual Test Guide:** `docs/weftro-v3/testing/phase-08-mutations-manual-test-guide.md`
 - **Phase 7 E2E Acceptance Suite Script:** `scripts/phase7_hardening_acceptance_suite.cjs` (19/19 PASSED)
-- **Phase 7 Manual Test Guide:** `docs/weftro-v3/testing/phase-07-hardening-manual-test-guide.md`
 - **Phase 6 Live Acceptance Suite Script:** `scripts/phase6_webhooks_acceptance_suite.cjs` (19/19 PASSED)
 - **Phase 5 Live Acceptance Suite Script:** `scripts/phase5_mcp_test_suite.cjs` (18/18 PASSED)
 - **Phase 4 Live Acceptance Suite Script:** `scripts/phase4_acceptance_suite.cjs` (18/18 PASSED)
@@ -57,16 +59,17 @@
 ---
 
 ## 4. Shared Dependencies with AGENT-RAG
-- `clipad_v3_memories`: Memory storage and retrieval. AGENT-RAG manages chunking, embedding, and hybrid retrieval; AGENT-API-MCP exposes the read-only contract.
+- `clipad_v3_memories`: Memory storage and retrieval. AGENT-RAG manages chunking, embedding, and hybrid retrieval; AGENT-API-MCP exposes the read-only and write mutation contract.
 - `clipad_v3_captures`: Capture repository and provenance metadata.
 - `clipad_v3_smart_moments`: Meeting and video insight nodes.
 - `clipad_v3_context_sessions`: Context binding.
 - `clipad_v3_connect_apps`: Application registry and client metadata.
 - `clipad_v3_connect_tokens`: Scoped access tokens and rate limit parameters.
 - `clipad_v3_webhooks`: Subscribed endpoints, signing secrets, events filter, and active state.
-- `clipad_v3_events`: Audit trail for intelligence queries, API access, and webhook delivery records.
+- `clipad_v3_events`: Audit trail for intelligence queries, API access, idempotency logs, and webhook delivery records.
 
 ---
 
 ## 5. Next Permitted Action
-Phase 7 is fully implemented and verified against the live production gateway. Awaiting user evaluation of the Phase 7 completion report. No Phase 8 code may be written until authorized.
+Phase 8 local validation is complete with 16/16 Phase 8 acceptance tests passing and 103/103 regression tests passing. Ready to proceed to next roadmap phase (Phase 9: Production Release Preparation, SDK Packaging, or Advanced Rate Limiting) pending formal production deployment window.
+
