@@ -46,15 +46,15 @@ export default function ConnectSettings() {
   const isMcpEnabled = isV3FeatureEnabled(V3_FLAGS.MCP_ENABLED, user);
 
   useEffect(() => {
-    if (user && isConnectEnabled) {
+    if (user?.id && isConnectEnabled) {
       loadData();
     } else {
       setLoading(false);
     }
-  }, [user, isConnectEnabled]);
+  }, [user?.id, isConnectEnabled]);
 
   const loadData = async () => {
-    setLoading(true);
+    if (apps.length === 0 && tokens.length === 0) setLoading(true);
     try {
       // Load Developer Apps
       const { data: appsData } = await supabase
@@ -197,7 +197,6 @@ export default function ConnectSettings() {
     <div className="space-y-8 animate-in fade-in duration-500">
       <div className="flex flex-col gap-2">
         <h2 className="text-3xl font-bold tracking-tight">Developer Connect</h2>
-        <p className="text-muted-foreground text-lg">Securely integrate Clipad\'s Intelligence Graph into your custom applications and workflows.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">

@@ -112,16 +112,7 @@ export default function DeveloperPlatform() {
         {/* Sidebar Header: Back button and expand/collapse button, top name area left empty */}
         <div className="h-16 flex items-center px-4 border-b border-slate-200 dark:border-border gap-3 shrink-0 justify-between">
           <div className="flex items-center gap-3 overflow-hidden">
-            {sidebarOpen && (
-              <button
-                onClick={() => navigate(-1)}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-slate-600 dark:text-muted-foreground hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-secondary hover:bg-slate-200 dark:hover:bg-accent rounded-md transition-all shadow-sm shrink-0"
-                title="Go back"
-              >
-                <ArrowLeft className="w-3.5 h-3.5" />
-                <span>Back</span>
-              </button>
-            )}
+            {sidebarOpen && <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Developer</span>}
           </div>
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}

@@ -59,7 +59,7 @@ export default function DeveloperWebhooks() {
   const [testResult, setTestResult] = useState(null);
 
   const fetchWebhooks = async () => {
-    setIsLoading(true);
+    if (webhooks.length === 0) setIsLoading(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
       const token = session?.access_token;
@@ -101,7 +101,7 @@ export default function DeveloperWebhooks() {
   useEffect(() => {
     fetchWebhooks();
     fetchApps();
-  }, [user]);
+  }, [user?.id]);
 
   const handleCopy = (key, text) => {
     navigator.clipboard.writeText(text);

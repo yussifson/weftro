@@ -280,15 +280,11 @@ export default function KnowledgeGraph() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(var(--primary-rgb),0.08),transparent_60%)] pointer-events-none" />
         <div className="max-w-7xl mx-auto relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <button onClick={() => navigate('/capture')} className="w-9 h-9 rounded-full bg-card border border-border flex items-center justify-center hover:bg-secondary transition-colors shrink-0" title="Go back">
-              <ArrowLeft className="w-4 h-4 text-muted-foreground" />
-            </button>
             <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center">
               <Network className="w-5 h-5 text-primary" />
             </div>
             <div>
               <h1 className="text-xl font-bold text-foreground">Knowledge Graph</h1>
-              <p className="text-xs text-muted-foreground">AI-detected relationships across all your connected systems</p>
             </div>
           </div>
 

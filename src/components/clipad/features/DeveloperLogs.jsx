@@ -21,7 +21,7 @@ export default function DeveloperLogs() {
   }, [companyId]);
 
   const loadLogs = async () => {
-    setLoading(true);
+    if (logs.length === 0) setLoading(true);
     try {
       const { data, error } = await supabase
         .from('clipad_v3_events')

@@ -232,19 +232,9 @@ Respond in valid JSON only:
 
         {/* Header */}
         <div>
-          <button
-            onClick={() => navigate(`${basePath}/dashboard`)}
-            className="flex items-center gap-2 text-sm text-white/80 hover:text-white mb-4 transition-colors group"
-          >
-            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-            Dashboard
-          </button>
           <div className="flex items-start justify-between flex-wrap gap-3">
             <div>
               <h1 className="text-2xl font-black text-white">Cross-Space Intelligence</h1>
-              <p className="text-sm text-white/80 mt-1">
-                Orbit scans all spaces for duplicate blockers, conflicting decisions, and knowledge silos in real-time.
-              </p>
             </div>
             <div className="flex items-center gap-2">
               <button onClick={load} className="flex items-center gap-1.5 px-3 py-2 bg-white/10 border border-white/15 text-white rounded-xl text-xs font-semibold hover:bg-white/20 transition-colors">

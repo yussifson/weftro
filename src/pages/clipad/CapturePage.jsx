@@ -13,13 +13,6 @@ export default function CapturePage() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(var(--primary-rgb),0.08),transparent_60%)] pointer-events-none" />
         <div className="max-w-6xl mx-auto relative z-10">
           <div className="flex items-start gap-4 mb-3">
-            <button 
-              onClick={() => navigate(-1)}
-              className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center hover:bg-secondary transition-colors shrink-0"
-              title="Go back"
-            >
-              <ArrowLeft className="w-5 h-5 text-muted-foreground" />
-            </button>
             <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center">
               <Inbox className="w-5 h-5 text-primary" />
             </div>
@@ -30,9 +23,6 @@ export default function CapturePage() {
                   V3 Intelligent
                 </span>
               </div>
-              <p className="text-sm text-muted-foreground">
-                Live context sessions, omni-channel captures, and browser extension ingestion.
-              </p>
             </div>
           </div>
 

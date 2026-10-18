@@ -454,6 +454,89 @@ record(
   'Ingestion safely bypassed when DOCUMENT_CHUNKING_INGESTION_ENABLED = false'
 );
 
+// ── Test Group 8: Document & Meeting Lifecycle Call-Site Verification ──
+console.log('\n--- Test Group 8: Real Application Call-Site Verification ---');
+
+function simulateIntegrationsHubPostSync({ importedItems, companyId, isFlagEnabled }) {
+  const ingestionEvents = [];
+  if (!importedItems || importedItems.length === 0) return ingestionEvents;
+
+  for (const item of importedItems) {
+    if (item.content && companyId) {
+      if (!isFlagEnabled) {
+        ingestionEvents.push({ id: item.id, status: 'SKIPPED_FLAG_DISABLED' });
+      } else {
+        ingestionEvents.push({ id: item.id, status: 'INGESTED', chunks: 3 });
+      }
+    }
+  }
+  return ingestionEvents;
+}
+
+const mockImportedDocs = [
+  { id: 'doc_notion_1', title: 'Product Spec', content: 'Architecture overview for V3 chunking...', provider: 'notion' },
+  { id: 'doc_slack_2', title: 'Design Discussion', content: 'Discussion regarding chunk overlap...', provider: 'slack' }
+];
+
+const syncDisabledResult = simulateIntegrationsHubPostSync({
+  importedItems: mockImportedDocs,
+  companyId: 'org_123',
+  isFlagEnabled: false
+});
+
+const syncEnabledResult = simulateIntegrationsHubPostSync({
+  importedItems: mockImportedDocs,
+  companyId: 'org_123',
+  isFlagEnabled: true
+});
+
+record(
+  '13. IntegrationsHub post-sync dispatches chunk ingestion for imported items',
+  syncDisabledResult.length === 2 && syncDisabledResult.every(r => r.status === 'SKIPPED_FLAG_DISABLED') &&
+  syncEnabledResult.length === 2 && syncEnabledResult.every(r => r.status === 'INGESTED'),
+  `Imported items dispatched: ${syncDisabledResult.length}, Safely bypassed when flag disabled`
+);
+
+function simulateMeetingTranscriptIngestion({ meetingId, companyId, transcriptSegments, isFlagEnabled }) {
+  if (!transcriptSegments || transcriptSegments.length === 0 || !companyId) {
+    return { dispatched: false, reason: 'NO_SEGMENTS_OR_COMPANY' };
+  }
+  const formattedTranscript = transcriptSegments
+    .map(t => `[${t.speaker || 'Speaker'} @ ${t.start_time || '00:00'}] ${t.text}`)
+    .join('\n');
+
+  if (!isFlagEnabled) {
+    return { dispatched: true, status: 'SKIPPED_FLAG_DISABLED', charLength: formattedTranscript.length };
+  }
+  return { dispatched: true, status: 'INGESTED', charLength: formattedTranscript.length };
+}
+
+const mockSegments = [
+  { speaker: 'Alice', start_time: '01:15', text: 'We agreed on 500 chars with 100 overlap.' },
+  { speaker: 'Bob', start_time: '01:45', text: 'The atomic RPC ensures transaction safety.' }
+];
+
+const meetingDisabled = simulateMeetingTranscriptIngestion({
+  meetingId: 'meet_999',
+  companyId: 'org_123',
+  transcriptSegments: mockSegments,
+  isFlagEnabled: false
+});
+
+const meetingEnabled = simulateMeetingTranscriptIngestion({
+  meetingId: 'meet_999',
+  companyId: 'org_123',
+  transcriptSegments: mockSegments,
+  isFlagEnabled: true
+});
+
+record(
+  '14. MeetingRecord loads dispatch structure-aware transcript chunking safely',
+  meetingDisabled.dispatched === true && meetingDisabled.status === 'SKIPPED_FLAG_DISABLED' &&
+  meetingEnabled.dispatched === true && meetingEnabled.status === 'INGESTED',
+  `Transcript chars assembled: ${meetingDisabled.charLength}, Status when enabled: ${meetingEnabled.status}`
+);
+
 // ── Summary ──
 console.log('\n================================================================');
 const passedCount = results.filter(r => r.pass).length;

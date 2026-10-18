@@ -65,7 +65,6 @@ export default function ClipadSidebar({ forceMobile }) {
   const intelligenceItems = [
     { label: 'Capture', path: '/capture', icon: Inbox },
     { label: 'Integrations', path: '/integrations', icon: Plug },
-    { label: 'Developers', path: '/developers', icon: Code2 },
     ...(isUserAdmin ? [
       { label: 'Analytics', path: '/integration-analytics', icon: BarChart2 },
     ] : []),
@@ -230,12 +229,33 @@ export default function ClipadSidebar({ forceMobile }) {
         </div>
       </div>
 
-      {/* User Profile Footer */}
-      <div className={cn("p-4 border-t border-white/10 dark:border-white/5 bg-[#004e52] dark:bg-[#060B0D] text-white", isCollapsed ? "flex justify-center" : "")}>
+      {/* Developer & User Profile Footer */}
+      <div className={cn("p-3 border-t border-white/10 dark:border-white/5 bg-[#004e52] dark:bg-[#060B0D] text-white", isCollapsed ? "flex flex-col items-center gap-2" : "space-y-2")}>
+        {/* Static Developer Button */}
+        <button
+          onClick={() => navigate(window.location.pathname.startsWith('/clipad') ? '/clipad/developers' : '/developers')}
+          className={cn(
+            "flex items-center transition-all duration-200 group rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-[#fad503]/50",
+            isCollapsed 
+              ? "w-10 h-10 justify-center hover:scale-105" 
+              : "w-full gap-3 px-3 py-2 border",
+            (location.pathname.startsWith('/developers') || location.pathname.startsWith('/clipad/developers'))
+              ? "bg-[#fad503]/15 text-[#fad503] border-[#fad503]/30 font-bold shadow-sm"
+              : "bg-white/5 border-white/10 text-white/80 hover:bg-white/10 hover:text-white hover:border-white/20 font-semibold"
+          )}
+          title="Developer"
+        >
+          <Code2 className={cn("shrink-0 transition-transform group-hover:scale-110", isCollapsed ? "w-5 h-5" : "w-4 h-4", (location.pathname.startsWith('/developers') || location.pathname.startsWith('/clipad/developers')) ? "text-[#fad503]" : "text-white/70 group-hover:text-white")} />
+          {!isCollapsed && <span className="text-[13px] tracking-wide font-medium">Developer</span>}
+        </button>
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <div className="flex items-center gap-3 cursor-pointer group outline-none">
-              <div className="w-10 h-10 shrink-0 rounded-full bg-[#fad503] flex items-center justify-center overflow-hidden border-2 border-white/10 group-hover:border-white/30 transition-all">
+            <div className={cn(
+              "flex items-center gap-3 cursor-pointer group outline-none rounded-xl transition-all",
+              isCollapsed ? "w-10 h-10 justify-center hover:scale-105" : "w-full p-1.5 hover:bg-white/5"
+            )}>
+              <div className="w-9 h-9 shrink-0 rounded-full bg-[#fad503] flex items-center justify-center overflow-hidden border-2 border-white/10 group-hover:border-white/30 transition-all">
                 {user?.avatar_url || user?.user_metadata?.avatar_url ? (
                   <img src={user.avatar_url || user.user_metadata.avatar_url} alt={firstName} className="w-full h-full object-cover" />
                 ) : (

@@ -16,6 +16,7 @@ import ClipadLoader from '@/components/ui/ClipadLoader';
 import LockWall from '@/components/clipad/LockWall';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/components/ui/use-toast';
+import { ingestDocumentChunks } from '@/lib/clipadChunkIngestionService';
 
 function CopyButton({ text }) {
   const [copied, setCopied] = useState(false);
@@ -231,7 +232,27 @@ export default function MeetingRecord() {
         }
       }
       if (actionsRes.data) setActionItems(actionsRes.data);
-      if (transcriptRes.data) setTranscript(transcriptRes.data);
+      if (transcriptRes.data) {
+        setTranscript(transcriptRes.data);
+        // Structure-aware transcript chunk ingestion (Milestone 3)
+        // Safe: guarded by DOCUMENT_CHUNKING_INGESTION_ENABLED flag inside service
+        if (transcriptRes.data.length > 0 && meetingRes.data?.company_id) {
+          const fullTranscriptText = transcriptRes.data
+            .map(t => `[${t.speaker || 'Speaker'} @ ${t.start_time || '00:00'}] ${t.text}`)
+            .join('\n');
+
+          ingestDocumentChunks({
+            knowledgeId: meetingId,
+            companyId: meetingRes.data.company_id,
+            content: fullTranscriptText,
+            title: meetingRes.data.title || 'Meeting Transcript',
+            parentType: 'meeting',
+            user
+          }).catch(err => {
+            console.warn('[MeetingRecord] Chunk ingestion error:', err);
+          });
+        }
+      }
       if (commentsRes.data) setComments(commentsRes.data);
       if (reactionsRes.data) setReactions(reactionsRes.data);
     } catch (err) { console.error(err); }

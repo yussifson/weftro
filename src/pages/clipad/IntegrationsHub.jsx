@@ -22,6 +22,7 @@ import {
 
 import { INTEGRATIONS, CATEGORIES } from '@/config/integrationsList';
 import { isV3FeatureEnabled, V3_FLAGS } from '@/lib/clipadV3Flags';
+import { ingestDocumentChunks } from '@/lib/clipadChunkIngestionService';
 
 const isSuperAdmin = (user) => user?.role === 'super_admin' || user?.user_metadata?.role === 'super_admin';
 
@@ -329,21 +330,36 @@ export default function IntegrationsHub() {
         description: descriptionText
       });
 
-      // Trigger AI reprocessing for any items missing ai_summary
+      // Trigger AI reprocessing & structure-aware chunk ingestion for imported items
       setTimeout(async () => {
         try {
           const { data: unprocessed } = await supabase
             .from('clipad_imported_knowledge')
-            .select('id, external_id')
+            .select('id, external_id, title, content, provider')
             .eq('integration_id', conn.id)
-            .is('ai_summary', null)
             .limit(20);
 
           if (unprocessed?.length > 0) {
             for (const item of unprocessed) {
+              // 1. Edge function AI summary trigger
               supabase.functions.invoke('integration-ai-processor', {
                 body: { integrationId: conn.id, provider: integration.id, externalId: item.external_id }
               }).catch(() => {});
+
+              // 2. Chunk Ingestion Pipeline Integration (Milestone 3)
+              // Safe: guarded by DOCUMENT_CHUNKING_INGESTION_ENABLED flag inside service
+              if (item.content && companyId) {
+                ingestDocumentChunks({
+                  knowledgeId: item.id,
+                  companyId,
+                  content: item.content,
+                  title: item.title || '',
+                  parentType: item.provider || 'integration',
+                  user
+                }).catch(err => {
+                  console.warn('[IntegrationsHub] Chunk ingestion error:', err);
+                });
+              }
             }
           }
         } catch { /* ignore */ }
@@ -431,18 +447,11 @@ export default function IntegrationsHub() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(var(--primary-rgb),0.08),transparent_60%)] pointer-events-none" />
         <div className="max-w-5xl mx-auto relative z-10">
           <div className="flex items-start gap-4 mb-3">
-            <button 
-              onClick={() => navigate(-1)}
-              className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center hover:bg-secondary transition-colors shrink-0"
-            >
-              <ArrowLeft className="w-5 h-5 text-muted-foreground" />
-            </button>
             <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center">
               <Plug className="w-5 h-5 text-primary" />
             </div>
             <div className="mt-1">
               <h1 className="text-2xl font-bold text-foreground">Integrations</h1>
-              <p className="text-sm text-muted-foreground">Connect your tools like Slack, GitHub, Zoom, and manage synchronization.</p>
             </div>
           </div>
           {/* Stats row */}

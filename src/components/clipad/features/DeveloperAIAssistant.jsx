@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useAuth } from '@/lib/AuthContext';
 import { generateText } from '@/lib/cloudflareAI';
 import { DEVELOPER_PLATFORM_KNOWLEDGE } from '@/lib/weftroDeveloperDocs';
@@ -11,43 +11,65 @@ import {
   Copy,
   CheckCircle2,
   Loader2,
-  RotateCcw,
   BookOpen,
   Cpu,
   KeyRound,
   ShieldCheck,
-  ChevronRight,
   Code2,
-  Layers,
-  ArrowRight
+  ArrowRight,
+  Trash2,
+  PlusCircle,
+  HelpCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/components/ui/use-toast';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
-// Security redaction pattern: Redacts Bearer tokens, client secrets, and sensitive credentials
-function redactSecrets(text) {
+// Security redaction and cleanup: strips token secrets, raw think tags, and internal prompt artifacts
+function sanitizeAssistantOutput(text) {
   if (typeof text !== 'string') return text;
   return text
+    // Remove reasoning / thinking tags from newer models
+    .replace(/<think>[\s\S]*?<\/think>/gi, '')
+    .replace(/<think>[\s\S]*/gi, '') // unclosed think during streaming
+    .replace(/<\/?(?:system|instruction|admin|prompt|rules|developer|override)>/gi, '')
+    .replace(/\[\/?INST\]/gi, '')
+    .replace(/<\/?s>/gi, '')
+    .replace(/<\|im_start\|>|<\|im_end\|>/gi, '')
+    // Redact Bearer tokens and client secrets
     .replace(/(cpd_[a-zA-Z0-9_-]{8})[a-zA-Z0-9_-]+/g, '$1••••••••')
     .replace(/(secret_[a-zA-Z0-9_-]{8})[a-zA-Z0-9_-]+/g, '$1••••••••')
     .replace(/(client_[a-zA-Z0-9_-]{8})[a-zA-Z0-9_-]+/g, '$1••••••••')
-    .replace(/(Bearer\s+)[a-zA-Z0-9_.-]{20,}/gi, '$1••••••••••••••••');
+    .replace(/(Bearer\s+)[a-zA-Z0-9_.-]{20,}/gi, '$1••••••••••••••••')
+    .trimStart();
 }
 
 const INITIAL_MESSAGES = [
   {
     role: 'assistant',
-    content: `👋 **Welcome to the Weftro Developer Assistant!**
+    content: `👋 **Welcome to the Weftro Developer Copilot!**
 
-I am your dedicated technical advisor for the Weftro Developer Platform & Connect ecosystem:
-* **Connect REST API (\`/api/v1\`):** Authentication, headers, pagination, rate limits, and errors.
-* **Credentials & Scopes:** Managing Client IDs, Client Secrets, and granular token scopes.
-* **Model Context Protocol (MCP):** Configuring Cursor, Claude Desktop, and AI agents.
-* **Examples & Troubleshooting:** Formulating cURL commands and debugging HTTP status codes.
+I am your dedicated enterprise AI architect and technical advisor for the Weftro Developer Platform, Connect API v1, and MCP ecosystem:
 
-Choose a quick prompt on the right or type your question below to get started.`
+* **Connect REST API (\`/api/v1\`):** Bearer token authentication, search, sessions, captures, and rate limits.
+* **Model Context Protocol (MCP):** Connect Cursor IDE, Claude Desktop, and agentic workflows to live company intelligence.
+* **Apps, Secrets & Scopes:** Granular OAuth scopes (\`search:read\`, \`memory:read\`, \`context:read\`, \`apps:manage\`).
+* **Webhooks & Events:** Real-time subscriptions for \`memory.created\`, \`moment.detected\`, and HMAC signature verification.
+* **Production Code Generation:** Runnable cURL, TypeScript/Node.js, and Python SDK integrations.
+
+Select a quick prompt from the right or enter your technical requirement below.`
   }
 ];
 
@@ -56,39 +78,61 @@ const QUICK_TOPICS = [
     category: 'API & Authentication',
     icon: KeyRound,
     prompts: [
-      { label: 'How do I authenticate with Bearer tokens?', query: 'How do I authenticate with Bearer tokens in the Connect API?' },
-      { label: 'How do I rotate my client secret?', query: 'How do I rotate my client secret without breaking production?' },
-      { label: 'Explain all available API scopes', query: 'Explain all available API scopes for application tokens.' }
+      { label: 'How do I authenticate with Bearer tokens?', query: 'Provide a complete guide and cURL example on how to authenticate with Bearer tokens using the Weftro Connect API v1.' },
+      { label: 'How do I rotate client secrets?', query: 'How do I rotate my developer client secret securely without downtime?' },
+      { label: 'Explain all available API scopes', query: 'List all available API scopes for Weftro applications in a markdown comparison table with descriptions.' }
     ]
   },
   {
     category: 'MCP & Agent Integrations',
     icon: Cpu,
     prompts: [
-      { label: 'Show me the Cursor MCP config', query: 'Show me how to configure Cursor IDE to connect to Weftro MCP.' },
-      { label: 'How do I query memories via MCP?', query: 'Which MCP tools are available to search and retrieve memories?' },
-      { label: 'Configure Claude Desktop MCP', query: 'How do I configure Claude Desktop with Weftro MCP?' }
+      { label: 'Show me Cursor MCP configuration', query: 'Show me the exact .cursor/mcp.json configuration file to connect Cursor to Weftro MCP server with Bearer auth.' },
+      { label: 'How do I query memories via MCP?', query: 'Which MCP tools are available to search and retrieve organizational memories? Provide tool names and parameters.' },
+      { label: 'Configure Claude Desktop MCP', query: 'How do I configure claude_desktop_config.json to query Weftro MCP?' }
     ]
   },
   {
-    category: 'Endpoints & Retrieval',
+    category: 'Endpoints & Data Flow',
     icon: TerminalSquare,
     prompts: [
-      { label: 'How do I search memories via API?', query: 'Show me an example cURL request to POST /api/v1/search.' },
+      { label: 'How do I search memories via API?', query: 'Show me an example cURL request and JSON response structure for POST /api/v1/search.' },
       { label: 'How does context session query work?', query: 'How do I query a context session and linked captures via /api/v1/context/query?' },
-      { label: 'What rate limits are enforced?', query: 'What rate limits and headers are enforced on the API Gateway?' }
+      { label: 'What rate limits are enforced?', query: 'Provide a table of rate limits, quotas, and response headers enforced on the Weftro API Gateway.' }
     ]
   }
 ];
 
 export default function DeveloperAIAssistant() {
   const { user } = useAuth();
-  const [messages, setMessages] = useState(INITIAL_MESSAGES);
+  const { toast } = useToast();
+  const storageKey = `clipad_dev_copilot_history_${user?.id || 'default'}`;
+
+  // Load persistent chat history from localStorage
+  const [messages, setMessages] = useState(() => {
+    try {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (_) {}
+    return INITIAL_MESSAGES;
+  });
+
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+
+  // Sync messages to localStorage whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(messages));
+    } catch (_) {}
+  }, [messages, storageKey]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -98,53 +142,80 @@ export default function DeveloperAIAssistant() {
     scrollToBottom();
   }, [messages, isLoading]);
 
+  // Handle Clear Conversation History
+  const handleConfirmDeleteHistory = () => {
+    try {
+      localStorage.removeItem(storageKey);
+    } catch (_) {}
+    setMessages(INITIAL_MESSAGES);
+    setShowDeleteConfirm(false);
+    toast({
+      title: "History Cleared",
+      description: "Developer Copilot conversation history has been reset."
+    });
+  };
+
+  // Start a new conversation while preserving history or resetting view
+  const handleStartNewChat = () => {
+    setMessages(INITIAL_MESSAGES);
+    toast({
+      title: "New Conversation",
+      description: "Started a fresh Copilot session."
+    });
+  };
+
   const handleSend = async (e, directText = null) => {
     e?.preventDefault();
     const query = (directText || input).trim();
     if (!query || isLoading) return;
 
-    // Redact any user-pasted sensitive token before saving to message history
-    const sanitizedQuery = redactSecrets(query);
+    // Sanitize user query
+    const sanitizedQuery = sanitizeAssistantOutput(query);
     const newMessages = [...messages, { role: 'user', content: sanitizedQuery }];
     setMessages(newMessages);
     setInput('');
     setIsLoading(true);
 
     try {
-      const systemPrompt = `You are the Weftro Developer Platform AI Assistant.
-Your sole mission is to provide accurate, concise, and production-grade guidance for developers building on the Weftro V3 Connect API, Developer Platform, and MCP Protocol.
+      const systemPrompt = `You are the Weftro Enterprise Developer Copilot, a senior API architect and systems engineer.
+Your purpose is to provide authoritative, production-grade technical guidance for developers integrating with the Weftro V3 Connect API, MCP Protocol, and Developer Platform.
 
-VERIFIED CAPABILITIES KNOWLEDGE BASE:
+OFFICIAL VERIFIED DEVELOPER KNOWLEDGE BASE:
 ${JSON.stringify(DEVELOPER_PLATFORM_KNOWLEDGE, null, 2)}
 
-STRICT OPERATING INSTRUCTIONS:
-1. ONLY describe endpoints, routes, scopes, and tools that exist in the knowledge base above (/api/v1/* and MCP).
-2. Base URL: https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect
-3. Authentication requires Bearer tokens ("Authorization: Bearer cpd_...").
-4. If asked about features in future phases, state clearly that they are planned for upcoming releases.
-5. NEVER ask for or output raw secrets, API tokens, passwords, or company internal database passwords.
-6. Provide clear, runnable cURL, JSON, and code snippets when requested.
-7. Format your response cleanly using Markdown and code blocks with syntax highlighting.`;
+CORE GUIDELINES:
+1. Deliver structured, corporate-level responses. Never say you are a mock AI or simulate placeholder responses.
+2. Provide real, valid cURL commands, Python (requests/httpx), and TypeScript/JavaScript snippets.
+3. When presenting structured data, comparisons, scopes, headers, or parameters, ALWAYS format them in clean GitHub-Flavored Markdown tables.
+4. Base URL: https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect (or /api/v1/* via API Gateway).
+5. Authentication uses Bearer tokens in the HTTP Authorization header: "Authorization: Bearer cpd_...".
+6. Never output or prompt for real production database passwords or confidential private keys.
+7. Support MCP (Model Context Protocol) JSON-RPC 2.0 specifications for tools including search_memories, query_context_session, get_smart_moments, list_entities, and trigger_capture.
+8. When providing diagrams, flowcharts, or architecture layouts, wrap them cleanly inside code blocks or structured tables so they can be scrolled horizontally.`;
 
       const promptPayload = [
         { role: 'system', content: systemPrompt },
-        ...newMessages.slice(-6) // bounded conversation window
+        ...newMessages.slice(-8) // Bounded conversation context window
       ];
 
       let streamBuffer = '';
       await generateText(promptPayload, (token) => {
         streamBuffer = token;
-        setMessages([...newMessages, { role: 'assistant', content: redactSecrets(streamBuffer) }]);
-      }, { fast: true });
+        const cleaned = sanitizeAssistantOutput(streamBuffer);
+        setMessages([...newMessages, { role: 'assistant', content: cleaned }]);
+      });
 
       if (!streamBuffer) {
-        setMessages([...newMessages, { role: 'assistant', content: "I'm ready to help with Weftro API integration questions. Please try again." }]);
+        setMessages([...newMessages, {
+          role: 'assistant',
+          content: "I am ready to help with your Weftro API or MCP integration. What technical implementation would you like to explore?"
+        }]);
       }
     } catch (err) {
-      console.error('[DeveloperAIAssistant] Error:', err);
+      console.error('[DeveloperCopilot] Error:', err);
       setMessages([...newMessages, {
         role: 'assistant',
-        content: `⚠️ **Unable to complete request:** ${err.message || 'AI service unavailable.'}. Please refer to the **API Documentation** tab for standard specs.`
+        content: `⚠️ **Service Notice:** Unable to reach AI endpoint (${err.message || 'connection timeout'}). Please check your network or consult the API Documentation tab.`
       }]);
     } finally {
       setIsLoading(false);
@@ -157,8 +228,84 @@ STRICT OPERATING INSTRUCTIONS:
     setTimeout(() => setCopiedIndex(null), 2000);
   };
 
+  // Custom Markdown renderers for tables, pre, and code to guarantee horizontal scrolling
+  const markdownComponents = useMemo(() => ({
+    table: ({ node, ...props }) => (
+      <div className="w-full my-3 overflow-x-auto rounded-xl border border-border bg-card/60 shadow-xs scrollbar-thin">
+        <table className="w-full text-xs text-left border-collapse min-w-[500px]" {...props} />
+      </div>
+    ),
+    thead: ({ node, ...props }) => (
+      <thead className="bg-secondary/70 text-foreground font-semibold border-b border-border" {...props} />
+    ),
+    th: ({ node, ...props }) => (
+      <th className="px-3.5 py-2.5 text-xs font-semibold whitespace-nowrap text-foreground" {...props} />
+    ),
+    td: ({ node, ...props }) => (
+      <td className="px-3.5 py-2 text-xs border-b border-border/40 text-muted-foreground whitespace-normal" {...props} />
+    ),
+    pre: ({ node, children, ...props }) => (
+      <div className="w-full my-3 overflow-x-auto rounded-xl border border-border bg-slate-950 text-slate-100 p-3.5 shadow-xs scrollbar-thin">
+        <pre className="text-xs font-mono whitespace-pre leading-relaxed min-w-max" {...props}>
+          {children}
+        </pre>
+      </div>
+    ),
+    code: ({ node, inline, children, ...props }) => {
+      if (inline) {
+        return (
+          <code className="px-1.5 py-0.5 rounded bg-muted/80 text-primary font-mono text-[11px] font-semibold" {...props}>
+            {children}
+          </code>
+        );
+      }
+      return (
+        <code className="font-mono text-xs whitespace-pre" {...props}>
+          {children}
+        </code>
+      );
+    }
+  }), []);
+
   return (
     <div className="h-full w-full flex flex-col bg-background text-foreground overflow-hidden">
+      {/* Top Copilot Bar */}
+      <div className="h-12 border-b border-border bg-card/50 px-4 md:px-6 flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-2.5">
+          <div className="w-6 h-6 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+            <Bot className="w-3.5 h-3.5" />
+          </div>
+          <span className="text-xs font-bold text-foreground tracking-wide">Developer Copilot</span>
+          <Badge variant="outline" className="text-[10px] py-0 px-2 bg-primary/5 text-primary border-primary/20">
+            GPT & Kimi Engine
+          </Badge>
+        </div>
+
+        {/* Toolbar: New Chat & Delete History */}
+        <div className="flex items-center gap-1.5">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleStartNewChat}
+            className="h-8 px-2.5 text-xs text-muted-foreground hover:text-foreground flex items-center gap-1.5"
+            title="Start new conversation"
+          >
+            <PlusCircle className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">New Chat</span>
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowDeleteConfirm(true)}
+            className="h-8 w-8 p-0 text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 transition-colors"
+            title="Delete conversation history"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+          </Button>
+        </div>
+      </div>
+
       {/* Main Responsive Two-Column Layout */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 min-h-0 overflow-hidden">
         {/* Left / Center Column: Chat Messages & Input (8 cols on lg) */}
@@ -179,15 +326,15 @@ STRICT OPERATING INSTRUCTIONS:
                   )}
 
                   <div
-                    className={`max-w-[88%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+                    className={`max-w-[90%] md:max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
                       isAssistant
-                        ? 'bg-card border border-border/80 text-foreground shadow-sm rounded-tl-sm'
-                        : 'bg-primary text-primary-foreground font-medium rounded-tr-sm shadow-sm'
+                        ? 'bg-card border border-border/80 text-foreground shadow-xs rounded-tl-sm'
+                        : 'bg-primary text-primary-foreground font-medium rounded-tr-sm shadow-xs'
                     }`}
                   >
                     {isAssistant ? (
-                      <div className="prose prose-sm dark:prose-invert max-w-none break-words [&>p]:mb-2 [&>p:last-child]:mb-0 [&>ul]:my-2 [&>ol]:my-2 [&>pre]:my-2 [&>pre]:bg-secondary/60 [&>pre]:p-3 [&>pre]:rounded-lg [&>pre]:border [&>pre]:border-border/60 [&_code]:text-xs [&_code]:font-mono">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      <div className="prose prose-sm dark:prose-invert max-w-none break-words [&>p]:mb-2 [&>p:last-child]:mb-0 [&>ul]:my-2 [&>ol]:my-2">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
                           {msg.content}
                         </ReactMarkdown>
                       </div>
@@ -231,9 +378,9 @@ STRICT OPERATING INSTRUCTIONS:
                 <div className="w-7 h-7 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0 animate-pulse">
                   <Bot className="w-3.5 h-3.5" />
                 </div>
-                <div className="px-4 py-3 rounded-2xl rounded-tl-sm bg-card border border-border/80 flex items-center gap-2.5 text-xs text-muted-foreground shadow-sm">
+                <div className="px-4 py-3 rounded-2xl rounded-tl-sm bg-card border border-border/80 flex items-center gap-2.5 text-xs text-muted-foreground shadow-xs">
                   <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" />
-                  <span>Synthesizing verified technical answer...</span>
+                  <span>Synthesizing enterprise technical response...</span>
                 </div>
               </div>
             )}
@@ -278,7 +425,7 @@ STRICT OPERATING INSTRUCTIONS:
             <Button
               type="submit"
               disabled={!input.trim() || isLoading}
-              className="h-11 px-5 rounded-xl font-medium shadow-sm flex items-center gap-2"
+              className="h-11 px-5 rounded-xl font-medium shadow-xs flex items-center gap-2"
             >
               <span>Send</span>
               <Send className="w-4 h-4" />
@@ -329,14 +476,38 @@ STRICT OPERATING INSTRUCTIONS:
           <div className="mt-auto p-3.5 rounded-xl border border-border/80 bg-secondary/30 space-y-2">
             <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-              <span>Grounded Knowledge Base</span>
+              <span>Grounded Enterprise Knowledge</span>
             </div>
             <p className="text-[11px] text-muted-foreground leading-relaxed">
-              Responses are strictly anchored to the live Weftro Connect API v1 OpenAPI schema and MCP tool definitions. All credentials and secrets are automatically redacted.
+              Responses are anchored to live Weftro Connect API v1 specifications, OpenAPI schemas, and MCP tool protocols. Sensitive keys and secrets are automatically redacted.
             </p>
           </div>
         </div>
       </div>
+
+      {/* Confirmation Modal: Delete Chat History */}
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent className="rounded-2xl max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-base font-bold flex items-center gap-2 text-rose-500">
+              <Trash2 className="w-4 h-4" />
+              Delete Conversation History?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-xs text-muted-foreground leading-relaxed">
+              This will permanently remove all messages and code snippets from your Developer Copilot history. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="mt-4 gap-2">
+            <AlertDialogCancel className="rounded-xl text-xs">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDeleteHistory}
+              className="rounded-xl text-xs bg-rose-600 hover:bg-rose-700 text-white font-medium"
+            >
+              Delete History
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -26,7 +26,7 @@ export default function DecisionLedger() {
   }, [companyId]);
 
   const loadDecisions = async () => {
-    setLoading(true);
+    if (decisions.length === 0) setLoading(true);
     try {
       // Load from clipad_decisions (native AI-detected decisions)
       const { data: nativeDecisions } = await supabase
@@ -156,17 +156,11 @@ export default function DecisionLedger() {
         <div className="max-w-5xl mx-auto relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <button onClick={() => navigate('/integrations')} className="w-9 h-9 rounded-full bg-card border border-border flex items-center justify-center hover:bg-secondary transition-colors shrink-0" title="Go back">
-                <ArrowLeft className="w-4 h-4 text-muted-foreground" />
-              </button>
               <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center">
                 <Scale className="w-5 h-5 text-primary" />
               </div>
               <h1 className="text-2xl font-bold text-foreground">Decision Ledger</h1>
             </div>
-            <p className="text-sm text-muted-foreground max-w-xl">
-              An AI-powered ledger of every key decision extracted from your meetings, chats, docs, and tickets across all connected integrations.
-            </p>
           </div>
 
           <div className="flex items-center gap-3">

@@ -189,13 +189,6 @@ Respond in valid JSON only:
 
         {/* Header */}
         <div>
-          <button
-            onClick={() => navigate(`${basePath}/dashboard`)}
-            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors group"
-          >
-            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-            Dashboard
-          </button>
           <div className="flex items-start justify-between flex-wrap gap-3">
             <div>
               <h1 className="text-2xl font-black text-foreground">CliPad Pulse</h1>

@@ -1,6 +1,6 @@
 ﻿import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, FileText, Video, Hash, Calendar, Settings, Activity } from "lucide-react";
+import { Search, FileText, Video, Hash, Calendar, Settings, Activity, Code2 } from "lucide-react";
 import { supabase } from "@/api/supabaseClient";
 import { useAuth } from "@/lib/AuthContext";
 import { Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
@@ -81,6 +81,10 @@ export default function CliPadCommandPalette() {
         <CommandEmpty>{loading ? "Searching..." : "No results found."}</CommandEmpty>
         
         <CommandGroup heading="Quick Actions">
+          <CommandItem onSelect={() => handleSelect('/developers')}>
+            <Code2 className="mr-2 h-4 w-4 text-[#fad503]" />
+            <span>Developer Platform</span>
+          </CommandItem>
           <CommandItem onSelect={() => handleSelect('/record')}>
             <Video className="mr-2 h-4 w-4 text-rose-500" />
             <span>Start Video Recording</span>

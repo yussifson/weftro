@@ -184,7 +184,6 @@ export default function KnowledgeHealth() {
             <HeartPulse className="w-8 h-8 text-rose-500" />
             Knowledge Health
           </h1>
-          <p className="text-slate-500 dark:text-muted-foreground mt-2">Bird's-eye view of your organization's operational intelligence and efficiency.</p>
         </div>
       </div>
 

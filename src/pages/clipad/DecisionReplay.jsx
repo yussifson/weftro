@@ -231,13 +231,6 @@ Respond in valid JSON only:
 
         {/* Back + Header */}
         <div>
-          <button
-            onClick={() => navigate(`${basePath}/decisions`)}
-            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors group"
-          >
-            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-            Decision Ledger
-          </button>
           <div className="flex items-start justify-between gap-4 flex-wrap">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shrink-0">

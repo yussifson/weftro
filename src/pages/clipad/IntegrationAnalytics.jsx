@@ -193,7 +193,6 @@ export default function IntegrationAnalytics() {
                 <h1 className="text-2xl font-black">
                   Integration Analytics
                 </h1>
-                <p className="text-sm text-slate-500 dark:text-muted-foreground mt-1">Monitor data ingestion, AI processing, and knowledge graph health.</p>
               </div>
             </div>
             <button 

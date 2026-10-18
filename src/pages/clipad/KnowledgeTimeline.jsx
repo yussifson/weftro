@@ -25,7 +25,7 @@ export default function KnowledgeTimeline() {
   }, [companyId]);
 
   const loadTimeline = async () => {
-    setLoading(true);
+    if (events.length === 0) setLoading(true);
     try {
       // Fetch imported knowledge
       const { data, error } = await supabase
@@ -38,35 +38,7 @@ export default function KnowledgeTimeline() {
       if (error) throw error;
       
       let eventsData = data || [];
-      // Inject mock data if empty
-      if (eventsData.length === 0) {
-        eventsData = [
-          {
-            id: 'mock-t1',
-            provider: 'zoom',
-            title: 'Weekly Standup',
-            content_type: 'video',
-            ai_summary: 'Discussed the current sprint progress. All tasks are on track except for the new authentication module which is delayed due to API rate limits.',
-            imported_at: new Date().toISOString()
-          },
-          {
-            id: 'mock-t2',
-            provider: 'slack',
-            title: '#engineering channel sync',
-            content_type: 'chat',
-            ai_summary: 'Resolved the production database indexing issue. Decided to migrate to pgvector for similarity searches.',
-            imported_at: new Date(Date.now() - 3600000 * 5).toISOString()
-          },
-          {
-            id: 'mock-t3',
-            provider: 'linear',
-            title: 'Issue ENG-405 Closed',
-            content_type: 'issue',
-            ai_summary: 'Closed the issue related to the accessibility contrast ratios. The Radix UI components were successfully integrated.',
-            imported_at: new Date(Date.now() - 86400000 * 2).toISOString()
-          }
-        ];
-      }
+      // Keep empty if no items found
       
       setEvents(eventsData);
     } catch (err) {
@@ -102,17 +74,11 @@ export default function KnowledgeTimeline() {
         <div className="max-w-5xl mx-auto relative z-10 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <button onClick={() => navigate('/integrations')} className="w-9 h-9 rounded-full bg-card border border-border flex items-center justify-center hover:bg-secondary transition-colors shrink-0" title="Go back">
-                <ArrowLeft className="w-4 h-4 text-muted-foreground" />
-              </button>
               <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center">
                 <History className="w-5 h-5 text-primary" />
               </div>
               <h1 className="text-2xl font-bold text-foreground">Knowledge Timeline</h1>
             </div>
-            <p className="text-sm text-muted-foreground max-w-xl">
-              A chronological feed of all knowledge ingested across your connected applications. See exactly what the AI is learning in real-time.
-            </p>
           </div>
           <button
             onClick={loadTimeline}
