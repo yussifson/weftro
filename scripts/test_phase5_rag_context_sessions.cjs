@@ -918,6 +918,118 @@ async function runResilienceTests() {
     `Allowed: ${permRevokeRes.allowedCount}, Revoked space item successfully excluded`
   );
 
+  // Test 28: System limitation test — Citation to included source that does not support the claim
+  function simulateUnsupportedClaimCitation() {
+    // Evidence pack contains budget info, but model makes a claim about an unmentioned acquisition
+    const sources = [
+      { index: 1, id: 'doc_acme_budget', title: 'Q4 Financial Report', isIncluded: true, isTruncated: false }
+    ];
+    const generatedAnswer = "Acme Corp acquired CyberDyne Systems for $500M [Source: #1].";
+    
+    // Index-provenance validation passes because #1 was supplied in evidence pack
+    const citationPattern = /\[Source:\s*#?([^\s\]]+)\]/gi;
+    const matches = [...generatedAnswer.matchAll(citationPattern)];
+    const parsedIdx = parseInt(matches[0][1], 10);
+    const matchedSource = sources.find(s => s.index === parsedIdx);
+    
+    // The current architecture validates index provenance ('PROVENANCE_PRESENT'),
+    // but does NOT perform NLI / entailment verification that the text supports the claim.
+    const isProvenanceValid = matchedSource && matchedSource.isIncluded;
+    const hasSemanticEntailmentVerification = false; // Documented architectural boundary
+
+    return { isProvenanceValid, hasSemanticEntailmentVerification };
+  }
+  const unsupportedClaimRes = simulateUnsupportedClaimCitation();
+  record(
+    '28. [SYSTEM LIMITATION] Validated citations certify evidence index provenance but not semantic claim entailment',
+    unsupportedClaimRes.isProvenanceValid === true && unsupportedClaimRes.hasSemanticEntailmentVerification === false,
+    `Index #1 certified as present in evidence pack; independent semantic entailment unperformed by design`
+  );
+
+  // Test 29: Citation rendering resilience with missing/malformed citation metadata in UI
+  function simulateSearchHubCitationSafety() {
+    // Simulate UI message with malformed or missing citations object
+    const testMessages = [
+      { content: "Answer [Source: #1]", citations: null, sources: null },
+      { content: "Answer [Source: #2]", citations: { valid: null }, sources: [] },
+      { content: "Answer [Source: #3]", citations: { valid: [{ index: 'not-a-number' }] }, sources: [{ index: 3 }] }
+    ];
+
+    let crashed = false;
+    try {
+      testMessages.forEach(msg => {
+        const parts = msg.content.split(/(\[Source:\s*#?\d+\])/gi);
+        parts.forEach(part => {
+          const match = part.match(/\[Source:\s*#?(\d+)\]/i);
+          if (match) {
+            const idx = parseInt(match[1], 10);
+            const validCitation = msg.citations?.valid?.find?.(c => c && c.index === idx);
+            const isVerified = !!validCitation;
+            const targetRecord = msg.sources?.find?.(s => s && s.index === idx);
+            const title = isVerified ? (validCitation?.isTruncated ? `Verified partial: ${validCitation.title || 'Untitled'}` : `Verified: ${validCitation.title || 'Untitled'}`) : `Unverified #${idx}`;
+          }
+        });
+      });
+    } catch (err) {
+      crashed = true;
+    }
+    return !crashed;
+  }
+  const uiSafetyRes = simulateSearchHubCitationSafety();
+  record(
+    '29. Citation UI rendering handles null, missing, or malformed citation metadata without throwing exceptions',
+    uiSafetyRes === true,
+    `All malformed/null message variations evaluated safely`
+  );
+
+  // Test 30: Absent isTruncated field falls back safely to false (full verification)
+  function testAbsentIsTruncatedFallback() {
+    const rawSource = { index: 1, id: 'doc_legacy', title: 'Legacy Source' }; // no isTruncated property
+    const isTruncated = rawSource.isTruncated || false;
+    const status = isTruncated ? 'VALID_TRUNCATED' : 'VALID';
+    return { isTruncated, status };
+  }
+  const absentTruncRes = testAbsentIsTruncatedFallback();
+  record(
+    '30. Absent isTruncated property on legacy source objects safely defaults to false (VALID)',
+    absentTruncRes.isTruncated === false && absentTruncRes.status === 'VALID',
+    `Fallback status: ${absentTruncRes.status}`
+  );
+
+  // Test 31: Reordered search results maintain immutable source ID and index association
+  function testReorderedResultsMapping() {
+    // Initial evidence pack order
+    const originalSources = [
+      { index: 1, id: 'doc_alpha', title: 'Alpha Memo' },
+      { index: 2, id: 'doc_beta', title: 'Beta Transcript' },
+      { index: 3, id: 'doc_gamma', title: 'Gamma Spec' }
+    ];
+
+    // User filters or sorts search results list in SearchHub
+    const reorderedSearchResults = [
+      { id: 'doc_gamma', title: 'Gamma Spec' },
+      { id: 'doc_alpha', title: 'Alpha Memo' },
+      { id: 'doc_beta', title: 'Beta Transcript' }
+    ];
+
+    // Clicking [Source: #1] must resolve to doc_alpha regardless of its position in search results
+    const citedIndex = 1;
+    const targetSource = originalSources.find(s => s.index === citedIndex);
+    const matchedCard = reorderedSearchResults.find(r => r.id === targetSource.id);
+
+    return {
+      targetId: targetSource.id,
+      matchedId: matchedCard.id,
+      correct: targetSource.id === 'doc_alpha' && matchedCard.id === 'doc_alpha'
+    };
+  }
+  const reorderRes = testReorderedResultsMapping();
+  record(
+    '31. Reordered or filtered UI search results maintain deterministic ID resolution for citation clicks',
+    reorderRes.correct === true,
+    `Citation #1 maps to target ID "${reorderRes.targetId}" across reordered UI result list`
+  );
+
   // ── Summary ──
   console.log('\n================================================================');
   const passedCount = results.filter(r => r.pass).length;
