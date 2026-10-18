@@ -663,7 +663,8 @@ serve(async (req) => {
       );
     }
 
-    if (tokRecord.app && tokRecord.app.is_active === false) {
+    const appRecord = Array.isArray(tokRecord.app) ? tokRecord.app[0] : tokRecord.app;
+    if (appRecord && (appRecord as any).is_active === false) {
       return errorResponse(
         'APP_INACTIVE',
         'The application associated with this token is inactive.',
@@ -733,20 +734,26 @@ serve(async (req) => {
 
   // 5. Audit Logging Helper (Fire and forget, resilient)
   const logAudit = (eventType: string, details: any = {}) => {
-    supabase.from('clipad_v3_events').insert([{
-      company_id: companyId,
-      user_id: userId,
-      event_type: eventType,
-      source_domain: 'api_gateway',
-      payload: {
-        request_id: requestId,
-        app_id: tokenData.app?.id,
-        path: subpath,
-        method: req.method,
-        latency_ms: Date.now() - startTime,
-        ...details,
-      },
-    }]).then(() => {}).catch((err: any) => console.warn('[api-gateway] Audit log error:', err.message));
+    (async () => {
+      try {
+        await supabase.from('clipad_v3_events').insert([{
+          company_id: companyId,
+          user_id: userId,
+          event_type: eventType,
+          source_domain: 'api_gateway',
+          payload: {
+            request_id: requestId,
+            app_id: tokenData?.app?.id,
+            path: subpath,
+            method: req.method,
+            latency_ms: Date.now() - startTime,
+            ...details,
+          },
+        }]);
+      } catch (err: any) {
+        console.warn('[api-gateway] Audit log error:', err.message);
+      }
+    })();
   };
 
   try {

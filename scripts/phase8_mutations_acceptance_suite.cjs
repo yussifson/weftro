@@ -17,16 +17,18 @@ const crypto = require('crypto');
 const { spawn } = require('child_process');
 const path = require('path');
 
-const BASE_URL = 'https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect';
+const BASE_URL = (process.env.WEFTRO_API_URL || process.env.BASE_URL || 'https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect').replace(/\/+$/, '');
 const TEST_KEY = 'weftro_phase3_acceptance_test_key';
 const MCP_SERVER_PATH = path.resolve(__dirname, '../packages/weftro-mcp/index.js');
 
 function request(reqPath, options = {}, body = null) {
   return new Promise((resolve, reject) => {
     const url = new URL(reqPath.startsWith('http') ? reqPath : `${BASE_URL}${reqPath}`);
+    const isHttps = url.protocol === 'https:';
+    const client = isHttps ? https : require('http');
     const reqOptions = {
       hostname: url.hostname,
-      port: 443,
+      port: url.port || (isHttps ? 443 : 80),
       path: url.pathname + url.search,
       method: options.method || 'GET',
       headers: {
@@ -41,7 +43,7 @@ function request(reqPath, options = {}, body = null) {
       reqOptions.headers['Content-Length'] = Buffer.byteLength(payload);
     }
 
-    const req = https.request(reqOptions, (res) => {
+    const req = client.request(reqOptions, (res) => {
       let rawData = '';
       res.on('data', chunk => rawData += chunk);
       res.on('end', () => {
@@ -73,7 +75,8 @@ function invokeMcpTool(token, toolName, toolArgs) {
       env: {
         ...process.env,
         WEFTRO_TOKEN: token,
-        WEFTRO_API_URL: BASE_URL
+        WEFTRO_API_URL: BASE_URL,
+        WEFTRO_ENABLE_MUTATIONS: 'true'
       }
     });
 
@@ -280,6 +283,35 @@ async function runPhase8Suite() {
       `Original ID: ${createdCapture?.id}, Returned ID: ${duplicateCapRes.data?.data?.id}`
     );
 
+    // 2.5 Concurrent duplicate requests race test
+    const concurrentKey = `idemp_concurrent_${crypto.randomUUID().slice(0, 8)}`;
+    const concurrentPayload = {
+      title: 'Concurrent Race Test',
+      content: 'Simultaneous duplicate requests testing race conditions',
+      source_type: 'cli_tool'
+    };
+
+    const [raceRes1, raceRes2] = await Promise.all([
+      request('/api/v1/captures', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token1}`, 'Idempotency-Key': concurrentKey }
+      }, concurrentPayload),
+      request('/api/v1/captures', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token1}`, 'Idempotency-Key': concurrentKey }
+      }, concurrentPayload)
+    ]);
+
+    const id1 = raceRes1.data?.data?.id;
+    const id2 = raceRes2.data?.data?.id;
+    assert(
+      (raceRes1.statusCode === 201 || raceRes1.statusCode === 200) &&
+      (raceRes2.statusCode === 201 || raceRes2.statusCode === 200) &&
+      id1 && id2 && id1 === id2,
+      'Concurrent duplicate requests with identical Idempotency-Key resolve to same resource ID',
+      `Status 1: ${raceRes1.statusCode}, Status 2: ${raceRes2.statusCode}, ID 1: ${id1}, ID 2: ${id2}`
+    );
+
     // ─── Test Group 3: POST /api/v1/memories Mutations ────────────────────────
     console.log('\n--- Test Group 3: POST /api/v1/memories Mutations ---');
 
@@ -435,6 +467,26 @@ async function runPhase8Suite() {
         'Precondition failed: Memory was not created'
       );
     }
+
+    // ─── Test Group 6: Rejection of Identity Spoofing / Overrides ────────────
+    console.log('\n--- Test Group 6: Rejection of Identity Spoofing / Overrides ---');
+
+    const spoofAttemptRes = await request('/api/v1/memories', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token1}` }
+    }, {
+      title: 'Tenant Spoof Attempt',
+      content: 'Attempting to inject foreign company_id in payload',
+      company_id: '11111111-2222-3333-4444-555555555555', // Attacker-provided company ID
+      user_id: '99999999-8888-7777-6666-555555555555'
+    });
+
+    const spoofedMem = spoofAttemptRes.data?.data;
+    assert(
+      spoofAttemptRes.statusCode === 201 && spoofedMem?.company_id === comp1Id && spoofedMem?.company_id !== '11111111-2222-3333-4444-555555555555',
+      'Gateway strictly derives organization identity from token context, ignoring payload overrides',
+      `Enforced Company ID: ${spoofedMem?.company_id}, Injected Company ID: 11111111-2222-3333-4444-555555555555`
+    );
 
     // ─── Final Summary ───────────────────────────────────────────────────────
     console.log('\n================================================================');
