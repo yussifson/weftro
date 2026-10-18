@@ -47,10 +47,14 @@ export function sanitizeRetrievedEvidence(text) {
  * @param {Array<Object>} evidenceItems - Retrieved items from hybrid retrieval
  * @returns {{ evidenceText: string, sources: Array<Object> }}
  */
-export function formatEvidencePack(evidenceItems = []) {
+export function formatEvidencePack(evidenceItems = [], options = {}) {
   if (!Array.isArray(evidenceItems) || evidenceItems.length === 0) {
     return { evidenceText: 'No supporting evidence found in authorized records.', sources: [] };
   }
+
+  // Budgeting: default 18,000 characters (~4,500 tokens) for evidence pack
+  const maxEvidenceChars = options.maxEvidenceChars || 18000;
+  let accumulatedChars = 0;
 
   const sources = [];
   const evidenceBlocks = [];
@@ -62,6 +66,7 @@ export function formatEvidencePack(evidenceItems = []) {
     const rawContent = item.content || item.snippet || item.summary || item.ai_summary || '';
     const cleanContent = sanitizeRetrievedEvidence(rawContent);
 
+    // Source metadata is preserved unconditionally for UI mapping and citation verification
     sources.push({
       index: index + 1,
       id: sourceId,
@@ -72,13 +77,19 @@ export function formatEvidencePack(evidenceItems = []) {
       source_channel: item.source_channel || 'hybrid'
     });
 
-    evidenceBlocks.push(
-      `--- EVIDENCE ITEM [${index + 1}] ---\n` +
-      `ID: ${sourceId}\n` +
-      `TYPE: ${type}\n` +
-      `TITLE: ${title}\n` +
-      `CONTENT: ${cleanContent.slice(0, 1500)}\n`
-    );
+    if (accumulatedChars < maxEvidenceChars) {
+      const remainingBudget = maxEvidenceChars - accumulatedChars;
+      const contentSnippet = cleanContent.slice(0, Math.min(1500, remainingBudget));
+      const block =
+        `--- EVIDENCE ITEM [${index + 1}] ---\n` +
+        `ID: ${sourceId}\n` +
+        `TYPE: ${type}\n` +
+        `TITLE: ${title}\n` +
+        `CONTENT: ${contentSnippet}\n`;
+
+      evidenceBlocks.push(block);
+      accumulatedChars += block.length;
+    }
   });
 
   return {

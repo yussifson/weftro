@@ -36,10 +36,11 @@ BEGIN
     RAISE EXCEPTION 'Unauthorized: Caller company context does not match target company.';
   END IF;
 
-  -- Verify parent knowledge record exists and belongs to target company
+  -- Step 0: Lock parent record to serialize concurrent replacements across distributed instances
   IF NOT EXISTS (
     SELECT 1 FROM public.clipad_imported_knowledge
     WHERE id = p_knowledge_id AND company_id::text = p_company_id::text
+    FOR UPDATE
   ) THEN
     RAISE EXCEPTION 'Parent knowledge document not found or does not belong to target organization.';
   END IF;

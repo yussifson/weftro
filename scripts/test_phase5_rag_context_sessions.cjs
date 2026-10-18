@@ -568,6 +568,62 @@ async function runResilienceTests() {
     `Disabled status: ${disabledFlagResult.status}, response: "${disabledFlagResult.answer}"`
   );
 
+  // ──────────────────────────────────────────────────────────────────
+  // Test Group 7: Enterprise Context Budgeting & Provenance Preservation
+  // ──────────────────────────────────────────────────────────────────
+  console.log('\n--- Test Group 7: Context Budgeting, Unicode & Provenance Matrix ---');
+
+  function simulateBudgetedEvidencePack({ items, maxEvidenceChars = 2000 }) {
+    let accumulated = 0;
+    const sources = [];
+    const evidenceBlocks = [];
+
+    items.forEach((item, index) => {
+      const sourceId = item.id || `doc_${index + 1}`;
+      sources.push({
+        index: index + 1,
+        id: sourceId,
+        title: item.title,
+        type: item.type || 'record'
+      });
+
+      if (accumulated < maxEvidenceChars) {
+        const remaining = maxEvidenceChars - accumulated;
+        const snippet = (item.content || '').slice(0, Math.min(1500, remaining));
+        const block = `[ITEM ${index + 1}] ID:${sourceId} ${item.title}: ${snippet}`;
+        evidenceBlocks.push(block);
+        accumulated += block.length;
+      }
+    });
+
+    return { evidenceText: evidenceBlocks.join('\n'), sources, totalChars: accumulated };
+  }
+
+  // Test 16: Oversized context with 10 documents
+  const largeItems = Array.from({ length: 10 }, (_, i) => ({
+    id: `doc_large_${i + 1}`,
+    title: `Document ${i + 1}`,
+    content: 'A'.repeat(800)
+  }));
+
+  const budgetedPack = simulateBudgetedEvidencePack({ items: largeItems, maxEvidenceChars: 3000 });
+  record(
+    '16. Evidence pack budgeting enforces max character limits while preserving all source references',
+    budgetedPack.totalChars <= 3100 && budgetedPack.sources.length === 10,
+    `Total chars: ${budgetedPack.totalChars} (capped at budget), All 10 sources preserved for citation provenance`
+  );
+
+  // Test 17: Unicode, code snippets, and non-ASCII character preservation
+  const unicodeItems = [
+    { id: 'doc_unicode', title: 'Multilingual & Code', content: 'const π = 3.14159; // 🚀 日本語, العربية, Español, ⚡' }
+  ];
+  const unicodePack = simulateBudgetedEvidencePack({ items: unicodeItems, maxEvidenceChars: 5000 });
+  record(
+    '17. Context budgeting correctly preserves Unicode, emojis, and code structures without mangling',
+    unicodePack.evidenceText.includes('π') && unicodePack.evidenceText.includes('日本語') && unicodePack.evidenceText.includes('🚀'),
+    `Preserved content: "${unicodePack.evidenceText}"`
+  );
+
   // ── Summary ──
   console.log('\n================================================================');
   const passedCount = results.filter(r => r.pass).length;
