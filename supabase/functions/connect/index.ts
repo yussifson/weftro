@@ -17,8 +17,10 @@ const SCOPES = {
   MEMORY_READ: 'memory:read',
   ENTITIES_READ: 'entities:read',
   CAPTURES_READ: 'captures:read',
+  CAPTURES_WRITE: 'captures:write',
   MOMENTS_READ: 'moments:read',
   SOURCES_READ: 'sources:read',
+  MEMORY_WRITE: 'memory:write',
   APPS_MANAGE: 'apps:manage',
   WEBHOOKS_MANAGE: 'webhooks:manage',
 };
@@ -129,6 +131,104 @@ async function hmacSha256Signature(secret: string, payload: string): Promise<str
   const signature = await crypto.subtle.sign('HMAC', key, enc.encode(payload));
   const hashArray = Array.from(new Uint8Array(signature));
   return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+// Background Webhook Event Dispatcher
+async function dispatchWebhookEvent(
+  supabase: any,
+  companyId: string,
+  eventType: string,
+  eventData: any
+) {
+  try {
+    const { data: webhooks, error } = await supabase
+      .from('clipad_v3_webhooks')
+      .select('*')
+      .eq('company_id', companyId)
+      .eq('is_active', true);
+
+    if (error || !webhooks || webhooks.length === 0) return;
+
+    const matchingHooks = webhooks.filter((hook: any) =>
+      Array.isArray(hook.events) && hook.events.includes(eventType)
+    );
+
+    for (const hook of matchingHooks) {
+      // Check SSRF
+      const ssrfCheck = isPrivateOrUnsafeUrl(hook.endpoint_url);
+      if (!ssrfCheck.safe) continue;
+
+      const eventId = `evt_${crypto.randomUUID().replace(/-/g, '')}`;
+      const timestamp = Math.floor(Date.now() / 1000);
+      const payload = {
+        id: eventId,
+        event: eventType,
+        created_at: new Date().toISOString(),
+        company_id: companyId,
+        data: eventData,
+      };
+
+      const payloadString = JSON.stringify(payload);
+      const signaturePayload = `${timestamp}.${payloadString}`;
+      const signature = await hmacSha256Signature(hook.secret, signaturePayload);
+
+      // Asynchronous dispatch with 5s timeout & redirect rejection
+      (async () => {
+        let deliveryStatus = 'failed';
+        let statusCode = 0;
+        let errorMessage: string | null = null;
+        const start = Date.now();
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 5000);
+          const res = await fetch(hook.endpoint_url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'User-Agent': 'Weftro-Webhooks/1.0',
+              'X-Weftro-Event-Id': eventId,
+              'X-Weftro-Timestamp': String(timestamp),
+              'X-Weftro-Signature': `t=${timestamp},v1=${signature}`,
+            },
+            body: payloadString,
+            signal: controller.signal,
+            redirect: 'manual',
+          });
+          clearTimeout(timeoutId);
+          statusCode = res.status;
+          if (statusCode >= 300 && statusCode < 400) {
+            deliveryStatus = 'failed';
+            errorMessage = `Webhook delivery rejected redirect response (HTTP ${statusCode}).`;
+          } else {
+            deliveryStatus = res.ok ? 'delivered' : 'failed';
+          }
+        } catch (err: any) {
+          deliveryStatus = 'failed';
+          errorMessage = err.name === 'AbortError' ? 'Delivery timed out' : err.message;
+        }
+
+        const durationMs = Date.now() - start;
+        // Audit log delivery event
+        await supabase.from('clipad_v3_events').insert([{
+          company_id: companyId,
+          user_id: null,
+          event_type: 'webhook.delivery',
+          source_domain: 'webhook_delivery',
+          payload: {
+            webhook_id: hook.id,
+            event_type: eventType,
+            event_id: eventId,
+            status: deliveryStatus,
+            response_status: statusCode,
+            duration_ms: durationMs,
+            error_message: errorMessage,
+          },
+        }]).catch(() => {});
+      })();
+    }
+  } catch (dispErr: any) {
+    console.warn('[dispatchWebhookEvent] Warning:', dispErr.message);
+  }
 }
 
 serve(async (req) => {
@@ -423,9 +523,11 @@ serve(async (req) => {
           { path: '/api/v1/search', method: 'POST', scope: 'search:read', description: 'Grounded search across organizational memories' },
           { path: '/api/v1/context/query', method: 'POST', scope: 'context:read', description: 'Structured context query with provenance' },
           { path: '/api/v1/memories', method: 'GET', scope: 'memory:read', description: 'List organizational memories with pagination' },
+          { path: '/api/v1/memories', method: 'POST', scope: 'memory:write', description: 'Create verified organizational memory with provenance and idempotency' },
           { path: '/api/v1/memories/:id', method: 'GET', scope: 'memory:read', description: 'Retrieve a single memory by ID' },
           { path: '/api/v1/entities/:id', method: 'GET', scope: 'entities:read', description: 'Retrieve an organizational entity node' },
           { path: '/api/v1/captures', method: 'GET', scope: 'captures:read', description: 'List captures for the authorized tenant' },
+          { path: '/api/v1/captures', method: 'POST', scope: 'captures:write', description: 'Ingest external content into capture pipeline with queue scheduling' },
           { path: '/api/v1/captures/:id', method: 'GET', scope: 'captures:read', description: 'Retrieve a capture record' },
           { path: '/api/v1/captures/:id/status', method: 'GET', scope: 'captures:read', description: 'Retrieve capture processing and queue status' },
           { path: '/api/v1/smart-moments', method: 'GET', scope: 'moments:read', description: 'List extracted smart moments' },
@@ -452,7 +554,9 @@ serve(async (req) => {
             'list_captures',
             'get_capture_by_id',
             'list_smart_moments',
-            'get_source_provenance'
+            'get_source_provenance',
+            'create_capture',
+            'create_organizational_memory'
           ]
         },
         webhooks: {
@@ -773,44 +877,177 @@ serve(async (req) => {
     // ROUTE: GET /api/v1/memories & GET /api/v1/memories/:id
     // ══════════════════════════════════════════════════════════════
     if (subpath === '/memories' || subpath === '/api/v1/memories') {
-      if (req.method !== 'GET') {
-        return errorResponse('METHOD_NOT_ALLOWED', 'Endpoint requires GET.', 405, requestId);
+      if (req.method === 'GET') {
+        if (!hasScope(SCOPES.MEMORY_READ)) {
+          return errorResponse('FORBIDDEN', 'Insufficient scope: memory:read required.', 403, requestId);
+        }
+
+        const limit = Math.min(Math.max(1, Number(url.searchParams.get('limit')) || 20), 100);
+        const offset = Math.max(0, Number(url.searchParams.get('offset')) || 0);
+        const tier = url.searchParams.get('tier');
+        const type = url.searchParams.get('type');
+
+        let queryBuilder = supabase
+          .from('clipad_v3_memories')
+          .select('id, title, content, summary, memory_type, memory_tier, status, confidence_score, importance, source_type, source_id, created_at, updated_at', { count: 'exact' })
+          .eq('company_id', companyId)
+          .eq('status', 'ACTIVE')
+          .order('created_at', { ascending: false });
+
+        if (tier) queryBuilder = queryBuilder.eq('memory_tier', tier);
+        if (type) queryBuilder = queryBuilder.eq('memory_type', type);
+
+        const { data: memories, count, error: listErr } = await queryBuilder.range(offset, offset + limit - 1);
+        if (listErr) throw listErr;
+
+        logAudit('api.memories.list', { count: memories?.length || 0 });
+
+        return successResponse(
+          memories || [],
+          {
+            request_id: requestId,
+            total: count,
+            limit,
+            offset,
+          },
+          200,
+          rateLimitHeaders
+        );
       }
-      if (!hasScope(SCOPES.MEMORY_READ)) {
-        return errorResponse('FORBIDDEN', 'Insufficient scope: memory:read required.', 403, requestId);
+
+      if (req.method === 'POST') {
+        if (!hasScope(SCOPES.MEMORY_WRITE)) {
+          return errorResponse('FORBIDDEN', 'Insufficient scope: memory:write required.', 403, requestId);
+        }
+
+        const body = await req.json().catch(() => ({}));
+        const idempotencyKey = req.headers.get('Idempotency-Key') || body.idempotency_key || null;
+
+        // Idempotency check: look for an existing successful event within 24 hours
+        if (idempotencyKey) {
+          const { data: cachedEvent } = await supabase
+            .from('clipad_v3_events')
+            .select('payload')
+            .eq('company_id', companyId)
+            .eq('event_type', 'api.memories.create')
+            .filter('payload->>idempotency_key', 'eq', idempotencyKey)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+          if (cachedEvent?.payload?.response_data) {
+            return successResponse(
+              cachedEvent.payload.response_data,
+              { request_id: requestId, idempotent_replay: true },
+              200,
+              rateLimitHeaders
+            );
+          }
+        }
+
+        const title = typeof body.title === 'string' ? body.title.trim() : '';
+        const content = typeof body.content === 'string' ? body.content.trim() : '';
+        const memoryType = body.memory_type || 'FACT';
+        const memoryTier = body.memory_tier || 'organizational';
+        const summary = typeof body.summary === 'string' ? body.summary.trim() : title;
+        const confidenceScore = typeof body.confidence_score === 'number' ? Math.min(1.0, Math.max(0.0, body.confidence_score)) : 1.0;
+        const importance = typeof body.importance === 'number' ? Math.min(1.0, Math.max(0.0, body.importance)) : 0.5;
+        const sourceType = body.source_type || 'manual_entry';
+        const sourceId = body.source_id ? String(body.source_id) : null;
+        const sourceMetadata = body.source_metadata || {};
+        const metadata = body.metadata || {};
+
+        if (!title) {
+          return errorResponse('BAD_REQUEST', "The 'title' field is required and must be non-empty.", 400, requestId);
+        }
+        if (!content) {
+          return errorResponse('BAD_REQUEST', "The 'content' field is required and must be non-empty.", 400, requestId);
+        }
+
+        // Validate linked source if source_id is provided
+        if (sourceId) {
+          // Check if source belongs to the same tenant organization
+          const { data: sourceCapture } = await supabase
+            .from('clipad_v3_captures')
+            .select('id, company_id')
+            .eq('id', sourceId)
+            .eq('company_id', companyId)
+            .maybeSingle();
+
+          if (!sourceCapture) {
+            // Check clipad_videos
+            const { data: sourceVideo } = await supabase
+              .from('clipad_videos')
+              .select('id, company_id')
+              .eq('id', sourceId)
+              .eq('company_id', companyId)
+              .maybeSingle();
+
+            if (!sourceVideo) {
+              return errorResponse('BAD_REQUEST', `Linked source_id '${sourceId}' was not found or belongs to another tenant organization.`, 404, requestId);
+            }
+          }
+        }
+
+        const memoryPayload = {
+          company_id: companyId,
+          user_id: userId,
+          title,
+          content,
+          summary,
+          memory_type: memoryType,
+          memory_tier: memoryTier,
+          status: 'ACTIVE',
+          is_active: true,
+          confidence_score: confidenceScore,
+          importance: importance,
+          source_type: sourceType,
+          source_id: sourceId,
+          source_metadata: sourceMetadata,
+          metadata: {
+            ...metadata,
+            ingested_via: 'connect_api',
+            app_id: tokenData?.app?.id || null,
+          },
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+
+        const { data: createdMemory, error: insertErr } = await supabase
+          .from('clipad_v3_memories')
+          .insert([memoryPayload])
+          .select('*')
+          .single();
+
+        if (insertErr || !createdMemory) {
+          return errorResponse('INTERNAL_SERVER_ERROR', insertErr?.message || 'Failed to persist memory.', 500, requestId);
+        }
+
+        // Audit log and persist idempotency cache in clipad_v3_events
+        logAudit('api.memories.create', {
+          memory_id: createdMemory.id,
+          idempotency_key: idempotencyKey,
+          response_data: createdMemory,
+        });
+
+        // Trigger webhook notification
+        dispatchWebhookEvent(supabase, companyId, 'memory.created', {
+          id: createdMemory.id,
+          title: createdMemory.title,
+          memory_type: createdMemory.memory_type,
+          memory_tier: createdMemory.memory_tier,
+          created_at: createdMemory.created_at,
+        });
+
+        return successResponse(
+          createdMemory,
+          { request_id: requestId, idempotency_key: idempotencyKey },
+          201,
+          rateLimitHeaders
+        );
       }
 
-      const limit = Math.min(Math.max(1, Number(url.searchParams.get('limit')) || 20), 100);
-      const offset = Math.max(0, Number(url.searchParams.get('offset')) || 0);
-      const tier = url.searchParams.get('tier');
-      const type = url.searchParams.get('type');
-
-      let queryBuilder = supabase
-        .from('clipad_v3_memories')
-        .select('id, title, content, summary, memory_type, memory_tier, status, confidence_score, importance, source_type, source_id, created_at, updated_at', { count: 'exact' })
-        .eq('company_id', companyId)
-        .eq('status', 'ACTIVE')
-        .order('created_at', { ascending: false });
-
-      if (tier) queryBuilder = queryBuilder.eq('memory_tier', tier);
-      if (type) queryBuilder = queryBuilder.eq('memory_type', type);
-
-      const { data: memories, count, error: listErr } = await queryBuilder.range(offset, offset + limit - 1);
-      if (listErr) throw listErr;
-
-      logAudit('api.memories.list', { count: memories?.length || 0 });
-
-      return successResponse(
-        memories || [],
-        {
-          request_id: requestId,
-          total: count,
-          limit,
-          offset,
-        },
-        200,
-        rateLimitHeaders
-      );
+      return errorResponse('METHOD_NOT_ALLOWED', 'Supported methods are GET, POST.', 405, requestId);
     }
 
     const memoryIdMatch = subpath.match(/^(?:\/api\/v1)?\/memories\/([0-9a-fA-F-]+)$/);
@@ -888,33 +1125,172 @@ serve(async (req) => {
     // ROUTE: GET /api/v1/captures & GET /api/v1/captures/:id & /status
     // ══════════════════════════════════════════════════════════════
     if (subpath === '/captures' || subpath === '/api/v1/captures') {
-      if (req.method !== 'GET') {
-        return errorResponse('METHOD_NOT_ALLOWED', 'Endpoint requires GET.', 405, requestId);
+      if (req.method === 'GET') {
+        if (!hasScope(SCOPES.CAPTURES_READ)) {
+          return errorResponse('FORBIDDEN', 'Insufficient scope: captures:read required.', 403, requestId);
+        }
+
+        const limit = Math.min(Math.max(1, Number(url.searchParams.get('limit')) || 20), 50);
+        const offset = Math.max(0, Number(url.searchParams.get('offset')) || 0);
+
+        const { data: captures, count, error: capErr } = await supabase
+          .from('clipad_v3_captures')
+          .select('id, capture_type, source_type, source_id, title, status, visibility, captured_at, created_at, provenance', { count: 'exact' })
+          .eq('company_id', companyId)
+          .order('created_at', { ascending: false })
+          .range(offset, offset + limit - 1);
+
+        if (capErr) throw capErr;
+
+        logAudit('api.captures.list', { count: captures?.length || 0 });
+
+        return successResponse(
+          captures || [],
+          { request_id: requestId, total: count, limit, offset },
+          200,
+          rateLimitHeaders
+        );
       }
-      if (!hasScope(SCOPES.CAPTURES_READ)) {
-        return errorResponse('FORBIDDEN', 'Insufficient scope: captures:read required.', 403, requestId);
+
+      if (req.method === 'POST') {
+        if (!hasScope(SCOPES.CAPTURES_WRITE)) {
+          return errorResponse('FORBIDDEN', 'Insufficient scope: captures:write required.', 403, requestId);
+        }
+
+        const body = await req.json().catch(() => ({}));
+        const idempotencyKey = req.headers.get('Idempotency-Key') || body.idempotency_key || null;
+
+        // Idempotency check: look for an existing successful event within 24 hours
+        if (idempotencyKey) {
+          const { data: cachedEvent } = await supabase
+            .from('clipad_v3_events')
+            .select('payload')
+            .eq('company_id', companyId)
+            .eq('event_type', 'api.captures.create')
+            .filter('payload->>idempotency_key', 'eq', idempotencyKey)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+          if (cachedEvent?.payload?.response_data) {
+            return successResponse(
+              cachedEvent.payload.response_data,
+              { request_id: requestId, idempotent_replay: true },
+              200,
+              rateLimitHeaders
+            );
+          }
+        }
+
+        const sourceType = typeof body.source_type === 'string' && body.source_type.trim() ? body.source_type.trim() : 'text_note';
+        const captureType = typeof body.capture_type === 'string' && body.capture_type.trim() ? body.capture_type.trim().toUpperCase() : 'NOTE';
+        const title = typeof body.title === 'string' ? body.title.trim() : '';
+        const content = typeof body.content === 'string' ? body.content.trim() : '';
+        const contextSessionId = body.context_session_id || null;
+        const metadata = body.metadata || {};
+        const provenance = body.provenance || {};
+
+        if (!content && !title) {
+          return errorResponse('BAD_REQUEST', "At least 'title' or 'content' must be provided.", 400, requestId);
+        }
+
+        // Validate context_session_id if provided
+        if (contextSessionId) {
+          const { data: sessionRecord } = await supabase
+            .from('clipad_v3_context_sessions')
+            .select('id, company_id')
+            .eq('id', contextSessionId)
+            .eq('company_id', companyId)
+            .maybeSingle();
+
+          if (!sessionRecord) {
+            return errorResponse('BAD_REQUEST', `Linked context_session_id '${contextSessionId}' was not found or belongs to another tenant organization.`, 404, requestId);
+          }
+        }
+
+        const capturePayload = {
+          company_id: companyId,
+          user_id: userId,
+          context_session_id: contextSessionId,
+          source_type: sourceType,
+          capture_type: captureType,
+          title: title || 'Untitled External Ingestion',
+          content: content,
+          content_type: 'text/plain',
+          status: 'QUEUED',
+          visibility: 'organization',
+          metadata: {
+            ...metadata,
+            ingested_via: 'connect_api',
+            app_id: tokenData?.app?.id || null,
+          },
+          provenance: {
+            ...provenance,
+            captured_by: userId,
+            source_type: sourceType,
+            capture_method: 'connect_api',
+            created_at: new Date().toISOString(),
+          },
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+
+        const { data: createdCapture, error: capInsertErr } = await supabase
+          .from('clipad_v3_captures')
+          .insert([capturePayload])
+          .select('*')
+          .single();
+
+        if (capInsertErr || !createdCapture) {
+          return errorResponse('INTERNAL_SERVER_ERROR', capInsertErr?.message || 'Failed to persist capture.', 500, requestId);
+        }
+
+        // Enqueue queue item in clipad_v3_capture_queue
+        const { data: queueJob } = await supabase
+          .from('clipad_v3_capture_queue')
+          .insert([{
+            company_id: companyId,
+            user_id: userId,
+            capture_id: createdCapture.id,
+            status: 'queued',
+            attempt_count: 0,
+            max_attempts: 3,
+            scheduled_at: new Date().toISOString(),
+          }])
+          .select('id, status, scheduled_at, attempt_count, max_attempts')
+          .maybeSingle();
+
+        const responseData = {
+          ...createdCapture,
+          queue_job: queueJob || null,
+        };
+
+        // Audit log and persist idempotency cache in clipad_v3_events
+        logAudit('api.captures.create', {
+          capture_id: createdCapture.id,
+          idempotency_key: idempotencyKey,
+          response_data: responseData,
+        });
+
+        // Trigger webhook notification
+        dispatchWebhookEvent(supabase, companyId, 'capture.created', {
+          id: createdCapture.id,
+          title: createdCapture.title,
+          source_type: createdCapture.source_type,
+          capture_type: createdCapture.capture_type,
+          status: createdCapture.status,
+          created_at: createdCapture.created_at,
+        });
+
+        return successResponse(
+          responseData,
+          { request_id: requestId, idempotency_key: idempotencyKey },
+          201,
+          rateLimitHeaders
+        );
       }
 
-      const limit = Math.min(Math.max(1, Number(url.searchParams.get('limit')) || 20), 50);
-      const offset = Math.max(0, Number(url.searchParams.get('offset')) || 0);
-
-      const { data: captures, count, error: capErr } = await supabase
-        .from('clipad_v3_captures')
-        .select('id, capture_type, source_type, source_id, title, status, visibility, captured_at, created_at, provenance', { count: 'exact' })
-        .eq('company_id', companyId)
-        .order('created_at', { ascending: false })
-        .range(offset, offset + limit - 1);
-
-      if (capErr) throw capErr;
-
-      logAudit('api.captures.list', { count: captures?.length || 0 });
-
-      return successResponse(
-        captures || [],
-        { request_id: requestId, total: count, limit, offset },
-        200,
-        rateLimitHeaders
-      );
+      return errorResponse('METHOD_NOT_ALLOWED', 'Supported methods are GET, POST.', 405, requestId);
     }
 
     const captureStatusMatch = subpath.match(/^(?:\/api\/v1)?\/captures\/([0-9a-fA-F-]+)\/status$/);

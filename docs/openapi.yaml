@@ -530,6 +530,62 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MemoryListResponse'
+    post:
+      summary: Create Organizational Memory
+      description: Creates a verified, durable organizational memory node with confidence scores, provenance, and idempotency guarantees.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: false
+          description: Optional idempotency key to prevent duplicate creation
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - content
+              properties:
+                title:
+                  type: string
+                content:
+                  type: string
+                summary:
+                  type: string
+                memory_type:
+                  type: string
+                  default: FACT
+                memory_tier:
+                  type: string
+                  default: organizational
+                confidence_score:
+                  type: number
+                  default: 1.0
+                importance:
+                  type: number
+                  default: 0.5
+                source_id:
+                  type: string
+                  format: uuid
+                source_type:
+                  type: string
+                idempotency_key:
+                  type: string
+      responses:
+        '201':
+          description: Memory successfully created.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
 
   /api/v1/memories/{id}:
     get:
@@ -588,6 +644,53 @@ paths:
       responses:
         '200':
           description: List of capture records.
+    post:
+      summary: Ingest Capture
+      description: Ingests raw content, meeting transcripts, or text notes into the capture inbox and schedules asynchronous queue processing.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: false
+          description: Optional idempotency key to prevent duplicate ingestion
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content
+              properties:
+                title:
+                  type: string
+                content:
+                  type: string
+                source_type:
+                  type: string
+                  default: text_note
+                capture_type:
+                  type: string
+                  default: NOTE
+                context_session_id:
+                  type: string
+                  format: uuid
+                metadata:
+                  type: object
+                idempotency_key:
+                  type: string
+      responses:
+        '201':
+          description: Capture ingested and queued.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
 
   /api/v1/captures/{id}:
     get:

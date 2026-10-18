@@ -23,9 +23,11 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
     { name: "memory:read", desc: "Read organizational memories with pagination and importance metrics" },
     { name: "context:read", desc: "Read context sessions and chronologically bound captures" },
     { name: "captures:read", desc: "Read capture records and queue processing state" },
+    { name: "captures:write", desc: "Ingest raw external content into the capture pipeline" },
     { name: "moments:read", desc: "Read extracted meeting/video smart moments and decisions" },
     { name: "entities:read", desc: "Read knowledge graph entities and relationship nodes" },
     { name: "sources:read", desc: "Read source provenance metadata" },
+    { name: "memory:write", desc: "Create verified, durable organizational memories with provenance and idempotency" },
     { name: "apps:manage", desc: "Register apps, rotate client secrets, issue and revoke tokens" },
     { name: "webhooks:manage", desc: "Create, inspect, update, rotate secrets, and delete webhook subscriptions and delivery history" }
   ],
@@ -76,6 +78,18 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
   -H "Authorization: Bearer cpd_..."`
     },
     {
+      method: "POST",
+      path: "/api/v1/memories",
+      scope: "memory:write",
+      description: "Create verified organizational memory with provenance and idempotency.",
+      body: { title: "string (required)", content: "string (required)", memory_type: "string", memory_tier: "string", importance: "number (0-1)", confidence_score: "number (0-1)", source_id: "uuid (optional)" },
+      example: `curl -X POST "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/memories" \\
+  -H "Authorization: Bearer cpd_..." \\
+  -H "Idempotency-Key: idemp_123456" \\
+  -H "Content-Type: application/json" \\
+  -d '{"title": "Core Tenet", "content": "Always enforce server-side tenant isolation", "memory_type": "FACT"}'`
+    },
+    {
       method: "GET",
       path: "/api/v1/memories/:id",
       scope: "memory:read",
@@ -98,6 +112,18 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
       description: "List captures for the authorized tenant.",
       example: `curl -X GET "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/captures" \\
   -H "Authorization: Bearer cpd_..."`
+    },
+    {
+      method: "POST",
+      path: "/api/v1/captures",
+      scope: "captures:write",
+      description: "Ingest external content into capture pipeline with queue scheduling.",
+      body: { content: "string (required)", title: "string (optional)", source_type: "string (optional)", capture_type: "string (optional)", context_session_id: "uuid (optional)" },
+      example: `curl -X POST "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/captures" \\
+  -H "Authorization: Bearer cpd_..." \\
+  -H "Idempotency-Key: idemp_cap_123" \\
+  -H "Content-Type: application/json" \\
+  -d '{"content": "New architecture spec discussion note", "source_type": "cli_capture"}'`
     },
     {
       method: "GET",
@@ -318,7 +344,9 @@ function verifyWeftroWebhook(payload, signatureHeader, secret) {
       { name: "list_captures", scope: "captures:read", desc: "List captures, source types, and processing states" },
       { name: "get_capture_by_id", scope: "captures:read", desc: "Retrieve specific capture transcript and queue status" },
       { name: "list_smart_moments", scope: "moments:read", desc: "List extracted smart moments, decisions, and action items" },
-      { name: "get_source_provenance", scope: "sources:read", desc: "Retrieve full source provenance and creator metadata" }
+      { name: "get_source_provenance", scope: "sources:read", desc: "Retrieve full source provenance and creator metadata" },
+      { name: "create_capture", scope: "captures:write", desc: "Ingest raw external content into the capture inbox with asynchronous queue scheduling" },
+      { name: "create_organizational_memory", scope: "memory:write", desc: "Synthesize verified, durable organizational memory with provenance and idempotency" }
     ]
   },
   rate_limits: {

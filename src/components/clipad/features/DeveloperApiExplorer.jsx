@@ -22,6 +22,20 @@ const ENDPOINTS = [
     defaultBody: null,
   },
   {
+    name: 'Create Memory',
+    method: 'POST',
+    path: '/api/v1/memories',
+    scope: 'memory:write',
+    defaultBody: JSON.stringify({
+      title: 'Decoupled Event Architecture',
+      content: 'All mutations trigger durable audit records and optional outbound webhook events.',
+      memory_type: 'FACT',
+      memory_tier: 'organizational',
+      importance: 0.85,
+      confidence_score: 0.95
+    }, null, 2),
+  },
+  {
     name: 'Get Capabilities',
     method: 'GET',
     path: '/api/v1/capabilities',
@@ -55,6 +69,18 @@ const ENDPOINTS = [
     path: '/api/v1/captures',
     scope: 'captures:read',
     defaultBody: null,
+  },
+  {
+    name: 'Ingest Capture',
+    method: 'POST',
+    path: '/api/v1/captures',
+    scope: 'captures:write',
+    defaultBody: JSON.stringify({
+      title: 'External Web Clipper Note',
+      content: 'User submitted research finding on vector embedding performance.',
+      source_type: 'browser_extension',
+      capture_type: 'NOTE'
+    }, null, 2),
   },
   {
     name: 'Context Query',

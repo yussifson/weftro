@@ -3,7 +3,7 @@
 **Agent ID:** `AGENT-API-MCP`  
 **Agent Name:** API & MCP Engineering Agent  
 **Workstream:** API / MCP / Developer Platform  
-**Current Phase:** Phase 7: Developer Experience, Documentation & Production Hardening  
+**Current Phase:** Phase 8: Deferred Write & Act Mutations  
 **Status:** `IMPLEMENTED & VERIFIED`  
 **Current Branch:** `main`  
 **Target Edge Function:** `https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect`  
@@ -12,7 +12,7 @@
 ---
 
 ## 1. Assigned Responsibilities
-- REST API gateway routes under `/api/v1/*` (30/30 verified).
+- REST API gateway routes under `/api/v1/*` (32/32 verified).
 - Token authentication, cryptographic hashing (`SHA-256`), and scope verification.
 - Developer application management (`/api/v1/apps`, `/api/v1/apps/:id`, `/api/v1/apps/:id/rotate-secret`).
 - Scoped API access token issuance and revocation (`/api/v1/tokens`, `/api/v1/tokens/:id/revoke`).
@@ -25,6 +25,7 @@
 - Developer Webhooks UI (`DeveloperWebhooks.jsx`).
 - Interactive Developer API Explorer (`DeveloperApiExplorer.jsx`).
 - Developer Documentation & Knowledge Base (`DeveloperDocs.jsx`, `weftroDeveloperDocs.js`).
+- Write & Mutation Pipelines: `POST /api/v1/captures` and `POST /api/v1/memories` with idempotency, validation, queue scheduling, and MCP write tools.
 
 ---
 
@@ -37,7 +38,8 @@
 | **Phase 4** | Developer Identity, Apps & Scopes | `APPROVED` | Deployed `connect`, 18/18 live acceptance tests passed, 29/29 Phase 3 regression tests passed |
 | **Phase 5** | Production MCP Server | `APPROVED` | Implemented `@weftro/mcp-server`, 18/18 Phase 5 live tests passed, 18/18 Phase 4 tests passed, 29/29 Phase 3 tests passed |
 | **Phase 6** | Webhook Delivery Engine | `APPROVED` | Deployed `connect`, SSRF filter, manual redirect rejection, 19/19 live tests passed, 0 regressions across Phase 3/4/5 suites |
-| **Phase 7** | Developer Experience & Hardening | `VERIFIED COMPLETE` | 19/19 Phase 7 E2E tests passed, OpenAPI 3.1 + Docs synchronized (30/30 routes), MCP README added, API Explorer enhanced |
+| **Phase 7** | Developer Experience & Hardening | `APPROVED` | 19/19 Phase 7 E2E tests passed, OpenAPI 3.1 + Docs synchronized (30/30 routes), MCP README added, API Explorer enhanced |
+| **Phase 8** | Deferred Write & Act Mutations | `IMPLEMENTED & VERIFIED` | `POST /api/v1/captures` & `POST /api/v1/memories` implemented with idempotency, queue scheduling, MCP write tools (`create_capture`, `create_organizational_memory`), and full regression verification |
 
 ---
 

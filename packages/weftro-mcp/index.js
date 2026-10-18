@@ -282,6 +282,90 @@ const TOOLS = [
       },
       required: ['source_id']
     }
+  },
+  {
+    name: 'create_capture',
+    description: 'Ingest raw external content, notes, or ideas into the organization capture inbox with asynchronous queue scheduling.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        title: {
+          type: 'string',
+          description: 'Optional headline or title for the captured note or resource.'
+        },
+        content: {
+          type: 'string',
+          description: 'The raw text content, note, transcript snippet, or meeting summary.'
+        },
+        source_type: {
+          type: 'string',
+          description: 'Type of origin source (e.g., "text_note", "slack_message", "cli_capture", "browser_clipper"). Default: "text_note".'
+        },
+        capture_type: {
+          type: 'string',
+          description: 'Category classification (e.g., "NOTE", "AUDIO", "MEETING", "DOCUMENT"). Default: "NOTE".'
+        },
+        context_session_id: {
+          type: 'string',
+          description: 'Optional UUID of an existing context session in the organization.'
+        },
+        metadata: {
+          type: 'object',
+          description: 'Optional JSON metadata to attach to the capture.'
+        },
+        idempotency_key: {
+          type: 'string',
+          description: 'Optional unique client request key to guarantee exactly-once ingestion on retries.'
+        }
+      },
+      required: ['content']
+    }
+  },
+  {
+    name: 'create_organizational_memory',
+    description: 'Synthesize verified, durable organizational memory (Fact, Decision, Preference, Pattern) with explicit importance, confidence score, and provenance.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        title: {
+          type: 'string',
+          description: 'Concise summary or subject title of the organizational memory.'
+        },
+        content: {
+          type: 'string',
+          description: 'Comprehensive, verified knowledge statement or architectural decision.'
+        },
+        memory_type: {
+          type: 'string',
+          description: 'Classification: "FACT", "DECISION", "PREFERENCE", "PATTERN", "LESSON_LEARNED". Default: "FACT".'
+        },
+        memory_tier: {
+          type: 'string',
+          description: 'Scope tier: "organizational", "team", "personal". Default: "organizational".'
+        },
+        importance: {
+          type: 'number',
+          description: 'Priority score between 0.0 and 1.0 (default 0.5).'
+        },
+        confidence_score: {
+          type: 'number',
+          description: 'Certainty rating between 0.0 and 1.0 (default 1.0).'
+        },
+        source_id: {
+          type: 'string',
+          description: 'Optional UUID of a verified source (capture or video) in the organization.'
+        },
+        source_type: {
+          type: 'string',
+          description: 'Identifier for source medium (e.g., "manual_entry", "capture_distillation", "design_review").'
+        },
+        idempotency_key: {
+          type: 'string',
+          description: 'Optional unique client request key to guarantee exactly-once creation on retries.'
+        }
+      },
+      required: ['title', 'content']
+    }
   }
 ];
 
@@ -458,6 +542,52 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         });
         const validated = schema.parse(args);
         const result = await callGateway(`/api/v1/sources/${validated.source_id}`, 'GET');
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2)
+            }
+          ]
+        };
+      }
+
+      case 'create_capture': {
+        const schema = z.object({
+          title: z.string().optional(),
+          content: z.string().min(1, 'Capture content cannot be empty'),
+          source_type: z.string().optional(),
+          capture_type: z.string().optional(),
+          context_session_id: z.string().uuid('Invalid session UUID').optional(),
+          metadata: z.record(z.any()).optional(),
+          idempotency_key: z.string().optional()
+        });
+        const validated = schema.parse(args);
+        const result = await callGateway('/api/v1/captures', 'POST', validated);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2)
+            }
+          ]
+        };
+      }
+
+      case 'create_organizational_memory': {
+        const schema = z.object({
+          title: z.string().min(1, 'Memory title cannot be empty'),
+          content: z.string().min(1, 'Memory content cannot be empty'),
+          memory_type: z.enum(['FACT', 'DECISION', 'PREFERENCE', 'PATTERN', 'LESSON_LEARNED']).optional(),
+          memory_tier: z.enum(['organizational', 'team', 'personal']).optional(),
+          importance: z.number().min(0).max(1).optional(),
+          confidence_score: z.number().min(0).max(1).optional(),
+          source_id: z.string().uuid('Invalid source UUID').optional(),
+          source_type: z.string().optional(),
+          idempotency_key: z.string().optional()
+        });
+        const validated = schema.parse(args);
+        const result = await callGateway('/api/v1/memories', 'POST', validated);
         return {
           content: [
             {

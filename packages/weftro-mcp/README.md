@@ -97,7 +97,9 @@ node packages/weftro-mcp/index.js
 
 ---
 
-## 5. Tool Catalog (9 Read-Only Intelligence Tools)
+## 5. Tool Catalog (Authorized Intelligence & Write Tools)
+
+### A. Read-Only Intelligence Tools
 
 | Tool Name | Scope Required | Parameters | Description |
 |---|---|---|---|
@@ -110,6 +112,13 @@ node packages/weftro-mcp/index.js
 | `get_capture_by_id` | `captures:read` | `capture_id` *(uuid, required)* | Retrieve specific capture details, raw transcripts, and queue status. |
 | `list_smart_moments` | `moments:read` | `limit` *(number, 1-100)*<br>`offset` *(number)*<br>`moment_type` *(string)* | List meeting/video decisions, action items, and highlighted moments. |
 | `get_source_provenance` | `sources:read` | `source_id` *(uuid, required)* | Retrieve full source provenance and creator metadata. |
+
+### B. Write & Mutation Tools (Phase 8)
+
+| Tool Name | Scope Required | Parameters | Description |
+|---|---|---|---|
+| `create_capture` | `captures:write` | `content` *(string, required)*<br>`title` *(string, optional)*<br>`source_type` *(string, optional)*<br>`capture_type` *(string, optional)*<br>`context_session_id` *(uuid, optional)*<br>`metadata` *(object, optional)*<br>`idempotency_key` *(string, optional)* | Ingest raw notes, clips, or external inputs into organization capture inbox with asynchronous queue scheduling. |
+| `create_organizational_memory` | `memory:write` | `title` *(string, required)*<br>`content` *(string, required)*<br>`memory_type` *(string, optional)*<br>`memory_tier` *(string, optional)*<br>`importance` *(number 0-1, optional)*<br>`confidence_score` *(number 0-1, optional)*<br>`source_id` *(uuid, optional)*<br>`source_type` *(string, optional)*<br>`idempotency_key` *(string, optional)* | Create verified, durable organizational memory (Fact, Decision, Pattern) with provenance tracking and idempotency. |
 
 ---
 
