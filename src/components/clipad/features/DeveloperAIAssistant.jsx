@@ -269,10 +269,10 @@ CORE GUIDELINES:
 
   return (
     <div className="h-full w-full flex flex-col bg-background text-foreground overflow-hidden">
-      {/* Main Responsive Two-Column Layout */}
+      {/* Main Responsive Layout: Chat response section takes generous width */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 min-h-0 overflow-hidden">
-        {/* Left / Center Column: Chat Messages & Input (8 cols on lg) */}
-        <div className="lg:col-span-8 flex flex-col h-full min-h-0 border-r border-border overflow-hidden bg-card/30 relative">
+        {/* Left / Center Column: Chat Messages & Input (9 cols on lg, 9.5 cols on xl) */}
+        <div className="lg:col-span-9 xl:col-span-9 flex flex-col h-full min-h-0 border-r border-border overflow-hidden bg-card/30 relative">
           {/* Floating Actions: New Chat & Delete History */}
           <div className="absolute top-3 right-4 z-20 flex items-center gap-1.5 bg-background/80 backdrop-blur-md p-1 rounded-xl border border-border/60 shadow-xs">
             <Button
@@ -297,7 +297,8 @@ CORE GUIDELINES:
             </Button>
           </div>
           {/* Scrollable Messages Area */}
-          <div className="flex-1 overflow-y-auto px-4 md:px-6 py-4 space-y-4 scrollbar-thin">
+          <div className="flex-1 overflow-y-auto px-4 md:px-8 py-5 space-y-4 scrollbar-thin">
+            <div className="max-w-5xl mx-auto w-full space-y-4">
             {messages.map((msg, idx) => {
               const isAssistant = msg.role === 'assistant';
               return (
@@ -312,11 +313,11 @@ CORE GUIDELINES:
                   )}
 
                   <div
-                    className={`max-w-[90%] md:max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+                    className={`w-full ${
                       isAssistant
-                        ? 'bg-card border border-border/80 text-foreground shadow-xs rounded-tl-sm'
-                        : 'bg-primary text-primary-foreground font-medium rounded-tr-sm shadow-xs'
-                    }`}
+                        ? 'max-w-[96%] md:max-w-[94%] bg-card border border-border/80 text-foreground shadow-xs rounded-2xl rounded-tl-sm px-5 py-4'
+                        : 'max-w-[85%] md:max-w-[75%] bg-primary text-primary-foreground font-medium rounded-2xl rounded-tr-sm px-4 py-3 shadow-xs'
+                    } text-sm leading-relaxed`}
                   >
                     {isAssistant ? (
                       <div className="prose prose-sm dark:prose-invert max-w-none break-words [&>p]:mb-2 [&>p:last-child]:mb-0 [&>ul]:my-2 [&>ol]:my-2">
@@ -370,6 +371,7 @@ CORE GUIDELINES:
                 </div>
               </div>
             )}
+            </div>
             <div ref={messagesEndRef} />
           </div>
 
@@ -395,32 +397,34 @@ CORE GUIDELINES:
           {/* Bottom Prompt Input Area */}
           <form
             onSubmit={(e) => handleSend(e)}
-            className="p-4 border-t border-border bg-card/80 backdrop-blur-sm shrink-0 flex items-center gap-3"
+            className="p-4 border-t border-border bg-card/80 backdrop-blur-sm shrink-0"
           >
-            <div className="relative flex-1">
-              <input
-                ref={inputRef}
-                type="text"
-                placeholder="Ask about endpoints, token scopes, MCP integration, or code snippets..."
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                disabled={isLoading}
-                className="w-full h-11 px-4 pr-10 text-sm bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all disabled:opacity-50"
-              />
+            <div className="max-w-5xl mx-auto w-full flex items-center gap-3">
+              <div className="relative flex-1">
+                <input
+                  ref={inputRef}
+                  type="text"
+                  placeholder="Ask about endpoints, token scopes, MCP integration, or code snippets..."
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  disabled={isLoading}
+                  className="w-full h-11 px-4 pr-10 text-sm bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all disabled:opacity-50"
+                />
+              </div>
+              <Button
+                type="submit"
+                disabled={!input.trim() || isLoading}
+                className="h-11 px-5 rounded-xl font-medium shadow-xs flex items-center gap-2"
+              >
+                <span>Send</span>
+                <Send className="w-4 h-4" />
+              </Button>
             </div>
-            <Button
-              type="submit"
-              disabled={!input.trim() || isLoading}
-              className="h-11 px-5 rounded-xl font-medium shadow-xs flex items-center gap-2"
-            >
-              <span>Send</span>
-              <Send className="w-4 h-4" />
-            </Button>
           </form>
         </div>
 
-        {/* Right Column: Quick Actions & Knowledge Hub (4 cols on lg, scrollable) */}
-        <div className="hidden lg:flex lg:col-span-4 flex-col h-full bg-card/50 overflow-y-auto p-5 space-y-5 scrollbar-thin">
+        {/* Right Column: Quick Actions & Knowledge Hub (3 cols on lg, scrollable) */}
+        <div className="hidden lg:flex lg:col-span-3 xl:col-span-3 flex-col h-full bg-card/50 overflow-y-auto p-4 space-y-4 scrollbar-thin">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-primary" />
             <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
