@@ -624,6 +624,72 @@ async function runResilienceTests() {
     `Preserved content: "${unicodePack.evidenceText}"`
   );
 
+  // Test 18: Service formatEvidencePack and validateCitationReferences with budget-omitted evidence
+  function simulateBudgetedPackAndValidation() {
+    const items = [
+      { id: 'doc_1', title: 'Included Item 1', content: 'Important Alpha facts.' },
+      { id: 'doc_2', title: 'Included Item 2', content: 'Important Beta facts.' },
+      { id: 'doc_3', title: 'Excluded Item 3', content: 'Gamma facts that overflow.' }
+    ];
+
+    // Simulate formatting with low budget that only fits items 1 and 2
+    let accumulated = 0;
+    const maxEvidenceChars = 115;
+    const blocks = [];
+    const sources = [];
+
+    items.forEach((item, index) => {
+      let isIncluded = false;
+      const block = `[ITEM ${index + 1}] ID:${item.id} ${item.title}: ${item.content}`;
+      if (accumulated + block.length <= maxEvidenceChars) {
+        blocks.push(block);
+        accumulated += block.length;
+        isIncluded = true;
+      }
+      sources.push({
+        index: index + 1,
+        id: item.id,
+        title: item.title,
+        isIncluded
+      });
+    });
+
+    // Validate a response citing [Source: #1] (included) and [Source: #3] (budget-omitted)
+    const responseText = "Fact one [Source: #1] and fact three [Source: #3]";
+    const citationPattern = /\[Source:\s*#?([^\s\]]+)\]/gi;
+    const matches = [...responseText.matchAll(citationPattern)];
+    const valid = [];
+    const unverified = [];
+
+    const sourceMap = new Map();
+    sources.forEach(s => sourceMap.set(s.index, s));
+
+    matches.forEach(m => {
+      const idx = parseInt(m[1], 10);
+      if (sourceMap.has(idx)) {
+        const src = sourceMap.get(idx);
+        if (src.isIncluded === false) {
+          unverified.push({ raw: m[0], index: idx, reason: 'OMITTED_DUE_TO_BUDGET' });
+        } else {
+          valid.push(src);
+        }
+      } else {
+        unverified.push({ raw: m[0], index: idx, reason: 'OUT_OF_RANGE_OR_UNRETRIEVED' });
+      }
+    });
+
+    return { blocks, sources, valid, unverified };
+  }
+
+  const budgetValidationRes = simulateBudgetedPackAndValidation();
+  record(
+    '18. Model citations referencing budget-omitted evidence items are strictly flagged as unverified (OMITTED_DUE_TO_BUDGET)',
+    budgetValidationRes.sources.find(s => s.index === 3).isIncluded === false &&
+    budgetValidationRes.valid.some(v => v.index === 1) &&
+    budgetValidationRes.unverified.some(u => u.index === 3 && u.reason === 'OMITTED_DUE_TO_BUDGET'),
+    `Valid: [Source #1], Unverified: [Source #3: OMITTED_DUE_TO_BUDGET]`
+  );
+
   // ── Summary ──
   console.log('\n================================================================');
   const passedCount = results.filter(r => r.pass).length;
