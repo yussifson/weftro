@@ -1359,7 +1359,7 @@ serve(async (req) => {
           content: content,
           content_type: 'text/plain',
           status: 'QUEUED',
-          visibility: 'organization',
+          visibility: 'ORGANIZATIONAL',
           metadata: {
             ...metadata,
             ingested_via: 'connect_api',
