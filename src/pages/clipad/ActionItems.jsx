@@ -40,54 +40,75 @@ export default function ActionItems() {
 
   const loadItems = useCallback(async () => {
     if (companyId === undefined) return;
-    setLoading(true);
+    if (items.length === 0) setLoading(true);
     try {
-      const { data } = await supabase
+      // 1. Direct action items from meetings/spaces
+      const { data: realActions } = await supabase
+        .from('clipad_action_items')
+        .select('*')
+        .eq('company_id', companyId)
+        .order('created_at', { ascending: false })
+        .limit(200);
+
+      // 2. Smart Moments of type ACTION
+      const { data: momentActions } = await supabase
+        .from('clipad_v3_smart_moments')
+        .select('*')
+        .eq('company_id', companyId)
+        .eq('moment_type', 'ACTION')
+        .order('created_at', { ascending: false })
+        .limit(100);
+
+      // 3. AI-extracted action items from imported knowledge
+      const { data: knowledgeData } = await supabase
         .from('clipad_imported_knowledge')
         .select('id, provider, content_type, title, url, author, imported_at, ai_action_items, ai_summary')
         .eq('company_id', companyId)
         .not('ai_action_items', 'is', null)
         .order('imported_at', { ascending: false })
-        .limit(200);
+        .limit(100);
 
-      let itemsData = data || [];
-
-      // Inject mock data if empty
-      if (itemsData.length === 0) {
-        itemsData = [
-          {
-            id: 'mock-a1',
-            provider: 'slack',
-            title: 'Project Kickoff Meeting',
-            imported_at: new Date().toISOString(),
-            ai_action_items: ['Schedule follow-up meeting with design team', 'Finalize the Q3 budget estimates by Friday'],
-            ai_summary: 'Kickoff meeting notes covering initial scope and responsibilities.'
-          },
-          {
-            id: 'mock-a2',
-            provider: 'linear',
-            title: 'Issue ENG-102: Refactor auth',
-            imported_at: new Date(Date.now() - 86400000).toISOString(),
-            ai_action_items: ['Update the Supabase JWT token expiration setting', 'Write unit tests for the new login flow'],
-            ai_summary: 'Discussion on moving from cookie-based auth to secure HttpOnly headers.'
-          },
-          {
-            id: 'mock-a3',
-            provider: 'zoom',
-            title: 'Weekly Standup',
-            imported_at: new Date(Date.now() - 86400000 * 3).toISOString(),
-            ai_action_items: ['Review the PR for the new analytics dashboard', 'Send out the weekly progress report to stakeholders'],
-            ai_summary: 'General updates from the engineering and marketing teams.'
-          }
-        ];
-      }
-
-      // Flatten into individual action item rows
       const flat = [];
-      itemsData.forEach(row => {
+
+      // Map real action items
+      (realActions || []).forEach(action => {
+        flat.push({
+          id: action.id,
+          sourceId: action.id,
+          text: action.title || action.description || 'Action Item',
+          provider: 'CliPad',
+          sourceTitle: action.metadata?.source_title || 'Meeting / Space Action',
+          sourceUrl: null,
+          author: action.assigned_to || null,
+          importedAt: action.created_at,
+          contentType: 'action_item',
+          ai_summary: action.description || null,
+          isComplete: action.is_complete || false,
+        });
+      });
+
+      // Map smart moment action items
+      (momentActions || []).forEach(moment => {
+        flat.push({
+          id: moment.id,
+          sourceId: moment.id,
+          text: moment.quote || moment.text || 'Action Item',
+          provider: moment.video_id ? 'Video' : moment.meeting_id ? 'Meeting' : 'CliPad',
+          sourceTitle: moment.metadata?.meeting_title || 'Meeting Recording',
+          sourceUrl: null,
+          author: moment.metadata?.assignee || null,
+          importedAt: moment.created_at,
+          contentType: 'moment',
+          ai_summary: moment.metadata?.context || null,
+          isComplete: false,
+        });
+      });
+
+      // Map imported knowledge action items
+      (knowledgeData || []).forEach(row => {
         const actions = Array.isArray(row.ai_action_items) ? row.ai_action_items : [];
         actions.forEach((action, idx) => {
-          if (typeof action === 'string' && action.trim().length > 5) {
+          if (typeof action === 'string' && action.trim().length > 3) {
             flat.push({
               id: `${row.id}-${idx}`,
               sourceId: row.id,
@@ -99,11 +120,13 @@ export default function ActionItems() {
               importedAt: row.imported_at,
               contentType: row.content_type,
               ai_summary: row.ai_summary,
+              isComplete: false,
             });
           }
         });
       });
 
+      // NO mock data — strictly real data only
       setItems(flat);
       setProviders([...new Set(flat.map(i => i.provider).filter(Boolean))]);
     } catch (err) {
@@ -113,7 +136,36 @@ export default function ActionItems() {
     }
   }, [companyId]);
 
-  useEffect(() => { loadItems(); }, [loadItems]);
+  useEffect(() => {
+    loadItems();
+    if (!companyId) return;
+
+    const channel = supabase
+      .channel(`realtime-actions-${companyId}`)
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'clipad_action_items',
+        filter: `company_id=eq.${companyId}`
+      }, () => {
+        loadItems();
+      })
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'clipad_v3_smart_moments',
+        filter: `company_id=eq.${companyId}`
+      }, (payload) => {
+        if (payload.new?.moment_type === 'ACTION') {
+          loadItems();
+        }
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [loadItems, companyId]);
 
   const handleExport = async (actionItem, target) => {
     const key = `${actionItem.id}-${target}`;

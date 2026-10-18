@@ -22,25 +22,141 @@ export default function KnowledgeTimeline() {
   useEffect(() => {
     if (companyId === undefined) return;
     loadTimeline();
+
+    // Supabase Real-time stream for live timeline feed
+    const channel = supabase
+      .channel(`timeline-stream-${companyId}`)
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'clipad_imported_knowledge',
+        filter: `company_id=eq.${companyId}`
+      }, () => loadTimeline())
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'clipad_v3_captures',
+        filter: `company_id=eq.${companyId}`
+      }, () => loadTimeline())
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'clipad_meeting_records',
+        filter: `company_id=eq.${companyId}`
+      }, () => loadTimeline())
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'clipad_org_events',
+        filter: `workspace_id=eq.${companyId}`
+      }, () => loadTimeline())
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [companyId]);
 
   const loadTimeline = async () => {
     if (events.length === 0) setLoading(true);
     try {
-      // Fetch imported knowledge
-      const { data, error } = await supabase
-        .from('clipad_imported_knowledge')
-        .select('*')
-        .eq('company_id', companyId)
-        .order('imported_at', { ascending: false })
-        .limit(100);
+      if (!companyId) return;
 
-      if (error) throw error;
-      
-      let eventsData = data || [];
-      // Keep empty if no items found
-      
-      setEvents(eventsData);
+      // Real-time timeline: combine live captures, meetings, and connected knowledge
+      const [knowledgeRes, capturesRes, meetingsRes, eventsRes] = await Promise.all([
+        supabase
+          .from('clipad_imported_knowledge')
+          .select('*')
+          .eq('company_id', companyId)
+          .order('imported_at', { ascending: false })
+          .limit(60),
+        supabase
+          .from('clipad_v3_captures')
+          .select('*')
+          .eq('company_id', companyId)
+          .order('created_at', { ascending: false })
+          .limit(40),
+        supabase
+          .from('clipad_meeting_records')
+          .select('*')
+          .eq('company_id', companyId)
+          .order('created_at', { ascending: false })
+          .limit(40),
+        supabase
+          .from('clipad_org_events')
+          .select('*')
+          .eq('workspace_id', companyId)
+          .order('created_at', { ascending: false })
+          .limit(30),
+      ]);
+
+      const unified = [];
+
+      // 1. Ingested knowledge
+      (knowledgeRes.data || []).forEach(item => {
+        unified.push({
+          id: item.id,
+          provider: item.provider || 'document',
+          title: item.title || 'Knowledge Artifact',
+          content_type: item.content_type || 'Document',
+          ai_summary: item.ai_summary,
+          content: item.content,
+          imported_at: item.imported_at || item.created_at,
+          author: item.author,
+          url: item.url,
+        });
+      });
+
+      // 2. Live Context Captures
+      (capturesRes.data || []).forEach(cap => {
+        unified.push({
+          id: cap.id,
+          provider: 'capture',
+          title: cap.title || 'Context Capture',
+          content_type: cap.capture_type || 'Live Capture',
+          ai_summary: cap.summary || cap.content,
+          content: cap.content,
+          imported_at: cap.created_at,
+          author: cap.user_id ? 'Team Member' : null,
+          url: cap.url || null,
+        });
+      });
+
+      // 3. Meeting Records
+      (meetingsRes.data || []).forEach(meeting => {
+        unified.push({
+          id: meeting.id,
+          provider: 'video',
+          title: meeting.title || 'Meeting Recording',
+          content_type: 'Meeting Session',
+          ai_summary: meeting.ai_summary || meeting.description,
+          content: null,
+          imported_at: meeting.created_at,
+          author: meeting.host_name || null,
+          url: null,
+        });
+      });
+
+      // 4. Real-time Org Events
+      (eventsRes.data || []).forEach(evt => {
+        unified.push({
+          id: evt.id,
+          provider: 'system',
+          title: evt.title || evt.event_type || 'Organization Event',
+          content_type: evt.event_type || 'Live Event',
+          ai_summary: evt.description || null,
+          content: null,
+          imported_at: evt.created_at,
+          author: null,
+          url: null,
+        });
+      });
+
+      // Sort in strict real-time chronological order (most recent first)
+      unified.sort((a, b) => new Date(b.imported_at) - new Date(a.imported_at));
+
+      // Strictly real data — zero mock data
+      setEvents(unified);
     } catch (err) {
       console.error('Failed to load timeline:', err);
     } finally {

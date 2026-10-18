@@ -99,50 +99,7 @@ export default function KnowledgeJourney() {
         .limit(200);
 
       if (!relationships?.length) {
-        const mockJourneys = [
-          {
-            item: {
-              id: 'mj-1', provider: 'slack', title: 'Brainstorming: Auth Redesign', imported_at: new Date(Date.now() - 86400000*5).toISOString(), ai_summary: 'Initial discussion in #engineering about moving away from cookies.'
-            },
-            children: [
-              {
-                rel: 'continues',
-                confidence: 0.95,
-                node: {
-                  item: {
-                    id: 'mj-2', provider: 'zoom', title: 'Architecture Review', imported_at: new Date(Date.now() - 86400000*3).toISOString(), ai_summary: 'Video call deciding the final auth token flow.'
-                  },
-                  children: [
-                    {
-                      rel: 'implements',
-                      confidence: 0.88,
-                      node: {
-                        item: { id: 'mj-3', provider: 'linear', title: 'ENG-102: Refactor auth', imported_at: new Date(Date.now() - 86400000).toISOString(), ai_summary: 'Ticket to implement the new HTTP-only auth flow.' },
-                        children: []
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
-          },
-          {
-            item: {
-              id: 'mj-4', provider: 'github', title: 'Issue #45: Dashboard performance', imported_at: new Date(Date.now() - 86400000*10).toISOString(), ai_summary: 'User reported slow load times on the main dashboard.'
-            },
-            children: [
-              {
-                rel: 'mentions',
-                confidence: 0.91,
-                node: {
-                  item: { id: 'mj-5', provider: 'slack', title: 'Performance Sync', imported_at: new Date(Date.now() - 86400000*8).toISOString(), ai_summary: 'Identified the database queries causing the bottleneck.' },
-                  children: []
-                }
-              }
-            ]
-          }
-        ];
-        setJourneys(mockJourneys);
+        setJourneys([]);
         setLoading(false);
         return;
       }

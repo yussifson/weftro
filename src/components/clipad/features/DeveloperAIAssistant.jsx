@@ -269,47 +269,33 @@ CORE GUIDELINES:
 
   return (
     <div className="h-full w-full flex flex-col bg-background text-foreground overflow-hidden">
-      {/* Top Copilot Bar */}
-      <div className="h-12 border-b border-border bg-card/50 px-4 md:px-6 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-2.5">
-          <div className="w-6 h-6 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
-            <Bot className="w-3.5 h-3.5" />
-          </div>
-          <span className="text-xs font-bold text-foreground tracking-wide">Developer Copilot</span>
-          <Badge variant="outline" className="text-[10px] py-0 px-2 bg-primary/5 text-primary border-primary/20">
-            GPT & Kimi Engine
-          </Badge>
-        </div>
-
-        {/* Toolbar: New Chat & Delete History */}
-        <div className="flex items-center gap-1.5">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleStartNewChat}
-            className="h-8 px-2.5 text-xs text-muted-foreground hover:text-foreground flex items-center gap-1.5"
-            title="Start new conversation"
-          >
-            <PlusCircle className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">New Chat</span>
-          </Button>
-
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setShowDeleteConfirm(true)}
-            className="h-8 w-8 p-0 text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 transition-colors"
-            title="Delete conversation history"
-          >
-            <Trash2 className="w-3.5 h-3.5" />
-          </Button>
-        </div>
-      </div>
-
       {/* Main Responsive Two-Column Layout */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 min-h-0 overflow-hidden">
         {/* Left / Center Column: Chat Messages & Input (8 cols on lg) */}
-        <div className="lg:col-span-8 flex flex-col h-full min-h-0 border-r border-border overflow-hidden bg-card/30">
+        <div className="lg:col-span-8 flex flex-col h-full min-h-0 border-r border-border overflow-hidden bg-card/30 relative">
+          {/* Floating Actions: New Chat & Delete History */}
+          <div className="absolute top-3 right-4 z-20 flex items-center gap-1.5 bg-background/80 backdrop-blur-md p-1 rounded-xl border border-border/60 shadow-xs">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleStartNewChat}
+              className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 rounded-lg"
+              title="Start new conversation"
+            >
+              <PlusCircle className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline text-[11px] font-medium">New Chat</span>
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowDeleteConfirm(true)}
+              className="h-7 w-7 p-0 text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 transition-colors rounded-lg"
+              title="Delete conversation history"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+            </Button>
+          </div>
           {/* Scrollable Messages Area */}
           <div className="flex-1 overflow-y-auto px-4 md:px-6 py-4 space-y-4 scrollbar-thin">
             {messages.map((msg, idx) => {

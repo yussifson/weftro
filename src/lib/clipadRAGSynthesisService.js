@@ -66,7 +66,31 @@ export function formatEvidencePack(evidenceItems = [], options = {}) {
     const rawContent = item.content || item.snippet || item.summary || item.ai_summary || '';
     const cleanContent = sanitizeRetrievedEvidence(rawContent);
 
-    // Source metadata is preserved unconditionally for UI mapping and citation verification
+    let isIncluded = false;
+    if (accumulatedChars < maxEvidenceChars) {
+      const remainingBudget = maxEvidenceChars - accumulatedChars;
+      // Reserve at least overhead characters for header/footer so snippet is non-empty
+      const blockHeader =
+        `--- EVIDENCE ITEM [${index + 1}] ---\n` +
+        `ID: ${sourceId}\n` +
+        `TYPE: ${type}\n` +
+        `TITLE: ${title}\n` +
+        `CONTENT: `;
+      const blockFooter = `\n`;
+      const overhead = blockHeader.length + blockFooter.length;
+
+      if (remainingBudget > overhead) {
+        const snippetLimit = Math.min(1500, remainingBudget - overhead);
+        const contentSnippet = cleanContent.slice(0, snippetLimit);
+        const block = `${blockHeader}${contentSnippet}${blockFooter}`;
+
+        evidenceBlocks.push(block);
+        accumulatedChars += block.length;
+        isIncluded = true;
+      }
+    }
+
+    // Source metadata is preserved with explicit inclusion flag
     sources.push({
       index: index + 1,
       id: sourceId,
@@ -74,22 +98,9 @@ export function formatEvidencePack(evidenceItems = [], options = {}) {
       type,
       similarity: item.similarity ?? null,
       rrf_score: item.rrf_score ?? null,
-      source_channel: item.source_channel || 'hybrid'
+      source_channel: item.source_channel || 'hybrid',
+      isIncluded
     });
-
-    if (accumulatedChars < maxEvidenceChars) {
-      const remainingBudget = maxEvidenceChars - accumulatedChars;
-      const contentSnippet = cleanContent.slice(0, Math.min(1500, remainingBudget));
-      const block =
-        `--- EVIDENCE ITEM [${index + 1}] ---\n` +
-        `ID: ${sourceId}\n` +
-        `TYPE: ${type}\n` +
-        `TITLE: ${title}\n` +
-        `CONTENT: ${contentSnippet}\n`;
-
-      evidenceBlocks.push(block);
-      accumulatedChars += block.length;
-    }
   });
 
   return {
@@ -184,7 +195,13 @@ export function validateCitationReferences(text, sources = []) {
 
     if (sourceIndexMap.has(parsedIndex)) {
       const matched = sourceIndexMap.get(parsedIndex);
-      if (!validCitationsMap.has(parsedIndex)) {
+      if (matched.isIncluded === false) {
+        unverifiedCitations.push({
+          raw: rawTag,
+          index: parsedIndex,
+          reason: 'OMITTED_DUE_TO_BUDGET',
+        });
+      } else if (!validCitationsMap.has(parsedIndex)) {
         validCitationsMap.set(parsedIndex, {
           index: parsedIndex,
           id: matched.id,

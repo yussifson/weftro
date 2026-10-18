@@ -23,12 +23,41 @@ export default function DecisionLedger() {
   useEffect(() => {
     if (companyId === undefined) return;
     loadDecisions();
+
+    // Real-time listener for decisions
+    const channel = supabase
+      .channel(`realtime-decisions-${companyId}`)
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'clipad_decisions',
+        filter: `workspace_id=eq.${companyId}`
+      }, () => {
+        loadDecisions();
+      })
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'clipad_v3_smart_moments',
+        filter: `company_id=eq.${companyId}`
+      }, (payload) => {
+        if (payload.new?.moment_type === 'DECISION') {
+          loadDecisions();
+        }
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [companyId]);
 
   const loadDecisions = async () => {
     if (decisions.length === 0) setLoading(true);
     try {
-      // Load from clipad_decisions (native AI-detected decisions)
+      if (!companyId) return;
+
+      // 1. Native decisions from meetings and system
       const { data: nativeDecisions } = await supabase
         .from('clipad_decisions')
         .select('*')
@@ -36,7 +65,16 @@ export default function DecisionLedger() {
         .order('created_at', { ascending: false })
         .limit(150);
 
-      // Also load from knowledge imports
+      // 2. Real-time Smart Moments of type DECISION
+      const { data: smartMoments } = await supabase
+        .from('clipad_v3_smart_moments')
+        .select('*')
+        .eq('company_id', companyId)
+        .eq('moment_type', 'DECISION')
+        .order('created_at', { ascending: false })
+        .limit(100);
+
+      // 3. Knowledge-based decisions from verified imports
       const { data: withDecisions } = await supabase
         .from('clipad_imported_knowledge')
         .select('*')
@@ -45,74 +83,57 @@ export default function DecisionLedger() {
         .order('imported_at', { ascending: false })
         .limit(100);
 
-      const { data: byKeyword } = await supabase
-        .from('clipad_imported_knowledge')
-        .select('*')
-        .eq('company_id', companyId)
-        .or('title.ilike.%decision%,ai_summary.ilike.%decided%,ai_summary.ilike.%decision%')
-        .order('imported_at', { ascending: false })
-        .limit(30);
-
-      // Combine native decisions and knowledge-based ones
+      // Map native decisions
       const nativeMapped = (nativeDecisions || []).map(d => ({
         _type: 'native',
         id: d.id,
         nativeId: d.id,
-        provider: 'Weftro',
+        provider: 'CliPad',
         title: d.decision_text,
         imported_at: d.created_at,
         ai_entities: { decisions: [d.decision_text] },
         ai_summary: d.rationale,
-        importance_score: d.importance_score,
-        confidence_score: d.confidence_score,
+        importance_score: d.importance_score || 0.9,
+        confidence_score: d.confidence_score || 0.95,
         outcome_status: d.outcome_status,
         status: d.status,
         ai_detected: d.ai_detected,
         participants: d.participants,
       }));
 
-      let knowledgeItems = [...(withDecisions || []), ...(byKeyword || [])].map(d => ({ ...d, _type: 'knowledge' }));
+      // Map smart moments
+      const momentsMapped = (smartMoments || []).map(m => ({
+        _type: 'moment',
+        id: m.id,
+        nativeId: m.id,
+        provider: m.video_id ? 'Video' : m.meeting_id ? 'Meeting' : 'CliPad',
+        title: m.quote || m.text || m.metadata?.title || 'Decision',
+        imported_at: m.created_at,
+        ai_entities: { decisions: [m.quote || m.text] },
+        ai_summary: m.metadata?.summary || m.metadata?.rationale || m.quote || '',
+        importance_score: m.metadata?.importance || 0.85,
+        confidence_score: m.confidence_score || 0.9,
+        status: 'active',
+        ai_detected: true,
+      }));
 
-      // Use mock data only if truly empty
-      if (nativeMapped.length === 0 && knowledgeItems.length === 0) {
-        knowledgeItems = [
-          {
-            _type: 'knowledge',
-            id: 'mock-d1',
-            provider: 'zoom',
-            title: 'Q3 Product Roadmap Review',
-            imported_at: new Date().toISOString(),
-            ai_entities: { decisions: ['We will prioritize the new Orbit Flow integration over the mobile app redesign for Q3.', 'The budget for Q4 marketing campaign is approved at $50,000.'] },
-            ai_summary: 'Discussion regarding the prioritization of features for the upcoming Q3 product roadmap. The team agreed on pushing the mobile redesign to next year.'
-          },
-          {
-            _type: 'knowledge',
-            id: 'mock-d2',
-            provider: 'slack',
-            title: '#engineering channel',
-            imported_at: new Date(Date.now() - 86400000 * 2).toISOString(),
-            ai_entities: { decisions: ['Switched from standard PostgreSQL indexing to pgvector for faster semantic search.', 'Agreed to adopt TailwindCSS for all new internal dashboards.'] },
-            ai_summary: 'Technical debate about database indexing strategies and frontend styling frameworks for the new admin panel.'
-          },
-        ];
-      }
+      const knowledgeItems = (withDecisions || []).map(d => ({ ...d, _type: 'knowledge' }));
 
-      const allItems = [...nativeMapped, ...knowledgeItems];
+      // Strictly REAL data only — NO mock data
+      const allItems = [...nativeMapped, ...momentsMapped, ...knowledgeItems];
       const seen = new Set();
       const unique = allItems.filter(item => {
-        if (seen.has(item.id)) return false;
+        if (!item || !item.id || seen.has(item.id)) return false;
         seen.add(item.id);
         return true;
       });
 
       const filtered = unique.filter(item => {
-        if (item._type === 'native') return true;
+        if (item._type === 'native' || item._type === 'moment') return true;
         const hasAiDecision =
           item.ai_entities?.decisions?.length > 0 ||
           (typeof item.ai_entities?.decisions === 'string' && item.ai_entities.decisions.trim().length > 0);
-        const titleKeyword = (item.title || '').toLowerCase().includes('decision');
-        const summaryKeyword = (item.ai_summary || '').toLowerCase().includes('decid');
-        return hasAiDecision || titleKeyword || summaryKeyword;
+        return hasAiDecision;
       });
 
       setDecisions(filtered);

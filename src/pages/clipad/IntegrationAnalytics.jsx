@@ -101,27 +101,10 @@ export default function IntegrationAnalytics() {
         let finalProviderData = pData;
         let finalTimelineData = tData;
 
-        // Inject mock data if no real data
+        // Real data calculation without mock numbers
         if (finalExactTotalItems === 0) {
-          finalExactTotalItems = 1240;
-          finalExactVectorizedItems = 980;
-          finalTotalRelationships = 3450;
-          
-          finalProviderData = [
-            { name: 'slack', value: 450 },
-            { name: 'zoom', value: 320 },
-            { name: 'linear', value: 180 },
-            { name: 'google drive', value: 150 },
-            { name: 'github', value: 90 },
-            { name: 'notion', value: 50 },
-          ];
-          
-          let mockCumulative = 0;
-          finalTimelineData = Object.entries(dateGroups).map(([date, _count]) => {
-            const randomNew = Math.floor(Math.random() * 50) + 10;
-            mockCumulative += randomNew;
-            return { date: date.slice(5), newItems: randomNew, totalItems: mockCumulative + 500 };
-          });
+          finalProviderData = [];
+          finalTimelineData = [];
         }
 
         setMetrics({
