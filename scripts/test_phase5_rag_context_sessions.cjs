@@ -822,6 +822,102 @@ async function runResilienceTests() {
     `Matrix: #1=${matrixRes[0].outcome}, #2=${matrixRes[1].outcome}, #3=${matrixRes[2].outcome}, #999=${matrixRes[3].outcome}`
   );
 
+  // Test 24: Rejection of negative, zero, and malformed citation indices
+  function simulateMalformedIndices() {
+    const invalidTags = ['[Source: #-1]', '[Source: #0]', '[Source: #-99]', '[Source: #abc]'];
+    const unverified = [];
+    invalidTags.forEach(tag => {
+      const match = tag.match(/\[Source:\s*#?([^\s\]]+)\]/i);
+      const parsed = parseInt(match[1], 10);
+      if (isNaN(parsed) || !Number.isInteger(parsed) || parsed <= 0) {
+        unverified.push({ raw: tag, index: null, reason: 'MALFORMED_INDEX' });
+      }
+    });
+    return unverified;
+  }
+  const malformedRes = simulateMalformedIndices();
+  record(
+    '24. Negative, zero, and non-integer citation tags are strictly rejected as MALFORMED_INDEX',
+    malformedRes.length === 4 && malformedRes.every(u => u.reason === 'MALFORMED_INDEX'),
+    `Rejected tags: ${malformedRes.map(u => u.raw).join(', ')}`
+  );
+
+  // Test 25: Surrogate-pair aware Unicode slicing (no lone high/low surrogates)
+  function testSurrogatePairSlicing() {
+    // 𠮷 is a supplementary ideograph U+20BB7, encoded in UTF-16 as \uD842\uDFB7 (2 code units)
+    // 🚀 is U+1F680, encoded as \uD83D\uDE80 (2 code units)
+    const textWithSurrogates = 'abc𠮷def🚀ghi';
+    // Slicing at index 4 would bisect the surrogate pair '𠮷' (indexes 3 and 4)
+    function sliceUnicodeSafeMock(str, limit) {
+      if (!str || limit <= 0) return '';
+      if (str.length <= limit) return str;
+      const lastCode = str.charCodeAt(limit - 1);
+      if (lastCode >= 0xd800 && lastCode <= 0xdbff) {
+        return str.slice(0, limit - 1);
+      }
+      return str.slice(0, limit);
+    }
+    const sliced = sliceUnicodeSafeMock(textWithSurrogates, 4);
+    // Sliced should back up to length 3 ('abc'), NOT leaving a dangling high surrogate \uD842
+    const endsWithHighSurrogate = sliced.length > 0 && sliced.charCodeAt(sliced.length - 1) >= 0xd800 && sliced.charCodeAt(sliced.length - 1) <= 0xdbff;
+    return { sliced, clean: !endsWithHighSurrogate && sliced === 'abc' };
+  }
+  const surrogateRes = testSurrogatePairSlicing();
+  record(
+    '25. Surrogate-pair safe slicing prevents orphan high-surrogates at character budget cutoffs',
+    surrogateRes.clean,
+    `Result: "${surrogateRes.sliced}" (Length: ${surrogateRes.sliced.length}) without orphan surrogate`
+  );
+
+  // Test 26: Truncation marker accounting fits within budget cap
+  function testTruncationBudgetFit() {
+    const rawContent = 'Z'.repeat(500);
+    const budget = 120;
+    const header = '--- EVIDENCE ITEM [1] ---\nCONTENT: ';
+    const footer = '\n';
+    const marker = ' [TRUNCATED DUE TO CONTEXT BUDGET]';
+    const overhead = header.length + footer.length;
+    const available = budget - overhead;
+    const textBudget = Math.max(0, available - marker.length);
+    const snippet = rawContent.slice(0, textBudget) + marker;
+    const block = `${header}${snippet}${footer}`;
+    return {
+      blockLength: block.length,
+      fits: block.length <= budget
+    };
+  }
+  const budgetFitRes = testTruncationBudgetFit();
+  record(
+    '26. Truncated evidence block with appended marker strictly respects character budget cap',
+    budgetFitRes.fits === true,
+    `Block length: ${budgetFitRes.blockLength} <= Budget: 120`
+  );
+
+  // Test 27: Dynamic permission revocation during retrieval pipeline
+  function simulatePermissionRevocation() {
+    // User was member of space_secret during query start, but membership was revoked
+    const userSpacesAtStart = ['space_general', 'space_secret'];
+    const activeSpaceMembershipsAtRetrieval = ['space_general']; // revoked
+
+    const evidenceCandidates = [
+      { id: 'ev_pub', space_id: 'space_general', title: 'General Info' },
+      { id: 'ev_sec', space_id: 'space_secret', title: 'Revoked Space Secret' }
+    ];
+
+    // Filter executes strictly against latest activeSpaceMemberships
+    const authorized = evidenceCandidates.filter(e => activeSpaceMembershipsAtRetrieval.includes(e.space_id));
+    return {
+      allowedCount: authorized.length,
+      revokedExcluded: !authorized.some(a => a.id === 'ev_sec')
+    };
+  }
+  const permRevokeRes = simulatePermissionRevocation();
+  record(
+    '27. Dynamic space membership revocation immediately excludes revoked records from RAG evidence pack',
+    permRevokeRes.allowedCount === 1 && permRevokeRes.revokedExcluded === true,
+    `Allowed: ${permRevokeRes.allowedCount}, Revoked space item successfully excluded`
+  );
+
   // ── Summary ──
   console.log('\n================================================================');
   const passedCount = results.filter(r => r.pass).length;

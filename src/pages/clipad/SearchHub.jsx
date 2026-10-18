@@ -927,11 +927,11 @@ export default function SearchHub() {
                                                        }
                                                      }
                                                    }}
-                                                   className={`inline-flex items-center gap-1 mx-1 px-1.5 py-0.5 rounded text-[11px] font-bold font-mono transition-all cursor-pointer shadow-xs active:scale-95 ${isVerified ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800 hover:bg-emerald-100' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 border border-slate-300 dark:border-slate-700 hover:bg-slate-200'}`}
-                                                   title={isVerified ? `Verified source: ${validCitation.title}` : `Unverified citation index #${sourceIndex}`}
+                                                   className={`inline-flex items-center gap-1 mx-1 px-1.5 py-0.5 rounded text-[11px] font-bold font-mono transition-all cursor-pointer shadow-xs active:scale-95 ${isVerified ? (validCitation?.isTruncated ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-300 dark:border-amber-800 hover:bg-amber-100' : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800 hover:bg-emerald-100') : 'bg-slate-100 dark:bg-slate-800 text-slate-500 border border-slate-300 dark:border-slate-700 hover:bg-slate-200'}`}
+                                                   title={isVerified ? (validCitation?.isTruncated ? `Verified source (Partial excerpt in context budget): ${validCitation.title}` : `Verified source: ${validCitation.title}`) : `Unverified citation index #${sourceIndex}`}
                                                  >
-                                                   <span>{isVerified ? '✓' : '?'}</span>
-                                                   <span>Source #{sourceIndex}</span>
+                                                   <span>{isVerified ? (validCitation?.isTruncated ? '⚠' : '✓') : '?'}</span>
+                                                   <span>Source #{sourceIndex}{validCitation?.isTruncated ? ' (partial)' : ''}</span>
                                                  </button>
                                                );
                                              });
@@ -962,10 +962,12 @@ export default function SearchHub() {
                                                  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                                                }
                                              }}
-                                             className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800/80 hover:bg-primary/10 text-slate-700 dark:text-slate-300 text-[11px] font-medium border border-slate-200 dark:border-slate-700 hover:border-primary/30 transition-colors"
+                                             className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium border transition-colors ${cite.isTruncated ? 'bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-800 hover:border-amber-400' : 'bg-slate-100 dark:bg-slate-800/80 hover:bg-primary/10 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-primary/30'}`}
+                                             title={cite.isTruncated ? `Partial excerpt included in prompt: ${cite.title}` : cite.title}
                                            >
-                                             <span className="font-mono text-primary font-bold">#{cite.index}</span>
+                                             <span className={`font-mono font-bold ${cite.isTruncated ? 'text-amber-600 dark:text-amber-400' : 'text-primary'}`}>#{cite.index}</span>
                                              <span className="max-w-[140px] truncate">{cite.title}</span>
+                                             {cite.isTruncated && <span className="text-[9px] uppercase px-1 rounded bg-amber-200/60 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 font-bold">partial</span>}
                                            </button>
                                          ))}
                                        </div>

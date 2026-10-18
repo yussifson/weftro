@@ -42,9 +42,38 @@ export function sanitizeRetrievedEvidence(text) {
 }
 
 /**
+ * Safely slice a string to a max character limit without splitting high/low surrogate pairs.
+ * Each character represents a UTF-16 code unit; this ensures supplementary Unicode codepoints
+ * (e.g. emoji, mathematical symbols, historic scripts) are not corrupted into orphan surrogates.
+ *
+ * @param {string} str - Input text
+ * @param {number} limit - Maximum allowed characters (code units)
+ * @returns {string} Cleanly sliced string
+ */
+export function sliceUnicodeSafe(str, limit) {
+  if (!str || typeof str !== 'string' || limit <= 0) return '';
+  if (str.length <= limit) return str;
+
+  // If the character at limit - 1 is a high surrogate (0xD800 to 0xDBFF),
+  // do not include it alone without its trailing low surrogate.
+  const lastCharCode = str.charCodeAt(limit - 1);
+  if (lastCharCode >= 0xd800 && lastCharCode <= 0xdbff) {
+    return str.slice(0, limit - 1);
+  }
+  return str.slice(0, limit);
+}
+
+/**
  * Format retrieved memories, documents, and chunks into structured untrusted evidence blocks.
  *
+ * Context Budget Accounting:
+ * - Counted in standard JavaScript characters (UTF-16 code units, matching string.length).
+ * - 18,000 characters corresponds to approximately 4,500 tokens in standard English/code tokenizers.
+ * - Slicing is surrogate-pair safe via sliceUnicodeSafe().
+ *
  * @param {Array<Object>} evidenceItems - Retrieved items from hybrid retrieval
+ * @param {Object} [options={}] - Formatting and budgeting options
+ * @param {number} [options.maxEvidenceChars=18000] - Hard cap on total evidence pack characters
  * @returns {{ evidenceText: string, sources: Array<Object> }}
  */
 export function formatEvidencePack(evidenceItems = [], options = {}) {
@@ -58,6 +87,7 @@ export function formatEvidencePack(evidenceItems = [], options = {}) {
 
   const sources = [];
   const evidenceBlocks = [];
+  const truncationMarker = ' [TRUNCATED DUE TO CONTEXT BUDGET]';
 
   evidenceItems.forEach((item, index) => {
     const sourceId = item.id || `doc_${index + 1}`;
@@ -67,6 +97,8 @@ export function formatEvidencePack(evidenceItems = [], options = {}) {
     const cleanContent = sanitizeRetrievedEvidence(rawContent);
 
     let isIncluded = false;
+    let isTruncated = false;
+
     if (accumulatedChars < maxEvidenceChars) {
       const remainingBudget = maxEvidenceChars - accumulatedChars;
       // Reserve at least overhead characters for header/footer so snippet is non-empty
@@ -80,18 +112,31 @@ export function formatEvidencePack(evidenceItems = [], options = {}) {
       const overhead = blockHeader.length + blockFooter.length;
 
       if (remainingBudget > overhead) {
-        const snippetLimit = Math.min(1500, remainingBudget - overhead);
-        const wasTruncated = cleanContent.length > snippetLimit;
-        const contentSnippet = cleanContent.slice(0, snippetLimit) + (wasTruncated ? ' [TRUNCATED DUE TO CONTEXT BUDGET]' : '');
-        const block = `${blockHeader}${contentSnippet}${blockFooter}`;
+        const availableContentChars = remainingBudget - overhead;
+        const maxSnippetChars = Math.min(1500, availableContentChars);
 
-        evidenceBlocks.push(block);
-        accumulatedChars += block.length;
-        isIncluded = true;
+        if (cleanContent.length > maxSnippetChars) {
+          isTruncated = true;
+          // When truncated, ensure the truncation marker itself fits within availableContentChars
+          const textBudget = Math.max(0, maxSnippetChars - truncationMarker.length);
+          const slicedText = sliceUnicodeSafe(cleanContent, textBudget);
+          const contentSnippet = `${slicedText}${truncationMarker}`;
+          const block = `${blockHeader}${contentSnippet}${blockFooter}`;
+
+          evidenceBlocks.push(block);
+          accumulatedChars += block.length;
+          isIncluded = true;
+        } else {
+          isTruncated = false;
+          const contentSnippet = cleanContent;
+          const block = `${blockHeader}${contentSnippet}${blockFooter}`;
+
+          evidenceBlocks.push(block);
+          accumulatedChars += block.length;
+          isIncluded = true;
+        }
       }
     }
-
-    const wasTruncated = isIncluded && (cleanContent.length > Math.min(1500, Math.max(0, maxEvidenceChars - (accumulatedChars - cleanContent.length))));
 
     // Source metadata is preserved with explicit inclusion and truncation flags
     sources.push({
@@ -103,7 +148,7 @@ export function formatEvidencePack(evidenceItems = [], options = {}) {
       rrf_score: item.rrf_score ?? null,
       source_channel: item.source_channel || 'hybrid',
       isIncluded,
-      isTruncated: isIncluded ? cleanContent.length > 1500 || (cleanContent.length > 0 && evidenceBlocks[evidenceBlocks.length - 1]?.includes('[TRUNCATED DUE TO CONTEXT BUDGET]')) : false
+      isTruncated: isIncluded ? isTruncated : false
     });
   });
 
@@ -186,7 +231,7 @@ export function validateCitationReferences(text, sources = []) {
     const rawIndexStr = match[1];
     const parsedIndex = parseInt(rawIndexStr, 10);
 
-    if (isNaN(parsedIndex) || !Number.isInteger(parsedIndex)) {
+    if (isNaN(parsedIndex) || !Number.isInteger(parsedIndex) || parsedIndex <= 0) {
       unverifiedCitations.push({
         raw: rawTag,
         index: null,
@@ -213,6 +258,9 @@ export function validateCitationReferences(text, sources = []) {
           type: matched.type,
           source_channel: matched.source_channel || 'hybrid',
           isTruncated: matched.isTruncated || false,
+          // Explicit provenance guarantee: verified as authorized and present in evidence pack,
+          // without claiming independent semantic factual proof beyond the provided source text.
+          verificationStatus: matched.isTruncated ? 'VALID_TRUNCATED' : 'VALID',
         });
       }
     } else {
