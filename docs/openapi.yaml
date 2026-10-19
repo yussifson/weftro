@@ -6,8 +6,10 @@ info:
     intelligence, memories, captures, entities, and smart moments to authorized applications.
   version: 1.0.0
 servers:
+  - url: https://www.weftro.com
+    description: Production Corporate API Gateway
   - url: https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect
-    description: Production Supabase Edge Gateway
+    description: Supabase Edge Gateway Fallback
 
 security:
   - BearerAuth: []

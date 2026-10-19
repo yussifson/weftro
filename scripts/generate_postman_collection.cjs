@@ -1,0 +1,363 @@
+const fs = require('fs');
+
+const collection = {
+  info: {
+    name: 'Weftro V3 Production REST API Gateway Acceptance Suite',
+    _postman_id: 'weftro-v3-prod-suite-001',
+    description: 'Postman/Newman production acceptance test suite for Weftro unified REST API over https://www.weftro.com',
+    schema: 'https://schema.getpostman.com/json/collection/v2.1.0/collection.json'
+  },
+  variable: [
+    { key: 'baseUrl', value: 'https://www.weftro.com' },
+    { key: 'backendUrl', value: 'https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect' },
+    { key: 'adminToken', value: '' },
+    { key: 'appId', value: '' },
+    { key: 'scopedToken', value: '' },
+    { key: 'scopedTokenId', value: '' },
+    { key: 'memoryId', value: '' }
+  ],
+  item: [
+    {
+      name: '01. Gateway Health Check',
+      event: [
+        {
+          listen: 'test',
+          script: {
+            exec: [
+              'pm.test("Status code is 200", function () { pm.response.to.have.status(200); });',
+              'pm.test("Gateway status is healthy", function () {',
+              '    var jsonData = pm.response.json();',
+              '    pm.expect(jsonData.data.status).to.eql("healthy");',
+              '    pm.expect(jsonData.data.version).to.eql("v1");',
+              '});'
+            ],
+            type: 'text/javascript'
+          }
+        }
+      ],
+      request: {
+        method: 'GET',
+        header: [{ key: 'Accept', value: 'application/json' }],
+        url: { raw: '{{baseUrl}}/api/v1/health', host: ['{{baseUrl}}'], path: ['api', 'v1', 'health'] }
+      }
+    },
+    {
+      name: '02. Capabilities Discovery',
+      event: [
+        {
+          listen: 'test',
+          script: {
+            exec: [
+              'pm.test("Status code is 200", function () { pm.response.to.have.status(200); });',
+              'pm.test("Capabilities advertise v1 and endpoints", function () {',
+              '    var jsonData = pm.response.json();',
+              '    pm.expect(jsonData.data.api_version).to.eql("v1");',
+              '    pm.expect(jsonData.data.endpoints.length).to.be.at.least(10);',
+              '});'
+            ],
+            type: 'text/javascript'
+          }
+        }
+      ],
+      request: {
+        method: 'GET',
+        header: [{ key: 'Accept', value: 'application/json' }],
+        url: { raw: '{{baseUrl}}/api/v1/capabilities', host: ['{{baseUrl}}'], path: ['api', 'v1', 'capabilities'] }
+      }
+    },
+    {
+      name: '03. Provision Production Test Workspace & Admin Token',
+      event: [
+        {
+          listen: 'test',
+          script: {
+            exec: [
+              'pm.test("Status code is 200", function () { pm.response.to.have.status(200); });',
+              'pm.test("Token provisioned with cpd_ prefix", function () {',
+              '    var jsonData = pm.response.json();',
+              '    pm.expect(jsonData.data.raw_token).to.match(/^cpd_/);',
+              '    pm.collectionVariables.set("adminToken", jsonData.data.raw_token);',
+              '});'
+            ],
+            type: 'text/javascript'
+          }
+        }
+      ],
+      request: {
+        method: 'POST',
+        header: [
+          { key: 'Content-Type', value: 'application/json' },
+          { key: 'x-test-suite-key', value: 'weftro_phase3_acceptance_test_key' }
+        ],
+        body: {
+          mode: 'raw',
+          raw: JSON.stringify({
+            action: 'create_tenant_and_token',
+            company_name: 'Postman Newman Production Test Co',
+            app_name: 'Postman Orchestrator',
+            scopes: ['apps:manage', 'search:read', 'memory:read', 'memory:write', 'captures:read', 'captures:write']
+          })
+        },
+        url: { raw: '{{backendUrl}}/_test/seed', host: ['{{backendUrl}}'], path: ['_test', 'seed'] }
+      }
+    },
+    {
+      name: '04. Create Developer Application',
+      event: [
+        {
+          listen: 'test',
+          script: {
+            exec: [
+              'pm.test("Status code is 201", function () { pm.response.to.have.status(201); });',
+              'pm.test("Application returns client_id and unhashed client_secret", function () {',
+              '    var jsonData = pm.response.json();',
+              '    pm.expect(jsonData.data.client_id).to.match(/^client_/);',
+              '    pm.expect(jsonData.data.client_secret).to.match(/^secret_/);',
+              '    pm.collectionVariables.set("appId", jsonData.data.id);',
+              '});'
+            ],
+            type: 'text/javascript'
+          }
+        }
+      ],
+      request: {
+        method: 'POST',
+        header: [
+          { key: 'Authorization', value: 'Bearer {{adminToken}}' },
+          { key: 'Content-Type', value: 'application/json' }
+        ],
+        body: {
+          mode: 'raw',
+          raw: JSON.stringify({
+            name: 'Production Ingest Agent',
+            description: 'Automated workflow ingestion agent',
+            redirect_uris: ['https://oauth.pstmn.io/v1/callback']
+          })
+        },
+        url: { raw: '{{baseUrl}}/api/v1/apps', host: ['{{baseUrl}}'], path: ['api', 'v1', 'apps'] }
+      }
+    },
+    {
+      name: '05. Rotate Application Secret',
+      event: [
+        {
+          listen: 'test',
+          script: {
+            exec: [
+              'pm.test("Status code is 200", function () { pm.response.to.have.status(200); });',
+              'pm.test("New secret generated on rotation", function () {',
+              '    var jsonData = pm.response.json();',
+              '    pm.expect(jsonData.data.client_secret).to.match(/^secret_/);',
+              '});'
+            ],
+            type: 'text/javascript'
+          }
+        }
+      ],
+      request: {
+        method: 'POST',
+        header: [
+          { key: 'Authorization', value: 'Bearer {{adminToken}}' }
+        ],
+        url: { raw: '{{baseUrl}}/api/v1/apps/{{appId}}/rotate-secret', host: ['{{baseUrl}}'], path: ['api', 'v1', 'apps', '{{appId}}', 'rotate-secret'] }
+      }
+    },
+    {
+      name: '06. Issue Scoped Bearer Token',
+      event: [
+        {
+          listen: 'test',
+          script: {
+            exec: [
+              'pm.test("Status code is 201", function () { pm.response.to.have.status(201); });',
+              'pm.test("Token has cpd_ prefix and restricted scopes", function () {',
+              '    var jsonData = pm.response.json();',
+              '    pm.expect(jsonData.data.access_token).to.match(/^cpd_/);',
+              '    pm.expect(jsonData.data.scopes).to.eql(["search:read", "memory:read"]);',
+              '    pm.collectionVariables.set("scopedToken", jsonData.data.access_token);',
+              '    pm.collectionVariables.set("scopedTokenId", jsonData.data.id);',
+              '});'
+            ],
+            type: 'text/javascript'
+          }
+        }
+      ],
+      request: {
+        method: 'POST',
+        header: [
+          { key: 'Authorization', value: 'Bearer {{adminToken}}' },
+          { key: 'Content-Type', value: 'application/json' }
+        ],
+        body: {
+          mode: 'raw',
+          raw: JSON.stringify({
+            app_id: '{{appId}}',
+            scopes: ['search:read', 'memory:read']
+          })
+        },
+        url: { raw: '{{baseUrl}}/api/v1/tokens', host: ['{{baseUrl}}'], path: ['api', 'v1', 'tokens'] }
+      }
+    },
+    {
+      name: '07. Grounded Search via Scoped Token',
+      event: [
+        {
+          listen: 'test',
+          script: {
+            exec: [
+              'pm.test("Status code is 200", function () { pm.response.to.have.status(200); });',
+              'pm.test("Search responds with valid envelope", function () {',
+              '    var jsonData = pm.response.json();',
+              '    pm.expect(jsonData).to.have.property("data");',
+              '    pm.expect(jsonData.meta).to.have.property("api_version", "v1");',
+              '});'
+            ],
+            type: 'text/javascript'
+          }
+        }
+      ],
+      request: {
+        method: 'POST',
+        header: [
+          { key: 'Authorization', value: 'Bearer {{scopedToken}}' },
+          { key: 'Content-Type', value: 'application/json' }
+        ],
+        body: {
+          mode: 'raw',
+          raw: JSON.stringify({
+            query: 'production architectural tenets',
+            limit: 5
+          })
+        },
+        url: { raw: '{{baseUrl}}/api/v1/search', host: ['{{baseUrl}}'], path: ['api', 'v1', 'search'] }
+      }
+    },
+    {
+      name: '08. Granular Scope Enforcement (Negative Test)',
+      event: [
+        {
+          listen: 'test',
+          script: {
+            exec: [
+              'pm.test("Status code is 403 FORBIDDEN", function () { pm.response.to.have.status(403); });',
+              'pm.test("Error code matches FORBIDDEN", function () {',
+              '    var jsonData = pm.response.json();',
+              '    pm.expect(jsonData.error.code).to.eql("FORBIDDEN");',
+              '});'
+            ],
+            type: 'text/javascript'
+          }
+        }
+      ],
+      request: {
+        method: 'POST',
+        header: [
+          { key: 'Authorization', value: 'Bearer {{scopedToken}}' },
+          { key: 'Content-Type', value: 'application/json' }
+        ],
+        body: {
+          mode: 'raw',
+          raw: JSON.stringify({
+            title: 'Unauthorized Mutation',
+            content: 'This must fail'
+          })
+        },
+        url: { raw: '{{baseUrl}}/api/v1/memories', host: ['{{baseUrl}}'], path: ['api', 'v1', 'memories'] }
+      }
+    },
+    {
+      name: '09. Create Organizational Memory via Master Token',
+      event: [
+        {
+          listen: 'test',
+          script: {
+            exec: [
+              'pm.test("Status code is 201", function () { pm.response.to.have.status(201); });',
+              'pm.test("Memory created successfully", function () {',
+              '    var jsonData = pm.response.json();',
+              '    pm.expect(jsonData.data.title).to.eql("Enterprise Security SLA");',
+              '    pm.collectionVariables.set("memoryId", jsonData.data.id);',
+              '});'
+            ],
+            type: 'text/javascript'
+          }
+        }
+      ],
+      request: {
+        method: 'POST',
+        header: [
+          { key: 'Authorization', value: 'Bearer {{adminToken}}' },
+          { key: 'Content-Type', value: 'application/json' }
+        ],
+        body: {
+          mode: 'raw',
+          raw: JSON.stringify({
+            title: 'Enterprise Security SLA',
+            content: 'All API tokens enforce rolling rate limits and immediate cryptographic revocation.',
+            memory_type: 'FACT',
+            importance: 0.95
+          })
+        },
+        url: { raw: '{{baseUrl}}/api/v1/memories', host: ['{{baseUrl}}'], path: ['api', 'v1', 'memories'] }
+      }
+    },
+    {
+      name: '10. Revoke Scoped Token',
+      event: [
+        {
+          listen: 'test',
+          script: {
+            exec: [
+              'pm.test("Status code is 200", function () { pm.response.to.have.status(200); });',
+              'pm.test("Token marked as revoked", function () {',
+              '    var jsonData = pm.response.json();',
+              '    pm.expect(jsonData.data.revoked).to.eql(true);',
+              '});'
+            ],
+            type: 'text/javascript'
+          }
+        }
+      ],
+      request: {
+        method: 'POST',
+        header: [
+          { key: 'Authorization', value: 'Bearer {{adminToken}}' }
+        ],
+        url: { raw: '{{baseUrl}}/api/v1/tokens/{{scopedTokenId}}/revoke', host: ['{{baseUrl}}'], path: ['api', 'v1', 'tokens', '{{scopedTokenId}}', 'revoke'] }
+      }
+    },
+    {
+      name: '11. Revocation Defense Verification',
+      event: [
+        {
+          listen: 'test',
+          script: {
+            exec: [
+              'pm.test("Status code is 401 TOKEN_REVOKED", function () { pm.response.to.have.status(401); });',
+              'pm.test("Error code matches TOKEN_REVOKED", function () {',
+              '    var jsonData = pm.response.json();',
+              '    pm.expect(jsonData.error.code).to.eql("TOKEN_REVOKED");',
+              '});'
+            ],
+            type: 'text/javascript'
+          }
+        }
+      ],
+      request: {
+        method: 'POST',
+        header: [
+          { key: 'Authorization', value: 'Bearer {{scopedToken}}' },
+          { key: 'Content-Type', value: 'application/json' }
+        ],
+        body: {
+          mode: 'raw',
+          raw: JSON.stringify({ query: 'test' })
+        },
+        url: { raw: '{{baseUrl}}/api/v1/search', host: ['{{baseUrl}}'], path: ['api', 'v1', 'search'] }
+      }
+    }
+  ]
+};
+
+fs.writeFileSync('weftro_postman_collection.json', JSON.stringify(collection, null, 2));
+console.log('Postman collection written successfully to weftro_postman_collection.json');
