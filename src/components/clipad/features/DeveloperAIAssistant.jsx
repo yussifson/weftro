@@ -377,15 +377,15 @@ CORE GUIDELINES:
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 min-h-0 overflow-hidden">
         {/* Left Column: Chat Messages & Input (Expanded to take all remaining space: 8 cols on lg, 9 cols on xl) */}
         <div className="lg:col-span-8 xl:col-span-9 flex flex-col h-full min-h-0 border-r border-border overflow-hidden bg-card/30 relative">
-          {/* Scrollable Messages Area: Tiny margins to left and right for corporate, clean, expanded visibility */}
-          <div className="flex-1 overflow-y-auto px-2 sm:px-4 md:px-5 py-4 space-y-3.5 scrollbar-thin">
+          {/* Scrollable Messages Area: Balanced margins on both sides for clean corporate symmetry */}
+          <div className="flex-1 overflow-y-auto px-2 sm:px-3 py-4 space-y-3.5 scrollbar-thin">
             <div className="w-full space-y-3.5">
             {messages.map((msg, idx) => {
               const isAssistant = msg.role === 'assistant';
               return (
                 <div
                   key={idx}
-                  className={`flex items-start gap-2.5 sm:gap-3.5 ${isAssistant ? 'justify-start' : 'justify-end'}`}
+                  className={`flex items-start gap-2.5 ${isAssistant ? 'justify-start' : 'justify-end'}`}
                 >
                   {isAssistant && (
                     <div className="w-7 h-7 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0 mt-0.5 shadow-sm">
@@ -394,10 +394,10 @@ CORE GUIDELINES:
                   )}
 
                   <div
-                    className={`w-full ${
+                    className={`${
                       isAssistant
-                        ? 'max-w-[99%] bg-card border border-border/80 text-foreground shadow-xs rounded-2xl rounded-tl-sm px-4 sm:px-5 py-3.5'
-                        : 'max-w-[85%] md:max-w-[65%] bg-primary text-primary-foreground font-medium rounded-2xl rounded-tr-sm px-4 py-2.5 shadow-xs'
+                        ? 'flex-1 bg-card border border-border/80 text-foreground shadow-xs rounded-2xl rounded-tl-sm px-4 sm:px-5 py-3.5'
+                        : 'max-w-[85%] md:max-w-[70%] bg-primary text-primary-foreground font-medium rounded-2xl rounded-tr-sm px-4 py-2.5 shadow-xs'
                     } text-sm leading-relaxed`}
                   >
                     {isAssistant ? (
@@ -442,8 +442,8 @@ CORE GUIDELINES:
             })}
 
             {isLoading && (
-              <div className="flex items-start gap-3">
-                <div className="w-7 h-7 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0 animate-pulse">
+              <div className="flex items-start gap-2.5">
+                <div className="w-7 h-7 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0 animate-pulse mt-0.5 shadow-sm">
                   <Bot className="w-3.5 h-3.5" />
                 </div>
                 <div className="px-4 py-3 rounded-2xl rounded-tl-sm bg-card border border-border/80 flex items-center gap-2.5 text-xs text-muted-foreground shadow-xs">
