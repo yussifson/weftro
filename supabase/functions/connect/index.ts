@@ -133,6 +133,125 @@ async function hmacSha256Signature(secret: string, payload: string): Promise<str
   return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
+// Extract human-readable text from PDF bytes safely
+async function extractTextFromPdfBytes(pdfBuffer: Uint8Array): Promise<string> {
+  try {
+    const rawBinary = new TextDecoder('latin1').decode(pdfBuffer);
+    const extractedChunks: string[] = [];
+
+    // Extract plaintext literals from the PDF body
+    const rawTextMatches = rawBinary.match(/\(([^\(\)\\]{2,})\)\s*T[jJ]/g) || [];
+    for (const rtm of rawTextMatches.slice(0, 500)) {
+      const clean = rtm.replace(/^[\s\(]+/, '').replace(/[\)\sTj]+$/, '').trim();
+      if (clean.length > 1) extractedChunks.push(clean);
+    }
+
+    // Extract TJ array literals
+    const arrayMatches = rawBinary.match(/\[([^\]]*?)\]\s*TJ/g) || [];
+    for (const am of arrayMatches.slice(0, 500)) {
+      const innerItems = am.match(/\((.*?)\)/g) || [];
+      const joined = innerItems.map(i => i.slice(1, -1)).join('');
+      if (joined.length > 1) extractedChunks.push(joined);
+    }
+
+    // Try decompressing small flate streams (up to first 10 streams)
+    const streamRegex = /stream\r?\n([\s\S]*?)\r?\nendstream/g;
+    let match: RegExpExecArray | null;
+    let streamCount = 0;
+
+    while ((match = streamRegex.exec(rawBinary)) !== null && streamCount < 10) {
+      streamCount++;
+      const streamContent = match[1];
+      if (streamContent.length > 200000) continue; // Skip huge media/image streams
+
+      try {
+        const streamBytes = new Uint8Array(streamContent.length);
+        for (let i = 0; i < streamContent.length; i++) {
+          streamBytes[i] = streamContent.charCodeAt(i);
+        }
+
+        const ds = new DecompressionStream('deflate');
+        const writer = ds.writable.getWriter();
+        writer.write(streamBytes).catch(() => {});
+        writer.close().catch(() => {});
+        const reader = ds.readable.getReader();
+        const outChunks: Uint8Array[] = [];
+        let totalLen = 0;
+        let readCount = 0;
+
+        while (readCount < 20) {
+          readCount++;
+          const { done, value } = await reader.read();
+          if (done) break;
+          if (value) {
+            outChunks.push(value);
+            totalLen += value.length;
+            if (totalLen > 100000) break;
+          }
+        }
+
+        if (totalLen > 0) {
+          const decompressedBytes = new Uint8Array(totalLen);
+          let offset = 0;
+          for (const ch of outChunks) {
+            decompressedBytes.set(ch, offset);
+            offset += ch.length;
+          }
+          const decText = new TextDecoder('utf-8', { fatal: false }).decode(decompressedBytes);
+          const tjMatches = decText.match(/\(([^\(\)\\]+)\)\s*T[jJ]/g) || [];
+          for (const tm of tjMatches.slice(0, 100)) {
+            const clean = tm.replace(/^[\s\(]+/, '').replace(/[\)\sTj]+$/, '').trim();
+            if (clean.length > 1) extractedChunks.push(clean);
+          }
+        }
+      } catch (_e) {
+        // Ignore uncompressed or malformed stream
+      }
+    }
+
+    return extractedChunks.slice(0, 1000).join(' ').replace(/\s+/g, ' ').trim();
+  } catch (_e) {
+    return '';
+  }
+}
+
+// Fetch document file and extract contextual text (PDF, text, markdown, json)
+async function extractDocumentContentFromUrl(fileUrl: string): Promise<{ text: string; error?: string }> {
+  try {
+    if (!fileUrl || typeof fileUrl !== 'string') {
+      return { text: '', error: 'Missing or invalid file URL.' };
+    }
+
+    if (fileUrl.startsWith('blob:')) {
+      return { text: '', error: 'Client-side temporary blob URL cannot be fetched directly on backend.' };
+    }
+
+    const res = await fetch(fileUrl, {
+      headers: { 'Accept': '*/*' },
+      signal: AbortSignal.timeout(15000),
+    });
+
+    if (!res.ok) {
+      return { text: '', error: `HTTP ${res.status}: ${res.statusText}` };
+    }
+
+    const contentType = (res.headers.get('content-type') || '').toLowerCase();
+    const isPdf = fileUrl.toLowerCase().endsWith('.pdf') || contentType.includes('pdf');
+
+    if (isPdf) {
+      const arrBuf = await res.arrayBuffer();
+      const extracted = await extractTextFromPdfBytes(new Uint8Array(arrBuf));
+      return { text: extracted || 'PDF parsed successfully but contained only vector graphics or rasterized image scans.' };
+    }
+
+    // For plaintext, markdown, JSON, or code files
+    const txt = await res.text();
+    return { text: txt.slice(0, 50000) };
+  } catch (err: any) {
+    return { text: '', error: `File fetch failed: ${err.message}` };
+  }
+}
+
 // ══════════════════════════════════════════════════════════════════════════════
 // ATOMIC DISTRIBUTED IDEMPOTENCY LEDGER ENGINE
 // ══════════════════════════════════════════════════════════════════════════════
@@ -651,6 +770,10 @@ const REMOTE_MCP_TOOLS = [
         document_id: {
           type: 'string',
           description: 'The UUID of the document record.',
+        },
+        read_file_content: {
+          type: 'boolean',
+          description: 'If true, parses and extracts text content from the document file (e.g. PDF or text file). Defaults to true.',
         },
       },
       required: ['document_id'],
@@ -1903,40 +2026,117 @@ serve(async (req) => {
                 );
               }
 
-              // Try documents
+              const shouldExtractContent = toolArgs.read_file_content !== false;
+
+              // 1. Try documents
               const { data: d1 } = await supabase.from('documents').select('*').eq('id', docId).maybeSingle();
               if (d1) {
+                let parsedContent = d1.ai_summary || d1.notes || null;
+                let extractionError = null;
+
+                if (shouldExtractContent && d1.file_url) {
+                  const extracted = await extractDocumentContentFromUrl(d1.file_url);
+                  if (extracted.text) {
+                    parsedContent = extracted.text;
+                  } else if (extracted.error) {
+                    extractionError = extracted.error;
+                  }
+                }
+
+                const enrichedDoc = {
+                  ...d1,
+                  extracted_content: parsedContent,
+                  extraction_status: parsedContent ? 'success' : (extractionError ? 'unsupported_or_failed' : 'no_content'),
+                  extraction_error: extractionError,
+                };
+
                 return new Response(
                   JSON.stringify({
                     jsonrpc: '2.0',
                     id: rpcId,
-                    result: { content: [{ type: 'text', text: JSON.stringify({ data: d1 }, null, 2) }] },
+                    result: { content: [{ type: 'text', text: JSON.stringify({ data: enrichedDoc }, null, 2) }] },
                   }),
                   { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
                 );
               }
 
-              // Try clipad_docs
+              // 2. Try clipad_docs
               const { data: d2 } = await supabase.from('clipad_docs').select('*').eq('id', docId).maybeSingle();
               if (d2) {
+                const enrichedDoc = {
+                  ...d2,
+                  extracted_content: d2.content || null,
+                  extraction_status: d2.content ? 'success' : 'empty',
+                };
                 return new Response(
                   JSON.stringify({
                     jsonrpc: '2.0',
                     id: rpcId,
-                    result: { content: [{ type: 'text', text: JSON.stringify({ data: d2 }, null, 2) }] },
+                    result: { content: [{ type: 'text', text: JSON.stringify({ data: enrichedDoc }, null, 2) }] },
                   }),
                   { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
                 );
               }
 
-              // Try integration_knowledge
+              // 3. Try integration_knowledge (Google Drive, Slack, Notion files, etc.)
               const { data: d3 } = await supabase.from('integration_knowledge').select('*').eq('id', docId).maybeSingle();
               if (d3) {
+                let parsedContent = d3.raw_content || d3.summary || null;
+                let extractionError = null;
+
+                if (!parsedContent && shouldExtractContent && d3.source_url) {
+                  const extracted = await extractDocumentContentFromUrl(d3.source_url);
+                  if (extracted.text) {
+                    parsedContent = extracted.text;
+                  } else if (extracted.error) {
+                    extractionError = extracted.error;
+                  }
+                }
+
+                const enrichedDoc = {
+                  ...d3,
+                  extracted_content: parsedContent,
+                  extraction_status: parsedContent ? 'success' : (extractionError ? 'unsupported_or_failed' : 'no_content'),
+                  extraction_error: extractionError,
+                };
+
                 return new Response(
                   JSON.stringify({
                     jsonrpc: '2.0',
                     id: rpcId,
-                    result: { content: [{ type: 'text', text: JSON.stringify({ data: d3 }, null, 2) }] },
+                    result: { content: [{ type: 'text', text: JSON.stringify({ data: enrichedDoc }, null, 2) }] },
+                  }),
+                  { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                );
+              }
+
+              // 4. Try clipad_imported_knowledge (Drive, Meet, Slack imports)
+              const { data: d4 } = await supabase.from('clipad_imported_knowledge').select('*').eq('id', docId).maybeSingle();
+              if (d4) {
+                let parsedContent = d4.ai_summary || (d4.raw_payload ? JSON.stringify(d4.raw_payload) : null);
+                let extractionError = null;
+
+                if (!parsedContent && shouldExtractContent && d4.url) {
+                  const extracted = await extractDocumentContentFromUrl(d4.url);
+                  if (extracted.text) {
+                    parsedContent = extracted.text;
+                  } else if (extracted.error) {
+                    extractionError = extracted.error;
+                  }
+                }
+
+                const enrichedDoc = {
+                  ...d4,
+                  extracted_content: parsedContent,
+                  extraction_status: parsedContent ? 'success' : (extractionError ? 'unsupported_or_failed' : 'no_content'),
+                  extraction_error: extractionError,
+                };
+
+                return new Response(
+                  JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: rpcId,
+                    result: { content: [{ type: 'text', text: JSON.stringify({ data: enrichedDoc }, null, 2) }] },
                   }),
                   { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
                 );
