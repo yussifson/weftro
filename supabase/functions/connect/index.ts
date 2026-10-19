@@ -621,6 +621,83 @@ const REMOTE_MCP_TOOLS = [
       required: ['title', 'content'],
     },
   },
+  {
+    name: 'list_documents',
+    description: 'Retrieve documents, synced cloud files, legal records, and notes across all spaces and integrations with pagination and keyword filtering.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        query: {
+          type: 'string',
+          description: 'Optional keywords to search within document titles, content, or tags.',
+        },
+        limit: {
+          type: 'number',
+          description: 'Maximum number of documents to return (1-50, default 20).',
+        },
+        offset: {
+          type: 'number',
+          description: 'Pagination offset (default 0).',
+        },
+      },
+    },
+  },
+  {
+    name: 'get_document_by_id',
+    description: 'Retrieve full document body, versions, metadata, and cloud source provenance for a specific document by its UUID.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        document_id: {
+          type: 'string',
+          description: 'The UUID of the document record.',
+        },
+      },
+      required: ['document_id'],
+    },
+  },
+  {
+    name: 'list_meetings',
+    description: 'List recorded meetings, video calls, rooms, durations, and AI summaries across all organization spaces.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        query: {
+          type: 'string',
+          description: 'Optional query filter for meeting title or topic.',
+        },
+        limit: {
+          type: 'number',
+          description: 'Maximum number of meetings to return (1-50, default 20).',
+        },
+        offset: {
+          type: 'number',
+          description: 'Pagination offset (default 0).',
+        },
+      },
+    },
+  },
+  {
+    name: 'list_spaces',
+    description: 'List organizational spaces, projects, shared channels, and their members.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        limit: {
+          type: 'number',
+          description: 'Maximum number of spaces to return (1-50, default 20).',
+        },
+      },
+    },
+  },
+  {
+    name: 'list_integrations',
+    description: 'List connected cloud integrations (Google Drive, Microsoft OneDrive, Google Meet, Slack, Gmail, Outlook) and their current synchronization status.',
+    inputSchema: {
+      type: 'object',
+      properties: {},
+    },
+  },
 ];
 
 serve(async (req) => {
@@ -981,13 +1058,34 @@ serve(async (req) => {
 
               const { data: session } = await sessQuery.limit(1).maybeSingle();
               if (!session) {
+                // Return gracefully with available spaces or recent context
+                const { data: spaces } = await supabase
+                  .from('clipad_spaces')
+                  .select('id, name, description, created_at')
+                  .eq('company_id', authenticatedCompanyId)
+                  .limit(5);
+
                 return new Response(
                   JSON.stringify({
                     jsonrpc: '2.0',
                     id: rpcId,
-                    error: { code: -32600, message: 'Weftro Resource Not Found (RESOURCE_NOT_FOUND): Context session not found or inaccessible.' },
+                    result: {
+                      content: [
+                        {
+                          type: 'text',
+                          text: JSON.stringify({
+                            data: {
+                              session: null,
+                              captures: [],
+                              available_spaces: spaces || [],
+                              message: 'No specific context session matched the query. Use list_spaces or list_captures to explore records.',
+                            },
+                          }, null, 2),
+                        },
+                      ],
+                    },
                   }),
-                  { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                  { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
                 );
               }
 
@@ -1698,6 +1796,247 @@ serve(async (req) => {
                   id: rpcId,
                   result: {
                     content: [{ type: 'text', text: JSON.stringify({ data: createdMem }, null, 2) }],
+                  },
+                }),
+                { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+              );
+            }
+
+            case 'list_documents': {
+              const limit = Math.min(Math.max(1, Number(toolArgs.limit) || 20), 50);
+              const offset = Math.max(0, Number(toolArgs.offset) || 0);
+
+              let docQuery = supabase
+                .from('documents')
+                .select('id, name, file_url, file_type, file_size, category, notes, ai_summary, created_at, tags')
+                .order('created_at', { ascending: false });
+
+              if (toolArgs.query) {
+                docQuery = docQuery.or(`name.ilike.%${toolArgs.query}%,notes.ilike.%${toolArgs.query}%,ai_summary.ilike.%${toolArgs.query}%`);
+              }
+
+              const { data: legalDocs } = await docQuery.range(offset, offset + limit - 1);
+
+              let clipadDocQuery = supabase
+                .from('clipad_docs')
+                .select('id, space_id, title, content, created_at, updated_at')
+                .order('created_at', { ascending: false });
+
+              if (toolArgs.query) {
+                clipadDocQuery = clipadDocQuery.or(`title.ilike.%${toolArgs.query}%,content.ilike.%${toolArgs.query}%`);
+              }
+
+              const { data: clipadDocs } = await clipadDocQuery.range(offset, offset + limit - 1);
+
+              // Also check integration knowledge records (synced from Drive, Slack, etc.)
+              let intQuery = supabase
+                .from('integration_knowledge')
+                .select('id, integration_type, title, summary, raw_content, source_url, tags, created_at')
+                .order('created_at', { ascending: false });
+
+              if (toolArgs.query) {
+                intQuery = intQuery.or(`title.ilike.%${toolArgs.query}%,summary.ilike.%${toolArgs.query}%,raw_content.ilike.%${toolArgs.query}%`);
+              }
+
+              const { data: intDocs } = await intQuery.range(offset, offset + limit - 1);
+
+              const formattedLegalDocs = (legalDocs || []).map((d: any) => ({
+                id: d.id,
+                source: 'cloud_storage',
+                title: d.name,
+                file_url: d.file_url,
+                file_type: d.file_type,
+                summary: d.ai_summary || d.notes,
+                created_at: d.created_at,
+                tags: d.tags,
+              }));
+
+              const formattedClipadDocs = (clipadDocs || []).map((d: any) => ({
+                id: d.id,
+                source: 'clipad_docs',
+                title: d.title,
+                content: d.content,
+                created_at: d.created_at,
+              }));
+
+              const formattedIntDocs = (intDocs || []).map((d: any) => ({
+                id: d.id,
+                source: `integration:${d.integration_type}`,
+                title: d.title,
+                summary: d.summary,
+                source_url: d.source_url,
+                created_at: d.created_at,
+              }));
+
+              const combinedDocs = [...formattedLegalDocs, ...formattedClipadDocs, ...formattedIntDocs];
+
+              return new Response(
+                JSON.stringify({
+                  jsonrpc: '2.0',
+                  id: rpcId,
+                  result: {
+                    content: [
+                      {
+                        type: 'text',
+                        text: JSON.stringify({
+                          data: combinedDocs,
+                          meta: { count: combinedDocs.length, limit, offset },
+                        }, null, 2),
+                      },
+                    ],
+                  },
+                }),
+                { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+              );
+            }
+
+            case 'get_document_by_id': {
+              const docId = toolArgs.document_id;
+              if (!docId) {
+                return new Response(
+                  JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: rpcId,
+                    error: { code: -32602, message: 'document_id is required.' },
+                  }),
+                  { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                );
+              }
+
+              // Try documents
+              const { data: d1 } = await supabase.from('documents').select('*').eq('id', docId).maybeSingle();
+              if (d1) {
+                return new Response(
+                  JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: rpcId,
+                    result: { content: [{ type: 'text', text: JSON.stringify({ data: d1 }, null, 2) }] },
+                  }),
+                  { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                );
+              }
+
+              // Try clipad_docs
+              const { data: d2 } = await supabase.from('clipad_docs').select('*').eq('id', docId).maybeSingle();
+              if (d2) {
+                return new Response(
+                  JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: rpcId,
+                    result: { content: [{ type: 'text', text: JSON.stringify({ data: d2 }, null, 2) }] },
+                  }),
+                  { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                );
+              }
+
+              // Try integration_knowledge
+              const { data: d3 } = await supabase.from('integration_knowledge').select('*').eq('id', docId).maybeSingle();
+              if (d3) {
+                return new Response(
+                  JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: rpcId,
+                    result: { content: [{ type: 'text', text: JSON.stringify({ data: d3 }, null, 2) }] },
+                  }),
+                  { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                );
+              }
+
+              return new Response(
+                JSON.stringify({
+                  jsonrpc: '2.0',
+                  id: rpcId,
+                  error: { code: -32600, message: 'Document not found or inaccessible.' },
+                }),
+                { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+              );
+            }
+
+            case 'list_meetings': {
+              const limit = Math.min(Math.max(1, Number(toolArgs.limit) || 20), 50);
+              const offset = Math.max(0, Number(toolArgs.offset) || 0);
+
+              let meetQuery = supabase
+                .from('clipad_meeting_records')
+                .select('id, space_id, title, daily_room_name, ai_summary, started_at, ended_at, duration, video_url, status, created_at')
+                .order('created_at', { ascending: false });
+
+              if (toolArgs.query) {
+                meetQuery = meetQuery.or(`title.ilike.%${toolArgs.query}%,ai_summary.ilike.%${toolArgs.query}%`);
+              }
+
+              const { data: meetings, count } = await meetQuery.range(offset, offset + limit - 1);
+
+              return new Response(
+                JSON.stringify({
+                  jsonrpc: '2.0',
+                  id: rpcId,
+                  result: {
+                    content: [
+                      {
+                        type: 'text',
+                        text: JSON.stringify({ data: meetings || [], meta: { count: meetings?.length || 0, limit, offset } }, null, 2),
+                      },
+                    ],
+                  },
+                }),
+                { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+              );
+            }
+
+            case 'list_spaces': {
+              const limit = Math.min(Math.max(1, Number(toolArgs.limit) || 20), 50);
+
+              const { data: spaces } = await supabase
+                .from('clipad_spaces')
+                .select('id, name, title, description, shared_notes, meeting_url, created_at, updated_at')
+                .order('created_at', { ascending: false })
+                .limit(limit);
+
+              return new Response(
+                JSON.stringify({
+                  jsonrpc: '2.0',
+                  id: rpcId,
+                  result: {
+                    content: [
+                      {
+                        type: 'text',
+                        text: JSON.stringify({ data: spaces || [], meta: { count: spaces?.length || 0 } }, null, 2),
+                      },
+                    ],
+                  },
+                }),
+                { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+              );
+            }
+
+            case 'list_integrations': {
+              const { data: integrations } = await supabase
+                .from('clipad_integrations')
+                .select('id, provider, status, external_account_name, last_synced_at, sync_frequency, sync_phase, created_at')
+                .order('created_at', { ascending: false });
+
+              const sanitizedIntegrations = (integrations || []).map((item: any) => ({
+                id: item.id,
+                provider: item.provider,
+                status: item.status,
+                account: item.external_account_name,
+                last_synced_at: item.last_synced_at,
+                sync_frequency: item.sync_frequency,
+                sync_phase: item.sync_phase,
+              }));
+
+              return new Response(
+                JSON.stringify({
+                  jsonrpc: '2.0',
+                  id: rpcId,
+                  result: {
+                    content: [
+                      {
+                        type: 'text',
+                        text: JSON.stringify({ data: sanitizedIntegrations, meta: { count: sanitizedIntegrations.length } }, null, 2),
+                      },
+                    ],
                   },
                 }),
                 { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
