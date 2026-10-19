@@ -3,7 +3,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-request-id, x-test-suite-key',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-request-id, x-test-suite-key, mcp-session-id',
   'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE, OPTIONS',
 };
 
@@ -371,6 +371,258 @@ async function dispatchWebhookEvent(
   }
 }
 
+// ══════════════════════════════════════════════════════════════
+// REMOTE MODEL CONTEXT PROTOCOL (MCP) TOOL SCHEMAS
+// ══════════════════════════════════════════════════════════════
+const REMOTE_MCP_TOOLS = [
+  {
+    name: 'search_organizational_memory',
+    description: 'Execute semantic and grounded search across authorized organizational memories, documents, and technical notes with confidence scores and provenance.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        query: {
+          type: 'string',
+          description: 'The search query or technical concept to retrieve from organizational memory.',
+        },
+        limit: {
+          type: 'number',
+          description: 'Maximum number of memories to return (1-50, default 10).',
+        },
+        offset: {
+          type: 'number',
+          description: 'Number of results to skip for pagination (default 0).',
+        },
+      },
+      required: ['query'],
+    },
+  },
+  {
+    name: 'query_organizational_context',
+    description: 'Retrieve structured context session records and chronologically bound captures by session ID or search keywords.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        context_session_id: {
+          type: 'string',
+          description: 'Specific UUID of an existing context session.',
+        },
+        query: {
+          type: 'string',
+          description: 'Optional query keywords to match against context sessions.',
+        },
+        limit: {
+          type: 'number',
+          description: 'Maximum number of items to return (1-50, default 10).',
+        },
+      },
+    },
+  },
+  {
+    name: 'get_memory_by_id',
+    description: 'Retrieve the complete content, importance score, memory tier, and metadata for a specific organizational memory by its UUID.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        memory_id: {
+          type: 'string',
+          description: 'The UUID of the memory record to retrieve.',
+        },
+      },
+      required: ['memory_id'],
+    },
+  },
+  {
+    name: 'list_organizational_memories',
+    description: 'List paginated organizational memories with optional filtering by status (ACTIVE/ARCHIVED).',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        limit: {
+          type: 'number',
+          description: 'Maximum number of memories to return (1-50, default 10).',
+        },
+        offset: {
+          type: 'number',
+          description: 'Pagination offset (default 0).',
+        },
+        status: {
+          type: 'string',
+          description: 'Optional memory status filter (e.g. "ACTIVE").',
+        },
+      },
+    },
+  },
+  {
+    name: 'get_entity_by_id',
+    description: 'Retrieve a knowledge graph entity node, entity type, attributes, and relationships array by entity UUID.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        entity_id: {
+          type: 'string',
+          description: 'The UUID of the entity node.',
+        },
+      },
+      required: ['entity_id'],
+    },
+  },
+  {
+    name: 'list_captures',
+    description: 'List authorized organizational captures, source types (audio, video, text notes), and processing states.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        limit: {
+          type: 'number',
+          description: 'Maximum number of captures to return (1-50, default 10).',
+        },
+        offset: {
+          type: 'number',
+          description: 'Pagination offset (default 0).',
+        },
+        source_type: {
+          type: 'string',
+          description: 'Filter by source type (e.g. "text_note", "meeting_recording", "slack_message").',
+        },
+      },
+    },
+  },
+  {
+    name: 'get_capture_by_id',
+    description: 'Retrieve a specific capture record, transcript or note content, and queue processing status by capture UUID.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        capture_id: {
+          type: 'string',
+          description: 'The UUID of the capture.',
+        },
+      },
+      required: ['capture_id'],
+    },
+  },
+  {
+    name: 'list_smart_moments',
+    description: 'List extracted smart moments, key decisions, action items, and topic highlights with source timecodes.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        limit: {
+          type: 'number',
+          description: 'Maximum number of moments to return (1-50, default 10).',
+        },
+        offset: {
+          type: 'number',
+          description: 'Pagination offset (default 0).',
+        },
+        moment_type: {
+          type: 'string',
+          description: 'Optional moment type filter (e.g. "DECISION", "ACTION_ITEM", "KEY_POINT").',
+        },
+      },
+    },
+  },
+  {
+    name: 'get_source_provenance',
+    description: 'Retrieve full source provenance, timestamps, original creator metadata, and media references for an organizational item.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        source_id: {
+          type: 'string',
+          description: 'The UUID of the source item (capture, meeting, or note).',
+        },
+      },
+      required: ['source_id'],
+    },
+  },
+  {
+    name: 'create_capture',
+    description: 'Ingest raw external content, notes, or ideas into the organization capture inbox with asynchronous queue scheduling.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        title: {
+          type: 'string',
+          description: 'Optional headline or title for the captured note or resource.',
+        },
+        content: {
+          type: 'string',
+          description: 'The raw text content, note, transcript snippet, or meeting summary.',
+        },
+        source_type: {
+          type: 'string',
+          description: 'Type of origin source (e.g., "text_note", "slack_message", "cli_capture", "browser_clipper"). Default: "text_note".',
+        },
+        capture_type: {
+          type: 'string',
+          description: 'Category classification (e.g., "NOTE", "AUDIO", "MEETING", "DOCUMENT"). Default: "NOTE".',
+        },
+        context_session_id: {
+          type: 'string',
+          description: 'Optional UUID of an existing context session in the organization.',
+        },
+        metadata: {
+          type: 'object',
+          description: 'Optional JSON metadata to attach to the capture.',
+        },
+        idempotency_key: {
+          type: 'string',
+          description: 'Optional unique client request key to guarantee exactly-once ingestion on retries.',
+        },
+      },
+      required: ['content'],
+    },
+  },
+  {
+    name: 'create_organizational_memory',
+    description: 'Synthesize verified, durable organizational memory (Fact, Decision, Preference, Pattern) with explicit importance, confidence score, and provenance.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        title: {
+          type: 'string',
+          description: 'Concise summary or subject title of the organizational memory.',
+        },
+        content: {
+          type: 'string',
+          description: 'Comprehensive, verified knowledge statement or architectural decision.',
+        },
+        memory_type: {
+          type: 'string',
+          description: 'Classification: "FACT", "DECISION", "PREFERENCE", "PATTERN", "LESSON_LEARNED". Default: "FACT".',
+        },
+        memory_tier: {
+          type: 'string',
+          description: 'Scope tier: "organizational", "team", "personal". Default: "organizational".',
+        },
+        importance: {
+          type: 'number',
+          description: 'Priority score between 0.0 and 1.0 (default 0.5).',
+        },
+        confidence_score: {
+          type: 'number',
+          description: 'Certainty rating between 0.0 and 1.0 (default 1.0).',
+        },
+        source_id: {
+          type: 'string',
+          description: 'Optional UUID of a verified source (capture or video) in the organization.',
+        },
+        source_type: {
+          type: 'string',
+          description: 'Identifier for source medium (e.g., "manual_entry", "capture_distillation", "design_review").',
+        },
+        idempotency_key: {
+          type: 'string',
+          description: 'Optional unique client request key to guarantee exactly-once creation on retries.',
+        },
+      },
+      required: ['title', 'content'],
+    },
+  },
+];
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
@@ -422,6 +674,1022 @@ serve(async (req) => {
         uptime_check: 'ok',
       },
       { request_id: requestId }
+    );
+  }
+
+  // ══════════════════════════════════════════════════════════════
+  // MODEL CONTEXT PROTOCOL (MCP) REMOTE TRANSPORT (STREAMABLE HTTP & SSE)
+  // ══════════════════════════════════════════════════════════════
+  if (subpath === '/mcp' || subpath === '/api/v1/mcp' || subpath === '/sse' || subpath === '/api/v1/sse') {
+    // SSE Stream probe for SSE clients
+    if (req.method === 'GET') {
+      const sessionId = `mcp_sess_${crypto.randomUUID().replace(/-/g, '')}`;
+      const stream = new ReadableStream({
+        start(controller) {
+          const enc = new TextEncoder();
+          const endpointEvent = `event: endpoint\ndata: /functions/v1/connect/mcp?session_id=${sessionId}\n\n`;
+          controller.enqueue(enc.encode(endpointEvent));
+        },
+      });
+
+      return new Response(stream, {
+        status: 200,
+        headers: {
+          ...corsHeaders,
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache, no-transform',
+          'Connection': 'keep-alive',
+          'mcp-session-id': sessionId,
+        },
+      });
+    }
+
+    if (req.method === 'POST') {
+      const authHeader = req.headers.get('Authorization') || '';
+      let callerTokenRecord: any = null;
+      let authenticatedCompanyId: string | null = null;
+      let authenticatedUserId: string | null = null;
+      let callerScopes: string[] = [];
+
+      // Validate bearer token if present
+      if (authHeader.startsWith('Bearer ')) {
+        const rawTok = authHeader.replace(/^Bearer\s+/i, '').trim();
+        if (rawTok) {
+          const { data: userAuth, error: uErr } = await supabase.auth.getUser(rawTok);
+          if (!uErr && userAuth?.user) {
+            authenticatedUserId = userAuth.user.id;
+            const { data: prof } = await supabase
+              .from('profiles')
+              .select('company_id')
+              .eq('id', authenticatedUserId)
+              .single();
+            authenticatedCompanyId = prof?.company_id || userAuth.user.user_metadata?.company_id || null;
+            callerScopes = ['admin', 'search:read', 'context:read', 'memory:read', 'entities:read', 'captures:read', 'moments:read', 'sources:read', 'captures:write', 'memory:write'];
+          } else {
+            const h = await sha256Hash(rawTok);
+            const { data: tokRow } = await supabase
+              .from('clipad_v3_connect_tokens')
+              .select('id, user_id, company_id, scopes, expires_at, revoked_at, app:app_id ( id, is_active )')
+              .eq('token_hash', h)
+              .single();
+            if (tokRow && !tokRow.revoked_at && (!tokRow.expires_at || new Date(tokRow.expires_at) >= new Date())) {
+              const appInfo = Array.isArray(tokRow.app) ? tokRow.app[0] : tokRow.app;
+              if (!appInfo || appInfo.is_active !== false) {
+                callerTokenRecord = tokRow;
+                authenticatedCompanyId = tokRow.company_id;
+                authenticatedUserId = tokRow.user_id;
+                callerScopes = Array.isArray(tokRow.scopes) ? tokRow.scopes : [];
+              }
+            }
+          }
+        }
+      }
+
+      const body = await req.json().catch(() => null);
+      if (!body || typeof body !== 'object') {
+        return new Response(
+          JSON.stringify({
+            jsonrpc: '2.0',
+            id: null,
+            error: { code: -32700, message: 'Parse error: Invalid JSON was received by the server.' },
+          }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      const rpcId = body.id !== undefined ? body.id : null;
+      const rpcMethod = body.method;
+
+      if (typeof rpcMethod !== 'string') {
+        return new Response(
+          JSON.stringify({
+            jsonrpc: '2.0',
+            id: rpcId,
+            error: { code: -32600, message: 'Invalid Request: method string is required.' },
+          }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // 1. Initialize
+      if (rpcMethod === 'initialize') {
+        const clientProto = body.params?.protocolVersion || '2024-11-05';
+        return new Response(
+          JSON.stringify({
+            jsonrpc: '2.0',
+            id: rpcId,
+            result: {
+              protocolVersion: '2024-11-05',
+              capabilities: {
+                tools: {
+                  listChanged: false,
+                },
+              },
+              serverInfo: {
+                name: 'weftro-connect-gateway',
+                version: '1.0.0',
+              },
+            },
+          }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // 2. Initialized Notification
+      if (rpcMethod === 'notifications/initialized') {
+        return new Response(null, { status: 204, headers: corsHeaders });
+      }
+
+      // 3. Ping
+      if (rpcMethod === 'ping') {
+        return new Response(
+          JSON.stringify({
+            jsonrpc: '2.0',
+            id: rpcId,
+            result: {},
+          }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // 4. Tools Listing
+      if (rpcMethod === 'tools/list') {
+        return new Response(
+          JSON.stringify({
+            jsonrpc: '2.0',
+            id: rpcId,
+            result: {
+              tools: REMOTE_MCP_TOOLS,
+            },
+          }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // 5. Tool Invocation
+      if (rpcMethod === 'tools/call') {
+        // Enforce Authentication
+        if (!authenticatedCompanyId) {
+          return new Response(
+            JSON.stringify({
+              jsonrpc: '2.0',
+              id: rpcId,
+              error: {
+                code: -32600,
+                message: 'Authentication required: WEFTRO_TOKEN or valid Bearer token is missing or invalid.',
+              },
+            }),
+            { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        const toolName = body.params?.name;
+        const toolArgs = body.params?.arguments || {};
+
+        const toolScopeCheck = (reqScope: string) => {
+          if (callerScopes.includes('admin')) return true;
+          if (callerScopes.includes(reqScope)) return true;
+          if (reqScope === 'search:read' && callerScopes.includes('memory:read')) return true;
+          return false;
+        };
+
+        // Tool execution dispatcher
+        try {
+          switch (toolName) {
+            case 'search_organizational_memory': {
+              if (!toolScopeCheck(SCOPES.SEARCH_READ)) {
+                return new Response(
+                  JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: rpcId,
+                    error: { code: -32600, message: 'Weftro Authorization Denied (FORBIDDEN): Insufficient scope: search:read required.' },
+                  }),
+                  { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                );
+              }
+              const query = typeof toolArgs.query === 'string' ? toolArgs.query.trim() : '';
+              if (!query) {
+                return new Response(
+                  JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: rpcId,
+                    error: { code: -32602, message: 'Invalid tool arguments: query must be a non-empty string.' },
+                  }),
+                  { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                );
+              }
+              const limit = Math.min(Math.max(1, Number(toolArgs.limit) || 10), 50);
+              const offset = Math.max(0, Number(toolArgs.offset) || 0);
+
+              const { data: mems, error: memErr } = await supabase
+                .from('clipad_v3_memories')
+                .select('id, title, content, summary, memory_type, memory_tier, confidence_score, importance, source_type, source_id, created_at, updated_at')
+                .eq('company_id', authenticatedCompanyId)
+                .eq('status', 'ACTIVE')
+                .or(`title.ilike.%${query}%,content.ilike.%${query}%,summary.ilike.%${query}%`)
+                .order('confidence_score', { ascending: false })
+                .range(offset, offset + limit - 1);
+
+              if (memErr) throw memErr;
+
+              const results = (mems || []).map((m: any) => ({
+                id: m.id,
+                title: m.title,
+                content: m.content,
+                summary: m.summary,
+                memory_type: m.memory_type,
+                memory_tier: m.memory_tier,
+                confidence: m.confidence_score,
+                provenance: {
+                  source_type: m.source_type,
+                  source_id: m.source_id,
+                  created_at: m.created_at,
+                  last_updated_at: m.updated_at,
+                },
+              }));
+
+              return new Response(
+                JSON.stringify({
+                  jsonrpc: '2.0',
+                  id: rpcId,
+                  result: {
+                    content: [
+                      {
+                        type: 'text',
+                        text: JSON.stringify({ data: results, meta: { query, count: results.length, limit, offset } }, null, 2),
+                      },
+                    ],
+                  },
+                }),
+                { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+              );
+            }
+
+            case 'query_organizational_context': {
+              if (!toolScopeCheck(SCOPES.CONTEXT_READ)) {
+                return new Response(
+                  JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: rpcId,
+                    error: { code: -32600, message: 'Weftro Authorization Denied (FORBIDDEN): Insufficient scope: context:read required.' },
+                  }),
+                  { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                );
+              }
+
+              let sessQuery = supabase
+                .from('clipad_v3_context_sessions')
+                .select('*')
+                .eq('company_id', authenticatedCompanyId);
+
+              if (toolArgs.context_session_id) {
+                sessQuery = sessQuery.eq('id', toolArgs.context_session_id);
+              } else if (toolArgs.query) {
+                sessQuery = sessQuery.or(`title.ilike.%${toolArgs.query}%,description.ilike.%${toolArgs.query}%`);
+              }
+
+              const { data: session } = await sessQuery.limit(1).maybeSingle();
+              if (!session) {
+                return new Response(
+                  JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: rpcId,
+                    error: { code: -32600, message: 'Weftro Resource Not Found (RESOURCE_NOT_FOUND): Context session not found or inaccessible.' },
+                  }),
+                  { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                );
+              }
+
+              const { data: caps } = await supabase
+                .from('clipad_v3_captures')
+                .select('id, capture_type, source_type, title, content, status, captured_at, provenance')
+                .eq('context_session_id', session.id)
+                .eq('company_id', authenticatedCompanyId)
+                .order('captured_at', { ascending: true })
+                .limit(Math.min(Math.max(1, Number(toolArgs.limit) || 10), 50));
+
+              return new Response(
+                JSON.stringify({
+                  jsonrpc: '2.0',
+                  id: rpcId,
+                  result: {
+                    content: [
+                      {
+                        type: 'text',
+                        text: JSON.stringify({ data: { session, captures: caps || [] } }, null, 2),
+                      },
+                    ],
+                  },
+                }),
+                { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+              );
+            }
+
+            case 'get_memory_by_id': {
+              if (!toolScopeCheck(SCOPES.MEMORY_READ)) {
+                return new Response(
+                  JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: rpcId,
+                    error: { code: -32600, message: 'Weftro Authorization Denied (FORBIDDEN): Insufficient scope: memory:read required.' },
+                  }),
+                  { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                );
+              }
+              const memId = toolArgs.memory_id;
+              if (!memId || typeof memId !== 'string') {
+                return new Response(
+                  JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: rpcId,
+                    error: { code: -32602, message: 'Invalid tool arguments: memory_id is required.' },
+                  }),
+                  { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                );
+              }
+
+              const { data: memRecord, error: memErr } = await supabase
+                .from('clipad_v3_memories')
+                .select('*')
+                .eq('id', memId)
+                .eq('company_id', authenticatedCompanyId)
+                .single();
+
+              if (memErr || !memRecord) {
+                return new Response(
+                  JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: rpcId,
+                    error: { code: -32600, message: 'Weftro Resource Not Found (RESOURCE_NOT_FOUND): Memory record not found or inaccessible.' },
+                  }),
+                  { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                );
+              }
+
+              return new Response(
+                JSON.stringify({
+                  jsonrpc: '2.0',
+                  id: rpcId,
+                  result: {
+                    content: [
+                      {
+                        type: 'text',
+                        text: JSON.stringify({ data: memRecord }, null, 2),
+                      },
+                    ],
+                  },
+                }),
+                { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+              );
+            }
+
+            case 'list_organizational_memories': {
+              if (!toolScopeCheck(SCOPES.MEMORY_READ)) {
+                return new Response(
+                  JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: rpcId,
+                    error: { code: -32600, message: 'Weftro Authorization Denied (FORBIDDEN): Insufficient scope: memory:read required.' },
+                  }),
+                  { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                );
+              }
+              const limit = Math.min(Math.max(1, Number(toolArgs.limit) || 10), 50);
+              const offset = Math.max(0, Number(toolArgs.offset) || 0);
+
+              let q = supabase
+                .from('clipad_v3_memories')
+                .select('id, title, content, summary, memory_type, memory_tier, status, confidence_score, importance, source_type, source_id, created_at, updated_at', { count: 'exact' })
+                .eq('company_id', authenticatedCompanyId)
+                .order('created_at', { ascending: false });
+
+              if (toolArgs.status) {
+                q = q.eq('status', toolArgs.status);
+              }
+
+              const { data: mems, count, error: listErr } = await q.range(offset, offset + limit - 1);
+              if (listErr) throw listErr;
+
+              return new Response(
+                JSON.stringify({
+                  jsonrpc: '2.0',
+                  id: rpcId,
+                  result: {
+                    content: [
+                      {
+                        type: 'text',
+                        text: JSON.stringify({ data: mems || [], meta: { total: count, limit, offset } }, null, 2),
+                      },
+                    ],
+                  },
+                }),
+                { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+              );
+            }
+
+            case 'get_entity_by_id': {
+              if (!toolScopeCheck(SCOPES.ENTITIES_READ)) {
+                return new Response(
+                  JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: rpcId,
+                    error: { code: -32600, message: 'Weftro Authorization Denied (FORBIDDEN): Insufficient scope: entities:read required.' },
+                  }),
+                  { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                );
+              }
+              const entId = toolArgs.entity_id;
+              if (!entId) {
+                return new Response(
+                  JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: rpcId,
+                    error: { code: -32602, message: 'Invalid tool arguments: entity_id is required.' },
+                  }),
+                  { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                );
+              }
+
+              const { data: entRecord, error: entErr } = await supabase
+                .from('clipad_v3_entities')
+                .select('*')
+                .eq('id', entId)
+                .eq('company_id', authenticatedCompanyId)
+                .single();
+
+              if (entErr || !entRecord) {
+                return new Response(
+                  JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: rpcId,
+                    error: { code: -32600, message: 'Weftro Resource Not Found (RESOURCE_NOT_FOUND): Entity node not found or inaccessible.' },
+                  }),
+                  { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                );
+              }
+
+              const { data: relations } = await supabase
+                .from('clipad_v3_entity_relationships')
+                .select('*')
+                .eq('company_id', authenticatedCompanyId)
+                .or(`source_entity_id.eq.${entId},target_entity_id.eq.${entId}`)
+                .limit(20);
+
+              return new Response(
+                JSON.stringify({
+                  jsonrpc: '2.0',
+                  id: rpcId,
+                  result: {
+                    content: [
+                      {
+                        type: 'text',
+                        text: JSON.stringify({ data: { ...entRecord, relationships: relations || [] } }, null, 2),
+                      },
+                    ],
+                  },
+                }),
+                { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+              );
+            }
+
+            case 'list_captures': {
+              if (!toolScopeCheck(SCOPES.CAPTURES_READ)) {
+                return new Response(
+                  JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: rpcId,
+                    error: { code: -32600, message: 'Weftro Authorization Denied (FORBIDDEN): Insufficient scope: captures:read required.' },
+                  }),
+                  { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                );
+              }
+              const limit = Math.min(Math.max(1, Number(toolArgs.limit) || 10), 50);
+              const offset = Math.max(0, Number(toolArgs.offset) || 0);
+
+              let q = supabase
+                .from('clipad_v3_captures')
+                .select('*', { count: 'exact' })
+                .eq('company_id', authenticatedCompanyId)
+                .order('created_at', { ascending: false });
+
+              if (toolArgs.source_type) {
+                q = q.eq('source_type', toolArgs.source_type);
+              }
+
+              const { data: captures, count, error: capErr } = await q.range(offset, offset + limit - 1);
+              if (capErr) throw capErr;
+
+              return new Response(
+                JSON.stringify({
+                  jsonrpc: '2.0',
+                  id: rpcId,
+                  result: {
+                    content: [
+                      {
+                        type: 'text',
+                        text: JSON.stringify({ data: captures || [], meta: { total: count, limit, offset } }, null, 2),
+                      },
+                    ],
+                  },
+                }),
+                { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+              );
+            }
+
+            case 'get_capture_by_id': {
+              if (!toolScopeCheck(SCOPES.CAPTURES_READ)) {
+                return new Response(
+                  JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: rpcId,
+                    error: { code: -32600, message: 'Weftro Authorization Denied (FORBIDDEN): Insufficient scope: captures:read required.' },
+                  }),
+                  { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                );
+              }
+              const capId = toolArgs.capture_id;
+              if (!capId) {
+                return new Response(
+                  JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: rpcId,
+                    error: { code: -32602, message: 'Invalid tool arguments: capture_id is required.' },
+                  }),
+                  { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                );
+              }
+
+              const { data: capture, error: capErr } = await supabase
+                .from('clipad_v3_captures')
+                .select('*')
+                .eq('id', capId)
+                .eq('company_id', authenticatedCompanyId)
+                .single();
+
+              if (capErr || !capture) {
+                return new Response(
+                  JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: rpcId,
+                    error: { code: -32600, message: 'Weftro Resource Not Found (RESOURCE_NOT_FOUND): Capture not found or inaccessible.' },
+                  }),
+                  { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                );
+              }
+
+              return new Response(
+                JSON.stringify({
+                  jsonrpc: '2.0',
+                  id: rpcId,
+                  result: {
+                    content: [
+                      {
+                        type: 'text',
+                        text: JSON.stringify({ data: capture }, null, 2),
+                      },
+                    ],
+                  },
+                }),
+                { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+              );
+            }
+
+            case 'list_smart_moments': {
+              if (!toolScopeCheck(SCOPES.MOMENTS_READ)) {
+                return new Response(
+                  JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: rpcId,
+                    error: { code: -32600, message: 'Weftro Authorization Denied (FORBIDDEN): Insufficient scope: moments:read required.' },
+                  }),
+                  { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                );
+              }
+              const limit = Math.min(Math.max(1, Number(toolArgs.limit) || 10), 50);
+              const offset = Math.max(0, Number(toolArgs.offset) || 0);
+
+              let q = supabase
+                .from('clipad_v3_smart_moments')
+                .select('*', { count: 'exact' })
+                .eq('company_id', authenticatedCompanyId)
+                .order('created_at', { ascending: false });
+
+              if (toolArgs.moment_type) {
+                q = q.eq('moment_type', toolArgs.moment_type);
+              }
+
+              const { data: moments, count, error: momErr } = await q.range(offset, offset + limit - 1);
+              if (momErr) throw momErr;
+
+              return new Response(
+                JSON.stringify({
+                  jsonrpc: '2.0',
+                  id: rpcId,
+                  result: {
+                    content: [
+                      {
+                        type: 'text',
+                        text: JSON.stringify({ data: moments || [], meta: { total: count, limit, offset } }, null, 2),
+                      },
+                    ],
+                  },
+                }),
+                { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+              );
+            }
+
+            case 'get_source_provenance': {
+              if (!toolScopeCheck(SCOPES.SOURCES_READ)) {
+                return new Response(
+                  JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: rpcId,
+                    error: { code: -32600, message: 'Weftro Authorization Denied (FORBIDDEN): Insufficient scope: sources:read required.' },
+                  }),
+                  { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                );
+              }
+              const srcId = toolArgs.source_id;
+              if (!srcId) {
+                return new Response(
+                  JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: rpcId,
+                    error: { code: -32602, message: 'Invalid tool arguments: source_id is required.' },
+                  }),
+                  { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                );
+              }
+
+              const { data: capture } = await supabase
+                .from('clipad_v3_captures')
+                .select('id, source_type, capture_type, title, status, created_at, provenance')
+                .eq('id', srcId)
+                .eq('company_id', authenticatedCompanyId)
+                .single();
+
+              if (capture) {
+                return new Response(
+                  JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: rpcId,
+                    result: {
+                      content: [
+                        {
+                          type: 'text',
+                          text: JSON.stringify({ data: { source_id: srcId, type: 'capture', details: capture } }, null, 2),
+                        },
+                      ],
+                    },
+                  }),
+                  { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                );
+              }
+
+              const { data: video } = await supabase
+                .from('clipad_videos')
+                .select('id, title, video_url, duration_seconds, created_at')
+                .eq('id', srcId)
+                .eq('company_id', authenticatedCompanyId)
+                .single();
+
+              if (video) {
+                return new Response(
+                  JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: rpcId,
+                    result: {
+                      content: [
+                        {
+                          type: 'text',
+                          text: JSON.stringify({ data: { source_id: srcId, type: 'meeting_video', details: video } }, null, 2),
+                        },
+                      ],
+                    },
+                  }),
+                  { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                );
+              }
+
+              return new Response(
+                JSON.stringify({
+                  jsonrpc: '2.0',
+                  id: rpcId,
+                  error: { code: -32600, message: 'Weftro Resource Not Found (RESOURCE_NOT_FOUND): Source not found or inaccessible.' },
+                }),
+                { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+              );
+            }
+
+            case 'create_capture': {
+              if (!toolScopeCheck(SCOPES.CAPTURES_WRITE)) {
+                return new Response(
+                  JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: rpcId,
+                    error: { code: -32600, message: 'Weftro Authorization Denied (FORBIDDEN): Insufficient scope: captures:write required.' },
+                  }),
+                  { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                );
+              }
+
+              const title = typeof toolArgs.title === 'string' ? toolArgs.title.trim() : '';
+              const content = typeof toolArgs.content === 'string' ? toolArgs.content.trim() : '';
+              if (!content && !title) {
+                return new Response(
+                  JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: rpcId,
+                    error: { code: -32602, message: "Invalid tool arguments: At least 'title' or 'content' must be provided." },
+                  }),
+                  { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                );
+              }
+
+              const idempotencyKey = toolArgs.idempotency_key || null;
+              if (idempotencyKey) {
+                const claim = await claimIdempotencyKey(supabase, authenticatedCompanyId, idempotencyKey, '/mcp/create_capture', toolArgs);
+                if (claim.action === 'conflict') {
+                  return new Response(
+                    JSON.stringify({
+                      jsonrpc: '2.0',
+                      id: rpcId,
+                      error: { code: -32600, message: 'IDEMPOTENCY_CONFLICT: Conflicting payload for idempotency key.' },
+                    }),
+                    { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                  );
+                }
+                if (claim.action === 'replay' && claim.responseData) {
+                  return new Response(
+                    JSON.stringify({
+                      jsonrpc: '2.0',
+                      id: rpcId,
+                      result: {
+                        content: [{ type: 'text', text: JSON.stringify({ data: claim.responseData, meta: { idempotent_replay: true } }, null, 2) }],
+                      },
+                    }),
+                    { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                  );
+                }
+              }
+
+              const sourceType = typeof toolArgs.source_type === 'string' && toolArgs.source_type.trim() ? toolArgs.source_type.trim() : 'text_note';
+              const captureType = typeof toolArgs.capture_type === 'string' && toolArgs.capture_type.trim() ? toolArgs.capture_type.trim().toUpperCase() : 'NOTE';
+              const contextSessionId = toolArgs.context_session_id || null;
+
+              if (contextSessionId) {
+                const { data: sRecord } = await supabase
+                  .from('clipad_v3_context_sessions')
+                  .select('id')
+                  .eq('id', contextSessionId)
+                  .eq('company_id', authenticatedCompanyId)
+                  .maybeSingle();
+                if (!sRecord) {
+                  return new Response(
+                    JSON.stringify({
+                      jsonrpc: '2.0',
+                      id: rpcId,
+                      error: { code: -32600, message: `RESOURCE_NOT_FOUND: Linked context_session_id '${contextSessionId}' was not found or inaccessible.` },
+                    }),
+                    { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                  );
+                }
+              }
+
+              const capPayload = {
+                company_id: authenticatedCompanyId,
+                user_id: authenticatedUserId,
+                context_session_id: contextSessionId,
+                source_type: sourceType,
+                capture_type: captureType,
+                title: title || 'Untitled Remote MCP Ingestion',
+                content,
+                content_type: 'text/plain',
+                status: 'QUEUED',
+                visibility: 'ORGANIZATIONAL',
+                metadata: {
+                  ...(toolArgs.metadata || {}),
+                  ingested_via: 'remote_mcp',
+                  app_id: callerTokenRecord?.app?.id || null,
+                },
+                provenance: {
+                  captured_by: authenticatedUserId,
+                  source_type: sourceType,
+                  capture_method: 'remote_mcp',
+                  created_at: new Date().toISOString(),
+                },
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+              };
+
+              const { data: createdCap, error: capErr } = await supabase
+                .from('clipad_v3_captures')
+                .insert([capPayload])
+                .select('*')
+                .single();
+
+              if (capErr || !createdCap) {
+                throw new Error(capErr?.message || 'Failed to persist capture.');
+              }
+
+              const { data: qJob } = await supabase
+                .from('clipad_v3_capture_queue')
+                .insert([{
+                  company_id: authenticatedCompanyId,
+                  user_id: authenticatedUserId,
+                  capture_id: createdCap.id,
+                  status: 'queued',
+                  attempt_count: 0,
+                  max_attempts: 3,
+                  scheduled_at: new Date().toISOString(),
+                }])
+                .select('id, status, scheduled_at, attempt_count, max_attempts')
+                .maybeSingle();
+
+              const respData = { ...createdCap, queue_job: qJob || null };
+
+              if (idempotencyKey) {
+                await resolveIdempotencyKey(supabase, authenticatedCompanyId, idempotencyKey, 201, respData);
+              }
+
+              return new Response(
+                JSON.stringify({
+                  jsonrpc: '2.0',
+                  id: rpcId,
+                  result: {
+                    content: [{ type: 'text', text: JSON.stringify({ data: respData }, null, 2) }],
+                  },
+                }),
+                { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+              );
+            }
+
+            case 'create_organizational_memory': {
+              if (!toolScopeCheck(SCOPES.MEMORY_WRITE)) {
+                return new Response(
+                  JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: rpcId,
+                    error: { code: -32600, message: 'Weftro Authorization Denied (FORBIDDEN): Insufficient scope: memory:write required.' },
+                  }),
+                  { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                );
+              }
+
+              const title = typeof toolArgs.title === 'string' ? toolArgs.title.trim() : '';
+              const content = typeof toolArgs.content === 'string' ? toolArgs.content.trim() : '';
+              if (!title || !content) {
+                return new Response(
+                  JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: rpcId,
+                    error: { code: -32602, message: "Invalid tool arguments: 'title' and 'content' must be non-empty strings." },
+                  }),
+                  { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                );
+              }
+
+              const idempotencyKey = toolArgs.idempotency_key || null;
+              if (idempotencyKey) {
+                const claim = await claimIdempotencyKey(supabase, authenticatedCompanyId, idempotencyKey, '/mcp/create_memory', toolArgs);
+                if (claim.action === 'conflict') {
+                  return new Response(
+                    JSON.stringify({
+                      jsonrpc: '2.0',
+                      id: rpcId,
+                      error: { code: -32600, message: 'IDEMPOTENCY_CONFLICT: Conflicting payload for idempotency key.' },
+                    }),
+                    { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                  );
+                }
+                if (claim.action === 'replay' && claim.responseData) {
+                  return new Response(
+                    JSON.stringify({
+                      jsonrpc: '2.0',
+                      id: rpcId,
+                      result: {
+                        content: [{ type: 'text', text: JSON.stringify({ data: claim.responseData, meta: { idempotent_replay: true } }, null, 2) }],
+                      },
+                    }),
+                    { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                  );
+                }
+              }
+
+              const sourceId = toolArgs.source_id ? String(toolArgs.source_id) : null;
+              if (sourceId) {
+                const { data: capSrc } = await supabase
+                  .from('clipad_v3_captures')
+                  .select('id')
+                  .eq('id', sourceId)
+                  .eq('company_id', authenticatedCompanyId)
+                  .maybeSingle();
+                const { data: vidSrc } = !capSrc
+                  ? await supabase.from('clipad_videos').select('id').eq('id', sourceId).eq('company_id', authenticatedCompanyId).maybeSingle()
+                  : { data: null };
+
+                if (!capSrc && !vidSrc) {
+                  return new Response(
+                    JSON.stringify({
+                      jsonrpc: '2.0',
+                      id: rpcId,
+                      error: { code: -32600, message: `RESOURCE_NOT_FOUND: Linked source_id '${sourceId}' was not found or belongs to another tenant organization.` },
+                    }),
+                    { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                  );
+                }
+              }
+
+              const memoryType = toolArgs.memory_type || 'FACT';
+              const memoryTier = toolArgs.memory_tier || 'organizational';
+              const confidenceScore = typeof toolArgs.confidence_score === 'number' ? Math.min(1.0, Math.max(0.0, toolArgs.confidence_score)) : 1.0;
+              const importance = typeof toolArgs.importance === 'number' ? Math.min(1.0, Math.max(0.0, toolArgs.importance)) : 0.5;
+              const sourceType = toolArgs.source_type || 'manual_entry';
+
+              const memPayload = {
+                company_id: authenticatedCompanyId,
+                user_id: authenticatedUserId,
+                title,
+                content,
+                summary: title,
+                memory_type: memoryType,
+                memory_tier: memoryTier,
+                status: 'ACTIVE',
+                is_active: true,
+                confidence_score: confidenceScore,
+                importance,
+                source_type: sourceType,
+                source_id: sourceId,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+              };
+
+              const { data: createdMem, error: memErr } = await supabase
+                .from('clipad_v3_memories')
+                .insert([memPayload])
+                .select('*')
+                .single();
+
+              if (memErr || !createdMem) {
+                throw new Error(memErr?.message || 'Failed to persist memory.');
+              }
+
+              if (idempotencyKey) {
+                await resolveIdempotencyKey(supabase, authenticatedCompanyId, idempotencyKey, 201, createdMem);
+              }
+
+              return new Response(
+                JSON.stringify({
+                  jsonrpc: '2.0',
+                  id: rpcId,
+                  result: {
+                    content: [{ type: 'text', text: JSON.stringify({ data: createdMem }, null, 2) }],
+                  },
+                }),
+                { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+              );
+            }
+
+            default:
+              return new Response(
+                JSON.stringify({
+                  jsonrpc: '2.0',
+                  id: rpcId,
+                  error: { code: -32601, message: `Method not found: Unknown tool '${toolName}'.` },
+                }),
+                { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+              );
+          }
+        } catch (toolEx: any) {
+          return new Response(
+            JSON.stringify({
+              jsonrpc: '2.0',
+              id: rpcId,
+              error: { code: -32603, message: `Internal MCP tool error: ${toolEx.message}` },
+            }),
+            { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+      }
+
+      // Any other unsupported method
+      return new Response(
+        JSON.stringify({
+          jsonrpc: '2.0',
+          id: rpcId,
+          error: { code: -32601, message: `Method not found: '${rpcMethod}' is not supported.` },
+        }),
+        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    return new Response(
+      JSON.stringify({
+        jsonrpc: '2.0',
+        id: null,
+        error: { code: -32600, message: 'Invalid Request: Method not allowed. Use GET (for SSE stream) or POST (for JSON-RPC).' },
+      }),
+      { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 
@@ -712,7 +1980,7 @@ serve(async (req) => {
         ],
         mcp: {
           server_package: '@weftro/mcp-server',
-          supported_transport: ['stdio'],
+          supported_transport: ['streamable-http', 'sse', 'stdio'],
           supported_tools: [
             'search_organizational_memory',
             'query_organizational_context',
