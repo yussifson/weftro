@@ -130,12 +130,15 @@ function invokeMcpTool(token, toolName, toolArgs) {
     proc.stdin.write(initReq);
     setTimeout(() => {
       proc.stdin.write(callReq);
-      proc.stdin.end();
-    }, 200);
+    }, 500);
+
+    setTimeout(() => {
+      try { proc.stdin.end(); } catch (_e) {}
+    }, 2500);
 
     setTimeout(() => {
       try { proc.kill(); } catch (_e) {}
-    }, 6000);
+    }, 10000);
   });
 }
 
