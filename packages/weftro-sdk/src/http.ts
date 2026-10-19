@@ -22,7 +22,7 @@ export class HttpClient {
     }
 
     this.apiKey = options.apiKey.trim();
-    this.baseUrl = (options.baseUrl || 'https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect').replace(/\/+$/, '');
+    this.baseUrl = (options.baseUrl || 'https://www.weftro.com').replace(/\/+$/, '');
     this.defaultTimeoutMs = options.timeoutMs ?? 30000;
     this.customFetch = options.fetch ?? globalThis.fetch;
     this.userAgent = options.userAgent ? `${options.userAgent} weftro-sdk/1.0.0` : 'weftro-sdk/1.0.0';

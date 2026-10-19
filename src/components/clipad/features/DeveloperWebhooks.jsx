@@ -32,9 +32,9 @@ const SUPPORTED_EVENTS = [
   { id: 'smart_moment.detected', name: 'Smart Moment Detected', desc: 'Emitted when key decisions or action items are extracted' },
 ];
 
-const BASE_URL = import.meta.env.VITE_SUPABASE_URL 
-  ? `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/connect`
-  : 'https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect';
+const BASE_URL = typeof window !== 'undefined' && window.location.origin.includes('weftro.com')
+  ? 'https://www.weftro.com'
+  : (import.meta.env.VITE_WEFTRO_GATEWAY_URL || 'https://www.weftro.com');
 
 export default function DeveloperWebhooks() {
   const { user } = useAuth();

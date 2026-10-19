@@ -56,6 +56,18 @@
       "destination": "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/:path*"
     },
     {
+      "source": "/functions/v1/:path*",
+      "destination": "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/:path*"
+    },
+    {
+      "source": "/oauth/init",
+      "destination": "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/oauth-init"
+    },
+    {
+      "source": "/oauth/callback",
+      "destination": "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/oauth-callback"
+    },
+    {
       "source": "/api/ai/:accountId/:model*",
       "destination": "https://api.cloudflare.com/client/v4/accounts/:accountId/ai/run/:model*"
     },

@@ -25,7 +25,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const DEFAULT_GATEWAY_URL = 'https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect';
+const DEFAULT_GATEWAY_URL = 'https://www.weftro.com';
 const GATEWAY_URL = (process.env.WEFTRO_API_URL || DEFAULT_GATEWAY_URL).replace(/\/+$/, '');
 const API_TOKEN = process.env.WEFTRO_TOKEN || process.env.WEFTRO_API_KEY || '';
 

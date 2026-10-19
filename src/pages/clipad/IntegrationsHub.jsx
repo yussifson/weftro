@@ -197,7 +197,10 @@ export default function IntegrationsHub() {
 
     const returnUrl = encodeURIComponent(window.location.href.split('?')[0]);
     const spaceParam = selectedScope === 'space' && selectedSpaceId ? `&space_id=${selectedSpaceId}` : '';
-    const oauthUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/oauth-init?provider=${integration.provider}&company_id=${companyId}&user_id=${user.id}&integration_id=${integration.id}&visibility=${selectedScope}${spaceParam}&return_url=${returnUrl}`;
+    const baseOAuthUrl = (typeof window !== 'undefined' && window.location.origin.includes('weftro.com'))
+      ? 'https://www.weftro.com/oauth/init'
+      : `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/oauth-init`;
+    const oauthUrl = `${baseOAuthUrl}?provider=${integration.provider}&company_id=${companyId}&user_id=${user.id}&integration_id=${integration.id}&visibility=${selectedScope}${spaceParam}&return_url=${returnUrl}`;
     window.location.href = oauthUrl;
   };
 
