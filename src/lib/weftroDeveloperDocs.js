@@ -4,7 +4,7 @@
 
 export const DEVELOPER_PLATFORM_KNOWLEDGE = {
   version: "v1",
-  gateway_url: "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect",
+  gateway_url: "https://www.weftro.com",
   supported_auth: [
     {
       type: "Bearer Connect Token",
@@ -37,14 +37,14 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
       path: "/api/v1/health",
       scope: "none",
       description: "Gateway health check probe.",
-      example: `curl -X GET "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/health"`
+      example: `curl -X GET "https://www.weftro.com/api/v1/health"`
     },
     {
       method: "GET",
       path: "/api/v1/capabilities",
       scope: "none",
       description: "Discover supported capabilities, active routes, and auth schemes.",
-      example: `curl -X GET "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/capabilities"`
+      example: `curl -X GET "https://www.weftro.com/api/v1/capabilities"`
     },
     {
       method: "POST",
@@ -52,7 +52,7 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
       scope: "search:read",
       description: "Grounded semantic search across organizational memory with confidence scores and provenance.",
       body: { query: "string (required)", limit: "number (1-50, default 10)", offset: "number (default 0)" },
-      example: `curl -X POST "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/search" \\
+      example: `curl -X POST "https://www.weftro.com/api/v1/search" \\
   -H "Authorization: Bearer cpd_..." \\
   -H "Content-Type: application/json" \\
   -d '{"query": "architectural roadmap", "limit": 10}'`
@@ -63,7 +63,7 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
       scope: "context:read",
       description: "Retrieve context session and chronologically bound captures.",
       body: { session_id: "string (required UUID)" },
-      example: `curl -X POST "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/context/query" \\
+      example: `curl -X POST "https://www.weftro.com/api/v1/context/query" \\
   -H "Authorization: Bearer cpd_..." \\
   -H "Content-Type: application/json" \\
   -d '{"session_id": "00000000-0000-0000-0000-000000000000"}'`
@@ -74,7 +74,7 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
       scope: "memory:read",
       description: "List organizational memories with pagination.",
       params: { limit: "1-100", offset: "number" },
-      example: `curl -X GET "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/memories?limit=20" \\
+      example: `curl -X GET "https://www.weftro.com/api/v1/memories?limit=20" \\
   -H "Authorization: Bearer cpd_..."`
     },
     {
@@ -83,7 +83,7 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
       scope: "memory:write",
       description: "Create verified organizational memory with provenance and idempotency.",
       body: { title: "string (required)", content: "string (required)", memory_type: "string", memory_tier: "string", importance: "number (0-1)", confidence_score: "number (0-1)", source_id: "uuid (optional)" },
-      example: `curl -X POST "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/memories" \\
+      example: `curl -X POST "https://www.weftro.com/api/v1/memories" \\
   -H "Authorization: Bearer cpd_..." \\
   -H "Idempotency-Key: idemp_123456" \\
   -H "Content-Type: application/json" \\
@@ -94,7 +94,7 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
       path: "/api/v1/memories/:id",
       scope: "memory:read",
       description: "Retrieve a specific organizational memory by ID.",
-      example: `curl -X GET "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/memories/<ID>" \\
+      example: `curl -X GET "https://www.weftro.com/api/v1/memories/<ID>" \\
   -H "Authorization: Bearer cpd_..."`
     },
     {
@@ -102,7 +102,7 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
       path: "/api/v1/entities/:id",
       scope: "entities:read",
       description: "Retrieve knowledge graph entity node and its cross-links.",
-      example: `curl -X GET "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/entities/<ID>" \\
+      example: `curl -X GET "https://www.weftro.com/api/v1/entities/<ID>" \\
   -H "Authorization: Bearer cpd_..."`
     },
     {
@@ -110,7 +110,7 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
       path: "/api/v1/captures",
       scope: "captures:read",
       description: "List captures for the authorized tenant.",
-      example: `curl -X GET "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/captures" \\
+      example: `curl -X GET "https://www.weftro.com/api/v1/captures" \\
   -H "Authorization: Bearer cpd_..."`
     },
     {
@@ -119,7 +119,7 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
       scope: "captures:write",
       description: "Ingest external content into capture pipeline with queue scheduling.",
       body: { content: "string (required)", title: "string (optional)", source_type: "string (optional)", capture_type: "string (optional)", context_session_id: "uuid (optional)" },
-      example: `curl -X POST "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/captures" \\
+      example: `curl -X POST "https://www.weftro.com/api/v1/captures" \\
   -H "Authorization: Bearer cpd_..." \\
   -H "Idempotency-Key: idemp_cap_123" \\
   -H "Content-Type: application/json" \\
@@ -130,7 +130,7 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
       path: "/api/v1/captures/:id",
       scope: "captures:read",
       description: "Retrieve specific capture transcript, source type, and queue state.",
-      example: `curl -X GET "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/captures/<ID>" \\
+      example: `curl -X GET "https://www.weftro.com/api/v1/captures/<ID>" \\
   -H "Authorization: Bearer cpd_..."`
     },
     {
@@ -138,7 +138,7 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
       path: "/api/v1/captures/:id/status",
       scope: "captures:read",
       description: "Get capture processing and background queue job status.",
-      example: `curl -X GET "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/captures/<ID>/status" \\
+      example: `curl -X GET "https://www.weftro.com/api/v1/captures/<ID>/status" \\
   -H "Authorization: Bearer cpd_..."`
     },
     {
@@ -146,7 +146,7 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
       path: "/api/v1/smart-moments",
       scope: "moments:read",
       description: "List extracted meeting and video smart moments.",
-      example: `curl -X GET "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/smart-moments" \\
+      example: `curl -X GET "https://www.weftro.com/api/v1/smart-moments" \\
   -H "Authorization: Bearer cpd_..."`
     },
     {
@@ -154,7 +154,7 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
       path: "/api/v1/sources/:id",
       scope: "sources:read",
       description: "Retrieve source metadata and provenance.",
-      example: `curl -X GET "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/sources/<ID>" \\
+      example: `curl -X GET "https://www.weftro.com/api/v1/sources/<ID>" \\
   -H "Authorization: Bearer cpd_..."`
     },
     {
@@ -162,7 +162,7 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
       path: "/api/v1/apps",
       scope: "apps:manage",
       description: "List registered developer applications for the authorized organization.",
-      example: `curl -X GET "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/apps" \\
+      example: `curl -X GET "https://www.weftro.com/api/v1/apps" \\
   -H "Authorization: Bearer <JWT_OR_APPS_MANAGE_TOKEN>"`
     },
     {
@@ -177,7 +177,7 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
       path: "/api/v1/apps/:id",
       scope: "apps:manage",
       description: "Retrieve developer application details.",
-      example: `curl -X GET "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/apps/<ID>" \\
+      example: `curl -X GET "https://www.weftro.com/api/v1/apps/<ID>" \\
   -H "Authorization: Bearer <JWT_OR_APPS_MANAGE_TOKEN>"`
     },
     {
@@ -192,7 +192,7 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
       path: "/api/v1/apps/:id",
       scope: "apps:manage",
       description: "Delete developer application and revoke its client credentials.",
-      example: `curl -X DELETE "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/apps/<ID>" \\
+      example: `curl -X DELETE "https://www.weftro.com/api/v1/apps/<ID>" \\
   -H "Authorization: Bearer <JWT_OR_APPS_MANAGE_TOKEN>"`
     },
     {
@@ -200,7 +200,7 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
       path: "/api/v1/apps/:id/rotate-secret",
       scope: "apps:manage",
       description: "Rotate client secret. Previous secret is immediately invalidated.",
-      example: `curl -X POST "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/apps/<ID>/rotate-secret" \\
+      example: `curl -X POST "https://www.weftro.com/api/v1/apps/<ID>/rotate-secret" \\
   -H "Authorization: Bearer <JWT_OR_APPS_MANAGE_TOKEN>"`
     },
     {
@@ -208,7 +208,7 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
       path: "/api/v1/tokens",
       scope: "apps:manage",
       description: "List active scoped API access tokens without revealing secrets.",
-      example: `curl -X GET "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/tokens" \\
+      example: `curl -X GET "https://www.weftro.com/api/v1/tokens" \\
   -H "Authorization: Bearer <JWT_OR_APPS_MANAGE_TOKEN>"`
     },
     {
@@ -223,7 +223,7 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
       path: "/api/v1/tokens/:id/revoke",
       scope: "apps:manage",
       description: "Revoke an active API token immediately.",
-      example: `curl -X POST "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/tokens/<ID>/revoke" \\
+      example: `curl -X POST "https://www.weftro.com/api/v1/tokens/<ID>/revoke" \\
   -H "Authorization: Bearer <JWT_OR_APPS_MANAGE_TOKEN>"`
     },
     {
@@ -231,7 +231,7 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
       path: "/api/v1/webhooks",
       scope: "webhooks:manage",
       description: "List webhook subscriptions registered for the authorized company tenant.",
-      example: `curl -X GET "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/webhooks" \\
+      example: `curl -X GET "https://www.weftro.com/api/v1/webhooks" \\
   -H "Authorization: Bearer cpd_..."`
     },
     {
@@ -246,7 +246,7 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
       path: "/api/v1/webhooks/:id",
       scope: "webhooks:manage",
       description: "Retrieve webhook subscription details and active status.",
-      example: `curl -X GET "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/webhooks/<ID>" \\
+      example: `curl -X GET "https://www.weftro.com/api/v1/webhooks/<ID>" \\
   -H "Authorization: Bearer cpd_..."`
     },
     {
@@ -261,7 +261,7 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
       path: "/api/v1/webhooks/:id",
       scope: "webhooks:manage",
       description: "Delete webhook subscription cleanly.",
-      example: `curl -X DELETE "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/webhooks/<ID>" \\
+      example: `curl -X DELETE "https://www.weftro.com/api/v1/webhooks/<ID>" \\
   -H "Authorization: Bearer cpd_..."`
     },
     {
@@ -269,7 +269,7 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
       path: "/api/v1/webhooks/:id/rotate-secret",
       scope: "webhooks:manage",
       description: "Rotate the signing secret for a webhook subscription. Invalidate previous secret immediately.",
-      example: `curl -X POST "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/webhooks/<ID>/rotate-secret" \\
+      example: `curl -X POST "https://www.weftro.com/api/v1/webhooks/<ID>/rotate-secret" \\
   -H "Authorization: Bearer cpd_..."`
     },
     {
@@ -277,7 +277,7 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
       path: "/api/v1/webhooks/:id/test",
       scope: "webhooks:manage",
       description: "Dispatch a signed test event to verify receiver signature checking and delivery.",
-      example: `curl -X POST "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/webhooks/<ID>/test" \\
+      example: `curl -X POST "https://www.weftro.com/api/v1/webhooks/<ID>/test" \\
   -H "Authorization: Bearer cpd_..."`
     },
     {
@@ -285,7 +285,7 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
       path: "/api/v1/webhooks/:id/deliveries",
       scope: "webhooks:manage",
       description: "List recent delivery logs, HTTP response status codes, latency, and payloads for an endpoint.",
-      example: `curl -X GET "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/webhooks/<ID>/deliveries" \\
+      example: `curl -X GET "https://www.weftro.com/api/v1/webhooks/<ID>/deliveries" \\
   -H "Authorization: Bearer cpd_..."`
     },
     {
@@ -293,7 +293,7 @@ export const DEVELOPER_PLATFORM_KNOWLEDGE = {
       path: "/api/v1/webhooks/deliveries/:id/retry",
       scope: "webhooks:manage",
       description: "Retry an eligible webhook delivery using current subscription credentials.",
-      example: `curl -X POST "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/webhooks/deliveries/<DELIVERY_ID>/retry" \\
+      example: `curl -X POST "https://www.weftro.com/api/v1/webhooks/deliveries/<DELIVERY_ID>/retry" \\
   -H "Authorization: Bearer cpd_..."`
     }
   ],
@@ -329,7 +329,7 @@ function verifyWeftroWebhook(payload, signatureHeader, secret) {
       "command": "node",
       "args": ["packages/weftro-mcp/index.js"],
       "env": {
-        "WEFTRO_API_URL": "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect",
+        "WEFTRO_API_URL": "https://www.weftro.com",
         "WEFTRO_TOKEN": "<YOUR_SCOPED_CONNECT_TOKEN>"
       }
     }

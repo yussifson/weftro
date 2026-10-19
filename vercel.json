@@ -52,6 +52,10 @@
       "destination": "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/mcp"
     },
     {
+      "source": "/api/v1/:path*",
+      "destination": "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/:path*"
+    },
+    {
       "source": "/api/ai/:accountId/:model*",
       "destination": "https://api.cloudflare.com/client/v4/accounts/:accountId/ai/run/:model*"
     },

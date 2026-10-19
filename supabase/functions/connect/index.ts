@@ -865,7 +865,7 @@ serve(async (req) => {
               protocolVersion: '2024-11-05',
               capabilities: {
                 tools: {
-                  listChanged: false,
+                  listChanged: true,
                 },
               },
               serverInfo: {
@@ -2115,26 +2115,6 @@ serve(async (req) => {
         .single();
       if (compErr) return errorResponse('DB_ERROR', compErr.message, 500, requestId);
 
-      // Determine or ensure a valid user for the tenant
-      let tenantUserId = user_id;
-      if (!tenantUserId) {
-        // Find existing auth user profile or default to standard test user
-        const { data: existingUser } = await supabase
-          .from('profiles')
-          .select('id')
-          .limit(1)
-          .maybeSingle();
-        tenantUserId = existingUser?.id || 'ce93f2a7-f2cd-4b99-aa2d-ebef3d63e715';
-      }
-
-      // Ensure profile is associated with company
-      await supabase.from('profiles').upsert([{
-        id: tenantUserId,
-        email: `tester_${tenantUserId.slice(0, 6)}@test.com`,
-        company_id: comp.id,
-        role: 'member'
-      }]);
-
       // 2. Create Connect App (created_by can be null in clipad_v3_connect_apps schema)
       const clientId = `client_${crypto.randomUUID().replace(/-/g, '')}`;
       const secretHash = await sha256Hash(`secret_${crypto.randomUUID()}`);
@@ -2142,7 +2122,7 @@ serve(async (req) => {
         .from('clipad_v3_connect_apps')
         .insert([{
           company_id: comp.id,
-          created_by: tenantUserId,
+          created_by: null,
           name: app_name || 'Test App',
           client_id: clientId,
           client_secret_hash: secretHash,
@@ -2152,14 +2132,14 @@ serve(async (req) => {
         .single();
       if (appErr) return errorResponse('DB_ERROR', appErr.message, 500, requestId);
 
-      // 3. Create Token (user_id references auth.users)
+      // 3. Create Token (user_id can be null or references auth.users)
       const rawToken = `cpd_test_${crypto.randomUUID().replace(/-/g, '')}`;
       const tokenHash = await sha256Hash(rawToken);
       const { data: tok, error: tokErr } = await supabase
         .from('clipad_v3_connect_tokens')
         .insert([{
           app_id: app.id,
-          user_id: tenantUserId,
+          user_id: null,
           company_id: comp.id,
           token_hash: tokenHash,
           scopes: scopes || ['search:read', 'memory:read', 'context:read', 'captures:read', 'moments:read', 'entities:read', 'sources:read'],
@@ -2173,7 +2153,7 @@ serve(async (req) => {
 
       return successResponse({
         company: comp,
-        user_id: tenantUserId,
+        user_id: null,
         app: app,
         token: tok,
         raw_token: rawToken
@@ -3953,6 +3933,25 @@ serve(async (req) => {
       }
 
       const durationMs = Date.now() - deliveryStart;
+
+      // Log delivery record into clipad_v3_webhook_deliveries
+      try {
+        await supabase.from('clipad_v3_webhook_deliveries').insert([{
+          webhook_id: hookRecord.id,
+          company_id: companyId,
+          event_type: 'test.ping',
+          status: deliveryStatus,
+          attempt_count: 1,
+          max_attempts: 1,
+          response_status: statusCode,
+          response_body: responseBody,
+          error_message: errorMessage,
+          execution_duration_ms: durationMs,
+          delivered_at: deliveryStatus === 'delivered' ? new Date().toISOString() : null,
+        }]);
+      } catch (delivInsertErr: any) {
+        console.warn('[webhooks.test] Delivery history insert warning:', delivInsertErr.message);
+      }
 
       // Log delivery event in clipad_v3_events safely without user_id FK dependency
       try {

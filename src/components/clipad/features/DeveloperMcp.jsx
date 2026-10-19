@@ -29,7 +29,7 @@ export default function DeveloperMcp() {
       "command": "node",
       "args": ["packages/weftro-mcp/index.js"],
       "env": {
-        "WEFTRO_API_URL": "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect",
+        "WEFTRO_API_URL": "https://www.weftro.com",
         "WEFTRO_TOKEN": "<YOUR_SCOPED_CONNECT_TOKEN>"
       }
     }
@@ -42,7 +42,7 @@ export default function DeveloperMcp() {
       "command": "npx",
       "args": ["-y", "@weftro/mcp-server"],
       "env": {
-        "WEFTRO_API_URL": "https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect",
+        "WEFTRO_API_URL": "https://www.weftro.com",
         "WEFTRO_TOKEN": "<YOUR_SCOPED_CONNECT_TOKEN>"
       }
     }
