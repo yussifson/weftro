@@ -217,8 +217,29 @@ async function claimIdempotencyKey(
     };
   }
 
-  // In progress: active concurrent worker currently executing
+  // In progress: wait and poll briefly (up to 2 seconds) for active concurrent worker to resolve
   if (existing.status === 'IN_PROGRESS') {
+    for (let attempt = 0; attempt < 8; attempt++) {
+      await new Promise(r => setTimeout(r, 250));
+      const { data: polled } = await supabase
+        .from('clipad_v3_idempotency_keys')
+        .select('status, response_status, response_body')
+        .eq('company_id', companyId)
+        .eq('idempotency_key', idempotencyKey)
+        .maybeSingle();
+
+      if (polled?.status === 'RESOLVED' && polled.response_body) {
+        return {
+          action: 'replay',
+          responseData: polled.response_body,
+          responseStatus: polled.response_status || 200,
+        };
+      }
+      if (polled?.status === 'FAILED') {
+        return { action: 'proceed' };
+      }
+    }
+
     return {
       action: 'in_progress',
       message: `An operation with idempotency key '${idempotencyKey}' is currently in progress. Please retry after a brief delay.`,

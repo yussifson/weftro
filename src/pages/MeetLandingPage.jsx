@@ -8,7 +8,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { OrbitLoader, PageLoader } from '@/components/ui/orbit-loader';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Menu, Zap, Target, Star, Brain, Camera, Rocket, MessageSquare, PhoneCall, ArrowRight, ShieldCheck, CheckCircle, Video, TrendingUp, Calendar, X, Keyboard, Sparkles, Copy, Link as LinkIcon, Users, Layers, ChevronRight, ChevronLeft, Monitor, Globe, Plus, Clock, Search, Network, Cpu, Database } from 'lucide-react';
+import { Menu, Zap, Target, Star, Brain, Camera, Rocket, MessageSquare, PhoneCall, ArrowRight, ShieldCheck, CheckCircle, Check, Video, TrendingUp, Calendar, X, Keyboard, Sparkles, Copy, Link as LinkIcon, Users, Layers, ChevronRight, ChevronLeft, Monitor, Globe, Plus, Clock, Search, Network, Cpu, Database } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CliPadLogo } from '@/components/ui/CliPadLogo';
@@ -744,17 +744,17 @@ export default function MeetLandingPage() {
                   </tr>
                   <tr className="border-b border-border/60 hover:bg-secondary/30 transition-colors">
                     <td className="py-4 px-6 font-semibold text-foreground text-sm">Screen Sharing & Whiteboard</td>
-                    <td className="py-4 px-5 text-center text-primary font-bold">&check;</td>
-                    <td className="py-4 px-5 text-center text-primary font-bold bg-primary/5 border-x border-primary/20">&check;</td>
-                    <td className="py-4 px-5 text-center text-primary font-bold">&check;</td>
-                    <td className="py-4 px-5 text-center text-primary font-bold">&check;</td>
+                    <td className="py-4 px-5 text-center"><Check className="w-4 h-4 mx-auto text-primary" /></td>
+                    <td className="py-4 px-5 text-center bg-primary/5 border-x border-primary/20"><Check className="w-4 h-4 mx-auto text-primary" /></td>
+                    <td className="py-4 px-5 text-center"><Check className="w-4 h-4 mx-auto text-primary" /></td>
+                    <td className="py-4 px-5 text-center"><Check className="w-4 h-4 mx-auto text-primary" /></td>
                   </tr>
                   <tr className="border-b border-border/60 hover:bg-secondary/30 transition-colors">
                     <td className="py-4 px-6 font-semibold text-foreground text-sm">Live Chat & Reactions</td>
-                    <td className="py-4 px-5 text-center text-primary font-bold">&check;</td>
-                    <td className="py-4 px-5 text-center text-primary font-bold bg-primary/5 border-x border-primary/20">&check;</td>
-                    <td className="py-4 px-5 text-center text-primary font-bold">&check;</td>
-                    <td className="py-4 px-5 text-center text-primary font-bold">&check;</td>
+                    <td className="py-4 px-5 text-center"><Check className="w-4 h-4 mx-auto text-primary" /></td>
+                    <td className="py-4 px-5 text-center bg-primary/5 border-x border-primary/20"><Check className="w-4 h-4 mx-auto text-primary" /></td>
+                    <td className="py-4 px-5 text-center"><Check className="w-4 h-4 mx-auto text-primary" /></td>
+                    <td className="py-4 px-5 text-center"><Check className="w-4 h-4 mx-auto text-primary" /></td>
                   </tr>
 
                   {/* Category 2: Async Video & Recording */}
@@ -779,16 +779,16 @@ export default function MeetLandingPage() {
                   </tr>
                   <tr className="border-b border-border/60 hover:bg-secondary/30 transition-colors">
                     <td className="py-4 px-6 font-semibold text-foreground text-sm">Viewer Analytics & Heatmaps</td>
-                    <td className="py-4 px-5 text-center text-muted-foreground">&mdash;</td>
+                    <td className="py-4 px-5 text-center text-muted-foreground">—</td>
                     <td className="py-4 px-5 text-center font-bold text-primary bg-primary/5 border-x border-primary/20">Views & Retention Curve</td>
                     <td className="py-4 px-5 text-center font-bold text-foreground">Second-by-second Drop-off</td>
                     <td className="py-4 px-5 text-center font-bold text-foreground">Custom BI & Telemetry Sync</td>
                   </tr>
                   <tr className="border-b border-border/60 hover:bg-secondary/30 transition-colors">
                     <td className="py-4 px-6 font-semibold text-foreground text-sm">Password Protection & Expiring Links</td>
-                    <td className="py-4 px-5 text-center text-muted-foreground">&mdash;</td>
-                    <td className="py-4 px-5 text-center text-primary font-bold bg-primary/5 border-x border-primary/20">&check;</td>
-                    <td className="py-4 px-5 text-center text-primary font-bold">&check;</td>
+                    <td className="py-4 px-5 text-center text-muted-foreground">—</td>
+                    <td className="py-4 px-5 text-center bg-primary/5 border-x border-primary/20"><Check className="w-4 h-4 mx-auto text-primary" /></td>
+                    <td className="py-4 px-5 text-center"><Check className="w-4 h-4 mx-auto text-primary" /></td>
                     <td className="py-4 px-5 text-center font-bold text-foreground">Domain Gating & Custom DRM</td>
                   </tr>
 
@@ -814,9 +814,9 @@ export default function MeetLandingPage() {
                   </tr>
                   <tr className="border-b border-border/60 hover:bg-secondary/30 transition-colors">
                     <td className="py-4 px-6 font-semibold text-foreground text-sm">Cross-Space Search & Discovery</td>
-                    <td className="py-4 px-5 text-center text-muted-foreground">&mdash;</td>
-                    <td className="py-4 px-5 text-center text-primary font-bold bg-primary/5 border-x border-primary/20">&check;</td>
-                    <td className="py-4 px-5 text-center text-primary font-bold">&check;</td>
+                    <td className="py-4 px-5 text-center text-muted-foreground">—</td>
+                    <td className="py-4 px-5 text-center bg-primary/5 border-x border-primary/20"><Check className="w-4 h-4 mx-auto text-primary" /></td>
+                    <td className="py-4 px-5 text-center"><Check className="w-4 h-4 mx-auto text-primary" /></td>
                     <td className="py-4 px-5 text-center font-bold text-foreground">Semantic Vector Index</td>
                   </tr>
 
@@ -828,7 +828,7 @@ export default function MeetLandingPage() {
                   </tr>
                   <tr className="border-b border-border/60 hover:bg-secondary/30 transition-colors">
                     <td className="py-4 px-6 font-semibold text-foreground text-sm">Automated Multilingual Transcripts</td>
-                    <td className="py-4 px-5 text-center text-muted-foreground">&mdash;</td>
+                    <td className="py-4 px-5 text-center text-muted-foreground">—</td>
                     <td className="py-4 px-5 text-center font-bold text-primary bg-primary/5 border-x border-primary/20">30+ Languages</td>
                     <td className="py-4 px-5 text-center font-bold text-foreground">50+ Languages</td>
                     <td className="py-4 px-5 text-center font-bold text-foreground">100+ & Custom Vocabulary</td>
@@ -842,14 +842,14 @@ export default function MeetLandingPage() {
                   </tr>
                   <tr className="border-b border-border/60 hover:bg-secondary/30 transition-colors">
                     <td className="py-4 px-6 font-semibold text-foreground text-sm">Smart Follow-up Action Emails</td>
-                    <td className="py-4 px-5 text-center text-muted-foreground">&mdash;</td>
-                    <td className="py-4 px-5 text-center text-primary font-bold bg-primary/5 border-x border-primary/20">&check;</td>
-                    <td className="py-4 px-5 text-center text-primary font-bold">&check;</td>
+                    <td className="py-4 px-5 text-center text-muted-foreground">—</td>
+                    <td className="py-4 px-5 text-center bg-primary/5 border-x border-primary/20"><Check className="w-4 h-4 mx-auto text-primary" /></td>
+                    <td className="py-4 px-5 text-center"><Check className="w-4 h-4 mx-auto text-primary" /></td>
                     <td className="py-4 px-5 text-center font-bold text-foreground">Custom SMTP & Templates</td>
                   </tr>
                   <tr className="border-b border-border/60 hover:bg-secondary/30 transition-colors">
                     <td className="py-4 px-6 font-semibold text-foreground text-sm">Speaker Talk-Time & Sentiment</td>
-                    <td className="py-4 px-5 text-center text-muted-foreground">&mdash;</td>
+                    <td className="py-4 px-5 text-center text-muted-foreground">—</td>
                     <td className="py-4 px-5 text-center font-bold text-primary bg-primary/5 border-x border-primary/20">Talk-time Ratio</td>
                     <td className="py-4 px-5 text-center font-bold text-foreground">Full Sentiment Analytics</td>
                     <td className="py-4 px-5 text-center font-bold text-foreground">Executive Team Telemetry</td>
@@ -870,23 +870,23 @@ export default function MeetLandingPage() {
                   </tr>
                   <tr className="border-b border-border/60 hover:bg-secondary/30 transition-colors">
                     <td className="py-4 px-6 font-semibold text-foreground text-sm">Custom Branding & Branded Rooms</td>
-                    <td className="py-4 px-5 text-center text-muted-foreground">&mdash;</td>
-                    <td className="py-4 px-5 text-center text-muted-foreground bg-primary/5 border-x border-primary/20">&mdash;</td>
+                    <td className="py-4 px-5 text-center text-muted-foreground">—</td>
+                    <td className="py-4 px-5 text-center text-muted-foreground bg-primary/5 border-x border-primary/20">—</td>
                     <td className="py-4 px-5 text-center font-bold text-foreground">Logos & Colors</td>
                     <td className="py-4 px-5 text-center font-bold text-foreground">Full White-Label & Subdomains</td>
                   </tr>
                   <tr className="border-b border-border/60 hover:bg-secondary/30 transition-colors">
                     <td className="py-4 px-6 font-semibold text-foreground text-sm">Single Sign-On (SSO)</td>
-                    <td className="py-4 px-5 text-center text-muted-foreground">&mdash;</td>
-                    <td className="py-4 px-5 text-center text-muted-foreground bg-primary/5 border-x border-primary/20">&mdash;</td>
+                    <td className="py-4 px-5 text-center text-muted-foreground">—</td>
+                    <td className="py-4 px-5 text-center text-muted-foreground bg-primary/5 border-x border-primary/20">—</td>
                     <td className="py-4 px-5 text-center font-bold text-foreground">Google & SAML 2.0</td>
                     <td className="py-4 px-5 text-center font-bold text-foreground">Okta, Azure AD, SAML, SCIM</td>
                   </tr>
                   <tr className="border-b border-border/60 hover:bg-secondary/30 transition-colors">
                     <td className="py-4 px-6 font-semibold text-foreground text-sm">Enterprise Audit Trail</td>
-                    <td className="py-4 px-5 text-center text-muted-foreground">&mdash;</td>
-                    <td className="py-4 px-5 text-center text-muted-foreground bg-primary/5 border-x border-primary/20">&mdash;</td>
-                    <td className="py-4 px-5 text-center text-primary font-bold">&check;</td>
+                    <td className="py-4 px-5 text-center text-muted-foreground">—</td>
+                    <td className="py-4 px-5 text-center text-muted-foreground bg-primary/5 border-x border-primary/20">—</td>
+                    <td className="py-4 px-5 text-center"><Check className="w-4 h-4 mx-auto text-primary" /></td>
                     <td className="py-4 px-5 text-center font-bold text-foreground">Immutable SIEM Stream</td>
                   </tr>
                   <tr className="border-b border-border/60 hover:bg-secondary/30 transition-colors">
