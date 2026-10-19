@@ -12,7 +12,7 @@ export default function SecurityPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans">
+    <div className="dark min-h-screen bg-[#0B1418] text-white font-sans">
       <SEO title="Enterprise Security & Privacy Architecture — Weftro by Clipad" description="Bank-grade multi-tenant security, end-to-end encryption, SOC2 and HIPAA compliant data infrastructure for your organizational memory." url="https://clipad.com/security" />
       <header className="sticky top-0 z-50 bg-background/85 backdrop-blur-md border-b border-border">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">

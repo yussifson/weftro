@@ -24,7 +24,6 @@ import ContactSalesModal from '@/components/clipad/ContactSalesModal';
 import PaymentReceiptModal from '@/components/clipad/PaymentReceiptModal';
 import SupportAIChat from '@/components/clipad/SupportAIChat';
 import ClipadMobileNav from '@/components/clipad/ClipadMobileNav';
-import ThemeToggle from '@/components/layout/ThemeToggle';
 
 
 const pillars = [
@@ -425,7 +424,7 @@ export default function MeetLandingPage() {
 
 
   return (
-    <div className={`min-h-screen bg-background text-foreground flex flex-col font-sans relative transition-all duration-500 ease-in-out overflow-x-hidden ${supportPanel ? 'lg:pr-[400px]' : ''}`}>
+    <div className={`dark min-h-screen bg-[#0B1418] text-white flex flex-col font-sans relative transition-all duration-500 ease-in-out overflow-x-hidden ${supportPanel ? 'lg:pr-[400px]' : ''}`}>
       <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
         <div className="absolute -top-[20%] -left-[10%] w-[70vw] h-[70vw] rounded-full bg-primary/5 blur-[120px]" />
         <div className="absolute -bottom-[20%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-[#fad503]/5 blur-[120px]" />
@@ -471,7 +470,6 @@ export default function MeetLandingPage() {
           
           {/* Right Action Items */}
           <div className="flex items-center gap-3 shrink-0">
-            <ThemeToggle />
             <LanguageSwitcher className="h-9 w-[130px] rounded-xl border border-border bg-background hover:bg-secondary text-foreground text-xs font-medium" />
             {user ? (
               <Button onClick={() => navigate('/dashboard')} className="rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold px-4 h-9 shadow-sm">
@@ -553,9 +551,9 @@ export default function MeetLandingPage() {
         <div className="flex-1 hidden md:flex items-center justify-center relative min-h-[520px]">
           <button
             onClick={prevSlide}
-            className="absolute left-0 z-10 w-10 h-10 rounded-full bg-white dark:bg-card hover:bg-secondary shadow-md border border-slate-100 flex items-center justify-center transition-all"
+            className="absolute left-0 z-10 w-10 h-10 rounded-full bg-card hover:bg-secondary shadow-md border border-white/10 flex items-center justify-center transition-all"
           >
-            <ChevronLeft className="w-5 h-5 text-slate-500 dark:text-muted-foreground" />
+            <ChevronLeft className="w-5 h-5 text-muted-foreground" />
           </button>
           <div className="flex flex-col items-center text-center w-full max-w-md px-12">
             <div className="w-full h-[340px] relative mb-8">
@@ -571,10 +569,10 @@ export default function MeetLandingPage() {
               ))}
             </div>
             <div className="h-28">
-              <h2 className="text-2xl font-semibold text-slate-900 dark:text-foreground mb-2 tracking-tight">
+              <h2 className="text-2xl font-semibold text-foreground mb-2 tracking-tight">
                 {slides[currentSlide].title}
               </h2>
-              <p className="text-sm text-slate-500 dark:text-muted-foreground leading-relaxed max-w-xs mx-auto">
+              <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">
                 {slides[currentSlide].description}
               </p>
             </div>
@@ -585,7 +583,7 @@ export default function MeetLandingPage() {
                   onClick={() => setCurrentSlide(i)}
                   className={`h-2 rounded-full transition-all duration-300 ${
                     i === currentSlide
-                      ? 'bg-primary w-6'
+                      ? 'bg-[#fad503] w-6'
                       : 'bg-muted w-2 hover:bg-muted-foreground/40'
                   }`}
                 />
@@ -594,9 +592,9 @@ export default function MeetLandingPage() {
           </div>
           <button
             onClick={nextSlide}
-            className="absolute right-0 z-10 w-10 h-10 rounded-full bg-white dark:bg-card hover:bg-secondary shadow-md border border-slate-100 flex items-center justify-center transition-all"
+            className="absolute right-0 z-10 w-10 h-10 rounded-full bg-card hover:bg-secondary shadow-md border border-white/10 flex items-center justify-center transition-all"
           >
-            <ChevronRight className="w-5 h-5 text-slate-500 dark:text-muted-foreground" />
+            <ChevronRight className="w-5 h-5 text-muted-foreground" />
           </button>
         </div>
       </main>

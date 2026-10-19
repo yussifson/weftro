@@ -20,8 +20,8 @@ import {
   Cpu,
   Webhook,
   ArrowLeft,
-  PanelLeftClose,
-  PanelLeft
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
@@ -120,9 +120,9 @@ export default function DeveloperPlatform() {
             title={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
           >
             {sidebarOpen ? (
-              <PanelLeftClose className="w-5 h-5 transition-transform duration-300" />
+              <ChevronLeft className="w-5 h-5 transition-transform duration-300" />
             ) : (
-              <PanelLeft className="w-5 h-5 transition-transform duration-300" />
+              <ChevronRight className="w-5 h-5 transition-transform duration-300" />
             )}
           </button>
         </div>
