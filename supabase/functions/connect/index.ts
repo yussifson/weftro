@@ -411,6 +411,7 @@ serve(async (req) => {
         company_name,
         app_name,
         scopes,
+        user_id = null,
         is_app_active = true,
         expires_at = null,
         is_revoked = false,
@@ -425,6 +426,26 @@ serve(async (req) => {
         .single();
       if (compErr) return errorResponse('DB_ERROR', compErr.message, 500, requestId);
 
+      // Determine or ensure a valid user for the tenant
+      let tenantUserId = user_id;
+      if (!tenantUserId) {
+        // Find existing auth user profile or default to standard test user
+        const { data: existingUser } = await supabase
+          .from('profiles')
+          .select('id')
+          .limit(1)
+          .maybeSingle();
+        tenantUserId = existingUser?.id || 'ce93f2a7-f2cd-4b99-aa2d-ebef3d63e715';
+      }
+
+      // Ensure profile is associated with company
+      await supabase.from('profiles').upsert([{
+        id: tenantUserId,
+        email: `tester_${tenantUserId.slice(0, 6)}@test.com`,
+        company_id: comp.id,
+        role: 'member'
+      }]);
+
       // 2. Create Connect App (created_by can be null in clipad_v3_connect_apps schema)
       const clientId = `client_${crypto.randomUUID().replace(/-/g, '')}`;
       const secretHash = await sha256Hash(`secret_${crypto.randomUUID()}`);
@@ -432,7 +453,7 @@ serve(async (req) => {
         .from('clipad_v3_connect_apps')
         .insert([{
           company_id: comp.id,
-          created_by: null,
+          created_by: tenantUserId,
           name: app_name || 'Test App',
           client_id: clientId,
           client_secret_hash: secretHash,
@@ -442,14 +463,14 @@ serve(async (req) => {
         .single();
       if (appErr) return errorResponse('DB_ERROR', appErr.message, 500, requestId);
 
-      // 3. Create Token (user_id can be null or references auth.users)
+      // 3. Create Token (user_id references auth.users)
       const rawToken = `cpd_test_${crypto.randomUUID().replace(/-/g, '')}`;
       const tokenHash = await sha256Hash(rawToken);
       const { data: tok, error: tokErr } = await supabase
         .from('clipad_v3_connect_tokens')
         .insert([{
           app_id: app.id,
-          user_id: null,
+          user_id: tenantUserId,
           company_id: comp.id,
           token_hash: tokenHash,
           scopes: scopes || ['search:read', 'memory:read', 'context:read', 'captures:read', 'moments:read', 'entities:read', 'sources:read'],
@@ -463,7 +484,7 @@ serve(async (req) => {
 
       return successResponse({
         company: comp,
-        user_id: null,
+        user_id: tenantUserId,
         app: app,
         token: tok,
         raw_token: rawToken
@@ -1349,9 +1370,32 @@ serve(async (req) => {
           }
         }
 
+        // Determine effective user attribution (token caller, body author if authorized in company, or tenant profile)
+        let effectiveUserId = userId;
+        if (!effectiveUserId && body.user_id) {
+          const { data: memberUser } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('id', body.user_id)
+            .eq('company_id', companyId)
+            .maybeSingle();
+          if (memberUser) {
+            effectiveUserId = memberUser.id;
+          }
+        }
+        if (!effectiveUserId) {
+          const { data: companyMember } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('company_id', companyId)
+            .limit(1)
+            .maybeSingle();
+          effectiveUserId = companyMember?.id || null;
+        }
+
         const capturePayload = {
           company_id: companyId,
-          user_id: userId,
+          user_id: effectiveUserId,
           context_session_id: contextSessionId,
           source_type: sourceType,
           capture_type: captureType,
@@ -1367,7 +1411,7 @@ serve(async (req) => {
           },
           provenance: {
             ...provenance,
-            captured_by: userId,
+            captured_by: effectiveUserId,
             source_type: sourceType,
             capture_method: 'connect_api',
             created_at: new Date().toISOString(),
@@ -1391,7 +1435,7 @@ serve(async (req) => {
           .from('clipad_v3_capture_queue')
           .insert([{
             company_id: companyId,
-            user_id: userId,
+            user_id: effectiveUserId,
             capture_id: createdCapture.id,
             status: 'queued',
             attempt_count: 0,
