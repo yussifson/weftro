@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Code2, Folder, Shield, BarChart2, Network, Clock, Scale, CheckSquare, Map as MapIcon, Plug, Search, Settings, HelpCircle, PanelLeftClose, PanelLeft, ChevronUp, ChevronDown, Activity, LogOut, Target, TrendingUp, GitMerge, HeartPulse, Sparkles, Home, Inbox } from 'lucide-react';
+import { Code2, TerminalSquare, LayoutGrid, Folder, Shield, BarChart2, Network, Clock, Scale, CheckSquare, Map as MapIcon, Plug, Search, Settings, HelpCircle, PanelLeftClose, PanelLeft, ChevronUp, ChevronDown, Activity, LogOut, Target, TrendingUp, GitMerge, HeartPulse, Sparkles, Home, Inbox } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CliPadLogo } from '@/components/ui/CliPadLogo';
 import { useAuth } from '@/lib/AuthContext';
@@ -57,7 +57,7 @@ export default function ClipadSidebar({ forceMobile }) {
   const mainItems = [
     { label: 'Home', path: '/dashboard', icon: Home },
     { label: 'Search', path: '/search', icon: Search },
-    { label: 'Spaces', path: '/spaces', icon: Folder },
+    { label: 'Spaces', path: '/spaces', icon: LayoutGrid },
   ];
 
   const isSuperAdmin = user?.role === 'super_admin';
@@ -245,7 +245,7 @@ export default function ClipadSidebar({ forceMobile }) {
           )}
           title="Developer"
         >
-          <Code2 className={cn("shrink-0 transition-transform group-hover:scale-110", isCollapsed ? "w-5 h-5" : "w-4 h-4", (location.pathname.startsWith('/developers') || location.pathname.startsWith('/clipad/developers')) ? "text-[#fad503]" : "text-white/70 group-hover:text-white")} />
+          <TerminalSquare className={cn("shrink-0 transition-transform group-hover:scale-110", isCollapsed ? "w-5 h-5" : "w-4 h-4", (location.pathname.startsWith('/developers') || location.pathname.startsWith('/clipad/developers')) ? "text-[#fad503]" : "text-white/70 group-hover:text-white")} />
           {!isCollapsed && <span className="text-[13px] tracking-wide font-medium">Developer</span>}
         </button>
 

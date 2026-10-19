@@ -19,11 +19,21 @@ import {
   ArrowRight,
   Trash2,
   PlusCircle,
-  HelpCircle
+  HelpCircle,
+  History,
+  MessageSquare,
+  Clock
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -106,33 +116,82 @@ const QUICK_TOPICS = [
 export default function DeveloperAIAssistant() {
   const { user } = useAuth();
   const { toast } = useToast();
-  const storageKey = `clipad_dev_copilot_history_${user?.id || 'default'}`;
+  const sessionsStorageKey = `clipad_dev_copilot_sessions_${user?.id || 'default'}`;
+  const activeSessionStorageKey = `clipad_dev_copilot_active_id_${user?.id || 'default'}`;
 
-  // Load persistent chat history from localStorage
-  const [messages, setMessages] = useState(() => {
+  // Helper to create a new session object
+  const createNewSession = (title = 'New Consultation') => ({
+    id: `session_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+    title,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    messages: INITIAL_MESSAGES
+  });
+
+  // Load persistent sessions list from localStorage
+  const [sessions, setSessions] = useState(() => {
     try {
-      const saved = localStorage.getItem(storageKey);
+      const saved = localStorage.getItem(sessionsStorageKey);
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) return parsed;
       }
+      // Migrate legacy single history if present
+      const legacySaved = localStorage.getItem(`clipad_dev_copilot_history_${user?.id || 'default'}`);
+      if (legacySaved) {
+        const legacyParsed = JSON.parse(legacySaved);
+        if (Array.isArray(legacyParsed) && legacyParsed.length > 1) {
+          const firstUserMsg = legacyParsed.find(m => m.role === 'user');
+          const title = firstUserMsg ? firstUserMsg.content.slice(0, 40) + '...' : 'Previous Session';
+          return [{
+            id: `session_migrated_${Date.now()}`,
+            title,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            messages: legacyParsed
+          }];
+        }
+      }
     } catch (_) {}
-    return INITIAL_MESSAGES;
+    return [createNewSession('Welcome Consultation')];
   });
+
+  // Active session ID
+  const [activeSessionId, setActiveSessionId] = useState(() => {
+    try {
+      const savedId = localStorage.getItem(activeSessionStorageKey);
+      if (savedId) return savedId;
+    } catch (_) {}
+    return sessions[0]?.id || `session_${Date.now()}`;
+  });
+
+  // Show history modal & single chat delete confirmation modal
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [sessionToDelete, setSessionToDelete] = useState(null);
+
+  // Active session
+  const activeSession = useMemo(() => {
+    return sessions.find(s => s.id === activeSessionId) || sessions[0] || null;
+  }, [sessions, activeSessionId]);
+
+  const messages = activeSession ? activeSession.messages : INITIAL_MESSAGES;
 
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState(null);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
-  // Sync messages to localStorage whenever they change
+  // Sync sessions & activeSessionId to localStorage
   useEffect(() => {
     try {
-      localStorage.setItem(storageKey, JSON.stringify(messages));
+      localStorage.setItem(sessionsStorageKey, JSON.stringify(sessions));
+      if (activeSessionId) {
+        localStorage.setItem(activeSessionStorageKey, activeSessionId);
+      }
     } catch (_) {}
-  }, [messages, storageKey]);
+  }, [sessions, activeSessionId, sessionsStorageKey, activeSessionStorageKey]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -142,26 +201,71 @@ export default function DeveloperAIAssistant() {
     scrollToBottom();
   }, [messages, isLoading]);
 
-  // Handle Clear Conversation History
-  const handleConfirmDeleteHistory = () => {
-    try {
-      localStorage.removeItem(storageKey);
-    } catch (_) {}
-    setMessages(INITIAL_MESSAGES);
-    setShowDeleteConfirm(false);
-    toast({
-      title: "History Cleared",
-      description: "Developer Copilot conversation history has been reset."
-    });
-  };
-
-  // Start a new conversation while preserving history or resetting view
+  // Start a new chat session
   const handleStartNewChat = () => {
-    setMessages(INITIAL_MESSAGES);
+    const newSess = createNewSession('New Consultation');
+    setSessions(prev => [newSess, ...prev]);
+    setActiveSessionId(newSess.id);
+    setShowHistoryModal(false);
     toast({
       title: "New Conversation",
       description: "Started a fresh Copilot session."
     });
+  };
+
+  // Switch to an existing session
+  const handleSelectSession = (sessionId) => {
+    setActiveSessionId(sessionId);
+    setShowHistoryModal(false);
+  };
+
+  // Confirm deletion of the currently active chat or a specified session
+  const handleDeleteCurrentChat = () => {
+    setSessionToDelete(activeSession);
+    setShowDeleteConfirm(true);
+  };
+
+  const handleConfirmDeleteSession = () => {
+    const targetId = sessionToDelete?.id || activeSessionId;
+    const remaining = sessions.filter(s => s.id !== targetId);
+
+    if (remaining.length === 0) {
+      const fresh = createNewSession('Welcome Consultation');
+      setSessions([fresh]);
+      setActiveSessionId(fresh.id);
+    } else {
+      setSessions(remaining);
+      if (activeSessionId === targetId) {
+        setActiveSessionId(remaining[0].id);
+      }
+    }
+
+    setShowDeleteConfirm(false);
+    setSessionToDelete(null);
+    toast({
+      title: "Chat Deleted",
+      description: "The conversation was deleted."
+    });
+  };
+
+  // Helper to update messages for the active session and dynamically update the title on first user message
+  const updateActiveSessionMessages = (newMsgs) => {
+    setSessions(prev => prev.map(s => {
+      if (s.id !== activeSessionId) return s;
+      let newTitle = s.title;
+      if (s.title === 'New Consultation' || s.title === 'Welcome Consultation') {
+        const firstUser = newMsgs.find(m => m.role === 'user');
+        if (firstUser) {
+          newTitle = firstUser.content.slice(0, 38).trim() + (firstUser.content.length > 38 ? '...' : '');
+        }
+      }
+      return {
+        ...s,
+        title: newTitle,
+        updatedAt: new Date().toISOString(),
+        messages: newMsgs
+      };
+    }));
   };
 
   const handleSend = async (e, directText = null) => {
@@ -172,7 +276,7 @@ export default function DeveloperAIAssistant() {
     // Sanitize user query
     const sanitizedQuery = sanitizeAssistantOutput(query);
     const newMessages = [...messages, { role: 'user', content: sanitizedQuery }];
-    setMessages(newMessages);
+    updateActiveSessionMessages(newMessages);
     setInput('');
     setIsLoading(true);
 
@@ -202,18 +306,18 @@ CORE GUIDELINES:
       await generateText(promptPayload, (token) => {
         streamBuffer = token;
         const cleaned = sanitizeAssistantOutput(streamBuffer);
-        setMessages([...newMessages, { role: 'assistant', content: cleaned }]);
+        updateActiveSessionMessages([...newMessages, { role: 'assistant', content: cleaned }]);
       }, { task: TASK_TYPES.CODING });
 
       if (!streamBuffer) {
-        setMessages([...newMessages, {
+        updateActiveSessionMessages([...newMessages, {
           role: 'assistant',
           content: "I am ready to help with your Weftro API or MCP integration. What technical implementation would you like to explore?"
         }]);
       }
     } catch (err) {
       console.error('[DeveloperCopilot] Error:', err);
-      setMessages([...newMessages, {
+      updateActiveSessionMessages([...newMessages, {
         role: 'assistant',
         content: `⚠️ **Service Notice:** Unable to reach AI endpoint (${err.message || 'connection timeout'}). Please check your network or consult the API Documentation tab.`
       }]);
@@ -271,17 +375,17 @@ CORE GUIDELINES:
     <div className="h-full w-full flex flex-col bg-background text-foreground overflow-hidden">
       {/* Main Responsive Two-Column Layout */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 min-h-0 overflow-hidden">
-        {/* Left Column: Chat Messages & Input (Expanded to left: 7 cols on lg) */}
-        <div className="lg:col-span-7 flex flex-col h-full min-h-0 border-r border-border overflow-hidden bg-card/30 relative">
-          {/* Scrollable Messages Area */}
-          <div className="flex-1 overflow-y-auto px-4 md:px-8 py-5 space-y-4 scrollbar-thin">
-            <div className="max-w-4xl mx-auto w-full space-y-4">
+        {/* Left Column: Chat Messages & Input (Expanded to take all remaining space: 8 cols on lg, 9 cols on xl) */}
+        <div className="lg:col-span-8 xl:col-span-9 flex flex-col h-full min-h-0 border-r border-border overflow-hidden bg-card/30 relative">
+          {/* Scrollable Messages Area: Tiny margins to left and right for corporate, clean, expanded visibility */}
+          <div className="flex-1 overflow-y-auto px-2 sm:px-4 md:px-5 py-4 space-y-3.5 scrollbar-thin">
+            <div className="w-full space-y-3.5">
             {messages.map((msg, idx) => {
               const isAssistant = msg.role === 'assistant';
               return (
                 <div
                   key={idx}
-                  className={`flex items-start gap-3.5 ${isAssistant ? 'justify-start' : 'justify-end'}`}
+                  className={`flex items-start gap-2.5 sm:gap-3.5 ${isAssistant ? 'justify-start' : 'justify-end'}`}
                 >
                   {isAssistant && (
                     <div className="w-7 h-7 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0 mt-0.5 shadow-sm">
@@ -292,8 +396,8 @@ CORE GUIDELINES:
                   <div
                     className={`w-full ${
                       isAssistant
-                        ? 'max-w-[98%] bg-card border border-border/80 text-foreground shadow-xs rounded-2xl rounded-tl-sm px-5 py-4'
-                        : 'max-w-[85%] md:max-w-[70%] bg-primary text-primary-foreground font-medium rounded-2xl rounded-tr-sm px-4 py-3 shadow-xs'
+                        ? 'max-w-[99%] bg-card border border-border/80 text-foreground shadow-xs rounded-2xl rounded-tl-sm px-4 sm:px-5 py-3.5'
+                        : 'max-w-[85%] md:max-w-[65%] bg-primary text-primary-foreground font-medium rounded-2xl rounded-tr-sm px-4 py-2.5 shadow-xs'
                     } text-sm leading-relaxed`}
                   >
                     {isAssistant ? (
@@ -353,7 +457,7 @@ CORE GUIDELINES:
           </div>
 
           {/* Quick chips bar directly above input on mobile / tablet */}
-          <div className="lg:hidden px-4 py-2 bg-muted/40 border-t border-border/60 flex items-center gap-2 overflow-x-auto text-xs shrink-0 hide-scrollbar">
+          <div className="lg:hidden px-3 py-2 bg-muted/40 border-t border-border/60 flex items-center gap-2 overflow-x-auto text-xs shrink-0 hide-scrollbar">
             <span className="text-[11px] font-medium text-muted-foreground whitespace-nowrap">Try:</span>
             {[
               "Bearer auth example",
@@ -371,12 +475,12 @@ CORE GUIDELINES:
             ))}
           </div>
 
-          {/* Bottom Prompt Input Area */}
+          {/* Bottom Prompt Input Area: Expanded full width with minimal horizontal spacing */}
           <form
             onSubmit={(e) => handleSend(e)}
-            className="p-4 border-t border-border bg-card/80 backdrop-blur-sm shrink-0"
+            className="px-2 sm:px-4 py-3 border-t border-border bg-card/80 backdrop-blur-sm shrink-0"
           >
-            <div className="max-w-4xl mx-auto w-full flex items-center gap-3">
+            <div className="w-full flex items-center gap-2.5">
               <div className="relative flex-1">
                 <input
                   ref={inputRef}
@@ -385,13 +489,13 @@ CORE GUIDELINES:
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   disabled={isLoading}
-                  className="w-full h-11 px-4 pr-10 text-sm bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all disabled:opacity-50"
+                  className="w-full h-11 px-3.5 pr-10 text-sm bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all disabled:opacity-50"
                 />
               </div>
               <Button
                 type="submit"
                 disabled={!input.trim() || isLoading}
-                className="h-11 px-5 rounded-xl font-medium shadow-xs flex items-center gap-2"
+                className="h-11 px-4 sm:px-5 rounded-xl font-medium shadow-xs flex items-center gap-2 shrink-0"
               >
                 <span>Send</span>
                 <Send className="w-4 h-4" />
@@ -400,64 +504,76 @@ CORE GUIDELINES:
           </form>
         </div>
 
-        {/* Right Column: Increased width (5 cols on lg), with New Chat & Delete on top of Instant Inquiries */}
-        <div className="hidden lg:flex lg:col-span-5 flex-col h-full bg-card/50 overflow-y-auto p-5 space-y-5 scrollbar-thin">
+        {/* Right Column: Decreased width (4 cols on lg, 3 cols on xl) to eliminate wasted empty space while keeping quick links fully readable */}
+        <div className="hidden lg:flex lg:col-span-4 xl:col-span-3 flex-col h-full bg-card/50 overflow-y-auto p-3.5 space-y-4 scrollbar-thin">
           {/* Header Bar with Action Controls */}
-          <div className="flex items-center justify-between pb-3 border-b border-border/60">
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-primary" />
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <div className="flex items-center justify-between pb-2.5 border-b border-border/60">
+            <div className="flex items-center gap-1.5 overflow-hidden">
+              <Sparkles className="w-3.5 h-3.5 text-primary shrink-0" />
+              <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground truncate">
                 Instant Inquiries
               </h3>
             </div>
             
-            {/* New Chat and Delete placed right here on top of Instant Inquiries */}
-            <div className="flex items-center gap-1.5 bg-muted/40 p-1 rounded-lg border border-border/50">
+            {/* History, New Chat and Delete controls placed right here on top of Instant Inquiries */}
+            <div className="flex items-center gap-1 bg-muted/40 p-1 rounded-lg border border-border/50 shrink-0">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowHistoryModal(true)}
+                className="h-6 px-2 text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 rounded-md"
+                title="View all chat history"
+              >
+                <History className="w-3 h-3 text-primary" />
+                <span className="text-[11px] font-medium">History</span>
+              </Button>
+
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleStartNewChat}
-                className="h-7 px-2.5 text-xs text-muted-foreground hover:text-foreground flex items-center gap-1.5 rounded-md"
+                className="h-6 px-2 text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 rounded-md"
                 title="Start new conversation"
               >
-                <PlusCircle className="w-3.5 h-3.5 text-primary" />
-                <span className="text-[11px] font-medium">New Chat</span>
+                <PlusCircle className="w-3 h-3 text-primary" />
+                <span className="text-[11px] font-medium">New</span>
               </Button>
 
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setShowDeleteConfirm(true)}
-                className="h-7 w-7 p-0 text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 transition-colors rounded-md"
-                title="Clear conversation history"
+                onClick={handleDeleteCurrentChat}
+                className="h-6 w-6 p-0 text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 transition-colors rounded-md"
+                title="Delete this chat"
               >
-                <Trash2 className="w-3.5 h-3.5" />
+                <Trash2 className="w-3 h-3" />
               </Button>
             </div>
           </div>
 
-          {/* Categorized Quick Links */}
-          <div className="space-y-4">
+          {/* Categorized Quick Links: Compact card size so users see and understand each link without empty space */}
+          <div className="space-y-3.5">
             {QUICK_TOPICS.map((topic, tIdx) => {
               const Icon = topic.icon;
               return (
-                <div key={tIdx} className="space-y-2">
-                  <div className="flex items-center gap-1.5 text-xs font-medium text-foreground">
-                    <Icon className="w-3.5 h-3.5 text-primary" />
-                    <span>{topic.category}</span>
+                <div key={tIdx} className="space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-[11px] font-semibold text-foreground">
+                    <Icon className="w-3 h-3 text-primary shrink-0" />
+                    <span className="truncate">{topic.category}</span>
                   </div>
-                  <div className="space-y-1.5">
+                  <div className="space-y-1">
                     {topic.prompts.map((item, pIdx) => (
                       <button
                         key={pIdx}
                         onClick={() => handleSend(null, item.query)}
                         disabled={isLoading}
-                        className="w-full text-left px-3 py-2 text-xs rounded-lg border border-border/70 bg-card hover:bg-secondary hover:border-primary/40 transition-all flex items-center justify-between group disabled:opacity-50"
+                        className="w-full text-left px-2.5 py-1.5 text-xs rounded-lg border border-border/70 bg-card hover:bg-secondary hover:border-primary/40 transition-all flex items-center justify-between group disabled:opacity-50"
+                        title={item.label}
                       >
-                        <span className="text-muted-foreground group-hover:text-foreground line-clamp-1">
+                        <span className="text-muted-foreground group-hover:text-foreground text-[11px] leading-snug line-clamp-2">
                           {item.label}
                         </span>
-                        <ArrowRight className="w-3 h-3 text-muted-foreground group-hover:text-primary transition-transform group-hover:translate-x-0.5 shrink-0 ml-2" />
+                        <ArrowRight className="w-3 h-3 text-muted-foreground group-hover:text-primary transition-transform group-hover:translate-x-0.5 shrink-0 ml-1.5" />
                       </button>
                     ))}
                   </div>
@@ -467,37 +583,132 @@ CORE GUIDELINES:
           </div>
 
           {/* Quick Context Card */}
-          <div className="mt-auto p-3.5 rounded-xl border border-border/80 bg-secondary/30 space-y-2">
-            <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+          <div className="mt-auto p-3 rounded-xl border border-border/80 bg-secondary/30 space-y-1.5">
+            <div className="flex items-center gap-1.5 text-[11px] font-semibold text-foreground">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
               <span>Grounded Enterprise Knowledge</span>
             </div>
-            <p className="text-[11px] text-muted-foreground leading-relaxed">
-              Responses are anchored to live Weftro Connect API v1 specifications, OpenAPI schemas, and MCP tool protocols. Sensitive keys and secrets are automatically redacted.
+            <p className="text-[10px] text-muted-foreground leading-relaxed">
+              Anchored to live Weftro Connect API specifications, OpenAPI schemas, and MCP tools. Sensitive secrets are redacted.
             </p>
           </div>
         </div>
       </div>
 
-      {/* Confirmation Modal: Delete Chat History */}
+      {/* Chat History Popup Modal */}
+      <Dialog open={showHistoryModal} onOpenChange={setShowHistoryModal}>
+        <DialogContent className="rounded-2xl max-w-lg p-0 overflow-hidden bg-card border-border shadow-xl">
+          <DialogHeader className="p-4 pb-3 border-b border-border/70 flex flex-row items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                <History className="w-4 h-4" />
+              </div>
+              <div>
+                <DialogTitle className="text-sm font-bold text-foreground">
+                  Consultation History
+                </DialogTitle>
+                <DialogDescription className="text-xs text-muted-foreground">
+                  Select any previous session to review and continue your conversation.
+                </DialogDescription>
+              </div>
+            </div>
+            <Button
+              size="sm"
+              onClick={handleStartNewChat}
+              className="h-8 px-3 text-xs gap-1.5 rounded-lg shadow-xs"
+            >
+              <PlusCircle className="w-3.5 h-3.5" />
+              <span>New Chat</span>
+            </Button>
+          </DialogHeader>
+
+          {/* Scrollable Chat Sessions List */}
+          <div className="max-h-[380px] overflow-y-auto p-3 space-y-2 scrollbar-thin">
+            {sessions.map((sess) => {
+              const isActive = sess.id === activeSessionId;
+              const msgCount = (sess.messages || []).filter(m => m.role === 'user').length;
+              const formattedDate = new Date(sess.updatedAt || sess.createdAt).toLocaleDateString(undefined, {
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              });
+
+              return (
+                <div
+                  key={sess.id}
+                  onClick={() => handleSelectSession(sess.id)}
+                  className={`group w-full text-left p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                    isActive
+                      ? 'bg-primary/10 border-primary/40 shadow-xs'
+                      : 'bg-card border-border/70 hover:bg-secondary hover:border-primary/30'
+                  }`}
+                >
+                  <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${
+                      isActive ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground group-hover:text-foreground'
+                    }`}>
+                      <MessageSquare className="w-3.5 h-3.5" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <p className={`text-xs font-semibold truncate ${isActive ? 'text-primary' : 'text-foreground'}`}>
+                          {sess.title || 'Untitled Consultation'}
+                        </p>
+                        {isActive && (
+                          <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-primary/40 text-primary bg-primary/5 shrink-0">
+                            Active
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2.5 mt-1 text-[11px] text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-3 h-3" /> {formattedDate}
+                        </span>
+                        <span>•</span>
+                        <span>{msgCount} {msgCount === 1 ? 'prompt' : 'prompts'}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Individual Delete Action */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSessionToDelete(sess);
+                      setShowDeleteConfirm(true);
+                    }}
+                    className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 transition-all shrink-0"
+                    title="Delete this chat"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Confirmation Modal: Delete Chat Session */}
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
         <AlertDialogContent className="rounded-2xl max-w-md">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-base font-bold flex items-center gap-2 text-rose-500">
               <Trash2 className="w-4 h-4" />
-              Delete Conversation History?
+              Delete This Conversation?
             </AlertDialogTitle>
             <AlertDialogDescription className="text-xs text-muted-foreground leading-relaxed">
-              This will permanently remove all messages and code snippets from your Developer Copilot history. This action cannot be undone.
+              Are you sure you want to delete <strong className="text-foreground">"{sessionToDelete?.title || activeSession?.title || 'this consultation'}"</strong>? Only this particular chat session will be removed permanently.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="mt-4 gap-2">
             <AlertDialogCancel className="rounded-xl text-xs">Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={handleConfirmDeleteHistory}
+              onClick={handleConfirmDeleteSession}
               className="rounded-xl text-xs bg-rose-600 hover:bg-rose-700 text-white font-medium"
             >
-              Delete History
+              Delete Chat
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

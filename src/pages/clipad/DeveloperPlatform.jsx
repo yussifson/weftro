@@ -107,12 +107,12 @@ export default function DeveloperPlatform() {
 
   return (
     <div style={{ fontFamily: "'Inter', sans-serif" }} className="flex h-[calc(100vh-64px)] max-h-[calc(100vh-64px)] bg-slate-50 dark:bg-background overflow-hidden text-slate-900 dark:text-slate-100">
-      {/* SIDEBAR NAVIGATION: Slim, compact width to give maximum space to the main content & Copilot */}
-      <aside className={`bg-white dark:bg-card border-r border-slate-200 dark:border-border flex-col hidden md:flex shrink-0 transition-all duration-300 ${sidebarOpen ? 'w-48' : 'w-14'}`}>
+      {/* SIDEBAR NAVIGATION: Professional, spacious developer side panel */}
+      <aside className={`bg-white dark:bg-card border-r border-slate-200 dark:border-border flex-col hidden md:flex shrink-0 transition-all duration-300 ${sidebarOpen ? 'w-64' : 'w-18'}`}>
         {/* Sidebar Header: Back button and expand/collapse button, top name area left empty */}
-        <div className="h-14 flex items-center px-3 border-b border-slate-200 dark:border-border gap-2 shrink-0 justify-between">
+        <div className="h-14 flex items-center px-4 border-b border-slate-200 dark:border-border gap-2 shrink-0 justify-between">
           <div className="flex items-center gap-2 overflow-hidden">
-            {sidebarOpen && <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Developer</span>}
+            {sidebarOpen && <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Developer Platform</span>}
           </div>
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -128,10 +128,10 @@ export default function DeveloperPlatform() {
         </div>
 
         {/* Sidebar Nav Links */}
-        <div className="flex-1 overflow-y-auto py-3 px-2 space-y-1 scrollbar-hide">
+        <div className="flex-1 overflow-y-auto py-3.5 px-2.5 space-y-1.5 scrollbar-hide">
           {sidebarOpen && (
-            <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2 px-2.5 transition-opacity">
-              Platform
+            <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2.5 px-2.5 transition-opacity">
+              Platform & Tools
             </div>
           )}
 
@@ -143,8 +143,8 @@ export default function DeveloperPlatform() {
                 key={tab.id}
                 onClick={() => navigate(tab.path)}
                 title={!sidebarOpen ? tab.label : ''}
-                className={`flex items-center py-2 rounded-lg transition-all ${
-                  sidebarOpen ? 'w-full gap-2.5 px-2.5 text-xs' : 'justify-center w-10 h-10 mx-auto'
+                className={`flex items-center py-2.5 rounded-lg transition-all ${
+                  sidebarOpen ? 'w-full gap-3 px-3 text-xs' : 'justify-center w-11 h-11 mx-auto'
                 } ${
                   isActive
                     ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-foreground font-semibold shadow-2xs'
@@ -152,11 +152,11 @@ export default function DeveloperPlatform() {
                 }`}
               >
                 <Icon
-                  className={`shrink-0 ${sidebarOpen ? 'w-4 h-4' : 'w-4 h-4'} ${
+                  className={`shrink-0 ${sidebarOpen ? 'w-4.5 h-4.5' : 'w-5 h-5'} ${
                     isActive ? 'text-primary' : 'text-slate-400'
                   }`}
                 />
-                {sidebarOpen && <span className="truncate text-xs">{tab.label}</span>}
+                {sidebarOpen && <span className="truncate text-xs font-medium">{tab.label}</span>}
               </button>
             );
           })}
@@ -198,13 +198,13 @@ export default function DeveloperPlatform() {
       {/* MAIN CONTENT AREA - Takes entire space without redundant top header */}
       <div className="flex-1 flex flex-col h-full overflow-hidden pt-12 md:pt-0 relative">
         {/* Scrollable / Full-Size Tab Body */}
-        <div className={`flex-1 ${activeTab === 'assistant' ? 'p-0 h-full overflow-hidden' : 'p-4 md:p-6 overflow-y-auto scrollbar-thin'}`}>
+        <div className={`flex-1 ${activeTab === 'assistant' ? 'p-0 h-full overflow-hidden' : 'px-2 sm:px-4 py-4 overflow-y-auto scrollbar-thin'}`}>
           {activeTab === 'webhooks' ? (
-            <div className="max-w-6xl mx-auto">
+            <div className="w-full">
               <DeveloperWebhooks />
             </div>
           ) : activeTab === 'mcp' ? (
-            <div className="max-w-6xl mx-auto">
+            <div className="w-full">
               <DeveloperMcp />
             </div>
           ) : activeTab === 'assistant' ? (
@@ -212,19 +212,19 @@ export default function DeveloperPlatform() {
               <DeveloperAIAssistant />
             </div>
           ) : activeTab === 'explorer' ? (
-            <div className="max-w-6xl mx-auto">
+            <div className="w-full">
               <DeveloperApiExplorer />
             </div>
           ) : activeTab === 'docs' ? (
-            <div className="max-w-6xl mx-auto">
+            <div className="w-full">
               <DeveloperDocs />
             </div>
           ) : activeTab === 'logs' ? (
-            <div className="max-w-6xl mx-auto">
+            <div className="w-full">
               <DeveloperLogs />
             </div>
           ) : (
-            <div className="max-w-6xl mx-auto">
+            <div className="w-full">
               <ConnectSettings />
             </div>
           )}
