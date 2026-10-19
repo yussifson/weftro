@@ -4,7 +4,7 @@ import { FileText, CheckCircle, MessageSquare, Calendar, Video,
   Loader2, X, ShieldAlert, AlertTriangle, ExternalLink, Zap, Layers, Copy, CheckCheck,
   Users, ArrowUpRight, Send, Plus, Volume2, VolumeX, ThumbsUp, ThumbsDown, Edit,
   Search, Sparkles, ArrowLeft
-, BrainCircuit, Inbox, Compass} from 'lucide-react';
+, BrainCircuit, Inbox, Compass, Code2, CheckCircle2 } from 'lucide-react';
 import { CliPadLogo } from '@/components/ui/CliPadLogo';
 import { supabase } from '@/api/supabaseClient';
 import { generateText } from '@/lib/cloudflareAI';
@@ -91,7 +91,63 @@ async function fetchAccessibleSpaceIds(user) {
     (publicSpaces || []).forEach(s => memberSpaceIds.add(s.id));
     ids = memberSpaceIds;
   }
-  _spaceIdCache.set(cacheKey, { ids, expiry: Date.now() + 60_000 });
+  // Dedicated Code Block component for SearchHub with top bar and snippet copy button
+function SearchCodeSnippetBlock({ children, className }) {
+  const [copied, setCopied] = useState(false);
+  const match = /language-(\w+)/.exec(className || '');
+  const language = match ? match[1] : '';
+
+  const extractText = (node) => {
+    if (typeof node === 'string') return node;
+    if (Array.isArray(node)) return node.map(extractText).join('');
+    if (node && node.props && node.props.children) return extractText(node.props.children);
+    return '';
+  };
+
+  const handleCopyCode = (e) => {
+    e.stopPropagation();
+    const rawText = extractText(children).replace(/\n$/, '');
+    navigator.clipboard.writeText(rawText);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="w-full max-w-full my-3 rounded-xl border border-border/80 bg-slate-950 text-slate-100 shadow-xs overflow-hidden">
+      <div className="flex items-center justify-between px-3.5 py-1.5 bg-slate-900/90 border-b border-slate-800/80 text-xs text-slate-400">
+        <div className="flex items-center gap-1.5 font-mono text-[11px] font-semibold text-slate-300">
+          <Code2 className="w-3.5 h-3.5 text-primary" />
+          <span className="uppercase tracking-wider">{language || 'code'}</span>
+        </div>
+        <button
+          type="button"
+          onClick={handleCopyCode}
+          className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium text-slate-300 hover:text-white bg-slate-800/80 hover:bg-slate-700/80 transition-colors cursor-pointer active:scale-95"
+          title="Copy snippet to clipboard"
+        >
+          {copied ? (
+            <>
+              <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+              <span className="text-emerald-400 font-medium">Copied!</span>
+            </>
+          ) : (
+            <>
+              <Copy className="w-3 h-3 text-slate-400" />
+              <span>Copy</span>
+            </>
+          )}
+        </button>
+      </div>
+      <div className="p-3.5 overflow-x-auto scrollbar-thin">
+        <pre className="text-xs font-mono whitespace-pre-wrap break-words break-all leading-relaxed m-0 p-0 bg-transparent border-0 text-slate-100">
+          {children}
+        </pre>
+      </div>
+    </div>
+  );
+}
+
+_spaceIdCache.set(cacheKey, { ids, expiry: Date.now() + 60_000 });
   return ids;
 }
 
@@ -846,6 +902,28 @@ Guidelines:
                                             };
 
                                             return <p>{React.Children.map(children, renderWithCitations)}</p>;
+                                          },
+                                          pre: ({ node, children, ...props }) => {
+                                            const childProps = children && children.props ? children.props : {};
+                                            return (
+                                              <SearchCodeSnippetBlock className={childProps.className}>
+                                                {children}
+                                              </SearchCodeSnippetBlock>
+                                            );
+                                          },
+                                          code: ({ node, inline, children, className, ...props }) => {
+                                            if (inline) {
+                                              return (
+                                                <code className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-primary font-mono text-[11px] font-semibold break-words" {...props}>
+                                                  {children}
+                                                </code>
+                                              );
+                                            }
+                                            return (
+                                              <code className={`font-mono text-xs whitespace-pre-wrap break-words break-all ${className || ''}`} {...props}>
+                                                {children}
+                                              </code>
+                                            );
                                           }
                                         }}
                                       >

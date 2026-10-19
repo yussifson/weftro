@@ -332,6 +332,68 @@ CORE GUIDELINES:
     setTimeout(() => setCopiedIndex(null), 2000);
   };
 
+// Dedicated Code Block component with top bar and copy snippet button (ChatGPT / Claude style)
+function CodeSnippetBlock({ children, className }) {
+  const [copied, setCopied] = useState(false);
+  
+  // Extract language from className (e.g. "language-javascript")
+  const match = /language-(\w+)/.exec(className || '');
+  const language = match ? match[1] : '';
+
+  // Extract raw text from children for reliable clipboard copying
+  const extractText = (node) => {
+    if (typeof node === 'string') return node;
+    if (Array.isArray(node)) return node.map(extractText).join('');
+    if (node && node.props && node.props.children) return extractText(node.props.children);
+    return '';
+  };
+
+  const handleCopyCode = (e) => {
+    e.stopPropagation();
+    const rawText = extractText(children).replace(/\n$/, '');
+    navigator.clipboard.writeText(rawText);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="w-full max-w-full my-3 rounded-xl border border-border/80 bg-slate-950 text-slate-100 shadow-xs overflow-hidden">
+      {/* Code Snippet Header Bar */}
+      <div className="flex items-center justify-between px-3.5 py-1.5 bg-slate-900/90 border-b border-slate-800/80 text-xs text-slate-400">
+        <div className="flex items-center gap-1.5 font-mono text-[11px] font-semibold text-slate-300">
+          <Code2 className="w-3.5 h-3.5 text-primary" />
+          <span className="uppercase tracking-wider">{language || 'code'}</span>
+        </div>
+        <button
+          type="button"
+          onClick={handleCopyCode}
+          className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium text-slate-300 hover:text-white bg-slate-800/80 hover:bg-slate-700/80 transition-colors cursor-pointer active:scale-95"
+          title="Copy snippet to clipboard"
+        >
+          {copied ? (
+            <>
+              <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+              <span className="text-emerald-400 font-medium">Copied!</span>
+            </>
+          ) : (
+            <>
+              <Copy className="w-3 h-3 text-slate-400" />
+              <span>Copy</span>
+            </>
+          )}
+        </button>
+      </div>
+
+      {/* Code Snippet Content */}
+      <div className="p-3.5 overflow-x-auto scrollbar-thin">
+        <pre className="text-xs font-mono whitespace-pre-wrap break-words break-all leading-relaxed m-0 p-0 bg-transparent border-0">
+          {children}
+        </pre>
+      </div>
+    </div>
+  );
+}
+
   // Custom Markdown renderers for tables, pre, and code to guarantee responsive wrapping without horizontal overflow
   const markdownComponents = useMemo(() => ({
     table: ({ node, ...props }) => (
@@ -348,14 +410,16 @@ CORE GUIDELINES:
     td: ({ node, ...props }) => (
       <td className="px-3 py-2 text-xs border-b border-border/40 text-muted-foreground break-words" {...props} />
     ),
-    pre: ({ node, children, ...props }) => (
-      <div className="w-full max-w-full my-3 overflow-x-auto rounded-xl border border-border bg-slate-950 text-slate-100 p-3.5 shadow-xs scrollbar-thin">
-        <pre className="text-xs font-mono whitespace-pre-wrap break-words break-all leading-relaxed" {...props}>
+    pre: ({ node, children, ...props }) => {
+      // If pre contains a code block, inspect child props to pass language class
+      const childProps = children && children.props ? children.props : {};
+      return (
+        <CodeSnippetBlock className={childProps.className}>
           {children}
-        </pre>
-      </div>
-    ),
-    code: ({ node, inline, children, ...props }) => {
+        </CodeSnippetBlock>
+      );
+    },
+    code: ({ node, inline, children, className, ...props }) => {
       if (inline) {
         return (
           <code className="px-1.5 py-0.5 rounded bg-muted/80 text-primary font-mono text-[11px] font-semibold break-words" {...props}>
@@ -364,7 +428,7 @@ CORE GUIDELINES:
         );
       }
       return (
-        <code className="font-mono text-xs whitespace-pre-wrap break-words break-all" {...props}>
+        <code className={`font-mono text-xs whitespace-pre-wrap break-words break-all ${className || ''}`} {...props}>
           {children}
         </code>
       );

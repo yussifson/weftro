@@ -18,6 +18,7 @@ import { powerSync } from './api/PowerSyncConnector';
 
 import ClipadLayout from '@/components/layout/ClipadLayout';
 import ClipadAdminLayout from '@/components/layout/ClipadAdminLayout';
+import ClipadLoader from '@/components/ui/ClipadLoader';
 import { safeLazy } from '@/lib/safeLazy';
 
 const SpaceDashboard = safeLazy(() => import('@/pages/clipad/SpaceDashboard'));
@@ -102,7 +103,7 @@ function App() {
                   <VideoProvider>
                   <BrowserRouter>
                     <AnalyticsTracker />
-                    <React.Suspense fallback={<div>Loading...</div>}>
+                    <React.Suspense fallback={<ClipadLoader fullScreen={true} text="" />}>
                       <Routes>
                         <Route path="/login" element={<CliPadLogin />} />
                         <Route path="/signup" element={<CliPadSignUp />} />

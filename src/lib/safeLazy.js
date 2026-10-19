@@ -48,15 +48,25 @@ export function safeLazy(factory, retries = 2, interval = 800) {
                 return;
               }
 
-              // Exhausted retry attempts. Clear cache in background and resolve with fallback or report cleanly
+              // Exhausted retry attempts: New deployment has removed this chunk.
+              // Clear caches and trigger smooth automatic reload so the user gets the new version seamlessly
               try {
                 if ('caches' in window) {
-                  const cacheKeys = await caches.keys();
-                  for (const key of cacheKeys) {
-                    await caches.delete(key);
-                  }
+                  caches.keys().then((keys) => {
+                    return Promise.all(keys.map(k => caches.delete(k)));
+                  }).finally(() => {
+                    const lastReload = sessionStorage.getItem('vite_chunk_auto_reload');
+                    const now = Date.now();
+                    if (!lastReload || now - parseInt(lastReload, 10) > 10000) {
+                      sessionStorage.setItem('vite_chunk_auto_reload', now.toString());
+                      window.location.reload();
+                    }
+                  });
+                  return;
                 }
               } catch (_) {}
+              window.location.reload();
+              return;
             }
 
             // Reject so ErrorBoundary or caller handles gracefully without destroying active state

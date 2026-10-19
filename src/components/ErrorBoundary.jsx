@@ -36,7 +36,7 @@ export class ErrorBoundary extends React.Component {
       errorMsg.includes('loading chunk');
 
     if (isChunkMismatch) {
-      // Clear cache in background so subsequent user interactions fetch the newest assets
+      // Clear cache and auto-reload so user gets the new release automatically without seeing a crash screen
       (async () => {
         try {
           if ('caches' in window) {
@@ -44,6 +44,12 @@ export class ErrorBoundary extends React.Component {
             for (const k of keys) await caches.delete(k);
           }
         } catch (_) {}
+        const lastReload = sessionStorage.getItem('vite_eb_auto_reload');
+        const now = Date.now();
+        if (!lastReload || now - parseInt(lastReload, 10) > 10000) {
+          sessionStorage.setItem('vite_eb_auto_reload', now.toString());
+          window.location.reload();
+        }
       })();
     }
 
