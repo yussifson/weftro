@@ -332,25 +332,25 @@ CORE GUIDELINES:
     setTimeout(() => setCopiedIndex(null), 2000);
   };
 
-  // Custom Markdown renderers for tables, pre, and code to guarantee horizontal scrolling
+  // Custom Markdown renderers for tables, pre, and code to guarantee responsive wrapping without horizontal overflow
   const markdownComponents = useMemo(() => ({
     table: ({ node, ...props }) => (
-      <div className="w-full my-3 overflow-x-auto rounded-xl border border-border bg-card/60 shadow-xs scrollbar-thin">
-        <table className="w-full text-xs text-left border-collapse min-w-[500px]" {...props} />
+      <div className="w-full max-w-full my-3 overflow-x-auto rounded-xl border border-border bg-card/60 shadow-xs scrollbar-thin">
+        <table className="w-full text-xs text-left border-collapse" {...props} />
       </div>
     ),
     thead: ({ node, ...props }) => (
       <thead className="bg-secondary/70 text-foreground font-semibold border-b border-border" {...props} />
     ),
     th: ({ node, ...props }) => (
-      <th className="px-3.5 py-2.5 text-xs font-semibold whitespace-nowrap text-foreground" {...props} />
+      <th className="px-3 py-2 text-xs font-semibold text-foreground" {...props} />
     ),
     td: ({ node, ...props }) => (
-      <td className="px-3.5 py-2 text-xs border-b border-border/40 text-muted-foreground whitespace-normal" {...props} />
+      <td className="px-3 py-2 text-xs border-b border-border/40 text-muted-foreground break-words" {...props} />
     ),
     pre: ({ node, children, ...props }) => (
-      <div className="w-full my-3 overflow-x-auto rounded-xl border border-border bg-slate-950 text-slate-100 p-3.5 shadow-xs scrollbar-thin">
-        <pre className="text-xs font-mono whitespace-pre leading-relaxed min-w-max" {...props}>
+      <div className="w-full max-w-full my-3 overflow-x-auto rounded-xl border border-border bg-slate-950 text-slate-100 p-3.5 shadow-xs scrollbar-thin">
+        <pre className="text-xs font-mono whitespace-pre-wrap break-words break-all leading-relaxed" {...props}>
           {children}
         </pre>
       </div>
@@ -358,13 +358,13 @@ CORE GUIDELINES:
     code: ({ node, inline, children, ...props }) => {
       if (inline) {
         return (
-          <code className="px-1.5 py-0.5 rounded bg-muted/80 text-primary font-mono text-[11px] font-semibold" {...props}>
+          <code className="px-1.5 py-0.5 rounded bg-muted/80 text-primary font-mono text-[11px] font-semibold break-words" {...props}>
             {children}
           </code>
         );
       }
       return (
-        <code className="font-mono text-xs whitespace-pre" {...props}>
+        <code className="font-mono text-xs whitespace-pre-wrap break-words break-all" {...props}>
           {children}
         </code>
       );
@@ -376,16 +376,16 @@ CORE GUIDELINES:
       {/* Main Responsive Two-Column Layout */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 min-h-0 overflow-hidden">
         {/* Left Column: Chat Messages & Input (Expanded to take all remaining space: 8 cols on lg, 9 cols on xl) */}
-        <div className="lg:col-span-8 xl:col-span-9 flex flex-col h-full min-h-0 border-r border-border overflow-hidden bg-card/30 relative">
+        <div className="lg:col-span-8 xl:col-span-9 flex flex-col h-full min-h-0 min-w-0 border-r border-border overflow-hidden bg-card/30 relative">
           {/* Scrollable Messages Area: Balanced margins on both sides for clean corporate symmetry */}
-          <div className="flex-1 overflow-y-auto px-2 sm:px-3 py-4 space-y-3.5 scrollbar-thin">
-            <div className="w-full space-y-3.5">
+          <div className="flex-1 overflow-y-auto px-2 sm:px-3 py-4 space-y-3.5 scrollbar-thin min-w-0">
+            <div className="w-full min-w-0 space-y-3.5">
             {messages.map((msg, idx) => {
               const isAssistant = msg.role === 'assistant';
               return (
                 <div
                   key={idx}
-                  className={`flex items-start gap-2.5 ${isAssistant ? 'justify-start' : 'justify-end'}`}
+                  className={`flex items-start gap-2.5 min-w-0 w-full ${isAssistant ? 'justify-start' : 'justify-end'}`}
                 >
                   {isAssistant && (
                     <div className="w-7 h-7 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0 mt-0.5 shadow-sm">
@@ -396,18 +396,18 @@ CORE GUIDELINES:
                   <div
                     className={`${
                       isAssistant
-                        ? 'flex-1 bg-card border border-border/80 text-foreground shadow-xs rounded-2xl rounded-tl-sm px-4 sm:px-5 py-3.5'
+                        ? 'flex-1 min-w-0 max-w-full bg-card border border-border/80 text-foreground shadow-xs rounded-2xl rounded-tl-sm px-4 sm:px-5 py-3.5'
                         : 'max-w-[85%] md:max-w-[70%] bg-primary text-primary-foreground font-medium rounded-2xl rounded-tr-sm px-4 py-2.5 shadow-xs'
-                    } text-sm leading-relaxed`}
+                    } text-sm leading-relaxed overflow-hidden`}
                   >
                     {isAssistant ? (
-                      <div className="prose prose-sm dark:prose-invert max-w-none break-words [&>p]:mb-2 [&>p:last-child]:mb-0 [&>ul]:my-2 [&>ol]:my-2">
+                      <div className="prose prose-sm dark:prose-invert max-w-none break-words overflow-hidden [&>p]:mb-2 [&>p:last-child]:mb-0 [&>ul]:my-2 [&>ol]:my-2">
                         <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
                           {msg.content}
                         </ReactMarkdown>
                       </div>
                     ) : (
-                      <p className="whitespace-pre-wrap">{msg.content}</p>
+                      <p className="whitespace-pre-wrap break-words">{msg.content}</p>
                     )}
 
                     {isAssistant && idx > 0 && (
