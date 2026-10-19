@@ -17,6 +17,7 @@ import { generateShortId } from '@/utils/idGenerator';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import ClipadLoader from '@/components/ui/ClipadLoader';
+import { SidebarCollapseIcon } from '@/components/ui/SidebarCollapseIcon';
 import LockWall from '@/components/clipad/LockWall';
 import { useToast } from '@/components/ui/use-toast';
 import TaskBoard from '@/components/clipad/tasks/TaskBoard';
@@ -561,9 +562,16 @@ export default function SpaceDashboard() {
              )}
              <span className={`font-bold text-sm truncate transition-opacity duration-300 ${sidebarOpen ? 'opacity-100' : 'opacity-0 hidden'}`}>{space.name}</span>
           </div>
-          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-1.5 text-slate-400 hover:text-slate-600 dark:text-muted-foreground hover:bg-slate-100 dark:hover:bg-accent rounded-md transition-colors shrink-0" title={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}>
-              {sidebarOpen ? <ChevronLeft className="w-5 h-5 transition-transform duration-300" /> : <ChevronRight className="w-5 h-5 transition-transform duration-300" />}
-            </button>
+          <button 
+            onClick={() => setSidebarOpen(!sidebarOpen)} 
+            className="p-1.5 text-slate-500 hover:text-slate-800 dark:text-muted-foreground dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-accent rounded-md transition-all shrink-0 flex items-center justify-center group" 
+            title={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+          >
+            <SidebarCollapseIcon 
+              className="w-5 h-5 group-hover:scale-105" 
+              collapsed={!sidebarOpen}
+            />
+          </button>
         </div>
         
         <div className="flex-1 overflow-y-auto py-4 px-3 space-y-1 scrollbar-hide">
