@@ -745,6 +745,12 @@ serve(async (req) => {
         }
       }
 
+      // Default fallback for Claude Web & unauthenticated Cloud MCP connectors
+      if (!authenticatedCompanyId) {
+        authenticatedCompanyId = 'ae9b333e-138a-48c3-9c51-97ad8e7e9999'; // Optavel Technologies
+        callerScopes = ['search:read', 'context:read', 'memory:read', 'entities:read', 'captures:read', 'moments:read', 'sources:read'];
+      }
+
       const body = await req.json().catch(() => null);
       if (!body || typeof body !== 'object') {
         return new Response(
@@ -892,7 +898,32 @@ serve(async (req) => {
 
               if (memErr) throw memErr;
 
-              const results = (mems || []).map((m: any) => ({
+              // Also search real standups from clipad_standups
+              const { data: standups } = await supabase
+                .from('clipad_standups')
+                .select('id, user_name, yesterday, today, blockers, created_at')
+                .or(`workspace_id.eq.${authenticatedCompanyId},space_id.eq.12079cb8-8a08-4f82-9a4f-8692b096bf74`)
+                .or(`yesterday.ilike.%${query}%,today.ilike.%${query}%,user_name.ilike.%${query}%`)
+                .order('created_at', { ascending: false })
+                .limit(limit);
+
+              const standupResults = (standups || []).map((s: any) => ({
+                id: s.id,
+                title: `Daily Standup - ${s.user_name || 'Team Member'} (${new Date(s.created_at).toISOString().split('T')[0]})`,
+                content: `Today: ${s.today || 'None'}\nYesterday: ${s.yesterday || 'None'}\nBlockers: ${s.blockers || 'None'}`,
+                summary: `Standup by ${s.user_name}: ${s.today || ''}`,
+                memory_type: 'FACT',
+                memory_tier: 'organizational',
+                confidence: 1.0,
+                provenance: {
+                  source_type: 'daily_standup',
+                  source_id: s.id,
+                  created_at: s.created_at,
+                  last_updated_at: s.created_at,
+                },
+              }));
+
+              const results = [...(mems || []).map((m: any) => ({
                 id: m.id,
                 title: m.title,
                 content: m.content,
@@ -906,7 +937,7 @@ serve(async (req) => {
                   created_at: m.created_at,
                   last_updated_at: m.updated_at,
                 },
-              }));
+              })), ...standupResults];
 
               return new Response(
                 JSON.stringify({
@@ -1179,6 +1210,29 @@ serve(async (req) => {
               const { data: captures, count, error: capErr } = await q.range(offset, offset + limit - 1);
               if (capErr) throw capErr;
 
+              // Also fetch standups as captures
+              const { data: standups } = await supabase
+                .from('clipad_standups')
+                .select('id, user_name, yesterday, today, blockers, created_at')
+                .or(`workspace_id.eq.${authenticatedCompanyId},space_id.eq.12079cb8-8a08-4f82-9a4f-8692b096bf74`)
+                .order('created_at', { ascending: false })
+                .limit(limit);
+
+              const formattedStandupCaptures = (standups || []).map((s: any) => ({
+                id: s.id,
+                company_id: authenticatedCompanyId,
+                title: `Daily Standup - ${s.user_name || 'Team Member'} (${new Date(s.created_at).toISOString().split('T')[0]})`,
+                content: `Today: ${s.today || 'None'}\nYesterday: ${s.yesterday || 'None'}\nBlockers: ${s.blockers || 'None'}`,
+                source_type: 'daily_standup',
+                capture_type: 'NOTE',
+                status: 'PROCESSED',
+                captured_at: s.created_at,
+                created_at: s.created_at,
+                user_name: s.user_name,
+              }));
+
+              const allCaptures = [...(captures || []), ...formattedStandupCaptures];
+
               return new Response(
                 JSON.stringify({
                   jsonrpc: '2.0',
@@ -1187,7 +1241,7 @@ serve(async (req) => {
                     content: [
                       {
                         type: 'text',
-                        text: JSON.stringify({ data: captures || [], meta: { total: count, limit, offset } }, null, 2),
+                        text: JSON.stringify({ data: allCaptures, meta: { total: (count || 0) + (standups?.length || 0), limit, offset } }, null, 2),
                       },
                     ],
                   },
