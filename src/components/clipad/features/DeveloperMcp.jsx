@@ -181,6 +181,48 @@ export default function DeveloperMcp() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
+          {/* Cloud Connectors: ChatGPT & Claude */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-foreground text-sm">Cloud Connectors (ChatGPT & Claude Web)</span>
+                <span className="text-xs text-muted-foreground">(Streamable HTTP & SSE)</span>
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-8 text-xs gap-1"
+                onClick={() => handleCopy('cloud_mcp', 'https://www.weftro.com/mcp')}
+              >
+                {copiedKey === 'cloud_mcp' ? (
+                  <>
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                    Copied URL
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3.5 h-3.5" />
+                    Copy Server URL
+                  </>
+                )}
+              </Button>
+            </div>
+            <div className="p-4 rounded-xl bg-muted/60 border border-border/70 space-y-2 text-xs">
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-muted-foreground w-28">Server URL:</span>
+                <code className="bg-background px-2 py-0.5 rounded border border-border font-mono text-primary font-semibold">https://www.weftro.com/mcp</code>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-muted-foreground w-28">Authentication:</span>
+                <span className="text-foreground">No sign-in (or Scoped Bearer Token)</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-muted-foreground w-28">Protocol:</span>
+                <span className="text-foreground">Model Context Protocol (2024-11-05)</span>
+              </div>
+            </div>
+          </div>
+
           {/* Cursor Configuration */}
           <div>
             <div className="flex items-center justify-between mb-2">
