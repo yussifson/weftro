@@ -382,13 +382,15 @@ serve(async (req) => {
   const rawPath = url.pathname.replace(/\/+$/, ''); // Strip trailing slash
 
   // Normalize path routing for edge functions
-  // Handles /connect, /connect/api/v1/..., /api/v1/...
+  // Handles /functions/v1/connect, /connect, /connect/api/v1/..., /api/v1/...
   let subpath = rawPath;
-  const matchConnect = rawPath.match(/(?:\/connect)?(?:\/api\/v1)?(\/.*)?$/);
-  if (matchConnect && matchConnect[1]) {
-    subpath = matchConnect[1];
-  } else if (rawPath.endsWith('/connect') || rawPath.endsWith('/v1')) {
+  if (rawPath.endsWith('/connect') || rawPath.endsWith('/v1')) {
     subpath = '/';
+  } else {
+    const matchConnect = rawPath.match(/(?:\/functions\/v1\/connect|\/connect)?(?:\/api\/v1)?(\/.*)?$/);
+    if (matchConnect && matchConnect[1]) {
+      subpath = matchConnect[1];
+    }
   }
 
   const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
@@ -405,13 +407,18 @@ serve(async (req) => {
 
   const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-  // 1. Health & Capabilities endpoints (Public read-only capabilities)
-  if (subpath === '/health' || subpath === '/api/v1/health') {
+  // 1. Health & Root Probe endpoints (Public read-only capabilities)
+  if (subpath === '/' || subpath === '/health' || subpath === '/api/v1/health') {
     return successResponse(
       {
         status: 'healthy',
         service: 'weftro-v3-api-gateway',
         version: API_VERSION,
+        mcp: {
+          server_name: 'weftro-connect-gateway',
+          protocol_version: '2024-11-05',
+          capabilities: { tools: {} },
+        },
         uptime_check: 'ok',
       },
       { request_id: requestId }
