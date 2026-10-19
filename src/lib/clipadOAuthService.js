@@ -38,6 +38,24 @@ export async function createConnectApp(userId, companyId, { name, description, r
  * Grants an access token to an app (simulates the end of an OAuth flow or Personal Access Token)
  */
 export async function grantAccessToken(userId, companyId, appId, scopes) {
+  // Ensure we have active auth user ID
+  let activeUserId = userId;
+  if (!activeUserId) {
+    const { data: { user } } = await supabase.auth.getUser();
+    activeUserId = user?.id;
+  }
+
+  // Ensure valid company_id
+  let activeCompanyId = companyId;
+  if (!activeCompanyId && activeUserId) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('company_id')
+      .eq('id', activeUserId)
+      .maybeSingle();
+    activeCompanyId = profile?.company_id;
+  }
+
   const rawToken = `cpd_${crypto.randomUUID().replace(/-/g, '')}`;
   const tokenHash = await simulateHash(rawToken);
   
@@ -45,15 +63,38 @@ export async function grantAccessToken(userId, companyId, appId, scopes) {
     .from('clipad_v3_connect_tokens')
     .insert([{
       app_id: appId,
-      user_id: userId,
-      company_id: companyId,
+      user_id: activeUserId,
+      company_id: activeCompanyId,
       token_hash: tokenHash,
       scopes: scopes || ['memory:read', 'context:read']
     }])
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    console.error('[grantAccessToken] Direct DB insert failed, trying Edge Gateway /tokens:', error.message);
+    // Graceful fallback to Edge Gateway POST /api/v1/tokens using the current user's session JWT
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.access_token) {
+      const gatewayRes = await fetch('https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/tokens', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          app_id: appId,
+          scopes: scopes || ['memory:read', 'context:read']
+        })
+      });
+      const gatewayData = await gatewayRes.json();
+      if (gatewayRes.ok && gatewayData?.data?.access_token) {
+        return gatewayData.data;
+      }
+    }
+    throw error;
+  }
+
   return { ...data, access_token: rawToken };
 }
 
