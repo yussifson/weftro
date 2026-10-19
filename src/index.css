@@ -28,40 +28,50 @@ html, body {
 @layer base {
   :root, .light {
     --font-inter: 'Inter', sans-serif;
-    --background: 0 0% 100%;
-    --foreground: 222 47% 11%;
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    
+    /* 🏛️ EXECUTIVE WARM CERAMIC CANVAS & SURFACES */
+    --background: 210 20% 98.2%;            /* #F8F9FA Silky Warm Off-White / Ceramic */
+    --foreground: 220 40% 11%;              /* #0D1524 Deep Executive Obsidian */
+    --card: 0 0% 100%;                      /* #FFFFFF Pristine Elevated Porcelain */
+    --card-foreground: 220 40% 11%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
-    --primary: 183 100% 20%; /* Dark Teal #006065 */
+    --popover-foreground: 220 40% 11%;
+
+    /* 💎 CORPORATE PETROL TEAL & HIGH-PRECISION ACCENT */
+    --primary: 184 92% 18.5%;               /* #04494F Rich Deep Petrol Teal */
     --primary-foreground: 0 0% 100%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222 47% 11%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222 47% 11%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 149 100% 33%;
-    --chart-1: 152 76% 41%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 38 92% 50%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --secondary: 212 30% 95%;               /* #EEF2F6 Satin Cool Gray */
+    --secondary-foreground: 220 40% 12%;
+    --muted: 212 26% 94.2%;                 /* #ECF1F5 Soft Surface Wash */
+    --muted-foreground: 218 17% 44%;        /* #5E6E82 Executive Slate */
+    --accent: 212 32% 92.5%;                /* #E5ECF2 Crisp Interactive Hover */
+    --accent-foreground: 220 40% 11%;
+    --destructive: 0 78% 54%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* 🪞 REFINED MICRO-CONTRAST HAIRLINES & FOCUS */
+    --border: 215 24% 88.5%;                /* #DCE3EA Subtle Hairline Divider */
+    --input: 215 24% 88.5%;
+    --ring: 184 92% 18.5%;
     --radius: 0.75rem;
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 222 47% 15%;
-    --sidebar-primary: 183 100% 20%;
+
+    /* 📊 PROFESSIONAL METRIC CHARTS */
+    --chart-1: 184 92% 18.5%;               /* Petrol Teal */
+    --chart-2: 38 95% 48%;                  /* Executive Amber Gold */
+    --chart-3: 215 85% 46%;                 /* Corporate Cobalt */
+    --chart-4: 158 64% 39%;                 /* Forest Emerald */
+    --chart-5: 280 60% 52%;                 /* Royal Amethyst */
+
+    /* 🧭 DISTINCT FROSTED TITANIUM SIDEBAR ARCHITECTURE */
+    --sidebar-background: 210 28% 96.2%;    /* #EFF3F7 Structured Architectural Wash */
+    --sidebar-foreground: 220 35% 20%;
+    --sidebar-primary: 184 92% 18.5%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 40% 96%;
-    --sidebar-accent-foreground: 222 47% 15%;
-    --sidebar-border: 214 32% 91%;
-    --sidebar-ring: 152 76% 41%;
-    --bg-base-rgb: 255, 255, 255;
+    --sidebar-accent: 212 30% 91.5%;
+    --sidebar-accent-foreground: 220 40% 11%;
+    --sidebar-border: 215 24% 88.5%;
+    --sidebar-ring: 184 92% 18.5%;
+    --bg-base-rgb: 248, 249, 250;
 
     /* ────────────────────────────────── */
     /* HOTEL VERTICAL — Premium Hospitality Palette */
@@ -147,10 +157,23 @@ html, body {
 
 @layer utilities {
   .glass {
-    @apply bg-white/5 backdrop-blur-md border border-white/10;
+    @apply bg-white/70 dark:bg-white/5 backdrop-blur-md border border-slate-200/80 dark:border-white/10;
   }
   .glass-card {
-    @apply bg-white/5 backdrop-blur-xl border border-white/10;
+    @apply bg-white/85 dark:bg-white/5 backdrop-blur-xl border border-slate-200/80 dark:border-white/10 shadow-sm dark:shadow-none;
+  }
+  
+  /* 🏛️ EXECUTIVE PORCELAIN CARD ELEVATION */
+  .executive-card {
+    background-color: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04), 0 4px 12px -2px rgba(15, 23, 42, 0.03);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .executive-card:hover {
+    border-color: hsl(var(--border) / 0.8);
+    box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.06), 0 12px 24px -4px rgba(15, 23, 42, 0.05);
+    transform: translateY(-1px);
   }
   
   .bg-noise {
@@ -456,16 +479,16 @@ html, body {
     @apply w-full border-collapse border-spacing-0;
   }
   thead {
-    @apply bg-muted/40 backdrop-blur-md sticky top-0 z-20;
+    @apply bg-secondary/80 dark:bg-muted/40 backdrop-blur-md sticky top-0 z-20;
   }
   th {
-    @apply px-6 py-4 text-left text-[11px] uppercase tracking-[0.06em] font-medium text-muted-foreground border-b border-border;
+    @apply px-6 py-4 text-left text-[11px] uppercase tracking-[0.08em] font-bold text-muted-foreground border-b border-border;
   }
   td {
-    @apply px-6 py-4 border-b border-border/40 text-sm align-middle transition-colors duration-200;
+    @apply px-6 py-4 border-b border-border/60 text-sm align-middle transition-colors duration-200;
   }
   tbody tr {
-    @apply transition-all duration-300 hover:bg-primary/5 relative z-0 hover:z-10 bg-card;
+    @apply transition-all duration-200 hover:bg-secondary/60 dark:hover:bg-primary/5 relative z-0 hover:z-10 bg-card;
   }
   
   /* Global Input and Button Google/Material Reskin */
