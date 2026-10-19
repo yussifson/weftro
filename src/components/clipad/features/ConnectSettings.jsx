@@ -635,6 +635,15 @@ export default function ConnectSettings() {
               <Badge key={s} variant="secondary" className="text-[10px] font-mono bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200">{s}</Badge>
             ))}
           </div>
+          <div className="pt-2 mt-2 border-t border-emerald-200/60 dark:border-emerald-800/60 space-y-1">
+            <span className="text-[10px] uppercase font-bold text-emerald-800/80 dark:text-emerald-300 tracking-wider">Example cURL Usage</span>
+            <pre className="p-2 bg-emerald-100/40 dark:bg-emerald-900/30 rounded text-[11px] font-mono text-emerald-950 dark:text-emerald-100 overflow-x-auto">
+{`curl -X POST "https://www.weftro.com/api/v1/search" \\
+  -H "Authorization: Bearer ${createdToken.token}" \\
+  -H "Content-Type: application/json" \\
+  -d '{"query": "strategic priorities", "limit": 5}'`}
+            </pre>
+          </div>
         </div>
       )}
 

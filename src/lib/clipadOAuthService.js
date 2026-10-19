@@ -73,10 +73,12 @@ export async function grantAccessToken(userId, companyId, appId, scopes) {
 
   if (error) {
     console.error('[grantAccessToken] Direct DB insert failed, trying Edge Gateway /tokens:', error.message);
-    // Graceful fallback to Edge Gateway POST /api/v1/tokens using the current user's session JWT
     const { data: { session } } = await supabase.auth.getSession();
     if (session?.access_token) {
-      const gatewayRes = await fetch('https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/tokens', {
+      const gatewayUrl = (typeof window !== 'undefined' && window.location.origin.includes('weftro.com'))
+        ? 'https://www.weftro.com/api/v1/tokens'
+        : 'https://wmabgiafwamxkcgxyhee.supabase.co/functions/v1/connect/api/v1/tokens';
+      const gatewayRes = await fetch(gatewayUrl, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${session.access_token}`,
