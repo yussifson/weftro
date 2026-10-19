@@ -661,31 +661,31 @@ Guidelines:
   const hasResults = isSearching || filteredResults.length > 0;
   const showLeftPanel = hasResults;
   return (
-    <div className="flex flex-col h-screen bg-slate-50 dark:bg-background font-sans text-slate-900 dark:text-slate-100 overflow-hidden">
+    <div className="flex flex-col h-screen bg-background font-sans text-foreground overflow-hidden">
       
       {!hasPerformedSearch ? (
         /* ── ZERO STATE (Original Centered Layout) ── */
         <div className="flex-1 flex flex-col items-center justify-center px-4 py-12 overflow-y-auto">
           {/* Greeting heading */}
-          <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-foreground text-center mb-2 tracking-tight">
+          <h1 className="text-3xl md:text-4xl font-extrabold text-foreground text-center mb-2 tracking-tight">
             How can I help you today, {firstName}?
           </h1>
-          <p className="text-sm text-slate-500 dark:text-muted-foreground text-center mb-8">Search across organizational memory, decisions, action items, documents, and meetings.</p>
+          <p className="text-sm text-muted-foreground text-center mb-8">Search across organizational memory, decisions, action items, documents, and meetings.</p>
 
           {/* Search Input Bar */}
           <div className="w-full max-w-2xl">
             <form onSubmit={(e) => { e.preventDefault(); setSearchParams({ q: query }); runSearch(); }}>
-              <div className="relative flex items-center bg-white dark:bg-card border border-slate-300 dark:border-border rounded-full pl-5 pr-2 py-2 shadow-sm hover:border-slate-400 dark:hover:border-slate-600 focus-within:border-[#006065] dark:focus-within:border-teal-500 focus-within:shadow-md transition-all w-full">
-                <Search className="w-5 h-5 text-slate-400 shrink-0 mr-2" />
+              <div className="relative flex items-center bg-card border border-border rounded-full pl-5 pr-2 py-2 shadow-sm hover:border-primary/40 focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/10 transition-all w-full">
+                <Search className="w-5 h-5 text-muted-foreground shrink-0 mr-2" />
                 <input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search decisions, documents, action items, standups..."
-                  className="flex-1 bg-transparent border-0 outline-none ring-0 focus:ring-0 focus:outline-none text-base font-normal placeholder:text-slate-400 text-slate-900 dark:text-foreground px-1 min-w-0 w-full"
+                  className="flex-1 bg-transparent border-0 outline-none ring-0 focus:ring-0 focus:outline-none text-base font-normal placeholder:text-muted-foreground text-foreground px-1 min-w-0 w-full"
                 />
 
                 {query && (
-                  <button type="button" onClick={() => setQuery('')} className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 mr-1 shrink-0 rounded-full hover:bg-slate-100 dark:hover:bg-accent transition-colors">
+                  <button type="button" onClick={() => setQuery('')} className="p-1.5 text-muted-foreground hover:text-foreground mr-1 shrink-0 rounded-full hover:bg-secondary transition-colors">
                     <X className="w-4 h-4" />
                   </button>
                 )}
@@ -693,7 +693,7 @@ Guidelines:
                 <button
                   type="submit"
                   disabled={!query.trim()}
-                  className="w-10 h-10 bg-[#006065] hover:bg-[#004e52] disabled:opacity-30 disabled:hover:bg-[#006065] text-white rounded-full flex items-center justify-center transition-all active:scale-95 shrink-0 shadow-sm"
+                  className="w-10 h-10 bg-primary hover:bg-primary/90 disabled:opacity-30 text-primary-foreground rounded-full flex items-center justify-center transition-all active:scale-95 shrink-0 shadow-sm"
                   title="Search"
                 >
                   {isSearching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
@@ -709,7 +709,7 @@ Guidelines:
                   <button
                     key={idx}
                     onClick={() => { setQuery(item.desc); setSearchParams({ q: item.desc }); runSearch(item.desc); }}
-                    className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white dark:bg-card border border-slate-200 dark:border-border hover:bg-slate-100 dark:hover:bg-accent text-slate-700 dark:text-slate-200 text-xs font-semibold transition-all group shadow-sm active:scale-95"
+                    className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-card border border-border hover:bg-secondary hover:border-primary/30 text-foreground text-xs font-semibold transition-all group shadow-xs active:scale-95"
                   >
                     <Icon className="w-3.5 h-3.5 text-primary shrink-0" />
                     {item.title}

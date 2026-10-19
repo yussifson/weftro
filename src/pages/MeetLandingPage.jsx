@@ -24,6 +24,7 @@ import ContactSalesModal from '@/components/clipad/ContactSalesModal';
 import PaymentReceiptModal from '@/components/clipad/PaymentReceiptModal';
 import SupportAIChat from '@/components/clipad/SupportAIChat';
 import ClipadMobileNav from '@/components/clipad/ClipadMobileNav';
+import ThemeToggle from '@/components/layout/ThemeToggle';
 
 
 const pillars = [
@@ -470,6 +471,7 @@ export default function MeetLandingPage() {
           
           {/* Right Action Items */}
           <div className="flex items-center gap-3 shrink-0">
+            <ThemeToggle />
             <LanguageSwitcher className="h-9 w-[130px] rounded-xl border border-border bg-background hover:bg-secondary text-foreground text-xs font-medium" />
             {user ? (
               <Button onClick={() => navigate('/dashboard')} className="rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold px-4 h-9 shadow-sm">

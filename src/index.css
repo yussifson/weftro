@@ -171,9 +171,43 @@ html, body {
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .executive-card:hover {
-    border-color: hsl(var(--border) / 0.8);
+    border-color: hsl(var(--border) / 0.85);
     box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.06), 0 12px 24px -4px rgba(15, 23, 42, 0.05);
     transform: translateY(-1px);
+  }
+
+  /* 🏢 ULTRA-CORP LIGHT SYSTEM COMPONENTS */
+  .corporate-panel {
+    background-color: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    box-shadow: 0 1px 2px 0 rgba(15, 23, 42, 0.03), 0 8px 16px -4px rgba(15, 23, 42, 0.02);
+  }
+
+  .corporate-border {
+    border-color: hsl(var(--border));
+  }
+
+  .corporate-input {
+    background-color: hsl(var(--card));
+    border: 1px solid hsl(var(--input));
+    color: hsl(var(--foreground));
+    box-shadow: 0 1px 2px 0 rgba(15, 23, 42, 0.02);
+    transition: all 0.15s ease-in-out;
+  }
+  .corporate-input:focus {
+    border-color: hsl(var(--primary));
+    box-shadow: 0 0 0 3px hsl(var(--primary) / 0.12);
+  }
+
+  .corporate-pill {
+    background-color: hsl(var(--secondary));
+    border: 1px solid hsl(var(--border) / 0.8);
+    color: hsl(var(--foreground));
+    transition: all 0.15s ease-in-out;
+  }
+  .corporate-pill:hover {
+    background-color: hsl(var(--accent));
+    border-color: hsl(var(--primary) / 0.3);
   }
   
   .bg-noise {
