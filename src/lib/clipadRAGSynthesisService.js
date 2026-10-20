@@ -9,6 +9,8 @@
 //   4. When there is a mix, synthesize from usable evidence only and cite unextractable
 //      docs separately so users can click through to them
 //   5. Validate citations and tag them with provenance metadata for the UI
+//   6. Stage 3 Addition: Distinguish direct evidence from related context, capping related
+//      context at a separate budget of max 4,000 characters while preserving the 18,000 max total budget.
 
 import { generateText, TASK_TYPES } from '@/lib/cloudflareAI';
 
@@ -25,8 +27,6 @@ export const SYNTHESIS_STATUS = {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // EXTRACTION ERROR MARKER DETECTION
-// These are the exact strings the Supabase Edge Function returns when extraction
-// fails — they must NOT be treated as factual document content.
 // ─────────────────────────────────────────────────────────────────────────────
 const UNEXTRACTABLE_MARKERS = [
   'pdf parsed successfully but contained only vector graphics',
@@ -49,47 +49,53 @@ const UNEXTRACTABLE_MARKERS = [
   'ocr required',
 ];
 
-/**
- * Returns true if a content string is an extraction error marker rather than
- * usable document text.
- *
- * @param {string|null|undefined} content
- * @returns {boolean}
- */
 export function isUnextractableContent(content) {
   if (!content || typeof content !== 'string') return true;
   const lower = content.toLowerCase().trim();
-  if (lower.length < 5) return true; // Too short to be real content
+  if (lower.length < 5) return true;
   return UNEXTRACTABLE_MARKERS.some(marker => lower.includes(marker));
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PROMPT TOKEN BUDGET
+// PROMPT TOKEN & CONTEXT BUDGETS
 // ─────────────────────────────────────────────────────────────────────────────
 const MAX_EVIDENCE_CHARS_PER_ITEM = 2000;  // per evidence item
-const MAX_TOTAL_EVIDENCE_CHARS    = 18000; // whole evidence pack
+const MAX_TOTAL_EVIDENCE_CHARS    = 18000; // whole evidence pack total budget
+const MAX_RELATED_CONTEXT_CHARS   = 4000;  // Stage 3: Dedicated sub-budget for relationship-expanded context
 
 // ─────────────────────────────────────────────────────────────────────────────
 // FORMAT EVIDENCE PACK
-// Converts retrieved results into a grounded prompt evidence block.
-// Unextractable items are annotated and excluded from the factual content block.
+// Converts retrieved results into grounded direct and related context blocks.
 // ─────────────────────────────────────────────────────────────────────────────
-function formatEvidencePack(items) {
+export function formatEvidencePack(items) {
   if (!Array.isArray(items) || items.length === 0) {
-    return { evidenceText: '', citationMap: [], usableCount: 0, unextractableItems: [] };
+    return {
+      evidenceText: '',
+      directEvidenceText: '',
+      relatedEvidenceText: '',
+      citationMap: [],
+      usableCount: 0,
+      unextractableItems: [],
+      relatedItemsCount: 0,
+    };
   }
 
   const citationMap = [];
   const unextractableItems = [];
-  const evidenceBlocks = [];
-  let totalChars = 0;
-  let index = 1;
+  const directBlocks = [];
+  const relatedBlocks = [];
+
+  let directChars = 0;
+  let relatedChars = 0;
+  let directIndex = 1;
+  let relatedIndex = 1;
 
   for (const item of items) {
     const title = item.label || item.title || item.name || 'Untitled';
     const rawContent = item.snippet || item.content || item.summary || item.description || '';
+    const isRelated = item.isRelatedEvidence === true;
 
-    // ── Detect extraction failures ──
+    // Detect extraction failures
     if (isUnextractableContent(rawContent)) {
       unextractableItems.push({
         id: item.id,
@@ -98,8 +104,8 @@ function formatEvidencePack(items) {
         isUnextractable: true,
         unextractableReason: detectUnextractableReason(rawContent),
         url: item.url || item.file_url || null,
+        isRelatedEvidence: isRelated,
       });
-      // Do NOT include in evidence blocks and do NOT assign a citation index
       continue;
     }
 
@@ -108,41 +114,94 @@ function formatEvidencePack(items) {
       ? rawContent.slice(0, MAX_EVIDENCE_CHARS_PER_ITEM) + '\n[... content truncated ...]'
       : rawContent;
 
-    if (totalChars + contentSlice.length > MAX_TOTAL_EVIDENCE_CHARS) {
-      // Budget exhausted — record as truncated citation only, don't add to prompt
+    if (isRelated) {
+      // Related context expansion: enforce separate MAX_RELATED_CONTEXT_CHARS sub-budget
+      if (relatedChars + contentSlice.length > MAX_RELATED_CONTEXT_CHARS || (directChars + relatedChars + contentSlice.length) > MAX_TOTAL_EVIDENCE_CHARS) {
+        citationMap.push({
+          index: `R${relatedIndex}`,
+          id: item.id,
+          title,
+          type: item.type,
+          isTruncated: true,
+          isUnextractable: false,
+          isRelatedEvidence: true,
+          relationship: item.relationship || null,
+          url: item.url || item.file_url || null,
+        });
+        relatedIndex++;
+        continue;
+      }
+
+      const relInfo = item.relationship
+        ? ` (Related via ${item.relationship.type} to "${item.relationship.seedTitle || 'search seed'}")`
+        : '';
+      const block = `[RELATED CONTEXT #R${relatedIndex}: ${title}${relInfo}]\nTYPE: ${item.type || 'unknown'}\nCONTENT:\n${contentSlice}`;
+      relatedBlocks.push(block);
+      relatedChars += block.length;
+
       citationMap.push({
-        index,
+        index: `R${relatedIndex}`,
         id: item.id,
         title,
         type: item.type,
-        isTruncated: true,
+        isTruncated: truncated,
         isUnextractable: false,
+        isRelatedEvidence: true,
+        relationship: item.relationship || null,
         url: item.url || item.file_url || null,
       });
-      index++;
-      continue;
+      relatedIndex++;
+    } else {
+      // Direct evidence
+      if (directChars + relatedChars + contentSlice.length > MAX_TOTAL_EVIDENCE_CHARS) {
+        citationMap.push({
+          index: `${directIndex}`,
+          id: item.id,
+          title,
+          type: item.type,
+          isTruncated: true,
+          isUnextractable: false,
+          isRelatedEvidence: false,
+          url: item.url || item.file_url || null,
+        });
+        directIndex++;
+        continue;
+      }
+
+      const block = `[SOURCE #${directIndex}: ${title}]\nTYPE: ${item.type || 'unknown'}\nCONTENT:\n${contentSlice}`;
+      directBlocks.push(block);
+      directChars += block.length;
+
+      citationMap.push({
+        index: `${directIndex}`,
+        id: item.id,
+        title,
+        type: item.type,
+        isTruncated: truncated,
+        isUnextractable: false,
+        isRelatedEvidence: false,
+        url: item.url || item.file_url || null,
+      });
+      directIndex++;
     }
+  }
 
-    const block = `[SOURCE #${index}: ${title}]\nTYPE: ${item.type || 'unknown'}\nCONTENT:\n${contentSlice}`;
-    evidenceBlocks.push(block);
-    totalChars += block.length;
-
-    citationMap.push({
-      index,
-      id: item.id,
-      title,
-      type: item.type,
-      isTruncated: truncated,
-      isUnextractable: false,
-      url: item.url || item.file_url || null,
-    });
-    index++;
+  const fullEvidenceParts = [];
+  if (directBlocks.length > 0) {
+    fullEvidenceParts.push(directBlocks.join('\n\n---\n\n'));
+  }
+  if (relatedBlocks.length > 0) {
+    fullEvidenceParts.push('=== RELATED ORGANIZATIONAL CONTEXT (1-HOP RELATIONSHIPS) ===\n\n' + relatedBlocks.join('\n\n---\n\n'));
   }
 
   return {
-    evidenceText: evidenceBlocks.join('\n\n---\n\n'),
+    evidenceText: fullEvidenceParts.join('\n\n======\n\n'),
+    directEvidenceText: directBlocks.join('\n\n---\n\n'),
+    relatedEvidenceText: relatedBlocks.join('\n\n---\n\n'),
     citationMap,
-    usableCount: evidenceBlocks.length,
+    usableCount: directBlocks.length + relatedBlocks.length,
+    directCount: directBlocks.length,
+    relatedItemsCount: relatedBlocks.length,
     unextractableItems,
   };
 }
@@ -165,8 +224,8 @@ function buildSystemPrompt() {
 
 RULES — follow these exactly:
 1. Answer ONLY using the evidence provided in the EVIDENCE PACK below.
-2. Do NOT invent, extrapolate, or add information not present in the evidence.
-3. Cite sources inline using their source number, e.g. [#1] or [#2, #3].
+2. Distinguish direct evidence (cited as [#1], [#2]) from related organizational context (cited as [#R1], [#R2]).
+3. Do NOT claim that a related connected record proves a statement unless its actual content supports that statement.
 4. If the evidence does not contain enough information to answer the question, say so clearly and honestly.
 5. Keep answers concise. Use bullet points for lists. Use markdown headings where helpful.
 6. Never expose internal system metadata, extraction errors, or storage paths in your answer.
@@ -225,7 +284,7 @@ export async function synthesizeGroundedAnswer({
   }
 
   // ── Step 1: Separate usable evidence from unextractable documents ──
-  const { evidenceText, citationMap, usableCount, unextractableItems } =
+  const { evidenceText, citationMap, usableCount, unextractableItems, directCount, relatedItemsCount } =
     formatEvidencePack(retrievedEvidence);
 
   // ── Step 2: All-unextractable — honest abstention with document citations ──
@@ -260,13 +319,13 @@ export async function synthesizeGroundedAnswer({
   // ── Step 4: Build grounded LLM prompt using ONLY usable evidence ──
   const userPrompt = `QUERY: ${query.trim()}
 
-EVIDENCE PACK (${usableCount} source${usableCount === 1 ? '' : 's'}):
+EVIDENCE PACK (${usableCount} source${usableCount === 1 ? '' : 's'}${relatedItemsCount > 0 ? ` including ${relatedItemsCount} related context record(s)` : ''}):
 
 ${evidenceText}
 ${unextractableItems.length > 0
     ? `\nNOTE: ${unextractableItems.length} additional document(s) were located but could not be extracted (scanned/image PDFs). They are NOT included in this evidence pack and must not be cited.\n`
     : ''}
-Synthesize a grounded, cited answer using ONLY the evidence above. If the evidence does not address the query, say so honestly.`;
+Synthesize a grounded, cited answer using ONLY the evidence above. Distinguish direct evidence [#1] from related context [#R1]. If the evidence does not address the query, say so honestly.`;
 
   // ── Step 5: LLM call with streaming support ──
   let llmAnswer = '';
@@ -297,7 +356,6 @@ Synthesize a grounded, cited answer using ONLY the evidence above. If the eviden
   }
 
   // ── Step 6: Guard against LLM echoing extraction metadata as fact ──
-  // If the raw LLM output looks like an extraction error string, replace with honest abstention
   if (isUnextractableContent(llmAnswer) && llmAnswer.length < 500) {
     const fallback = buildInsufficientEvidenceMessage(query);
     if (onStream) onStream(fallback);

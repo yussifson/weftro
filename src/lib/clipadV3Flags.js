@@ -27,6 +27,7 @@ export const V3_FLAGS = {
   ORGANIZATIONAL_LEARNING_ENABLED: 'organizational_learning_enabled',
   DOCUMENT_CHUNKING_INGESTION_ENABLED: 'document_chunking_ingestion_enabled',
   RAG_SYNTHESIS_ENABLED: 'rag_synthesis_enabled',
+  RELATIONSHIP_AWARE_RETRIEVAL_ENABLED: 'relationship_aware_retrieval_enabled',
 };
 
 // Default flag states for safe V3 staged rollout
@@ -52,6 +53,7 @@ const DEFAULT_V3_FLAG_DEFAULTS = {
   [V3_FLAGS.ORGANIZATIONAL_LEARNING_ENABLED]: true,
   [V3_FLAGS.DOCUMENT_CHUNKING_INGESTION_ENABLED]: true, // Phase 1 Upgrade: Activated for production
   [V3_FLAGS.RAG_SYNTHESIS_ENABLED]: true, // Phase 1 Upgrade: Activated for production
+  [V3_FLAGS.RELATIONSHIP_AWARE_RETRIEVAL_ENABLED]: false, // Phase 3 Stage 3: Defaulted to disabled until testing/verification complete
 };
 
 /**

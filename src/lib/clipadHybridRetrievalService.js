@@ -1,6 +1,5 @@
 // src/lib/clipadHybridRetrievalService.js
-// Weftro V3 — Hybrid Retrieval Service (Lexical + Semantic pgvector RRF)
-// Author: AGENT-RAG (Phase 3 Implementation)
+// Weftro V3 — Hybrid Retrieval Service (Lexical + Semantic pgvector RRF + Stage 3 Relationship Expansion)
 //
 // Combines:
 // 1. Semantic Vector Retrieval via `match_memories_hybrid` RPC (HNSW cosine similarity, 768-dim)
@@ -9,15 +8,27 @@
 // 4. Zero-Trust Security: Caller's authenticated context & SECURITY INVOKER enforced;
 //    cross-tenant boundaries, personal-memory ownership, and private-space memberships
 //    are strictly preserved even under RPC failure or fallback.
+// 5. Stage 3 Addition: Optional permission-aware one-hop relationship expansion for high-confidence seeds.
 
 import { supabase } from '@/api/supabaseClient';
 import { searchKnowledgeChunks } from './clipadChunkIngestionService';
+import { isV3FeatureEnabled, V3_FLAGS } from './clipadV3Flags';
 
 /**
  * Standard Reciprocal Rank Fusion (RRF) Constant
  * k = 60 is the industry standard (Cormack, Clarke, Buettcher 2009) to balance high vs. low ranks.
  */
 export const RRF_K = 60;
+
+/**
+ * Stage 3 Relationship Expansion Constants
+ */
+export const RELATIONSHIP_EXPANSION_DEFAULTS = {
+  MIN_CONFIDENCE: 0.75,
+  MAX_HOPS: 1,
+  MAX_RELATED_RECORDS: 6,
+  MAX_SEEDS: 3,
+};
 
 /**
  * Compute Reciprocal Rank Fusion (RRF) score for a list of ranked item lists.
@@ -182,9 +193,173 @@ export async function fetchRpcHybridMemories({
   }
 }
 
+// ──────────────────────────────────────────────────────────────────
+// STAGE 3: Permission-Aware One-Hop Relationship Expansion
+// ──────────────────────────────────────────────────────────────────
+
+/**
+ * Expands direct search results with 1-hop connected entities through verified relationships.
+ * 
+ * Invariants:
+ * 1. Only top direct-evidence results are used as expansion seeds (max 3 seeds).
+ * 2. Only high-confidence relationships (>= 0.75) are traversed.
+ * 3. Never exceeds 1 hop.
+ * 4. Strictly enforces caller's company_id and accessibleSpaceIds on both edge and target node.
+ * 5. Private-space records are strictly discarded if caller lacks membership.
+ * 6. Target nodes already present in direct results are deduplicated.
+ * 7. Returns at most maxRelated (default 6) related items.
+ */
+export async function expandOneHopRelationships({
+  directResults = [],
+  companyId,
+  accessibleSpaceIds = [],
+  minConfidence = RELATIONSHIP_EXPANSION_DEFAULTS.MIN_CONFIDENCE,
+  maxRelated = RELATIONSHIP_EXPANSION_DEFAULTS.MAX_RELATED_RECORDS,
+  maxSeeds = RELATIONSHIP_EXPANSION_DEFAULTS.MAX_SEEDS,
+}) {
+  if (!companyId || !Array.isArray(directResults) || directResults.length === 0) {
+    return [];
+  }
+
+  const directIdSet = new Set(directResults.map(r => String(r.id)));
+  const seeds = directResults.slice(0, maxSeeds);
+  const seedRecordIds = seeds.map(s => String(s.source_id || s.id));
+
+  try {
+    // 1. Locate entity nodes corresponding to the seed records
+    const { data: seedNodes, error: seedError } = await supabase
+      .from('clipad_v3_entities')
+      .select('id, entity_type, entity_id, name, metadata')
+      .eq('company_id', companyId)
+      .in('entity_id', seedRecordIds);
+
+    if (seedError || !seedNodes || seedNodes.length === 0) {
+      return [];
+    }
+
+    const seedNodeIds = seedNodes.map(n => n.id);
+    const seedNodeMap = new Map(seedNodes.map(n => [n.id, n]));
+
+    // 2. Query 1-hop relationships originating from or targeting seed nodes
+    // Filter strictly by company_id and minConfidence
+    const [outgoingRes, incomingRes] = await Promise.all([
+      supabase
+        .from('clipad_v3_entity_relationships')
+        .select('id, source_entity_id, target_entity_id, relationship_type, confidence, metadata')
+        .eq('company_id', companyId)
+        .in('source_entity_id', seedNodeIds)
+        .gte('confidence', minConfidence)
+        .limit(maxRelated * 3),
+      supabase
+        .from('clipad_v3_entity_relationships')
+        .select('id, source_entity_id, target_entity_id, relationship_type, confidence, metadata')
+        .eq('company_id', companyId)
+        .in('target_entity_id', seedNodeIds)
+        .gte('confidence', minConfidence)
+        .limit(maxRelated * 3),
+    ]);
+
+    const candidateEdges = [];
+    (outgoingRes.data || []).forEach(edge => {
+      candidateEdges.push({
+        ...edge,
+        seedNodeId: edge.source_entity_id,
+        connectedNodeId: edge.target_entity_id,
+        direction: 'outgoing',
+      });
+    });
+    (incomingRes.data || []).forEach(edge => {
+      candidateEdges.push({
+        ...edge,
+        seedNodeId: edge.target_entity_id,
+        connectedNodeId: edge.source_entity_id,
+        direction: 'incoming',
+      });
+    });
+
+    if (candidateEdges.length === 0) {
+      return [];
+    }
+
+    // 3. Fetch connected target entity nodes
+    const connectedNodeIds = Array.from(new Set(candidateEdges.map(e => e.connectedNodeId)));
+    const { data: targetNodes, error: targetError } = await supabase
+      .from('clipad_v3_entities')
+      .select('id, company_id, entity_type, entity_id, name, description, metadata')
+      .eq('company_id', companyId)
+      .in('id', connectedNodeIds);
+
+    if (targetError || !targetNodes || targetNodes.length === 0) {
+      return [];
+    }
+
+    const targetNodeMap = new Map(targetNodes.map(n => [n.id, n]));
+    const spaceIdSet = new Set((accessibleSpaceIds || []).map(String));
+
+    // 4. Permission filtering & deduplication
+    const seenRelatedIds = new Set();
+    const relatedEvidence = [];
+
+    for (const edge of candidateEdges) {
+      if (relatedEvidence.length >= maxRelated) break;
+
+      const target = targetNodeMap.get(edge.connectedNodeId);
+      if (!target) continue;
+
+      // Tenant isolation guard
+      if (target.company_id !== companyId) continue;
+
+      // Duplicate prevention: do not include if already in direct results or already added
+      const targetRecordId = String(target.entity_id || target.id);
+      if (directIdSet.has(targetRecordId) || seenRelatedIds.has(targetRecordId)) {
+        continue;
+      }
+
+      // Space authorization check
+      const targetMeta = target.metadata || {};
+      const edgeMeta = edge.metadata || {};
+      const targetSpaceId = targetMeta.space_id || targetMeta.team_space_id || edgeMeta.space_id || null;
+      const isPrivate = targetMeta.is_private === true || edgeMeta.is_private === true;
+
+      if (isPrivate) {
+        if (!targetSpaceId || !spaceIdSet.has(String(targetSpaceId))) {
+          // Caller lacks membership in private space: strictly reject without leaking title or metadata
+          continue;
+        }
+      }
+
+      const seedNode = seedNodeMap.get(edge.seedNodeId);
+      seenRelatedIds.add(targetRecordId);
+
+      relatedEvidence.push({
+        id: targetRecordId,
+        entity_id: target.id,
+        title: target.name,
+        snippet: target.description || targetMeta.snippet || `Connected ${target.entity_type}`,
+        type: target.entity_type,
+        isRelatedEvidence: true,
+        relationship: {
+          type: edge.relationship_type,
+          confidence: edge.confidence,
+          direction: edge.direction,
+          seedRecordId: seedNode?.entity_id || seedNode?.id,
+          seedTitle: seedNode?.name || 'Search Result',
+        },
+        source_channel: 'relationship_expansion',
+      });
+    }
+
+    return relatedEvidence;
+  } catch (err) {
+    console.warn('[HybridRetrieval.expandOneHopRelationships] Exception caught, falling back gracefully:', err.message);
+    return [];
+  }
+}
+
 /**
  * Core Hybrid Retrieval Function
  * Performs combined retrieval and fusion with deterministic fallback.
+ * Extends with optional one-hop relationship expansion when enabled.
  *
  * @param {Object} options
  * @param {string} options.queryText - The search query
@@ -196,7 +371,10 @@ export async function fetchRpcHybridMemories({
  * @param {string|null} [options.spaceId=null] - Filter to a specific team space
  * @param {number} [options.limit=20] - Max results to return
  * @param {boolean} [options.enableSemantic=true] - Whether to attempt semantic RPC
- * @returns {Promise<Array<Object>>} Deduplicated, fused, permission-scoped results
+ * @param {boolean} [options.includeChunks=false] - Whether to search chunk repository
+ * @param {boolean} [options.expandRelationships=false] - Explicit override to enable 1-hop relationship expansion
+ * @param {Object} [options.user=null] - User context for feature-flag checking
+ * @returns {Promise<{ direct: Array<Object>, related: Array<Object>, all: Array<Object> } | Array<Object>>}
  */
 export async function searchMemoriesHybrid({
   queryText,
@@ -208,10 +386,13 @@ export async function searchMemoriesHybrid({
   spaceId = null,
   limit = 20,
   enableSemantic = true,
-  includeChunks = false
+  includeChunks = false,
+  expandRelationships = false,
+  user = null,
+  returnStructured = false,
 }) {
   if (!queryText || !queryText.trim() || !companyId) {
-    return [];
+    return returnStructured ? { direct: [], related: [], all: [] } : [];
   }
 
   const cleanQuery = queryText.trim();
@@ -284,17 +465,16 @@ export async function searchMemoriesHybrid({
   const allChannels = await Promise.all(promises);
   const validChannels = allChannels.filter(channelResults => Array.isArray(channelResults) && channelResults.length > 0);
 
+  let directResults = [];
+
   // If multiple channels returned results, combine all via Reciprocal Rank Fusion
   if (validChannels.length > 1) {
     const fused = reciprocalRankFusion(validChannels, RRF_K);
-    return fused.slice(0, limit);
-  }
-
-  // If only one channel returned results, format and return it
-  if (validChannels.length === 1) {
+    directResults = fused.slice(0, limit);
+  } else if (validChannels.length === 1) {
     const singleChannel = validChannels[0];
     const channelName = singleChannel[0]?.source_channel || 'retrieval';
-    return singleChannel.slice(0, limit).map((m, idx) => ({
+    directResults = singleChannel.slice(0, limit).map((m, idx) => ({
       ...m,
       rrf_score: Number((1 / (RRF_K + idx + 1)).toFixed(6)),
       retrieval_metadata: {
@@ -305,5 +485,35 @@ export async function searchMemoriesHybrid({
     }));
   }
 
-  return [];
+  // Stage 3: Feature Flag Check for Relationship-Aware Retrieval
+  const isFlagActive = isV3FeatureEnabled(V3_FLAGS.RELATIONSHIP_AWARE_RETRIEVAL_ENABLED, user);
+  const shouldExpand = (expandRelationships || isFlagActive) && directResults.length > 0;
+
+  let relatedResults = [];
+  if (shouldExpand) {
+    try {
+      relatedResults = await expandOneHopRelationships({
+        directResults,
+        companyId,
+        accessibleSpaceIds,
+      });
+    } catch (expErr) {
+      console.warn('[HybridRetrieval] Relationship expansion failed, falling back to direct results:', expErr.message);
+      relatedResults = [];
+    }
+  }
+
+  if (returnStructured) {
+    return {
+      direct: directResults,
+      related: relatedResults,
+      all: [...directResults, ...relatedResults],
+    };
+  }
+
+  // Preserve existing contract by default: array of items
+  // If relationships were expanded, they are appended with isRelatedEvidence: true
+  return shouldExpand && relatedResults.length > 0
+    ? [...directResults, ...relatedResults]
+    : directResults;
 }
