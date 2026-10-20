@@ -1123,21 +1123,77 @@ serve(async (req) => {
                 },
               }));
 
-              const results = [...(mems || []).map((m: any) => ({
-                id: m.id,
-                title: m.title,
-                content: m.content,
-                summary: m.summary,
-                memory_type: m.memory_type,
-                memory_tier: m.memory_tier,
-                confidence: m.confidence_score,
+              // Also search synced integration knowledge (Google Drive, Slack, Notion, GitHub, etc.)
+              const { data: intKnowledge } = await supabase
+                .from('clipad_imported_knowledge')
+                .select('id, provider, content_type, title, content, ai_summary, url, author, created_at, updated_at')
+                .or(`title.ilike.%${query}%,content.ilike.%${query}%,ai_summary.ilike.%${query}%`)
+                .order('created_at', { ascending: false })
+                .limit(limit);
+
+              const integrationResults = (intKnowledge || []).map((ik: any) => ({
+                id: ik.id,
+                title: `[${ik.provider?.toUpperCase()}] ${ik.title || 'Untitled'}`,
+                content: ik.content || ik.ai_summary || '',
+                summary: ik.ai_summary || ik.content?.slice(0, 250) || '',
+                memory_type: 'FACT',
+                memory_tier: 'organizational',
+                confidence: 0.95,
                 provenance: {
-                  source_type: m.source_type,
-                  source_id: m.source_id,
-                  created_at: m.created_at,
-                  last_updated_at: m.updated_at,
+                  source_type: `integration:${ik.provider}`,
+                  source_id: ik.id,
+                  url: ik.url,
+                  author: ik.author,
+                  created_at: ik.created_at,
+                  last_updated_at: ik.updated_at || ik.created_at,
                 },
-              })), ...standupResults];
+              }));
+
+              // Also search documents & cloud files
+              const { data: matchedDocs } = await supabase
+                .from('documents')
+                .select('id, name, file_url, category, notes, ai_summary, created_at')
+                .or(`name.ilike.%${query}%,notes.ilike.%${query}%,ai_summary.ilike.%${query}%`)
+                .order('created_at', { ascending: false })
+                .limit(limit);
+
+              const docResults = (matchedDocs || []).map((md: any) => ({
+                id: md.id,
+                title: md.name,
+                content: md.ai_summary || md.notes || `Cloud document: ${md.name}`,
+                summary: md.ai_summary || md.notes || '',
+                memory_type: 'FACT',
+                memory_tier: 'organizational',
+                confidence: 0.9,
+                provenance: {
+                  source_type: 'cloud_storage_document',
+                  source_id: md.id,
+                  file_url: md.file_url,
+                  created_at: md.created_at,
+                  last_updated_at: md.created_at,
+                },
+              }));
+
+              const results = [
+                ...(mems || []).map((m: any) => ({
+                  id: m.id,
+                  title: m.title,
+                  content: m.content,
+                  summary: m.summary,
+                  memory_type: m.memory_type,
+                  memory_tier: m.memory_tier,
+                  confidence: m.confidence_score,
+                  provenance: {
+                    source_type: m.source_type,
+                    source_id: m.source_id,
+                    created_at: m.created_at,
+                    last_updated_at: m.updated_at,
+                  },
+                })),
+                ...standupResults,
+                ...integrationResults,
+                ...docResults
+              ];
 
               return new Response(
                 JSON.stringify({
