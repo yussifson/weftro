@@ -1,5 +1,16 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "app": {
+      "root": ".",
+      "framework": "vite"
+    },
+    "ingest-server": {
+      "root": "ingest-server",
+      "runtime": "node",
+      "entrypoint": "server.js"
+    }
+  },
   "headers": [
     {
       "source": "/(.*)",
@@ -62,7 +73,9 @@
     },
     {
       "source": "/((?!api/|functions/|oauth/|mcp).*)",
-      "destination": "/index.html"
+      "destination": {
+        "service": "app"
+      }
     }
   ]
 }
