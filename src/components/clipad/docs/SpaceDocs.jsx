@@ -6,8 +6,11 @@ import { Loader2, Plus, FileText, Sparkles, Save, AlignLeft, Bold, Italic, List,
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { invokeCloudflareAi } from '@/lib/cloudflareAI';
+import { useAuth } from '@/lib/AuthContext';
+import { ingestDocumentChunks } from '@/lib/clipadChunkIngestionService';
 
 export default function SpaceDocs({ spaceId }) {
+  const { user } = useAuth();
   const [docs, setDocs] = useState([]);
   const [selectedDocId, setSelectedDocId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -70,6 +73,34 @@ export default function SpaceDocs({ spaceId }) {
     } else {
       toast({ title: 'Saved', description: 'Document saved successfully.' });
       setDocs(docs.map((d) => (d.id === docId ? { ...d, title, content } : d)));
+
+      // Trigger structure-aware chunking and vector ingestion (Phase 1)
+      try {
+        const { data: spaceData } = await supabase
+          .from('clipad_spaces')
+          .select('company_id')
+          .eq('id', spaceId)
+          .maybeSingle();
+
+        const targetCompanyId = spaceData?.company_id || user?.company_id;
+        if (targetCompanyId && content && content.trim()) {
+          const cleanText = content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+          if (cleanText.length > 20) {
+            ingestDocumentChunks({
+              knowledgeId: docId,
+              companyId: targetCompanyId,
+              content: cleanText,
+              title: title || 'Workspace Document',
+              parentType: 'document',
+              user
+            }).catch(ingestErr => {
+              console.warn('[SpaceDocs] Document chunk ingestion warning:', ingestErr);
+            });
+          }
+        }
+      } catch (ingestErr) {
+        console.warn('[SpaceDocs] Document chunk ingestion error:', ingestErr);
+      }
     }
     setIsSaving(false);
   };

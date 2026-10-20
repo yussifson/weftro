@@ -50,8 +50,8 @@ const DEFAULT_V3_FLAG_DEFAULTS = {
   [V3_FLAGS.AUTOMATION_V3_ENABLED]: true, // Phase 9
   [V3_FLAGS.ORGANIZATIONAL_ANALYTICS_ENABLED]: true,
   [V3_FLAGS.ORGANIZATIONAL_LEARNING_ENABLED]: true,
-  [V3_FLAGS.DOCUMENT_CHUNKING_INGESTION_ENABLED]: false, // Phase 4: Disabled by default for production safety
-  [V3_FLAGS.RAG_SYNTHESIS_ENABLED]: false, // Phase 5: Disabled by default for production safety
+  [V3_FLAGS.DOCUMENT_CHUNKING_INGESTION_ENABLED]: true, // Phase 1 Upgrade: Activated for production
+  [V3_FLAGS.RAG_SYNTHESIS_ENABLED]: true, // Phase 1 Upgrade: Activated for production
 };
 
 /**

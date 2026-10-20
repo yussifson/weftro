@@ -281,35 +281,29 @@ export async function searchMemoriesHybrid({
     );
   }
 
-  const [semanticResults, lexicalResults] = await Promise.all(promises);
+  const allChannels = await Promise.all(promises);
+  const validChannels = allChannels.filter(channelResults => Array.isArray(channelResults) && channelResults.length > 0);
 
-  // If semantic returned results and lexical returned results, combine via RRF
-  if (semanticResults.length > 0 && lexicalResults.length > 0) {
-    const fused = reciprocalRankFusion([semanticResults, lexicalResults], RRF_K);
+  // If multiple channels returned results, combine all via Reciprocal Rank Fusion
+  if (validChannels.length > 1) {
+    const fused = reciprocalRankFusion(validChannels, RRF_K);
     return fused.slice(0, limit);
   }
 
-  // If only semantic returned results
-  if (semanticResults.length > 0) {
-    return semanticResults.slice(0, limit).map((m, idx) => ({
+  // If only one channel returned results, format and return it
+  if (validChannels.length === 1) {
+    const singleChannel = validChannels[0];
+    const channelName = singleChannel[0]?.source_channel || 'retrieval';
+    return singleChannel.slice(0, limit).map((m, idx) => ({
       ...m,
       rrf_score: Number((1 / (RRF_K + idx + 1)).toFixed(6)),
       retrieval_metadata: {
         ranks: { 0: idx + 1 },
-        source_channels: ['semantic'],
+        source_channels: [channelName],
         is_hybrid_match: false
       }
     }));
   }
 
-  // Fallback: If semantic returned empty or failed, return lexical results
-  return lexicalResults.slice(0, limit).map((m, idx) => ({
-    ...m,
-    rrf_score: Number((1 / (RRF_K + idx + 1)).toFixed(6)),
-    retrieval_metadata: {
-      ranks: { 1: idx + 1 },
-      source_channels: ['lexical'],
-      is_hybrid_match: false
-    }
-  }));
+  return [];
 }

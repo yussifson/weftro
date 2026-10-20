@@ -232,7 +232,14 @@ async function extractDocumentContentFromUrl(fileUrl: string): Promise<{ text: s
     });
 
     if (!res.ok) {
-      return { text: '', error: `HTTP ${res.status}: ${res.statusText}` };
+      let detail = res.statusText;
+      try {
+        const errJson = await res.json();
+        if (errJson?.message || errJson?.error || errJson?.code) {
+          detail = `${errJson.code || errJson.error || ''}: ${errJson.message || ''}`.trim();
+        }
+      } catch (_) {}
+      return { text: '', error: `Storage fetch error (HTTP ${res.status}): ${detail}` };
     }
 
     const contentType = (res.headers.get('content-type') || '').toLowerCase();
@@ -1098,14 +1105,27 @@ serve(async (req) => {
 
               if (memErr) throw memErr;
 
-              // Also search real standups from clipad_standups
-              const { data: standups } = await supabase
+              // Fetch authorized spaces for the authenticated company
+              const { data: companySpaces } = await supabase
+                .from('clipad_spaces')
+                .select('id')
+                .eq('company_id', authenticatedCompanyId);
+              const companySpaceIds = (companySpaces || []).map((s: any) => s.id);
+
+              // Also search real standups strictly for authenticated company
+              let standupQuery = supabase
                 .from('clipad_standups')
                 .select('id, user_name, yesterday, today, blockers, created_at')
-                .or(`workspace_id.eq.${authenticatedCompanyId},space_id.eq.12079cb8-8a08-4f82-9a4f-8692b096bf74`)
                 .or(`yesterday.ilike.%${query}%,today.ilike.%${query}%,user_name.ilike.%${query}%`)
                 .order('created_at', { ascending: false })
                 .limit(limit);
+
+              if (companySpaceIds.length > 0) {
+                standupQuery = standupQuery.or(`workspace_id.eq.${authenticatedCompanyId},space_id.in.(${companySpaceIds.join(',')})`);
+              } else {
+                standupQuery = standupQuery.eq('workspace_id', authenticatedCompanyId);
+              }
+              const { data: standups } = await standupQuery;
 
               const standupResults = (standups || []).map((s: any) => ({
                 id: s.id,
@@ -1123,10 +1143,11 @@ serve(async (req) => {
                 },
               }));
 
-              // Also search synced integration knowledge (Google Drive, Slack, Notion, GitHub, etc.)
+              // Also search synced integration knowledge strictly for authenticatedCompanyId
               const { data: intKnowledge } = await supabase
                 .from('clipad_imported_knowledge')
                 .select('id, provider, content_type, title, content, ai_summary, url, author, created_at, updated_at')
+                .eq('company_id', authenticatedCompanyId)
                 .or(`title.ilike.%${query}%,content.ilike.%${query}%,ai_summary.ilike.%${query}%`)
                 .order('created_at', { ascending: false })
                 .limit(limit);
@@ -1149,10 +1170,11 @@ serve(async (req) => {
                 },
               }));
 
-              // Also search documents & cloud files
+              // Also search documents & cloud files strictly for authenticatedCompanyId
               const { data: matchedDocs } = await supabase
                 .from('documents')
                 .select('id, name, file_url, category, notes, ai_summary, created_at')
+                .eq('company_id', authenticatedCompanyId)
                 .or(`name.ilike.%${query}%,notes.ilike.%${query}%,ai_summary.ilike.%${query}%`)
                 .order('created_at', { ascending: false })
                 .limit(limit);
@@ -1174,6 +1196,35 @@ serve(async (req) => {
                 },
               }));
 
+              // Also search space documents strictly for authenticated company spaces
+              let clipadDocResults: any[] = [];
+              if (companySpaceIds.length > 0) {
+                const { data: matchedClipadDocs } = await supabase
+                  .from('clipad_docs')
+                  .select('id, space_id, title, content, created_at, updated_at')
+                  .in('space_id', companySpaceIds)
+                  .or(`title.ilike.%${query}%,content.ilike.%${query}%`)
+                  .order('created_at', { ascending: false })
+                  .limit(limit);
+
+                clipadDocResults = (matchedClipadDocs || []).map((cd: any) => ({
+                  id: cd.id,
+                  title: cd.title,
+                  content: cd.content || '',
+                  summary: (cd.content || '').slice(0, 250),
+                  memory_type: 'FACT',
+                  memory_tier: 'team',
+                  confidence: 0.9,
+                  provenance: {
+                    source_type: 'clipad_doc',
+                    source_id: cd.id,
+                    space_id: cd.space_id,
+                    created_at: cd.created_at,
+                    last_updated_at: cd.updated_at || cd.created_at,
+                  },
+                }));
+              }
+
               const results = [
                 ...(mems || []).map((m: any) => ({
                   id: m.id,
@@ -1192,7 +1243,8 @@ serve(async (req) => {
                 })),
                 ...standupResults,
                 ...integrationResults,
-                ...docResults
+                ...docResults,
+                ...clipadDocResults
               ];
 
               return new Response(
@@ -1487,13 +1539,26 @@ serve(async (req) => {
               const { data: captures, count, error: capErr } = await q.range(offset, offset + limit - 1);
               if (capErr) throw capErr;
 
-              // Also fetch standups as captures
-              const { data: standups } = await supabase
+              // Also fetch standups strictly for authenticated company
+              const { data: companySpaces } = await supabase
+                .from('clipad_spaces')
+                .select('id')
+                .eq('company_id', authenticatedCompanyId);
+              const companySpaceIds = (companySpaces || []).map((s: any) => s.id);
+
+              let standupQuery = supabase
                 .from('clipad_standups')
                 .select('id, user_name, yesterday, today, blockers, created_at')
-                .or(`workspace_id.eq.${authenticatedCompanyId},space_id.eq.12079cb8-8a08-4f82-9a4f-8692b096bf74`)
                 .order('created_at', { ascending: false })
                 .limit(limit);
+
+              if (companySpaceIds.length > 0) {
+                standupQuery = standupQuery.or(`workspace_id.eq.${authenticatedCompanyId},space_id.in.(${companySpaceIds.join(',')})`);
+              } else {
+                standupQuery = standupQuery.eq('workspace_id', authenticatedCompanyId);
+              }
+
+              const { data: standups } = await standupQuery;
 
               const formattedStandupCaptures = (standups || []).map((s: any) => ({
                 id: s.id,
@@ -1985,9 +2050,11 @@ serve(async (req) => {
               const limit = Math.min(Math.max(1, Number(toolArgs.limit) || 20), 50);
               const offset = Math.max(0, Number(toolArgs.offset) || 0);
 
+              // 1. Cloud storage documents strictly for authenticatedCompanyId
               let docQuery = supabase
                 .from('documents')
                 .select('id, name, file_url, file_type, file_size, category, notes, ai_summary, created_at, tags')
+                .eq('company_id', authenticatedCompanyId)
                 .order('created_at', { ascending: false });
 
               if (toolArgs.query) {
@@ -1996,25 +2063,38 @@ serve(async (req) => {
 
               const { data: legalDocs } = await docQuery.range(offset, offset + limit - 1);
 
-              let clipadDocQuery = supabase
-                .from('clipad_docs')
-                .select('id, space_id, title, content, created_at, updated_at')
-                .order('created_at', { ascending: false });
+              // 2. Space docs strictly for spaces belonging to authenticatedCompanyId
+              const { data: companySpaces } = await supabase
+                .from('clipad_spaces')
+                .select('id')
+                .eq('company_id', authenticatedCompanyId);
+              const spaceIds = (companySpaces || []).map((s: any) => s.id);
 
-              if (toolArgs.query) {
-                clipadDocQuery = clipadDocQuery.or(`title.ilike.%${toolArgs.query}%,content.ilike.%${toolArgs.query}%`);
+              let clipadDocs: any[] = [];
+              if (spaceIds.length > 0) {
+                let clipadDocQuery = supabase
+                  .from('clipad_docs')
+                  .select('id, space_id, title, content, created_at, updated_at')
+                  .in('space_id', spaceIds)
+                  .order('created_at', { ascending: false });
+
+                if (toolArgs.query) {
+                  clipadDocQuery = clipadDocQuery.or(`title.ilike.%${toolArgs.query}%,content.ilike.%${toolArgs.query}%`);
+                }
+
+                const res = await clipadDocQuery.range(offset, offset + limit - 1);
+                clipadDocs = res.data || [];
               }
 
-              const { data: clipadDocs } = await clipadDocQuery.range(offset, offset + limit - 1);
-
-              // Also check integration knowledge records (synced from Drive, Slack, etc.)
+              // 3. Synced integration knowledge strictly for authenticatedCompanyId
               let intQuery = supabase
-                .from('integration_knowledge')
-                .select('id, integration_type, title, summary, raw_content, source_url, tags, created_at')
+                .from('clipad_imported_knowledge')
+                .select('id, provider, content_type, title, content, ai_summary, url, author, created_at, updated_at')
+                .eq('company_id', authenticatedCompanyId)
                 .order('created_at', { ascending: false });
 
               if (toolArgs.query) {
-                intQuery = intQuery.or(`title.ilike.%${toolArgs.query}%,summary.ilike.%${toolArgs.query}%,raw_content.ilike.%${toolArgs.query}%`);
+                intQuery = intQuery.or(`title.ilike.%${toolArgs.query}%,content.ilike.%${toolArgs.query}%,ai_summary.ilike.%${toolArgs.query}%`);
               }
 
               const { data: intDocs } = await intQuery.range(offset, offset + limit - 1);
@@ -2040,10 +2120,10 @@ serve(async (req) => {
 
               const formattedIntDocs = (intDocs || []).map((d: any) => ({
                 id: d.id,
-                source: `integration:${d.integration_type}`,
+                source: `integration:${d.provider}`,
                 title: d.title,
-                summary: d.summary,
-                source_url: d.source_url,
+                summary: d.ai_summary || d.content?.slice(0, 250) || '',
+                source_url: d.url,
                 created_at: d.created_at,
               }));
 
@@ -2084,8 +2164,14 @@ serve(async (req) => {
 
               const shouldExtractContent = toolArgs.read_file_content !== false;
 
-              // 1. Try documents
-              const { data: d1 } = await supabase.from('documents').select('*').eq('id', docId).maybeSingle();
+              // 1. Try documents strictly for authenticatedCompanyId
+              const { data: d1 } = await supabase
+                .from('documents')
+                .select('*')
+                .eq('id', docId)
+                .eq('company_id', authenticatedCompanyId)
+                .maybeSingle();
+
               if (d1) {
                 let parsedContent = d1.ai_summary || d1.notes || null;
                 let extractionError = null;
@@ -2116,60 +2202,49 @@ serve(async (req) => {
                 );
               }
 
-              // 2. Try clipad_docs
-              const { data: d2 } = await supabase.from('clipad_docs').select('*').eq('id', docId).maybeSingle();
+              // 2. Try clipad_docs (verify space belongs to authenticatedCompanyId)
+              const { data: d2 } = await supabase
+                .from('clipad_docs')
+                .select('*')
+                .eq('id', docId)
+                .maybeSingle();
+
               if (d2) {
-                const enrichedDoc = {
-                  ...d2,
-                  extracted_content: d2.content || null,
-                  extraction_status: d2.content ? 'success' : 'empty',
-                };
-                return new Response(
-                  JSON.stringify({
-                    jsonrpc: '2.0',
-                    id: rpcId,
-                    result: { content: [{ type: 'text', text: JSON.stringify({ data: enrichedDoc }, null, 2) }] },
-                  }),
-                  { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-                );
-              }
+                // Verify space belongs to authenticated company
+                const { data: spaceMatch } = await supabase
+                  .from('clipad_spaces')
+                  .select('id')
+                  .eq('id', d2.space_id)
+                  .eq('company_id', authenticatedCompanyId)
+                  .maybeSingle();
 
-              // 3. Try integration_knowledge (Google Drive, Slack, Notion files, etc.)
-              const { data: d3 } = await supabase.from('integration_knowledge').select('*').eq('id', docId).maybeSingle();
-              if (d3) {
-                let parsedContent = d3.raw_content || d3.summary || null;
-                let extractionError = null;
-
-                if (!parsedContent && shouldExtractContent && d3.source_url) {
-                  const extracted = await extractDocumentContentFromUrl(d3.source_url);
-                  if (extracted.text) {
-                    parsedContent = extracted.text;
-                  } else if (extracted.error) {
-                    extractionError = extracted.error;
-                  }
+                if (spaceMatch) {
+                  const enrichedDoc = {
+                    ...d2,
+                    extracted_content: d2.content || null,
+                    extraction_status: d2.content ? 'success' : 'empty',
+                  };
+                  return new Response(
+                    JSON.stringify({
+                      jsonrpc: '2.0',
+                      id: rpcId,
+                      result: { content: [{ type: 'text', text: JSON.stringify({ data: enrichedDoc }, null, 2) }] },
+                    }),
+                    { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                  );
                 }
-
-                const enrichedDoc = {
-                  ...d3,
-                  extracted_content: parsedContent,
-                  extraction_status: parsedContent ? 'success' : (extractionError ? 'unsupported_or_failed' : 'no_content'),
-                  extraction_error: extractionError,
-                };
-
-                return new Response(
-                  JSON.stringify({
-                    jsonrpc: '2.0',
-                    id: rpcId,
-                    result: { content: [{ type: 'text', text: JSON.stringify({ data: enrichedDoc }, null, 2) }] },
-                  }),
-                  { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-                );
               }
 
-              // 4. Try clipad_imported_knowledge (Drive, Meet, Slack imports)
-              const { data: d4 } = await supabase.from('clipad_imported_knowledge').select('*').eq('id', docId).maybeSingle();
+              // 3. Try clipad_imported_knowledge strictly for authenticatedCompanyId
+              const { data: d4 } = await supabase
+                .from('clipad_imported_knowledge')
+                .select('*')
+                .eq('id', docId)
+                .eq('company_id', authenticatedCompanyId)
+                .maybeSingle();
+
               if (d4) {
-                let parsedContent = d4.ai_summary || (d4.raw_payload ? JSON.stringify(d4.raw_payload) : null);
+                let parsedContent = d4.content || d4.ai_summary || (d4.metadata ? JSON.stringify(d4.metadata) : null);
                 let extractionError = null;
 
                 if (!parsedContent && shouldExtractContent && d4.url) {
@@ -2202,7 +2277,7 @@ serve(async (req) => {
                 JSON.stringify({
                   jsonrpc: '2.0',
                   id: rpcId,
-                  error: { code: -32600, message: 'Document not found or inaccessible.' },
+                  error: { code: -32600, message: 'Weftro Resource Not Found (RESOURCE_NOT_FOUND): Document not found or inaccessible for authenticated organization.' },
                 }),
                 { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
               );
@@ -2212,16 +2287,27 @@ serve(async (req) => {
               const limit = Math.min(Math.max(1, Number(toolArgs.limit) || 20), 50);
               const offset = Math.max(0, Number(toolArgs.offset) || 0);
 
-              let meetQuery = supabase
-                .from('clipad_meeting_records')
-                .select('id, space_id, title, daily_room_name, ai_summary, started_at, ended_at, duration, video_url, status, created_at')
-                .order('created_at', { ascending: false });
+              const { data: companySpaces } = await supabase
+                .from('clipad_spaces')
+                .select('id')
+                .eq('company_id', authenticatedCompanyId);
+              const spaceIds = (companySpaces || []).map((s: any) => s.id);
 
-              if (toolArgs.query) {
-                meetQuery = meetQuery.or(`title.ilike.%${toolArgs.query}%,ai_summary.ilike.%${toolArgs.query}%`);
+              let meetings: any[] = [];
+              if (spaceIds.length > 0) {
+                let meetQuery = supabase
+                  .from('clipad_meeting_records')
+                  .select('id, space_id, title, daily_room_name, ai_summary, started_at, ended_at, duration, video_url, status, created_at')
+                  .in('space_id', spaceIds)
+                  .order('created_at', { ascending: false });
+
+                if (toolArgs.query) {
+                  meetQuery = meetQuery.or(`title.ilike.%${toolArgs.query}%,ai_summary.ilike.%${toolArgs.query}%`);
+                }
+
+                const res = await meetQuery.range(offset, offset + limit - 1);
+                meetings = res.data || [];
               }
-
-              const { data: meetings, count } = await meetQuery.range(offset, offset + limit - 1);
 
               return new Response(
                 JSON.stringify({
@@ -2246,6 +2332,7 @@ serve(async (req) => {
               const { data: spaces } = await supabase
                 .from('clipad_spaces')
                 .select('id, name, title, description, shared_notes, meeting_url, created_at, updated_at')
+                .eq('company_id', authenticatedCompanyId)
                 .order('created_at', { ascending: false })
                 .limit(limit);
 
@@ -2270,6 +2357,7 @@ serve(async (req) => {
               const { data: integrations } = await supabase
                 .from('clipad_integrations')
                 .select('id, provider, status, external_account_name, last_synced_at, sync_frequency, sync_phase, created_at')
+                .eq('company_id', authenticatedCompanyId)
                 .order('created_at', { ascending: false });
 
               const sanitizedIntegrations = (integrations || []).map((item: any) => ({

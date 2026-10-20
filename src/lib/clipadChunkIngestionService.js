@@ -78,11 +78,24 @@ export async function generateChunkEmbedding(text) {
       }
     }
 
-    // 3. Fallback mock generator for isolated offline test environments (deterministic)
-    return generateDeterministicFallbackEmbedding(cleanText);
+    // 3. Fallback mock generator for isolated offline test environments ONLY
+    const isTestEnv = (typeof process !== 'undefined' && (process.env?.NODE_ENV === 'test' || process.env?.VITEST === 'true')) ||
+      (typeof window !== 'undefined' && (window.__IS_TEST_ENV__ || window.location?.hostname === 'localhost'));
+
+    if (isTestEnv) {
+      return generateDeterministicFallbackEmbedding(cleanText);
+    }
+
+    throw new Error('Embedding provider unavailable: Cloudflare AI proxy did not return valid 768-dimensional float embedding.');
   } catch (err) {
-    console.warn('[clipadChunkIngestionService] Upstream embedding provider failed, using deterministic fallback:', err.message);
-    return generateDeterministicFallbackEmbedding(cleanText);
+    const isTestEnv = (typeof process !== 'undefined' && (process.env?.NODE_ENV === 'test' || process.env?.VITEST === 'true')) ||
+      (typeof window !== 'undefined' && (window.__IS_TEST_ENV__ || window.location?.hostname === 'localhost'));
+
+    if (isTestEnv) {
+      console.warn('[clipadChunkIngestionService] Upstream embedding provider failed, using deterministic fallback in test environment:', err.message);
+      return generateDeterministicFallbackEmbedding(cleanText);
+    }
+    throw new Error(`Embedding generation failed in production: ${err.message}`);
   }
 }
 
@@ -327,3 +340,37 @@ export async function searchKnowledgeChunks({
     return [];
   }
 }
+
+/**
+ * Invalidate and delete indexed chunks for a deleted or inaccessible source document.
+ * Enforces company boundary to prevent cross-tenant deletions.
+ *
+ * @param {Object} options
+ * @param {string} options.knowledgeId - Parent record ID
+ * @param {string} options.companyId - Tenant organization ID
+ * @returns {Promise<{ success: boolean, deleted: boolean }>}
+ */
+export async function deleteDocumentChunks({ knowledgeId, companyId }) {
+  if (!knowledgeId || !companyId) {
+    throw new Error('Both knowledgeId and companyId are required to delete chunks.');
+  }
+
+  try {
+    const { error } = await supabase
+      .from('clipad_knowledge_chunks')
+      .delete()
+      .eq('knowledge_id', knowledgeId)
+      .eq('company_id', companyId);
+
+    if (error) {
+      console.warn('[deleteDocumentChunks] Error deleting chunks:', error.message);
+      return { success: false, error: error.message };
+    }
+
+    return { success: true, deleted: true };
+  } catch (err) {
+    console.error('[deleteDocumentChunks] Exception:', err.message);
+    return { success: false, error: err.message };
+  }
+}
+

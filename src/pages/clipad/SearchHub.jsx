@@ -4,7 +4,7 @@ import { FileText, CheckCircle, MessageSquare, Calendar, Video,
   Loader2, X, ShieldAlert, AlertTriangle, ExternalLink, Zap, Layers, Copy, CheckCheck,
   Users, ArrowUpRight, Send, Plus, Volume2, VolumeX, ThumbsUp, ThumbsDown, Edit,
   Search, Sparkles, ArrowLeft
-, BrainCircuit, Inbox, Compass, Code2, CheckCircle2 } from 'lucide-react';
+, BrainCircuit, Inbox, Compass, Code2, CheckCircle2, MessageSquareText } from 'lucide-react';
 import { CliPadLogo } from '@/components/ui/CliPadLogo';
 import { supabase } from '@/api/supabaseClient';
 import { generateText } from '@/lib/cloudflareAI';
@@ -159,6 +159,7 @@ export default function SearchHub() {
 
   const [query, setQuery] = useState(searchParams.get('q') || '');
   const [activeFilter, setActiveFilter] = useState('all');
+  const [searchMode, setSearchMode] = useState('answer'); // 'answer' (AI synthesized answer) | 'find' (direct record locator)
   const [results, setResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [selectedResult, setSelectedResult] = useState(null);
@@ -408,16 +409,16 @@ export default function SearchHub() {
     const term = `%${q}%`;
     const cid = companyId;
 
-    const [docs, tasks, messages, meetings, decisions, videos, blockers, standups, integrations, people, memories, captures, moments] = await Promise.all([
-      safeQuery(spaceIdArr.length > 0 ? supabase.from('clipad_docs').select('id, title, content, space_id, created_at').in('space_id', spaceIdArr).ilike('title', term).limit(20) : []),
-      safeQuery(spaceIdArr.length > 0 ? supabase.from('clipad_action_items').select('id, title, context, space_id, created_at').in('space_id', spaceIdArr).ilike('title', term).limit(20) : []),
+    const [docs, tasks, messages, meetings, decisions, videos, blockers, standups, integrations, people, memories, captures, moments, cloudDocs] = await Promise.all([
+      safeQuery(spaceIdArr.length > 0 ? supabase.from('clipad_docs').select('id, title, content, space_id, created_at').in('space_id', spaceIdArr).or(`title.ilike.${term},content.ilike.${term}`).limit(20) : []),
+      safeQuery(spaceIdArr.length > 0 ? supabase.from('clipad_action_items').select('id, title, context, space_id, created_at').in('space_id', spaceIdArr).or(`title.ilike.${term},context.ilike.${term}`).limit(20) : []),
       safeQuery(spaceIdArr.length > 0 ? supabase.from('clipad_messages').select('id, content, space_id, created_at').in('space_id', spaceIdArr).ilike('content', term).limit(20) : []),
-      safeQuery(spaceIdArr.length > 0 ? supabase.from('clipad_meeting_records').select('id, title, ai_summary, space_id, created_at').in('space_id', spaceIdArr).ilike('title', term).limit(20) : []),
+      safeQuery(spaceIdArr.length > 0 ? supabase.from('clipad_meeting_records').select('id, title, ai_summary, space_id, created_at').in('space_id', spaceIdArr).or(`title.ilike.${term},ai_summary.ilike.${term}`).limit(20) : []),
       safeQuery(spaceIdArr.length > 0 ? supabase.from('clipad_decisions').select('id, decision_text, team_space_id, created_at').in('team_space_id', spaceIdArr).ilike('decision_text', term).limit(20) : []),
-      safeQuery(spaceIdArr.length > 0 ? supabase.from('clipad_videos').select('id, title, ai_summary, space_id, created_at').in('space_id', spaceIdArr).eq('company_id', cid).ilike('title', term).limit(20) : []),
+      safeQuery(spaceIdArr.length > 0 ? supabase.from('clipad_videos').select('id, title, ai_summary, space_id, created_at').in('space_id', spaceIdArr).eq('company_id', cid).or(`title.ilike.${term},ai_summary.ilike.${term}`).limit(20) : []),
       safeQuery(spaceIdArr.length > 0 ? supabase.from('clipad_blockers').select('id, description, team_space_id, detected_at').in('team_space_id', spaceIdArr).ilike('description', term).limit(20) : []),
-      safeQuery(spaceIdArr.length > 0 ? supabase.from('clipad_standups').select('id, user_name, today, yesterday, blockers, space_id, created_at').in('space_id', spaceIdArr).ilike('today', term).limit(20) : []),
-      safeQuery(supabase.from('clipad_imported_knowledge').select('id, title, content, provider, content_type, updated_at').eq('company_id', cid).ilike('title', term).limit(20)),
+      safeQuery(spaceIdArr.length > 0 ? supabase.from('clipad_standups').select('id, user_name, today, yesterday, blockers, space_id, created_at').in('space_id', spaceIdArr).or(`today.ilike.${term},yesterday.ilike.${term},blockers.ilike.${term}`).limit(20) : []),
+      safeQuery(supabase.from('clipad_imported_knowledge').select('id, title, content, provider, content_type, updated_at').eq('company_id', cid).or(`title.ilike.${term},content.ilike.${term}`).limit(20)),
       searchPeople(q, cid),
       searchMemoriesHybrid({
         queryText: q,
@@ -431,7 +432,8 @@ export default function SearchHub() {
         return [];
       }),
       safeQuery(supabase.from('clipad_v3_captures').select('id, title, content, created_at').eq('user_id', user.id).ilike('content', term).limit(10)),
-      safeQuery(supabase.from('clipad_v3_smart_moments').select('id, title, description, created_at').eq('company_id', cid).ilike('description', term).limit(10))
+      safeQuery(supabase.from('clipad_v3_smart_moments').select('id, title, description, created_at').eq('company_id', cid).ilike('description', term).limit(10)),
+      safeQuery(supabase.from('documents').select('id, name, file_url, category, notes, ai_summary, created_at').eq('company_id', cid).or(`name.ilike.${term},notes.ilike.${term},ai_summary.ilike.${term}`).limit(20))
     ]);
 
     const raw = [
@@ -456,6 +458,7 @@ export default function SearchHub() {
       ...(blockers || []).map(b => ({ type: 'blocker', id: b.id, space_id: b.team_space_id, label: 'Blocker', snippet: b.description, created_at: b.detected_at })),
       ...(standups || []).map(s => ({ type: 'standup', id: s.id, space_id: s.space_id, label: `Standup — ${s.user_name || 'Team member'} (${s.created_at?.slice(0, 10)})`, snippet: s.today, created_at: s.created_at })),
       ...(integrations || []).map(i => ({ type: 'integration', id: i.id, space_id: null, label: `[${i.provider}] ${i.title}`, snippet: i.content, created_at: i.updated_at, provider: i.provider })),
+      ...(cloudDocs || []).map(cd => ({ type: 'doc', id: cd.id, space_id: null, label: cd.name, snippet: cd.ai_summary || cd.notes, created_at: cd.created_at, url: cd.file_url })),
     ];
 
     setResults(raw);
@@ -726,7 +729,26 @@ Guidelines:
           <h1 className="text-3xl md:text-4xl font-extrabold text-foreground text-center mb-2 tracking-tight">
             How can I help you today, {firstName}?
           </h1>
-          <p className="text-sm text-muted-foreground text-center mb-8">Search across organizational memory, decisions, action items, documents, and meetings.</p>
+          <p className="text-sm text-muted-foreground text-center mb-5">Search across organizational memory, decisions, action items, documents, and meetings.</p>
+          {/* Dual Search Mode Selector */}
+          <div className="flex items-center justify-center gap-2 mb-6">
+            <button
+              type="button"
+              onClick={() => setSearchMode('answer')}
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all ${searchMode === 'answer' ? 'bg-primary text-primary-foreground shadow-xs ring-2 ring-primary/20' : 'bg-secondary/60 text-muted-foreground hover:bg-secondary hover:text-foreground'}`}
+            >
+              <MessageSquareText className="w-3.5 h-3.5" />
+              <span>Answer Mode</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setSearchMode('find')}
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all ${searchMode === 'find' ? 'bg-primary text-primary-foreground shadow-xs ring-2 ring-primary/20' : 'bg-secondary/60 text-muted-foreground hover:bg-secondary hover:text-foreground'}`}
+            >
+              <Search className="w-3.5 h-3.5" />
+              <span>Find Mode</span>
+            </button>
+          </div>
 
           {/* Search Input Bar */}
           <div className="w-full max-w-2xl">
@@ -931,31 +953,62 @@ Guidelines:
                                       </ReactMarkdown>
 
                                       {/* Validated Evidence Provenance Bar */}
-                                      {msg.citations && msg.citations.valid && msg.citations.valid.length > 0 && (
+                                      {msg.citations && (msg.citations.valid?.length > 0 || msg.citations.unextractable?.length > 0) && (
                                         <div className="mt-3 pt-2.5 border-t border-slate-200/70 dark:border-slate-800 flex flex-wrap items-center gap-1.5">
-                                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-muted-foreground mr-1">
-                                            Included Sources:
-                                          </span>
-                                          {msg.citations.valid.map((cite) => (
-                                            <button
-                                              key={cite.index}
-                                              type="button"
-                                              onClick={() => {
-                                                const found = results.find(r => r.id === cite.id);
-                                                if (found) {
-                                                  setSelectedResult(found);
-                                                  const el = document.getElementById(`result-card-${found.id}`);
-                                                  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                                }
-                                              }}
-                                              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium border transition-colors ${cite.isTruncated ? 'bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-800 hover:border-amber-400' : 'bg-slate-100 dark:bg-slate-800/80 hover:bg-primary/10 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-primary/30'}`}
-                                              title={cite.isTruncated ? `Partial source excerpt included in prompt: ${cite.title || 'Untitled'}` : `Full source included in prompt: ${cite.title || 'Untitled'}`}
-                                            >
-                                              <span className={`font-mono font-bold ${cite.isTruncated ? 'text-amber-600 dark:text-amber-400' : 'text-primary'}`}>#{cite.index}</span>
-                                              <span className="max-w-[140px] truncate">{cite.title}</span>
-                                              {cite.isTruncated && <span className="text-[9px] uppercase px-1 rounded bg-amber-200/60 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 font-bold">partial</span>}
-                                            </button>
-                                          ))}
+                                          {msg.citations.valid?.length > 0 && (
+                                            <>
+                                              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-muted-foreground mr-1">
+                                                Included Sources:
+                                              </span>
+                                              {msg.citations.valid.map((cite) => (
+                                                <button
+                                                  key={cite.index}
+                                                  type="button"
+                                                  onClick={() => {
+                                                    const found = results.find(r => r.id === cite.id);
+                                                    if (found) {
+                                                      setSelectedResult(found);
+                                                      const el = document.getElementById(`result-card-${found.id}`);
+                                                      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                                    }
+                                                  }}
+                                                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium border transition-colors ${cite.isTruncated ? 'bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-800 hover:border-amber-400' : 'bg-slate-100 dark:bg-slate-800/80 hover:bg-primary/10 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-primary/30'}`}
+                                                  title={cite.isTruncated ? `Partial source excerpt included in prompt: ${cite.title || 'Untitled'}` : `Full source included in prompt: ${cite.title || 'Untitled'}`}
+                                                >
+                                                  <span className={`font-mono font-bold ${cite.isTruncated ? 'text-amber-600 dark:text-amber-400' : 'text-primary'}`}>#{cite.index}</span>
+                                                  <span className="max-w-[140px] truncate">{cite.title}</span>
+                                                  {cite.isTruncated && <span className="text-[9px] uppercase px-1 rounded bg-amber-200/60 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 font-bold">partial</span>}
+                                                </button>
+                                              ))}
+                                            </>
+                                          )}
+                                          {msg.citations.unextractable?.length > 0 && (
+                                            <>
+                                              <span className="text-[10px] font-bold uppercase tracking-wider text-orange-400 dark:text-orange-500 mr-1 ml-1">
+                                                Not Extracted:
+                                              </span>
+                                              {msg.citations.unextractable.map((cite) => (
+                                                <button
+                                                  key={cite.id}
+                                                  type="button"
+                                                  onClick={() => {
+                                                    const found = results.find(r => r.id === cite.id);
+                                                    if (found) {
+                                                      setSelectedResult(found);
+                                                      const el = document.getElementById(`result-card-${found.id}`);
+                                                      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                                    }
+                                                  }}
+                                                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium border transition-colors bg-orange-50 dark:bg-orange-950/30 text-orange-800 dark:text-orange-300 border-orange-300 dark:border-orange-800 hover:border-orange-400"
+                                                  title={`Document found but could not be extracted: ${cite.title || 'Untitled'} (${cite.unextractableReason || 'unextractable'})`}
+                                                >
+                                                  <span className="font-mono font-bold text-orange-500 dark:text-orange-400">⚠</span>
+                                                  <span className="max-w-[140px] truncate">{cite.title}</span>
+                                                  <span className="text-[9px] uppercase px-1 rounded bg-orange-200/60 dark:bg-orange-900/60 text-orange-900 dark:text-orange-200 font-bold">unextractable</span>
+                                                </button>
+                                              ))}
+                                            </>
+                                          )}
                                         </div>
                                       )}
                                      </>
@@ -1031,7 +1084,7 @@ Guidelines:
 
               {/* RIGHT SIDE: SIDEBAR CATEGORY FILTERS & SEARCH RESULTS */}
               {/* Category filters are PERMANENTLY accessible on the right side. The results list automatically opens when results exist, closes when none. */}
-              <div className="col-span-1 lg:col-span-5 xl:col-span-4 flex flex-col h-full overflow-hidden bg-white dark:bg-card border border-slate-200 dark:border-border rounded-2xl shadow-xs p-4 animate-in fade-in duration-300">
+              <div className={`col-span-1 ${searchMode === 'find' ? 'lg:col-span-12 xl:col-span-12' : 'lg:col-span-5 xl:col-span-4'} flex flex-col h-full overflow-hidden bg-white dark:bg-card border border-slate-200 dark:border-border rounded-2xl shadow-xs p-4 animate-in fade-in duration-300`}>
                  {/* Right Sidebar Header: Category Filters / Quick Links */}
                  <div className="flex items-center justify-between mb-3 shrink-0">
                     <div className="flex items-center gap-2">
