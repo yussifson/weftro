@@ -18,6 +18,7 @@ import { searchMemoriesHybrid } from '@/lib/clipadHybridRetrievalService';
 import { synthesizeGroundedAnswer } from '@/lib/clipadRAGSynthesisService';
 import { isV3FeatureEnabled, V3_FLAGS } from '@/lib/clipadV3Flags';
 import { getUserContextSessions, appendSessionAudit } from '@/lib/clipadContextSessionService';
+import { getConnectedRecordsForEntity } from '@/lib/clipadEntityService';
 
 const TYPE_META = {
   person:      { icon: Users,         label: 'Person',    color: 'text-primary', bg: 'bg-primary/10 border border-primary/20' },
@@ -163,6 +164,43 @@ export default function SearchHub() {
   const [results, setResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [selectedResult, setSelectedResult] = useState(null);
+  const [connectedRecords, setConnectedRecords] = useState([]);
+  const [isLoadingConnected, setIsLoadingConnected] = useState(false);
+
+  // Fetch connected knowledge records when selectedResult changes
+  useEffect(() => {
+    let isCancelled = false;
+    if (!selectedResult?.id || !currentCompany?.id) {
+      setConnectedRecords([]);
+      setIsLoadingConnected(false);
+      return;
+    }
+
+    async function loadConnected() {
+      setIsLoadingConnected(true);
+      try {
+        const records = await getConnectedRecordsForEntity({
+          supabase,
+          companyId: currentCompany.id,
+          sourceId: selectedResult.id,
+          sourceType: selectedResult.type,
+          limit: 6,
+          accessibleSpaceIds: spaces?.map(s => String(s.id)) || [],
+        });
+        if (!isCancelled) {
+          setConnectedRecords(records || []);
+        }
+      } catch (err) {
+        console.warn('[SearchHub] Failed to load connected knowledge:', err);
+        if (!isCancelled) setConnectedRecords([]);
+      } finally {
+        if (!isCancelled) setIsLoadingConnected(false);
+      }
+    }
+
+    loadConnected();
+    return () => { isCancelled = true; };
+  }, [selectedResult?.id, selectedResult?.type, currentCompany?.id]);
 
   // AI State
   const [aiAnswer, setAiAnswer] = useState('');
@@ -1221,8 +1259,63 @@ Guidelines:
                               )}
                            </div>
                            <h3 className="font-bold text-xs text-slate-900 dark:text-foreground mb-1 leading-snug line-clamp-1">{selectedResult.label}</h3>
-                           <div className="text-[11px] text-slate-600 dark:text-muted-foreground max-h-20 overflow-y-auto pr-1">
+                           <div className="text-[11px] text-slate-600 dark:text-muted-foreground max-h-20 overflow-y-auto pr-1 mb-2">
                              {selectedResult.snippet || 'No preview available.'}
+                           </div>
+
+                           {/* Connected Knowledge Breadcrumbs */}
+                           <div className="pt-2 border-t border-slate-200/60 dark:border-border">
+                              <div className="flex items-center gap-1.5 mb-1.5">
+                                 <BrainCircuit className="w-3 h-3 text-primary" />
+                                 <span className="text-[9px] font-bold uppercase tracking-wider text-slate-500 dark:text-muted-foreground">
+                                    Connected Knowledge
+                                 </span>
+                                 {isLoadingConnected && <Loader2 className="w-2.5 h-2.5 animate-spin text-slate-400 ml-1" />}
+                              </div>
+
+                              {isLoadingConnected ? (
+                                 <div className="text-[10px] text-slate-400 italic py-1">Discovering connections...</div>
+                              ) : connectedRecords.length > 0 ? (
+                                 <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto pr-0.5">
+                                    {connectedRecords.map((item) => {
+                                       const itemMeta = TYPE_META[item.type] || TYPE_META.doc;
+                                       const ItemIcon = itemMeta.icon;
+                                       const relLabel = (item.relationship?.type || 'related_to').replace(/_/g, ' ');
+                                       return (
+                                          <button
+                                             key={item.id}
+                                             onClick={() => {
+                                                if (item.route) {
+                                                   navigate(item.route);
+                                                } else {
+                                                   // Select within results if present or preview directly
+                                                   setSelectedResult({
+                                                      id: item.id,
+                                                      label: item.title,
+                                                      type: item.type,
+                                                      snippet: item.snippet,
+                                                      space_id: item.metadata?.space_id,
+                                                   });
+                                                }
+                                             }}
+                                             title={`${relLabel} • ${item.title}`}
+                                             className="group flex items-center gap-1 text-[10px] px-2 py-1 rounded-md bg-white dark:bg-card border border-slate-200/80 dark:border-border/80 hover:border-primary/50 dark:hover:border-primary/50 text-slate-700 dark:text-foreground transition-colors shadow-2xs text-left max-w-full"
+                                          >
+                                             <ItemIcon className="w-2.5 h-2.5 shrink-0 text-primary" />
+                                             <span className="truncate max-w-[140px] font-medium">{item.title}</span>
+                                             <span className="text-[8px] uppercase tracking-wider px-1 py-0.2 rounded bg-slate-100 dark:bg-muted text-slate-500 dark:text-muted-foreground shrink-0">
+                                                {relLabel}
+                                             </span>
+                                             <ArrowUpRight className="w-2.5 h-2.5 shrink-0 text-slate-400 group-hover:text-primary transition-colors" />
+                                          </button>
+                                       );
+                                    })}
+                                 </div>
+                              ) : (
+                                 <div className="text-[10px] text-slate-400 dark:text-muted-foreground/60 italic py-0.5">
+                                    No verified 1-hop connections found for this record.
+                                 </div>
+                              )}
                            </div>
                         </div>
                      )}

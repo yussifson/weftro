@@ -828,6 +828,36 @@ const REMOTE_MCP_TOOLS = [
       properties: {},
     },
   },
+  {
+    name: 'get_connected_knowledge',
+    description: 'Discover relevant, permission-safe organizational knowledge connected to a source record or query through verified relationships.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        source_id: {
+          type: 'string',
+          description: 'The UUID or unique record identifier of the starting source entity.',
+        },
+        source_type: {
+          type: 'string',
+          description: 'Optional entity type (e.g., "decision", "meeting", "task", "doc", "person", "space").',
+        },
+        query: {
+          type: 'string',
+          description: 'Optional search query to discover connected knowledge around a topic.',
+        },
+        limit: {
+          type: 'number',
+          description: 'Maximum number of connected records to return (1-20, default 6).',
+        },
+        relationship_types: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Optional list of relationship types to filter (e.g. ["decided_in", "supports", "member_of"]).',
+        },
+      },
+    },
+  },
 ];
 
 serve(async (req) => {
@@ -2387,6 +2417,269 @@ serve(async (req) => {
               );
             }
 
+            case 'get_connected_knowledge': {
+              if (!toolScopeCheck(SCOPES.ENTITIES_READ) && !toolScopeCheck(SCOPES.SEARCH_READ)) {
+                return new Response(
+                  JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: rpcId,
+                    error: { code: -32600, message: 'Weftro Authorization Denied (FORBIDDEN): Insufficient scope: entities:read or search:read required.' },
+                  }),
+                  { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                );
+              }
+
+              const sourceId = typeof toolArgs.source_id === 'string' ? toolArgs.source_id.trim() : null;
+              const sourceType = typeof toolArgs.source_type === 'string' ? toolArgs.source_type.trim() : null;
+              const query = typeof toolArgs.query === 'string' ? toolArgs.query.trim() : null;
+              const limit = Math.min(Math.max(1, Number(toolArgs.limit) || 6), 20);
+              const relTypes = Array.isArray(toolArgs.relationship_types) ? toolArgs.relationship_types : null;
+
+              if (!sourceId && !query) {
+                return new Response(
+                  JSON.stringify({
+                    jsonrpc: '2.0',
+                    id: rpcId,
+                    error: { code: -32602, message: "Invalid tool arguments: Either 'source_id' or 'query' must be provided." },
+                  }),
+                  { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                );
+              }
+
+              // Fetch accessible space IDs for the caller (authenticated company spaces)
+              const { data: spaces } = await supabase
+                .from('clipad_spaces')
+                .select('id, is_private')
+                .eq('company_id', authenticatedCompanyId);
+
+              // Public spaces in tenant
+              const publicSpaceIds = new Set((spaces || []).filter((s: any) => !s.is_private).map((s: any) => String(s.id)));
+              let callerSpaceIds = new Set(publicSpaceIds);
+
+              if (authenticatedUserId) {
+                const { data: userSpaces } = await supabase
+                  .from('clipad_space_members')
+                  .select('space_id')
+                  .eq('user_id', authenticatedUserId);
+                (userSpaces || []).forEach((m: any) => callerSpaceIds.add(String(m.space_id)));
+              } else {
+                // Token-based access: grants tenant's public spaces
+                callerSpaceIds = publicSpaceIds;
+              }
+
+              let connectedResults: any[] = [];
+              let sourceRecord: any = null;
+
+              // Path A: source_id provided
+              if (sourceId) {
+                let entQuery = supabase
+                  .from('clipad_v3_entities')
+                  .select('*')
+                  .eq('company_id', authenticatedCompanyId);
+
+                if (sourceType) entQuery = entQuery.eq('entity_type', sourceType);
+
+                const { data: matchedNodes } = await entQuery
+                  .or(`id.eq.${sourceId},entity_id.eq.${sourceId}`)
+                  .limit(1);
+
+                if (!matchedNodes || matchedNodes.length === 0) {
+                  return new Response(
+                    JSON.stringify({
+                      jsonrpc: '2.0',
+                      id: rpcId,
+                      error: { code: -32600, message: 'Weftro Resource Not Found (RESOURCE_NOT_FOUND): Source entity not found or inaccessible.' },
+                    }),
+                    { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                  );
+                }
+
+                const sNode = matchedNodes[0];
+                const sMeta = sNode.metadata || {};
+                const sSpaceId = sMeta.space_id || sMeta.team_space_id;
+                if (sMeta.is_private && (!sSpaceId || !callerSpaceIds.has(String(sSpaceId)))) {
+                  return new Response(
+                    JSON.stringify({
+                      jsonrpc: '2.0',
+                      id: rpcId,
+                      error: { code: -32600, message: 'Weftro Resource Not Found (RESOURCE_NOT_FOUND): Source entity not found or inaccessible.' },
+                    }),
+                    { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                  );
+                }
+
+                sourceRecord = {
+                  id: sNode.entity_id || sNode.id,
+                  entity_id: sNode.id,
+                  type: sNode.entity_type,
+                  title: sNode.name,
+                };
+
+                // Fetch 1-hop relationships
+                let outQ = supabase
+                  .from('clipad_v3_entity_relationships')
+                  .select('id, source_entity_id, target_entity_id, relationship_type, confidence, metadata')
+                  .eq('company_id', authenticatedCompanyId)
+                  .eq('source_entity_id', sNode.id)
+                  .gte('confidence', 0.75);
+
+                let inQ = supabase
+                  .from('clipad_v3_entity_relationships')
+                  .select('id, source_entity_id, target_entity_id, relationship_type, confidence, metadata')
+                  .eq('company_id', authenticatedCompanyId)
+                  .eq('target_entity_id', sNode.id)
+                  .gte('confidence', 0.75);
+
+                if (relTypes && relTypes.length > 0) {
+                  outQ = outQ.in('relationship_type', relTypes);
+                  inQ = inQ.in('relationship_type', relTypes);
+                }
+
+                const [outRes, inRes] = await Promise.all([
+                  outQ.limit(limit * 3),
+                  inQ.limit(limit * 3),
+                ]);
+
+                const candidateEdges: any[] = [];
+                (outRes.data || []).forEach((e: any) => candidateEdges.push({ ...e, connectedNodeId: e.target_entity_id, direction: 'outgoing' }));
+                (inRes.data || []).forEach((e: any) => candidateEdges.push({ ...e, connectedNodeId: e.source_entity_id, direction: 'incoming' }));
+
+                if (candidateEdges.length > 0) {
+                  const targetIds = Array.from(new Set(candidateEdges.map((e: any) => e.connectedNodeId)));
+                  const { data: targetNodes } = await supabase
+                    .from('clipad_v3_entities')
+                    .select('*')
+                    .eq('company_id', authenticatedCompanyId)
+                    .in('id', targetIds);
+
+                  const tMap = new Map((targetNodes || []).map((n: any) => [n.id, n]));
+                  const seenT = new Set();
+
+                  for (const edge of candidateEdges) {
+                    if (connectedResults.length >= limit) break;
+                    const target = tMap.get(edge.connectedNodeId);
+                    if (!target || target.company_id !== authenticatedCompanyId) continue;
+
+                    const tRecId = String(target.entity_id || target.id);
+                    if (seenT.has(tRecId) || tRecId === String(sNode.entity_id || sNode.id)) continue;
+
+                    const tMeta = target.metadata || {};
+                    const edgeMeta = edge.metadata || {};
+                    const tSpaceId = tMeta.space_id || tMeta.team_space_id || edgeMeta.space_id;
+                    const isPriv = tMeta.is_private === true || edgeMeta.is_private === true;
+                    if (isPriv && (!tSpaceId || !callerSpaceIds.has(String(tSpaceId)))) continue;
+
+                    seenT.add(tRecId);
+                    connectedResults.push({
+                      id: tRecId,
+                      entity_id: target.id,
+                      title: target.name,
+                      type: target.entity_type,
+                      snippet: target.description || tMeta.snippet || `Connected ${target.entity_type}`,
+                      relationship: {
+                        type: edge.relationship_type,
+                        direction: edge.direction,
+                        confidence: edge.confidence,
+                      },
+                      provenance: {
+                        source_id: tRecId,
+                        connected_to: sourceRecord.id,
+                        is_related_evidence: true,
+                      },
+                    });
+                  }
+                }
+              } else if (query) {
+                // Path B: query-based topic discovery
+                const term = `%${query}%`;
+                const { data: seedNodes } = await supabase
+                  .from('clipad_v3_entities')
+                  .select('*')
+                  .eq('company_id', authenticatedCompanyId)
+                  .or(`name.ilike.${term},description.ilike.${term}`)
+                  .limit(3);
+
+                if (seedNodes && seedNodes.length > 0) {
+                  const seedIds = seedNodes.map((n: any) => n.id);
+                  const { data: edges } = await supabase
+                    .from('clipad_v3_entity_relationships')
+                    .select('*')
+                    .eq('company_id', authenticatedCompanyId)
+                    .or(`source_entity_id.in.(${seedIds.join(',')}),target_entity_id.in.(${seedIds.join(',')})`)
+                    .gte('confidence', 0.75)
+                    .limit(limit * 2);
+
+                  if (edges && edges.length > 0) {
+                    const connNodeIds = Array.from(new Set(edges.map((e: any) => seedIds.includes(e.source_entity_id) ? e.target_entity_id : e.source_entity_id)));
+                    const { data: connNodes } = await supabase
+                      .from('clipad_v3_entities')
+                      .select('*')
+                      .eq('company_id', authenticatedCompanyId)
+                      .in('id', connNodeIds);
+
+                    const cMap = new Map((connNodes || []).map((n: any) => [n.id, n]));
+                    const seenC = new Set();
+
+                    for (const edge of edges) {
+                      if (connectedResults.length >= limit) break;
+                      const isOut = seedIds.includes(edge.source_entity_id);
+                      const tNode = cMap.get(isOut ? edge.target_entity_id : edge.source_entity_id);
+                      if (!tNode || tNode.company_id !== authenticatedCompanyId) continue;
+
+                      const tRecId = String(tNode.entity_id || tNode.id);
+                      if (seenC.has(tRecId)) continue;
+
+                      const tMeta = tNode.metadata || {};
+                      const tSpaceId = tMeta.space_id || tMeta.team_space_id;
+                      if (tMeta.is_private && (!tSpaceId || !callerSpaceIds.has(String(tSpaceId)))) continue;
+
+                      seenC.add(tRecId);
+                      connectedResults.push({
+                        id: tRecId,
+                        entity_id: tNode.id,
+                        title: tNode.name,
+                        type: tNode.entity_type,
+                        snippet: tNode.description || tMeta.snippet || `Connected ${tNode.entity_type}`,
+                        relationship: {
+                          type: edge.relationship_type,
+                          direction: isOut ? 'outgoing' : 'incoming',
+                          confidence: edge.confidence,
+                        },
+                        provenance: {
+                          source_id: tRecId,
+                          is_related_evidence: true,
+                        },
+                      });
+                    }
+                  }
+                }
+              }
+
+              return new Response(
+                JSON.stringify({
+                  jsonrpc: '2.0',
+                  id: rpcId,
+                  result: {
+                    content: [
+                      {
+                        type: 'text',
+                        text: JSON.stringify({
+                          data: connectedResults,
+                          meta: {
+                            source: sourceRecord,
+                            query: query || null,
+                            count: connectedResults.length,
+                            limit,
+                          },
+                        }, null, 2),
+                      },
+                    ],
+                  },
+                }),
+                { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+              );
+            }
+
             default:
               return new Response(
                 JSON.stringify({
@@ -2679,6 +2972,7 @@ serve(async (req) => {
           { path: '/api/v1/memories', method: 'POST', scope: 'memory:write', description: 'Create verified organizational memory with provenance and idempotency' },
           { path: '/api/v1/memories/:id', method: 'GET', scope: 'memory:read', description: 'Retrieve a single memory by ID' },
           { path: '/api/v1/entities/:id', method: 'GET', scope: 'entities:read', description: 'Retrieve an organizational entity node' },
+          { path: '/api/v1/connected-knowledge', method: 'POST', scope: 'entities:read,search:read', description: 'Retrieve connected organizational knowledge with 1-hop traversal and authorization' },
           { path: '/api/v1/captures', method: 'GET', scope: 'captures:read', description: 'List captures for the authorized tenant' },
           { path: '/api/v1/captures', method: 'POST', scope: 'captures:write', description: 'Ingest external content into capture pipeline with queue scheduling' },
           { path: '/api/v1/captures/:id', method: 'GET', scope: 'captures:read', description: 'Retrieve a capture record' },
@@ -3283,6 +3577,246 @@ serve(async (req) => {
         {
           ...entity,
           relationships: relations || [],
+        },
+        { request_id: requestId },
+        200,
+        rateLimitHeaders
+      );
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // ROUTE: POST /api/v1/connected-knowledge
+    // ══════════════════════════════════════════════════════════════
+    if (subpath === '/connected-knowledge' || subpath === '/api/v1/connected-knowledge') {
+      if (req.method !== 'POST') {
+        return errorResponse('METHOD_NOT_ALLOWED', 'Endpoint requires POST.', 405, requestId);
+      }
+      if (!hasScope(SCOPES.ENTITIES_READ) && !hasScope(SCOPES.SEARCH_READ)) {
+        return errorResponse('FORBIDDEN', 'Insufficient scope: entities:read or search:read required.', 403, requestId);
+      }
+
+      let body: any = {};
+      try {
+        body = await req.json();
+      } catch {
+        return errorResponse('INVALID_REQUEST', 'Request body must be valid JSON.', 400, requestId);
+      }
+
+      const sourceId = typeof body.source_id === 'string' ? body.source_id.trim() : null;
+      const sourceType = typeof body.source_type === 'string' ? body.source_type.trim() : null;
+      const query = typeof body.query === 'string' ? body.query.trim() : null;
+      const limit = Math.min(Math.max(1, Number(body.limit) || 6), 20);
+      const relTypes = Array.isArray(body.relationship_types) ? body.relationship_types : null;
+
+      if (!sourceId && !query) {
+        return errorResponse('INVALID_REQUEST', "Either 'source_id' or 'query' must be provided.", 400, requestId);
+      }
+
+      // Fetch accessible spaces for tenant
+      const { data: spaces } = await supabase
+        .from('clipad_spaces')
+        .select('id, is_private')
+        .eq('company_id', companyId);
+
+      const publicSpaceIds = new Set((spaces || []).filter((s: any) => !s.is_private).map((s: any) => String(s.id)));
+      let callerSpaceIds = new Set(publicSpaceIds);
+
+      if (authenticatedUserId) {
+        const { data: userSpaces } = await supabase
+          .from('clipad_space_members')
+          .select('space_id')
+          .eq('user_id', authenticatedUserId);
+        (userSpaces || []).forEach((m: any) => callerSpaceIds.add(String(m.space_id)));
+      } else {
+        callerSpaceIds = publicSpaceIds;
+      }
+
+      let connectedResults: any[] = [];
+      let sourceRecord: any = null;
+
+      if (sourceId) {
+        let entQuery = supabase
+          .from('clipad_v3_entities')
+          .select('*')
+          .eq('company_id', companyId);
+
+        if (sourceType) entQuery = entQuery.eq('entity_type', sourceType);
+
+        const { data: matchedNodes } = await entQuery
+          .or(`id.eq.${sourceId},entity_id.eq.${sourceId}`)
+          .limit(1);
+
+        if (!matchedNodes || matchedNodes.length === 0) {
+          return errorResponse('RESOURCE_NOT_FOUND', 'Source entity not found or inaccessible.', 404, requestId);
+        }
+
+        const sNode = matchedNodes[0];
+        const sMeta = sNode.metadata || {};
+        const sSpaceId = sMeta.space_id || sMeta.team_space_id;
+        if (sMeta.is_private && (!sSpaceId || !callerSpaceIds.has(String(sSpaceId)))) {
+          return errorResponse('RESOURCE_NOT_FOUND', 'Source entity not found or inaccessible.', 404, requestId);
+        }
+
+        sourceRecord = {
+          id: sNode.entity_id || sNode.id,
+          entity_id: sNode.id,
+          type: sNode.entity_type,
+          title: sNode.name,
+        };
+
+        let outQ = supabase
+          .from('clipad_v3_entity_relationships')
+          .select('id, source_entity_id, target_entity_id, relationship_type, confidence, metadata')
+          .eq('company_id', companyId)
+          .eq('source_entity_id', sNode.id)
+          .gte('confidence', 0.75);
+
+        let inQ = supabase
+          .from('clipad_v3_entity_relationships')
+          .select('id, source_entity_id, target_entity_id, relationship_type, confidence, metadata')
+          .eq('company_id', companyId)
+          .eq('target_entity_id', sNode.id)
+          .gte('confidence', 0.75);
+
+        if (relTypes && relTypes.length > 0) {
+          outQ = outQ.in('relationship_type', relTypes);
+          inQ = inQ.in('relationship_type', relTypes);
+        }
+
+        const [outRes, inRes] = await Promise.all([
+          outQ.limit(limit * 3),
+          inQ.limit(limit * 3),
+        ]);
+
+        const candidateEdges: any[] = [];
+        (outRes.data || []).forEach((e: any) => candidateEdges.push({ ...e, connectedNodeId: e.target_entity_id, direction: 'outgoing' }));
+        (inRes.data || []).forEach((e: any) => candidateEdges.push({ ...e, connectedNodeId: e.source_entity_id, direction: 'incoming' }));
+
+        if (candidateEdges.length > 0) {
+          const targetIds = Array.from(new Set(candidateEdges.map((e: any) => e.connectedNodeId)));
+          const { data: targetNodes } = await supabase
+            .from('clipad_v3_entities')
+            .select('*')
+            .eq('company_id', companyId)
+            .in('id', targetIds);
+
+          const tMap = new Map((targetNodes || []).map((n: any) => [n.id, n]));
+          const seenT = new Set();
+
+          for (const edge of candidateEdges) {
+            if (connectedResults.length >= limit) break;
+            const target = tMap.get(edge.connectedNodeId);
+            if (!target || target.company_id !== companyId) continue;
+
+            const tRecId = String(target.entity_id || target.id);
+            if (seenT.has(tRecId) || tRecId === String(sNode.entity_id || sNode.id)) continue;
+
+            const tMeta = target.metadata || {};
+            const edgeMeta = edge.metadata || {};
+            const tSpaceId = tMeta.space_id || tMeta.team_space_id || edgeMeta.space_id;
+            const isPriv = tMeta.is_private === true || edgeMeta.is_private === true;
+            if (isPriv && (!tSpaceId || !callerSpaceIds.has(String(tSpaceId)))) continue;
+
+            seenT.add(tRecId);
+            connectedResults.push({
+              id: tRecId,
+              entity_id: target.id,
+              title: target.name,
+              type: target.entity_type,
+              snippet: target.description || tMeta.snippet || `Connected ${target.entity_type}`,
+              relationship: {
+                type: edge.relationship_type,
+                direction: edge.direction,
+                confidence: edge.confidence,
+              },
+              provenance: {
+                source_id: tRecId,
+                connected_to: sourceRecord.id,
+                is_related_evidence: true,
+              },
+            });
+          }
+        }
+      } else if (query) {
+        const term = `%${query}%`;
+        const { data: seedNodes } = await supabase
+          .from('clipad_v3_entities')
+          .select('*')
+          .eq('company_id', companyId)
+          .or(`name.ilike.${term},description.ilike.${term}`)
+          .limit(3);
+
+        if (seedNodes && seedNodes.length > 0) {
+          const seedIds = seedNodes.map((n: any) => n.id);
+          const { data: edges } = await supabase
+            .from('clipad_v3_entity_relationships')
+            .select('*')
+            .eq('company_id', companyId)
+            .or(`source_entity_id.in.(${seedIds.join(',')}),target_entity_id.in.(${seedIds.join(',')})`)
+            .gte('confidence', 0.75)
+            .limit(limit * 2);
+
+          if (edges && edges.length > 0) {
+            const connNodeIds = Array.from(new Set(edges.map((e: any) => seedIds.includes(e.source_entity_id) ? e.target_entity_id : e.source_entity_id)));
+            const { data: connNodes } = await supabase
+              .from('clipad_v3_entities')
+              .select('*')
+              .eq('company_id', companyId)
+              .in('id', connNodeIds);
+
+            const cMap = new Map((connNodes || []).map((n: any) => [n.id, n]));
+            const seenC = new Set();
+
+            for (const edge of edges) {
+              if (connectedResults.length >= limit) break;
+              const isOut = seedIds.includes(edge.source_entity_id);
+              const tNode = cMap.get(isOut ? edge.target_entity_id : edge.source_entity_id);
+              if (!tNode || tNode.company_id !== companyId) continue;
+
+              const tRecId = String(tNode.entity_id || tNode.id);
+              if (seenC.has(tRecId)) continue;
+
+              const tMeta = tNode.metadata || {};
+              const tSpaceId = tMeta.space_id || tMeta.team_space_id;
+              if (tMeta.is_private && (!tSpaceId || !callerSpaceIds.has(String(tSpaceId)))) continue;
+
+              seenC.add(tRecId);
+              connectedResults.push({
+                id: tRecId,
+                entity_id: tNode.id,
+                title: tNode.name,
+                type: tNode.entity_type,
+                snippet: tNode.description || tMeta.snippet || `Connected ${tNode.entity_type}`,
+                relationship: {
+                  type: edge.relationship_type,
+                  direction: isOut ? 'outgoing' : 'incoming',
+                  confidence: edge.confidence,
+                },
+                provenance: {
+                  source_id: tRecId,
+                  is_related_evidence: true,
+                },
+              });
+            }
+          }
+        }
+      }
+
+      logAudit('api.connected_knowledge.get', {
+        source_id: sourceId,
+        query: query,
+        count: connectedResults.length,
+      });
+
+      return successResponse(
+        {
+          data: connectedResults,
+          meta: {
+            source: sourceRecord,
+            query: query || null,
+            count: connectedResults.length,
+            limit,
+          },
         },
         { request_id: requestId },
         200,

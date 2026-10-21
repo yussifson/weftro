@@ -735,3 +735,205 @@ export async function deleteEntityForRecord({
     return false;
   }
 }
+
+// ──────────────────────────────────────────────────────────────────
+// STAGE 5: Relationship Breadcrumbs & Connected Knowledge Resolution
+// Resolves authorized 1-hop connected records for a source entity or query.
+// ──────────────────────────────────────────────────────────────────
+
+/**
+ * Maps an entity type and record ID to the corresponding UI navigation path.
+ */
+export function getEntityNavigationRoute(entityType, entityRecordId, spaceId = null) {
+  if (!entityType || !entityRecordId) return null;
+  const type = String(entityType).toLowerCase();
+  switch (type) {
+    case 'meeting':
+      return `/meetings/${entityRecordId}`;
+    case 'video':
+      return `/watch/${entityRecordId}`;
+    case 'doc':
+    case 'document':
+      return spaceId ? `/spaces/${spaceId}?tab=docs&docId=${entityRecordId}` : null;
+    case 'task':
+      return spaceId ? `/spaces/${spaceId}?tab=tasks&taskId=${entityRecordId}` : null;
+    case 'decision':
+      return spaceId ? `/spaces/${spaceId}?tab=decisions` : null;
+    case 'blocker':
+      return spaceId ? `/spaces/${spaceId}?tab=overview` : null;
+    case 'capture':
+    case 'memory':
+      return '/capture';
+    case 'space':
+      return `/spaces/${entityRecordId}`;
+    case 'person':
+      return null;
+    default:
+      return null;
+  }
+}
+
+/**
+ * Retrieve verified 1-hop connected records for an entity record with strict authorization checks.
+ *
+ * @param {Object} params
+ * @param {string} params.companyId - Authenticated company UUID
+ * @param {string} params.sourceId - Source record identifier (UUID or entity_id)
+ * @param {string} [params.sourceType=null] - Optional source entity type
+ * @param {Array<string>} [params.accessibleSpaceIds=[]] - Spaces caller is authorized to view
+ * @param {number} [params.limit=6] - Max related records to return
+ * @param {number} [params.minConfidence=0.75] - Minimum edge confidence
+ * @param {Array<string>} [params.relationshipTypes=null] - Optional filter for relationship types
+ * @returns {Promise<Array<Object>>} Authorized connected records with relationship metadata
+ */
+export async function getConnectedRecordsForEntity({
+  companyId,
+  sourceId,
+  sourceType = null,
+  accessibleSpaceIds = [],
+  limit = 6,
+  minConfidence = 0.75,
+  relationshipTypes = null,
+}) {
+  if (!companyId || !sourceId) return [];
+
+  try {
+    // 1. Locate entity node by id or entity_id
+    let nodeQuery = supabase
+      .from('clipad_v3_entities')
+      .select('id, company_id, entity_type, entity_id, name, description, metadata')
+      .eq('company_id', companyId);
+
+    if (sourceType) {
+      nodeQuery = nodeQuery.eq('entity_type', sourceType);
+    }
+
+    const { data: matchedNodes, error: nodeErr } = await nodeQuery
+      .or(`id.eq.${sourceId},entity_id.eq.${sourceId}`)
+      .limit(1);
+
+    if (nodeErr || !matchedNodes || matchedNodes.length === 0) {
+      return [];
+    }
+
+    const sourceNode = matchedNodes[0];
+
+    // Source permission verification: verify caller has access to source space if private
+    const spaceSet = new Set((accessibleSpaceIds || []).map(String));
+    const srcMeta = sourceNode.metadata || {};
+    const srcSpaceId = srcMeta.space_id || srcMeta.team_space_id;
+    if (srcMeta.is_private && (!srcSpaceId || !spaceSet.has(String(srcSpaceId)))) {
+      return []; // Inaccessible source record: return empty without revealing existence
+    }
+
+    // 2. Query 1-hop relationships (outgoing and incoming)
+    let outgoingQuery = supabase
+      .from('clipad_v3_entity_relationships')
+      .select('id, source_entity_id, target_entity_id, relationship_type, confidence, metadata')
+      .eq('company_id', companyId)
+      .eq('source_entity_id', sourceNode.id)
+      .gte('confidence', minConfidence);
+
+    let incomingQuery = supabase
+      .from('clipad_v3_entity_relationships')
+      .select('id, source_entity_id, target_entity_id, relationship_type, confidence, metadata')
+      .eq('company_id', companyId)
+      .eq('target_entity_id', sourceNode.id)
+      .gte('confidence', minConfidence);
+
+    if (Array.isArray(relationshipTypes) && relationshipTypes.length > 0) {
+      outgoingQuery = outgoingQuery.in('relationship_type', relationshipTypes);
+      incomingQuery = incomingQuery.in('relationship_type', relationshipTypes);
+    }
+
+    const [outgoingRes, incomingRes] = await Promise.all([
+      outgoingQuery.limit(limit * 3),
+      incomingQuery.limit(limit * 3),
+    ]);
+
+    const candidateEdges = [];
+    (outgoingRes.data || []).forEach(e => {
+      candidateEdges.push({
+        ...e,
+        connectedNodeId: e.target_entity_id,
+        direction: 'outgoing',
+      });
+    });
+    (incomingRes.data || []).forEach(e => {
+      candidateEdges.push({
+        ...e,
+        connectedNodeId: e.source_entity_id,
+        direction: 'incoming',
+      });
+    });
+
+    if (candidateEdges.length === 0) return [];
+
+    // 3. Fetch connected target entity nodes
+    const targetNodeIds = Array.from(new Set(candidateEdges.map(e => e.connectedNodeId)));
+    const { data: targetNodes, error: targetErr } = await supabase
+      .from('clipad_v3_entities')
+      .select('id, company_id, entity_type, entity_id, name, description, metadata')
+      .eq('company_id', companyId)
+      .in('id', targetNodeIds);
+
+    if (targetErr || !targetNodes || targetNodes.length === 0) return [];
+
+    const targetMap = new Map(targetNodes.map(n => [n.id, n]));
+    const results = [];
+    const seenTargetIds = new Set();
+
+    for (const edge of candidateEdges) {
+      if (results.length >= limit) break;
+
+      const target = targetMap.get(edge.connectedNodeId);
+      if (!target) continue;
+
+      // Tenant isolation guard
+      if (target.company_id !== companyId) continue;
+
+      const targetRecordId = String(target.entity_id || target.id);
+      if (seenTargetIds.has(targetRecordId) || targetRecordId === String(sourceNode.entity_id || sourceNode.id)) {
+        continue;
+      }
+
+      // Space authorization check
+      const targetMeta = target.metadata || {};
+      const edgeMeta = edge.metadata || {};
+      const targetSpaceId = targetMeta.space_id || targetMeta.team_space_id || edgeMeta.space_id || null;
+      const isPrivate = targetMeta.is_private === true || edgeMeta.is_private === true;
+
+      if (isPrivate) {
+        if (!targetSpaceId || !spaceSet.has(String(targetSpaceId))) {
+          // Lacks membership in private space: strictly omit
+          continue;
+        }
+      }
+
+      seenTargetIds.add(targetRecordId);
+
+      const navRoute = getEntityNavigationRoute(target.entity_type, target.entity_id || target.id, targetSpaceId);
+
+      results.push({
+        id: targetRecordId,
+        entity_id: target.id,
+        title: target.name || 'Untitled',
+        type: target.entity_type,
+        snippet: target.description || targetMeta.snippet || `Connected ${target.entity_type}`,
+        relationship: {
+          type: edge.relationship_type,
+          direction: edge.direction,
+          confidence: edge.confidence,
+        },
+        space_id: targetSpaceId,
+        route: navRoute,
+        isRelatedEvidence: true,
+      });
+    }
+
+    return results;
+  } catch (err) {
+    console.warn('[clipadEntityService.getConnectedRecordsForEntity] Exception:', err.message);
+    return [];
+  }
+}

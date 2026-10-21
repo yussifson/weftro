@@ -366,6 +366,36 @@ const TOOLS = [
       },
       required: ['title', 'content']
     }
+  },
+  {
+    name: 'get_connected_knowledge',
+    description: 'Discover relevant, permission-safe organizational knowledge connected to a source record or query through verified relationships.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        source_id: {
+          type: 'string',
+          description: 'The UUID or unique record identifier of the starting source entity.'
+        },
+        source_type: {
+          type: 'string',
+          description: 'Optional entity type (e.g., "decision", "meeting", "task", "doc", "person", "space").'
+        },
+        query: {
+          type: 'string',
+          description: 'Optional search query to discover connected knowledge around a topic.'
+        },
+        limit: {
+          type: 'number',
+          description: 'Maximum number of connected records to return (1-20, default 6).'
+        },
+        relationship_types: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Optional list of relationship types to filter (e.g. ["decided_in", "supports", "member_of"]).'
+        }
+      }
+    }
   }
 ];
 
@@ -568,6 +598,28 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         });
         const validated = schema.parse(args);
         const result = await callGateway('/api/v1/captures', 'POST', validated);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2)
+            }
+          ]
+        };
+      }
+
+      case 'get_connected_knowledge': {
+        const schema = z.object({
+          source_id: z.string().optional(),
+          source_type: z.string().optional(),
+          query: z.string().optional(),
+          limit: z.number().int().min(1).max(20).optional(),
+          relationship_types: z.array(z.string()).optional()
+        }).refine(data => data.source_id || data.query, {
+          message: "Either 'source_id' or 'query' must be provided."
+        });
+        const validated = schema.parse(args);
+        const result = await callGateway('/api/v1/connected-knowledge', 'POST', validated);
         return {
           content: [
             {
