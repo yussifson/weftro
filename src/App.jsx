@@ -41,6 +41,8 @@ const SecurityPage = safeLazy(() => import('@/pages/SecurityPage'));
 const CliPadDashboard = safeLazy(() => import('@/pages/clipad/CliPadDashboard'));
 const CliPadLogin = safeLazy(() => import('@/pages/clipad/CliPadLogin'));
 const CliPadSignUp = safeLazy(() => import('@/pages/clipad/CliPadSignUp'));
+const CliPadForgotPassword = safeLazy(() => import('@/pages/clipad/CliPadForgotPassword'));
+const CliPadResetPassword = safeLazy(() => import('@/pages/clipad/CliPadResetPassword'));
 const SpacesList = safeLazy(() => import('@/pages/clipad/SpacesList'));
 const MeetingRecord = safeLazy(() => import('@/pages/clipad/MeetingRecord'));
 const SaveMeetingPage = safeLazy(() => import('@/pages/clipad/SaveMeetingPage'));
@@ -107,6 +109,8 @@ function App() {
                       <Routes>
                         <Route path="/login" element={<CliPadLogin />} />
                         <Route path="/signup" element={<CliPadSignUp />} />
+                        <Route path="/forgot-password" element={<CliPadForgotPassword />} />
+                        <Route path="/reset-password" element={<CliPadResetPassword />} />
                         <Route path="/custom-pricing" element={<CliPadCustomPricing />} />
                         <Route path="/" element={<MeetLandingPage />} />
                         <Route path="/pricing" element={<PricingPage />} />

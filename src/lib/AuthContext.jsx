@@ -73,17 +73,22 @@ export const AuthProvider = ({ children }) => {
         if (urlAccessToken && urlRefreshToken) {
             setAuthStep("Restoring cross-domain session...");
             
-            // ALWAYS clean the URL immediately to prevent retry loops on refresh
-            const params = new URLSearchParams(window.location.search);
-            params.delete('access_token');
-            params.delete('refresh_token');
-            const cleanHashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
-            cleanHashParams.delete('access_token');
-            cleanHashParams.delete('refresh_token');
-            const newSearch = params.toString();
-            const newHash = cleanHashParams.toString();
-            const newUrl = window.location.pathname + (newSearch ? '?' + newSearch : '') + (newHash ? '#' + newHash : '');
-            window.history.replaceState({}, document.title, newUrl);
+            // If on /reset-password, allow CliPadResetPassword to process recovery tokens
+            const isPasswordRecovery = window.location.pathname === '/reset-password' || hashParams.get('type') === 'recovery' || urlParams.get('type') === 'recovery';
+            
+            if (!isPasswordRecovery) {
+              // ALWAYS clean the URL immediately to prevent retry loops on refresh
+              const params = new URLSearchParams(window.location.search);
+              params.delete('access_token');
+              params.delete('refresh_token');
+              const cleanHashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+              cleanHashParams.delete('access_token');
+              cleanHashParams.delete('refresh_token');
+              const newSearch = params.toString();
+              const newHash = cleanHashParams.toString();
+              const newUrl = window.location.pathname + (newSearch ? '?' + newSearch : '') + (newHash ? '#' + newHash : '');
+              window.history.replaceState({}, document.title, newUrl);
+            }
 
             const { data, error } = await supabase.auth.setSession({
                 access_token: urlAccessToken,
@@ -514,7 +519,7 @@ export const AuthProvider = ({ children }) => {
 
       // Update favicon and title if company data has it
       // Clipad / Weftro pages always use Weftro branding regardless of company
-      const clipadRoutes = ['/', '/pricing', '/security', '/custom-pricing', '/login', '/signup', '/chat', '/analytics', '/meetings', '/spaces', '/dashboard', '/settings', '/support', '/search', '/record', '/watch', '/journey', '/decisions', '/integrations', '/action-items', '/knowledge-graph', '/timeline', '/health', '/integration-analytics', '/clipad'];
+      const clipadRoutes = ['/', '/pricing', '/security', '/custom-pricing', '/login', '/signup', '/forgot-password', '/reset-password', '/chat', '/analytics', '/meetings', '/spaces', '/dashboard', '/settings', '/support', '/search', '/record', '/watch', '/journey', '/decisions', '/integrations', '/action-items', '/knowledge-graph', '/timeline', '/health', '/integration-analytics', '/clipad'];
       const isClipadRoute = window.location.pathname === '/' || window.location.hostname.includes('Weftro') || window.location.hostname.includes('clipad') || clipadRoutes.some(r => r !== '/' && window.location.pathname.startsWith(r));
 
       if (isClipadRoute) {
