@@ -170,7 +170,7 @@ export default function SearchHub() {
   // Fetch connected knowledge records when selectedResult changes
   useEffect(() => {
     let isCancelled = false;
-    if (!selectedResult?.id || !currentCompany?.id) {
+    if (!selectedResult?.id || !user?.company_id) {
       setConnectedRecords([]);
       setIsLoadingConnected(false);
       return;
@@ -179,13 +179,14 @@ export default function SearchHub() {
     async function loadConnected() {
       setIsLoadingConnected(true);
       try {
+        const spaceIdSet = await fetchAccessibleSpaceIds(user);
         const records = await getConnectedRecordsForEntity({
           supabase,
-          companyId: currentCompany.id,
+          companyId: user.company_id,
           sourceId: selectedResult.id,
           sourceType: selectedResult.type,
           limit: 6,
-          accessibleSpaceIds: spaces?.map(s => String(s.id)) || [],
+          accessibleSpaceIds: Array.from(spaceIdSet).map(String),
         });
         if (!isCancelled) {
           setConnectedRecords(records || []);
@@ -200,7 +201,7 @@ export default function SearchHub() {
 
     loadConnected();
     return () => { isCancelled = true; };
-  }, [selectedResult?.id, selectedResult?.type, currentCompany?.id]);
+  }, [selectedResult?.id, selectedResult?.type, user?.company_id]);
 
   // AI State
   const [aiAnswer, setAiAnswer] = useState('');
