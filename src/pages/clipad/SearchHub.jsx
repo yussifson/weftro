@@ -889,15 +889,16 @@ Guidelines:
                                           p: ({ children }) => {
                                             const renderWithCitations = (child) => {
                                               if (typeof child !== 'string') return child;
-                                              const parts = child.split(/(\[Source:\s*#?\d+\])/gi);
+                                              const parts = child.split(/(\[(?:Source:\s*)?#?R?\d+\])/gi);
                                               if (parts.length === 1) return child;
                                               return parts.map((part, pIdx) => {
-                                                const match = part.match(/\[Source:\s*#?(\d+)\]/i);
+                                                const match = part.match(/\[(?:Source:\s*)?#?(R?\d+)\]/i);
                                                 if (!match) return part;
-                                                const sourceIndex = parseInt(match[1], 10);
-                                                const validCitation = msg.citations?.valid?.find(c => c.index === sourceIndex);
+                                                const sourceIndex = match[1];
+                                                const validCitation = msg.citations?.valid?.find(c => String(c.index).toUpperCase() === String(sourceIndex).toUpperCase());
                                                 const isVerified = !!validCitation;
-                                                const targetRecord = msg.sources?.find(s => s.index === sourceIndex);
+                                                const targetRecord = msg.sources?.find(s => String(s.index).toUpperCase() === String(sourceIndex).toUpperCase() || s.id === validCitation?.id);
+                                                const isRelated = String(sourceIndex).toUpperCase().startsWith('R') || validCitation?.isRelatedEvidence;
 
                                                 return (
                                                   <button
@@ -913,11 +914,27 @@ Guidelines:
                                                         }
                                                       }
                                                     }}
-                                                    className={`inline-flex items-center gap-1 mx-1 px-1.5 py-0.5 rounded text-[11px] font-bold font-mono transition-all cursor-pointer shadow-xs active:scale-95 ${isVerified ? (validCitation?.isTruncated ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-300 dark:border-amber-800 hover:bg-amber-100' : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800 hover:bg-emerald-100') : 'bg-slate-100 dark:bg-slate-800 text-slate-500 border border-slate-300 dark:border-slate-700 hover:bg-slate-200'}`}
-                                                    title={isVerified ? (validCitation?.isTruncated ? `Partial source excerpt: ${validCitation.title || 'Untitled'}` : `Source included: ${validCitation.title || 'Untitled'}`) : `Unresolved citation index #${sourceIndex}`}
+                                                    className={`inline-flex items-center gap-1 mx-1 px-1.5 py-0.5 rounded text-[11px] font-bold font-mono transition-all cursor-pointer shadow-xs active:scale-95 ${
+                                                      isVerified
+                                                        ? (isRelated
+                                                            ? 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-400 border border-purple-300 dark:border-purple-800 hover:bg-purple-100'
+                                                            : (validCitation?.isTruncated
+                                                                ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-300 dark:border-amber-800 hover:bg-amber-100'
+                                                                : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800 hover:bg-emerald-100'))
+                                                        : 'bg-slate-100 dark:bg-slate-800 text-slate-500 border border-slate-300 dark:border-slate-700 hover:bg-slate-200'
+                                                    }`}
+                                                    title={
+                                                      isVerified
+                                                        ? (isRelated
+                                                            ? `Related organizational context: ${validCitation.title || 'Untitled'}`
+                                                            : (validCitation?.isTruncated
+                                                                ? `Partial direct excerpt: ${validCitation.title || 'Untitled'}`
+                                                                : `Direct source included: ${validCitation.title || 'Untitled'}`))
+                                                        : `Unresolved citation index #${sourceIndex}`
+                                                    }
                                                   >
-                                                    <span>{isVerified ? (validCitation?.isTruncated ? '⚠' : '✓') : '?'}</span>
-                                                    <span>{validCitation?.isTruncated ? `Partial excerpt #${sourceIndex}` : `Source #${sourceIndex}`}</span>
+                                                    <span>{isVerified ? (isRelated ? '🔗' : (validCitation?.isTruncated ? '⚠' : '✓')) : '?'}</span>
+                                                    <span>{isRelated ? `Related #${sourceIndex}` : (validCitation?.isTruncated ? `Partial #${sourceIndex}` : `Source #${sourceIndex}`)}</span>
                                                   </button>
                                                 );
                                               });

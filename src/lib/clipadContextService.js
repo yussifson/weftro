@@ -347,3 +347,226 @@ export async function getGraphAwareContext({
     sources,
   };
 }
+
+// ──────────────────────────────────────────────────────────────────
+// STAGE 4: Organizational Context Assembly
+// Formats direct evidence, related evidence, organizational context, and conflicts
+// with deterministic deduplication and strict budget enforcement.
+// ──────────────────────────────────────────────────────────────────
+
+export const CONTEXT_BUDGETS = {
+  MAX_TOTAL_CONTEXT_CHARS: 18000,
+  MAX_RELATED_CONTEXT_CHARS: 4000,
+  MAX_ORGANIZATIONAL_CONTEXT_CHARS: 2500,
+};
+
+/**
+ * Assembles four-category structured organizational context:
+ * A. Direct Evidence (prioritized, deduplicated)
+ * B. Related Evidence (1-hop verified relationships, budgeted)
+ * C. Organizational Context (people, teams, spaces, active decisions/blockers)
+ * D. Conflicts and Uncertainty (status/date discrepancies detected across records)
+ *
+ * @param {Object} params
+ * @param {string} params.companyId
+ * @param {string} [params.userId=null]
+ * @param {Array<string>} [params.accessibleSpaceIds=[]]
+ * @param {Array<Object>} [params.directEvidence=[]]
+ * @param {Array<Object>} [params.relatedEvidence=[]]
+ * @param {Array<Object>} [params.organizationalEntities=[]]
+ * @param {string} [params.query='']
+ * @returns {Object} Structured context pack
+ */
+export function assembleOrganizationalContext({
+  companyId,
+  userId = null,
+  accessibleSpaceIds = [],
+  directEvidence = [],
+  relatedEvidence = [],
+  organizationalEntities = [],
+  query = '',
+}) {
+  const spaceSet = new Set((accessibleSpaceIds || []).map(String));
+
+  // 1. Permission security enforcement: filter out any cross-tenant or private space records
+  const authDirect = (directEvidence || []).filter(item => {
+    if (item.company_id && item.company_id !== companyId) return false;
+    const isPrivate = item.is_private === true || item.metadata?.is_private === true;
+    const spaceId = item.space_id || item.team_space_id || item.metadata?.space_id;
+    if (isPrivate && (!spaceId || !spaceSet.has(String(spaceId)))) return false;
+    return true;
+  });
+
+  const authRelated = (relatedEvidence || []).filter(item => {
+    if (item.company_id && item.company_id !== companyId) return false;
+    const isPrivate = item.is_private === true || item.metadata?.is_private === true;
+    const spaceId = item.space_id || item.team_space_id || item.metadata?.space_id;
+    if (isPrivate && (!spaceId || !spaceSet.has(String(spaceId)))) return false;
+    return true;
+  });
+
+  const authEntities = (organizationalEntities || []).filter(e => {
+    if (e.company_id && e.company_id !== companyId) return false;
+    const isPrivate = e.is_private === true || e.metadata?.is_private === true;
+    const spaceId = e.space_id || e.team_space_id || e.metadata?.space_id;
+    if (isPrivate && (!spaceId || !spaceSet.has(String(spaceId)))) return false;
+    return true;
+  });
+
+  // 2. Prioritization & Deduplication across evidence
+  const allCandidateEvidence = [
+    ...authDirect.map(d => ({ ...d, isRelatedEvidence: false })),
+    ...authRelated.map(r => ({ ...r, isRelatedEvidence: true })),
+  ];
+
+  // Deterministic sorting and duplicate excision
+  const directList = [];
+  const relatedList = [];
+  const seenIds = new Set();
+  const seenContent = new Map();
+
+  for (const item of allCandidateEvidence) {
+    const id = String(item.id || '');
+    if (seenIds.has(id)) continue;
+
+    const raw = (item.snippet || item.content || item.summary || item.description || '').trim().toLowerCase();
+    if (raw.length > 20 && seenContent.has(raw)) {
+      const existing = seenContent.get(raw);
+      // Check if there is a meaningful contradiction in status
+      const st1 = (existing.status || existing.state || '').toLowerCase();
+      const st2 = (item.status || item.state || '').toLowerCase();
+      if (st1 === st2) {
+        continue; // duplicate content with same status: prune
+      }
+    }
+
+    seenIds.add(id);
+    if (raw.length > 20) seenContent.set(raw, item);
+
+    if (item.isRelatedEvidence) {
+      relatedList.push(item);
+    } else {
+      directList.push(item);
+    }
+  }
+
+  // 3. Category D: Conflicts and Uncertainty Detection
+  const conflicts = [];
+  const statusTracker = new Map();
+  for (const item of [...directList, ...relatedList]) {
+    const title = (item.label || item.title || item.name || '').trim();
+    const status = (item.status || item.state || item.metadata?.status || '').trim();
+    const date = item.updated_at || item.created_at;
+
+    if (title && status) {
+      const norm = title.toLowerCase();
+      if (statusTracker.has(norm)) {
+        const prev = statusTracker.get(norm);
+        if (prev.status.toLowerCase() !== status.toLowerCase()) {
+          conflicts.push({
+            subject: title,
+            description: `Differing record status for "${title}": recorded as "${prev.status}" (${prev.date ? prev.date.slice(0, 10) : 'earlier'}) vs "${status}" (${date ? date.slice(0, 10) : 'subsequent'}).`,
+          });
+        }
+      } else {
+        statusTracker.set(norm, { title, status, date });
+      }
+    }
+  }
+
+  // 4. Budget Enforcement & Assembly
+  let totalChars = 0;
+  const directBlocks = [];
+  const relatedBlocks = [];
+  const citationMap = [];
+
+  let directIdx = 1;
+  let relatedIdx = 1;
+
+  // A. Format Direct Evidence (Highest priority)
+  for (const item of directList) {
+    if (totalChars >= CONTEXT_BUDGETS.MAX_TOTAL_CONTEXT_CHARS) {
+      citationMap.push({ index: `${directIdx}`, id: item.id, title: item.title, isTruncated: true, isRelated: false });
+      directIdx++;
+      continue;
+    }
+    const title = item.label || item.title || item.name || 'Direct Record';
+    const content = item.snippet || item.content || item.summary || item.description || '';
+    const slice = content.length > 2000 ? content.slice(0, 2000) + '\n[... truncated ...]' : content;
+    const block = `[DIRECT EVIDENCE #${directIdx}: ${title}]\nTYPE: ${item.type || 'record'}\nCONTENT:\n${slice}`;
+
+    if (totalChars + block.length <= CONTEXT_BUDGETS.MAX_TOTAL_CONTEXT_CHARS) {
+      directBlocks.push(block);
+      totalChars += block.length;
+      citationMap.push({ index: `${directIdx}`, id: item.id, title, isTruncated: content.length > 2000, isRelated: false });
+      directIdx++;
+    } else {
+      citationMap.push({ index: `${directIdx}`, id: item.id, title, isTruncated: true, isRelated: false });
+      directIdx++;
+    }
+  }
+
+  // B. Format Related Evidence (Cap at MAX_RELATED_CONTEXT_CHARS sub-budget)
+  let relatedChars = 0;
+  for (const item of relatedList) {
+    if (relatedChars >= CONTEXT_BUDGETS.MAX_RELATED_CONTEXT_CHARS || totalChars >= CONTEXT_BUDGETS.MAX_TOTAL_CONTEXT_CHARS) {
+      citationMap.push({ index: `R${relatedIdx}`, id: item.id, title: item.title, isTruncated: true, isRelated: true });
+      relatedIdx++;
+      continue;
+    }
+    const title = item.label || item.title || item.name || 'Related Context';
+    const content = item.snippet || item.content || item.summary || item.description || '';
+    const slice = content.length > 2000 ? content.slice(0, 2000) + '\n[... truncated ...]' : content;
+    const relInfo = item.relationship ? ` (Via ${item.relationship.type} to "${item.relationship.seedTitle || 'query seed'}")` : '';
+    const block = `[RELATED EVIDENCE #R${relatedIdx}: ${title}${relInfo}]\nTYPE: ${item.type || 'record'}\nCONTENT:\n${slice}`;
+
+    if (relatedChars + block.length <= CONTEXT_BUDGETS.MAX_RELATED_CONTEXT_CHARS && (totalChars + block.length) <= CONTEXT_BUDGETS.MAX_TOTAL_CONTEXT_CHARS) {
+      relatedBlocks.push(block);
+      relatedChars += block.length;
+      totalChars += block.length;
+      citationMap.push({ index: `R${relatedIdx}`, id: item.id, title, isTruncated: content.length > 2000, isRelated: true, relationship: item.relationship });
+      relatedIdx++;
+    } else {
+      citationMap.push({ index: `R${relatedIdx}`, id: item.id, title, isTruncated: true, isRelated: true });
+      relatedIdx++;
+    }
+  }
+
+  // C. Category C: Organizational Context (Entities, Teams, Projects)
+  const orgBlocks = [];
+  let orgChars = 0;
+  for (const ent of authEntities) {
+    if (orgChars >= CONTEXT_BUDGETS.MAX_ORGANIZATIONAL_CONTEXT_CHARS || totalChars >= CONTEXT_BUDGETS.MAX_TOTAL_CONTEXT_CHARS) break;
+    const line = `• [[${(ent.entity_type || 'entity').toUpperCase()}]] ${ent.name}${ent.description ? `: ${ent.description.slice(0, 150)}` : ''}`;
+    if (orgChars + line.length <= CONTEXT_BUDGETS.MAX_ORGANIZATIONAL_CONTEXT_CHARS && totalChars + line.length <= CONTEXT_BUDGETS.MAX_TOTAL_CONTEXT_CHARS) {
+      orgBlocks.push(line);
+      orgChars += line.length;
+      totalChars += line.length;
+    }
+  }
+
+  // Construct structured context document
+  const sections = [];
+  if (directBlocks.length > 0) {
+    sections.push(`=== DIRECT EVIDENCE (${directBlocks.length} records) ===\n\n` + directBlocks.join('\n\n---\n\n'));
+  }
+  if (relatedBlocks.length > 0) {
+    sections.push(`=== RELATED ORGANIZATIONAL CONTEXT (1-HOP RELATIONSHIPS) ===\n\n` + relatedBlocks.join('\n\n---\n\n'));
+  }
+  if (orgBlocks.length > 0) {
+    sections.push(`=== ORGANIZATIONAL CONTEXT (ENTITIES & TEAMS) ===\n\n` + orgBlocks.join('\n'));
+  }
+  if (conflicts.length > 0) {
+    sections.push(`=== POTENTIAL CONFLICTS & DISCREPANCIES ===\n\n` + conflicts.map(c => `⚠ ${c.description}`).join('\n'));
+  }
+
+  return {
+    contextText: sections.join('\n\n======\n\n'),
+    directCount: directBlocks.length,
+    relatedCount: relatedBlocks.length,
+    orgEntitiesCount: orgBlocks.length,
+    conflicts,
+    citationMap,
+    totalChars,
+  };
+}
