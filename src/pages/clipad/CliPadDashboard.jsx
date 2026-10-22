@@ -67,12 +67,12 @@ function SpaceCard({ space, onClick }) {
       </div>
       <div className="flex items-center justify-between mb-4">
         <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-bold border ${
-          space.is_private
+          space?.is_private
             ? 'bg-slate-50 dark:bg-background text-slate-600 dark:text-muted-foreground border-slate-200 dark:border-border'
             : 'bg-[#006065] dark:bg-[#131A2C]/5 text-[#006065] border-[#006065] dark:border-border/10'
         }`}>
-          {space.is_private ? <Lock className="w-3 h-3" /> : <Globe className="w-3 h-3" />}
-          {space.is_private ? 'Private' : 'Public'}
+          {space?.is_private ? <Lock className="w-3 h-3" /> : <Globe className="w-3 h-3" />}
+          {space?.is_private ? 'Private' : 'Public'}
         </span>
       </div>
       <div className="flex items-center justify-between mt-auto pt-4 border-t border-slate-100 dark:border-border">
@@ -124,12 +124,12 @@ function VideoCard({ video, onClick }) {
         <div className="absolute top-3 left-3">
           {video.space && (
             <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-bold shadow-sm backdrop-blur-md ${
-              video.space.is_private
+              video?.space?.is_private
                 ? 'bg-white/90 dark:bg-background/90 text-slate-700 dark:text-foreground'
                 : 'bg-[#fad503]/90 text-slate-900 dark:text-foreground'
             }`}>
-              {video.space.is_private ? <Lock className="w-3 h-3" /> : <Globe className="w-3 h-3" />}
-              {video.space.is_private ? 'Private' : 'Public'}
+              {video?.space?.is_private ? <Lock className="w-3 h-3" /> : <Globe className="w-3 h-3" />}
+              {video?.space?.is_private ? 'Private' : 'Public'}
             </span>
           )}
         </div>
@@ -620,12 +620,12 @@ export default function CliPadDashboard() {
                           <p className="text-sm font-semibold text-slate-900 dark:text-foreground group-hover:text-[#006065] transition-colors shrink-0 transition-colors">{m.title || 'Team Meeting'}</p>
                           {m.space && (
                             <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold ${
-                              m.space.is_private
+                              m?.space?.is_private
                                 ? 'bg-white dark:bg-card text-slate-900 dark:text-foreground border border-slate-200 dark:border-border text-slate-600 dark:text-muted-foreground'
                                 : 'bg-[#006065] dark:bg-card text-[#006065] dark:text-[#fad503]'
                             }`}>
-                              {m.space.is_private ? <Lock className="w-2.5 h-2.5" /> : <Globe className="w-2.5 h-2.5" />}
-                              {m.space.is_private ? 'Private' : 'Public'}
+                              {m?.space?.is_private ? <Lock className="w-2.5 h-2.5" /> : <Globe className="w-2.5 h-2.5" />}
+                              {m?.space?.is_private ? 'Private' : 'Public'}
                             </span>
                           )}
                         </div>

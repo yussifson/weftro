@@ -180,12 +180,12 @@ export default function VideosList() {
                     {v.space && <span className="inline-block px-2 py-1 rounded bg-white/10 dark:bg-secondary text-slate-500 dark:text-muted-foreground text-[10px] uppercase font-bold truncate max-w-[120px]">{v.space.name}</span>}
                     {v.space && (
                       <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold shrink-0 ${
-                        v.space.is_private
+                        v?.space?.is_private
                           ? 'bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400'
                           : 'bg-[#006065] dark:bg-card text-[#006065] dark:text-[#00beac]'
                       }`}>
-                        {v.space.is_private ? <Lock className="w-2.5 h-2.5" /> : <Globe className="w-2.5 h-2.5" />}
-                        {v.space.is_private ? 'Private' : 'Public'}
+                        {v?.space?.is_private ? <Lock className="w-2.5 h-2.5" /> : <Globe className="w-2.5 h-2.5" />}
+                        {v?.space?.is_private ? 'Private' : 'Public'}
                       </span>
                     )}
                   </div>

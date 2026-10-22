@@ -759,7 +759,7 @@ Guidelines:
   const hasResults = isSearching || filteredResults.length > 0;
   const showLeftPanel = hasResults;
   return (
-    <div className="flex flex-col h-screen bg-background font-sans text-foreground overflow-hidden">
+    <div className="flex flex-col h-full bg-background font-sans text-foreground overflow-hidden">
       
       {!hasPerformedSearch ? (
         /* ── ZERO STATE (Original Centered Layout) ── */

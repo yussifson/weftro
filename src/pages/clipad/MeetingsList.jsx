@@ -230,12 +230,12 @@ export default function MeetingsList() {
                     {m.space && <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-muted-foreground text-[10px] uppercase font-bold">{m.space.name}</span>}
                     {m.space && (
                       <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                        m.space.is_private
+                        m?.space?.is_private
                           ? 'bg-rose-100 dark:bg-rose-500/20 text-rose-700 dark:text-rose-400'
                           : 'bg-[#006065] dark:bg-card text-[#006065] dark:text-[#00beac]'
                       }`}>
-                        {m.space.is_private ? <Lock className="w-2.5 h-2.5" /> : <Globe className="w-2.5 h-2.5" />}
-                        {m.space.is_private ? 'Private' : 'Public'}
+                        {m?.space?.is_private ? <Lock className="w-2.5 h-2.5" /> : <Globe className="w-2.5 h-2.5" />}
+                        {m?.space?.is_private ? 'Private' : 'Public'}
                       </span>
                     )}
                   </div>

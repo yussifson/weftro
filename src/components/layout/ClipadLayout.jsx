@@ -56,6 +56,7 @@ export default function ClipadLayout() {
 
   // Hide sidebar and topnav when inside live immersive video meeting rooms
   const isImmersive = location.pathname.startsWith('/join');
+  const isSearchPage = location.pathname === '/search' || location.pathname.startsWith('/search');
 
   return (
     <div data-theme="brand" className="flex flex-row h-[100dvh] w-full overflow-hidden bg-[#f8fafc] dark:bg-background text-[#0f172a] dark:text-foreground pt-[var(--sat)] pb-[var(--sab)] pl-[var(--sal)] pr-[var(--sar)]">
@@ -65,8 +66,8 @@ export default function ClipadLayout() {
 
       {/* Main Content Column */}
       <div ref={containerRef} className="flex flex-col flex-1 w-0 overflow-hidden relative @container bg-[#f8fafc] dark:bg-background transition-all">
-        {!isImmersive && <ClipadTopNav forceMobile={forceMobile} />}
-        <PullToRefresh className={cn("relative z-30 page-enter h-full overflow-x-hidden scrollbar-thin", isImmersive ? "pb-0 overflow-y-hidden" : "pb-[80px] md:pb-0 overflow-y-auto")}>
+        {!isImmersive && !isSearchPage && <ClipadTopNav forceMobile={forceMobile} />}
+        <PullToRefresh className={cn("relative z-30 page-enter h-full overflow-x-hidden scrollbar-thin", isImmersive || isSearchPage ? "pb-0 overflow-y-hidden" : "pb-[80px] md:pb-0 overflow-y-auto")}>
           {location.pathname === '/chat' && isChatDocked ? (
             <div className="flex items-center justify-center h-full text-white flex-col gap-3">
               <MessageSquare className="w-8 h-8 opacity-50" />
