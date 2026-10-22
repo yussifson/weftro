@@ -278,7 +278,46 @@ export default function SearchHub() {
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [sessionToDelete, setSessionToDelete] = useState(null);
-  const [isControlsCollapsed, setIsControlsCollapsed] = useState(false);
+  const [isControlsCollapsed, setIsControlsCollapsed] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const cached = localStorage.getItem('search_hub_controls_collapsed');
+      if (cached !== null) return cached === 'true';
+    }
+    return user?.user_metadata?.search_hub_controls_collapsed === true;
+  });
+
+  // Sync preference across devices via user_metadata when user logs in / metadata arrives
+  useEffect(() => {
+    if (user?.user_metadata?.search_hub_controls_collapsed !== undefined) {
+      const remotePref = !!user.user_metadata.search_hub_controls_collapsed;
+      setIsControlsCollapsed(remotePref);
+      try {
+        localStorage.setItem('search_hub_controls_collapsed', String(remotePref));
+      } catch (e) {
+        // ignore
+      }
+    }
+  }, [user?.id, user?.user_metadata?.search_hub_controls_collapsed]);
+
+  const toggleControlsCollapsed = async () => {
+    const nextState = !isControlsCollapsed;
+    setIsControlsCollapsed(nextState);
+    try {
+      localStorage.setItem('search_hub_controls_collapsed', String(nextState));
+    } catch (e) {
+      // ignore
+    }
+
+    if (user?.id) {
+      try {
+        await supabase.auth.updateUser({
+          data: { search_hub_controls_collapsed: nextState }
+        });
+      } catch (err) {
+        console.warn('[SearchHub] Could not persist collapse preference to user_metadata:', err);
+      }
+    }
+  };
 
   // Load all user chat sessions from Supabase
   const loadAllSessions = useCallback(async () => {
@@ -1016,7 +1055,7 @@ Guidelines:
 
         <button
           type="button"
-          onClick={() => setIsControlsCollapsed(!isControlsCollapsed)}
+          onClick={toggleControlsCollapsed}
           className="h-7 px-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted flex items-center gap-1 transition-colors text-xs font-medium"
           title={isControlsCollapsed ? "Show controls (History, New Chat)" : "Collapse controls"}
           aria-label={isControlsCollapsed ? "Show controls" : "Collapse controls"}
