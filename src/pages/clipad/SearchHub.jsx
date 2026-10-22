@@ -96,15 +96,16 @@ const TYPE_META = {
 
 const FILTER_TABS = [
   { id: 'all', label: 'All Knowledge', icon: Layers },
-  { id: 'person', label: 'People', icon: Users },
+  { id: 'slack', label: 'Slack', icon: MessageSquare },
   { id: 'doc', label: 'Documents', icon: FileText },
   { id: 'task', label: 'Tasks', icon: CheckCircle },
   { id: 'meeting', label: 'Meetings', icon: Calendar },
   { id: 'video', label: 'Videos', icon: Video },
   { id: 'decision', label: 'Decisions', icon: ShieldAlert },
   { id: 'message', label: 'Conversations', icon: MessageSquare },
-  { id: 'capture', label: 'Captures', icon: Inbox },
   { id: 'integration', label: 'Integrations', icon: ExternalLink },
+  { id: 'person', label: 'People', icon: Users },
+  { id: 'capture', label: 'Captures', icon: Inbox },
 ];
 
 const SUGGESTED_PROMPTS = [
@@ -116,6 +117,7 @@ const SUGGESTED_PROMPTS = [
 
 const FILTER_TYPE_MAP = {
   all: null,
+  slack: ['integration'],
   person: ['person'],
   doc: ['doc', 'integration'],
   task: ['task', 'blocker', 'standup'],
@@ -137,8 +139,12 @@ function extractKeywords(text) {
     .filter(w => w.length > 2 && !STOP_WORDS.has(w));
 }
 
-const matchesFilter = (itemType, filterId) => {
+const matchesFilter = (item, filterId) => {
   if (!filterId || filterId === 'all') return true;
+  const itemType = typeof item === 'object' ? item.type : item;
+  if (filterId === 'slack') {
+    return itemType === 'integration' && String(item.provider || '').toLowerCase() === 'slack';
+  }
   const allowed = FILTER_TYPE_MAP[filterId];
   return allowed ? allowed.includes(itemType) : itemType === filterId;
 };
@@ -845,7 +851,7 @@ export default function SearchHub() {
               : supabase.from('clipad_standups').select('id, user_name, today, yesterday, blockers, space_id, created_at').in('space_id', spaceIdArr).or(`today.ilike.${term},yesterday.ilike.${term},blockers.ilike.${term},today.ilike.${primaryKwTerm}`).limit(20))
           : []
       ),
-      safeQuery(supabase.from('clipad_imported_knowledge').select('id, title, content, provider, content_type, updated_at').eq('company_id', cid).or(`title.ilike.${term},content.ilike.${term},title.ilike.${primaryKwTerm}`).limit(20)),
+      safeQuery(supabase.from('clipad_imported_knowledge').select('id, title, content, provider, content_type, url, author, metadata, updated_at').eq('company_id', cid).or(`title.ilike.${term},content.ilike.${term},title.ilike.${primaryKwTerm}`).limit(30)),
       searchPeople(q, cid),
       searchMemoriesHybrid({
         queryText: q,
@@ -884,7 +890,18 @@ export default function SearchHub() {
       ...(videos || []).map(v => ({ type: 'video', id: v.id, space_id: v.space_id, label: v.title || 'Video', snippet: v.ai_summary, created_at: v.created_at })),
       ...(blockers || []).map(b => ({ type: 'blocker', id: b.id, space_id: b.team_space_id, label: 'Blocker', snippet: b.description, created_at: b.detected_at })),
       ...(standups || []).map(s => ({ type: 'standup', id: s.id, space_id: s.space_id, label: `Standup — ${s.user_name || 'Team member'} (${s.created_at?.slice(0, 10)})`, snippet: s.today, created_at: s.created_at })),
-      ...(integrations || []).map(i => ({ type: 'integration', id: i.id, space_id: null, label: `[${i.provider}] ${i.title}`, snippet: i.content, created_at: i.updated_at, provider: i.provider })),
+      ...(integrations || []).map(i => ({
+        type: 'integration',
+        id: i.id,
+        space_id: null,
+        label: i.title ? `[${(i.provider || 'App').toUpperCase()}] ${i.title}` : `[${(i.provider || 'App').toUpperCase()}] Message`,
+        snippet: i.content,
+        created_at: i.updated_at,
+        provider: i.provider,
+        url: i.url || (i.metadata?.permalink || i.metadata?.url || null),
+        author: i.author || i.metadata?.user_name || null,
+        metadata: i.metadata || null
+      })),
       ...(cloudDocs || []).map(cd => ({ type: 'doc', id: cd.id, space_id: null, label: cd.name, snippet: cd.ai_summary || cd.notes, created_at: cd.created_at, url: cd.file_url })),
     ];
 
@@ -1221,7 +1238,7 @@ Guidelines:
   }, [searchParams]);
 
   const firstName = user?.full_name?.split(' ')[0] || user?.user_metadata?.full_name?.split(' ')[0] || 'there';
-  const filteredResults = useMemo(() => results.filter(r => matchesFilter(r.type, activeFilter)), [results, activeFilter]);
+  const filteredResults = useMemo(() => results.filter(r => matchesFilter(r, activeFilter)), [results, activeFilter]);
   const hasResults = isSearching || filteredResults.length > 0;
   const showLeftPanel = hasResults;
   return (
@@ -1439,7 +1456,7 @@ Guidelines:
                     const isActive = activeFilter === tab.id;
                     const count = tab.id === 'all' 
                       ? results.length 
-                      : results.filter(r => matchesFilter(r.type, tab.id)).length;
+                      : results.filter(r => matchesFilter(r, tab.id)).length;
                     return (
                       <button
                         key={tab.id}
@@ -1536,13 +1553,24 @@ Guidelines:
                               {meta.label}
                             </span>
                             {item.provider && (
-                              <span className="text-[10px] font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
-                                {item.provider}
+                              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 border ${
+                                String(item.provider).toLowerCase() === 'slack' 
+                                  ? 'bg-[#4A154B]/10 text-[#4A154B] dark:text-[#E01E5A] border-[#4A154B]/30' 
+                                  : String(item.provider).toLowerCase() === 'github'
+                                  ? 'bg-slate-900/10 text-slate-900 dark:text-slate-100 border-slate-700/30'
+                                  : 'bg-muted text-muted-foreground border-border'
+                              }`}>
+                                {item.provider.toUpperCase()}
+                              </span>
+                            )}
+                            {item.author && (
+                              <span className="text-[11px] text-muted-foreground font-medium">
+                                by {item.author}
                               </span>
                             )}
                             {item.created_at && (
                               <span className="text-[11px] text-muted-foreground">
-                                {new Date(item.created_at).toLocaleDateString()}
+                                • {new Date(item.created_at).toLocaleDateString()}
                               </span>
                             )}
                             {item.score > 0 && (
@@ -1650,7 +1678,10 @@ Guidelines:
                                                     onClick={() => {
                                                       if (targetRecord) {
                                                         const foundInResults = results.find(r => r.id === targetRecord.id);
-                                                        if (foundInResults) {
+                                                        const recordUrl = foundInResults?.url || targetRecord?.url || targetRecord?.metadata?.permalink;
+                                                        if (recordUrl) {
+                                                          window.open(recordUrl, '_blank', 'noopener,noreferrer');
+                                                        } else if (foundInResults) {
                                                           setSelectedResult(foundInResults);
                                                           const el = document.getElementById(`result-card-${foundInResults.id}`);
                                                           if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -1726,7 +1757,10 @@ Guidelines:
                                                   type="button"
                                                   onClick={() => {
                                                     const found = results.find(r => r.id === cite.id);
-                                                    if (found) {
+                                                    const targetUrl = found?.url || cite?.url || cite?.metadata?.permalink;
+                                                    if (targetUrl) {
+                                                      window.open(targetUrl, '_blank', 'noopener,noreferrer');
+                                                    } else if (found) {
                                                       setSelectedResult(found);
                                                       const el = document.getElementById(`result-card-${found.id}`);
                                                       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
