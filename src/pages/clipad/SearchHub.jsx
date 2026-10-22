@@ -1110,7 +1110,7 @@ Guidelines:
                 <input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Ask Orbit AI anything..."
+                  placeholder="Ask Orbit anything..."
                   className="flex-1 bg-transparent border-0 outline-none ring-0 focus:ring-0 focus:outline-none text-sm text-foreground placeholder:text-muted-foreground px-2 min-w-0 w-full font-normal"
                 />
 
@@ -1166,7 +1166,7 @@ Guidelines:
                            <Sparkles className="w-8 h-8 text-slate-300 dark:text-slate-600 dark:text-muted-foreground" />
                          </div>
                          <h3 className="font-bold text-slate-900 dark:text-foreground mb-2">Ready to assist</h3>
-                         <p className="text-sm text-slate-500 dark:text-muted-foreground">Ask any question and Orbit AI will analyze organizational knowledge to synthesize an answer.</p>
+                         <p className="text-sm text-slate-500 dark:text-muted-foreground">Ask any question and Orbit will analyze organizational knowledge to synthesize an answer.</p>
                       </div>
                    ) : (
                       chatHistory.map((msg, idx) => (
@@ -1185,8 +1185,8 @@ Guidelines:
                             </div>
 
                             <div className={`flex flex-col gap-1.5 flex-1 min-w-0 ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
-                               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-1">
-                                 {msg.role === 'user' ? 'You' : 'Orbit AI'}
+                               <span className="text-[10px] font-bold text-primary uppercase tracking-wider px-1">
+                                 {msg.role === 'user' ? 'You' : 'Orbit'}
                                 </span>
                                
                                 <div className={`text-sm leading-relaxed ${msg.role === 'user' ? 'px-4 py-3 bg-secondary text-secondary-foreground border border-border/70 rounded-2xl max-w-[85%] shadow-xs' : 'py-1 text-foreground w-full'}`}>
@@ -1367,17 +1367,25 @@ Guidelines:
                    )}
 
                    {isSynthesizing && (
-                      <div className="flex gap-4 max-w-3xl mr-auto">
+                      <div className="flex gap-3 max-w-3xl mr-auto animate-in fade-in slide-in-from-bottom-2 duration-300">
                          <div className="shrink-0 mt-1">
-                            <div className="w-8 h-8 rounded-xl flex items-center justify-center shadow-md animate-pulse overflow-hidden">
+                            <div className="w-8 h-8 rounded-xl flex items-center justify-center shadow-xs overflow-hidden">
                               <WeftroLogo height={32} iconOnly />
                             </div>
                          </div>
                          <div className="flex flex-col gap-1.5 items-start">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-1">Orbit AI</span>
-                            <div className="py-2 flex items-center gap-2">
-                               <Loader2 className="w-4 h-4 text-primary animate-spin" />
-                               <span className="text-sm font-medium text-slate-600 dark:text-muted-foreground">Synthesizing insights...</span>
+                            <span className="text-[10px] font-bold text-primary uppercase tracking-wider px-1">Orbit</span>
+                            {/* Gemini-inspired breathing stream bubble with animated glowing gradient & dot pulse */}
+                            <div className="relative overflow-hidden rounded-2xl rounded-tl-sm px-4 py-3 bg-card border border-primary/20 shadow-xs flex items-center gap-3">
+                               <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent animate-pulse" />
+                               <div className="relative flex items-center gap-1.5 z-10">
+                                  <span className="w-2 h-2 rounded-full bg-primary animate-ping" />
+                                  <span className="w-1.5 h-1.5 rounded-full bg-primary/70 animate-bounce" style={{ animationDelay: '150ms' }} />
+                                  <span className="w-1.5 h-1.5 rounded-full bg-primary/50 animate-bounce" style={{ animationDelay: '300ms' }} />
+                               </div>
+                               <span className="relative z-10 text-xs font-medium text-foreground tracking-wide">
+                                  Orbit is synthesizing knowledge...
+                                </span>
                             </div>
                          </div>
                       </div>
@@ -1407,7 +1415,7 @@ Guidelines:
                       <input
                         value={followUpInput}
                         onChange={e => setFollowUpInput(e.target.value)}
-                        placeholder="Ask Orbit AI anything..."
+                        placeholder="Ask Orbit anything..."
                         className="flex-1 bg-transparent border-0 outline-none ring-0 focus:ring-0 text-sm text-foreground placeholder:text-muted-foreground min-w-0 px-2 font-normal"
                       />
 
@@ -1424,7 +1432,7 @@ Guidelines:
                       </div>
                    </form>
                    <p className="text-center text-[11px] text-muted-foreground/70 mt-2 font-normal">
-                      Orbit AI can make mistakes. Verify important organizational info.
+                      Orbit can make mistakes. Verify important organizational info.
                    </p>
                 </div>
              </div>
