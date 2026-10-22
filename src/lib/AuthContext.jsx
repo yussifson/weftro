@@ -377,12 +377,28 @@ export const AuthProvider = ({ children }) => {
           }
         }
 
+        // Also check staff_records by email as a fallback source for company_id
+        if (!invitedCompanyId && sessionUser.email) {
+          try {
+            const { data: staffRec } = await supabase
+              .from('staff_records')
+              .select('company_id, role')
+              .ilike('user_email', sessionUser.email)
+              .limit(1)
+              .maybeSingle();
+            if (staffRec?.company_id) {
+              invitedCompanyId = staffRec.company_id;
+              if (staffRec.role && !invitedRole) invitedRole = staffRec.role;
+            }
+          } catch (e) { /* ignore */ }
+        }
+
         if (!PORTAL_ROLES.includes(invitedRole)) {
             let finalCompanyId = invitedCompanyId;
             let finalCompanyName = null;
             let finalRole = invitedRole || 'company_admin'; // Make them admin of their own workspace
 
-            // Auto-create personal workspace if no company was invited
+            // Auto-create personal workspace if no company was found at all
             if (!finalCompanyId) {
                 finalCompanyName = 'Personal Workspace';
                 const newCompanyId = crypto.randomUUID();
@@ -450,32 +466,77 @@ export const AuthProvider = ({ children }) => {
             .single();
           if (!updateError) profile = updatedProfile;
         } else {
-          // Auto-repair legacy users with null company_id
-          const newCompanyId = crypto.randomUUID();
-          const newCompanyName = 'Personal Workspace';
+          // Before creating a Personal Workspace, check if this user belongs to a company via staff_records or univ_accesscontrols
+          let recoveredCompanyId = null;
           try {
-              await supabase.from('companies').insert({
-                  id: newCompanyId,
-                  name: newCompanyName,
-                  subdomain: 'workspace-' + newCompanyId.split('-')[0]
-              });
+            if (sessionUser.email) {
+              const { data: staffRec } = await supabase
+                .from('staff_records')
+                .select('company_id')
+                .ilike('user_email', sessionUser.email)
+                .limit(1)
+                .maybeSingle();
+              if (staffRec?.company_id) recoveredCompanyId = staffRec.company_id;
+            }
+          } catch (e) { /* ignore */ }
+
+          if (!recoveredCompanyId && sessionUser.email) {
+            try {
+              const { data: accessRec } = await supabase
+                .from('univ_accesscontrols')
+                .select('company_id')
+                .ilike('email', sessionUser.email)
+                .limit(1)
+                .maybeSingle();
+              if (accessRec?.company_id) recoveredCompanyId = accessRec.company_id;
+            } catch (e) { /* ignore */ }
+          }
+
+          if (recoveredCompanyId) {
+            // Repair the profile to point to the real company — do NOT create a new orphaned workspace
+            console.log('[AuthContext] Recovering lost company_id for user:', sessionUser.id, '→', recoveredCompanyId);
+            try {
               const { data: updatedProfile, error: updateError } = await supabase
-                  .from('profiles')
-                  .update({
-                      company_id: newCompanyId,
-                      role: 'company_admin'
-                  })
-                  .eq('id', sessionUser.id)
-                  .select()
-                  .single();
-              
+                .from('profiles')
+                .update({ company_id: recoveredCompanyId, email: sessionUser.email?.toLowerCase() || profile.email || null })
+                .eq('id', sessionUser.id)
+                .select()
+                .single();
               if (!updateError) {
                 profile = updatedProfile;
-                await powerSync.execute(`UPDATE profiles SET company_id = ?, role = ? WHERE id = ?`, [newCompanyId, 'company_admin', sessionUser.id]);
-                await powerSync.execute(`INSERT INTO companies (id, name, subdomain) VALUES (?, ?, ?)`, [newCompanyId, newCompanyName, 'workspace-' + newCompanyId.split('-')[0]]);
+                await powerSync.execute(`UPDATE profiles SET company_id = ? WHERE id = ?`, [recoveredCompanyId, sessionUser.id]);
               }
-          } catch (e) {
-              console.warn('[AuthContext] Failed to repair legacy user without workspace', e);
+            } catch (e) {
+              console.warn('[AuthContext] Failed to recover company_id for user:', e);
+            }
+          } else {
+            // Auto-repair legacy users with null company_id — truly no company found
+            const newCompanyId = crypto.randomUUID();
+            const newCompanyName = 'Personal Workspace';
+            try {
+                await supabase.from('companies').insert({
+                    id: newCompanyId,
+                    name: newCompanyName,
+                    subdomain: 'workspace-' + newCompanyId.split('-')[0]
+                });
+                const { data: updatedProfile, error: updateError } = await supabase
+                    .from('profiles')
+                    .update({
+                        company_id: newCompanyId,
+                        role: 'company_admin'
+                    })
+                    .eq('id', sessionUser.id)
+                    .select()
+                    .single();
+                
+                if (!updateError) {
+                  profile = updatedProfile;
+                  await powerSync.execute(`UPDATE profiles SET company_id = ?, role = ? WHERE id = ?`, [newCompanyId, 'company_admin', sessionUser.id]);
+                  await powerSync.execute(`INSERT INTO companies (id, name, subdomain) VALUES (?, ?, ?)`, [newCompanyId, newCompanyName, 'workspace-' + newCompanyId.split('-')[0]]);
+                }
+            } catch (e) {
+                console.warn('[AuthContext] Failed to repair legacy user without workspace', e);
+            }
           }
         }
       }
@@ -593,7 +654,36 @@ export const AuthProvider = ({ children }) => {
 
         const timeoutPromise = new Promise(resolve => setTimeout(() => resolve([]), 2000));
         const comps = await Promise.race([fetchWorkspacesPromise, timeoutPromise]);
-        if (comps) availableCompanies = comps;
+        if (comps && comps.length > 0) {
+          availableCompanies = comps;
+        } else {
+          // Fallback to Supabase directly if PowerSync has not synced companies or access controls
+          try {
+            const emailParam = sessionUser.email ? sessionUser.email.toLowerCase() : '';
+            const cIds = new Set();
+            if (profile?.company_id) cIds.add(profile.company_id);
+            if (companyData?.id) cIds.add(companyData.id);
+
+            const [staffRes, accessRes] = await Promise.all([
+              supabase.from('staff_records').select('company_id').ilike('user_email', emailParam),
+              supabase.from('univ_accesscontrols').select('company_id').ilike('email', emailParam)
+            ]);
+            (staffRes.data || []).forEach(r => r.company_id && cIds.add(r.company_id));
+            (accessRes.data || []).forEach(r => r.company_id && cIds.add(r.company_id));
+
+            if (cIds.size > 0) {
+              const { data: supaComps } = await supabase
+                .from('companies')
+                .select('id, name, subdomain')
+                .in('id', Array.from(cIds));
+              if (supaComps && supaComps.length > 0) {
+                availableCompanies = supaComps;
+              }
+            }
+          } catch (supaErr) {
+            console.warn('[AuthContext] Supabase workspace fallback lookup error:', supaErr);
+          }
+        }
       } catch(e) {
         console.error("Failed to fetch available workspaces:", e);
       }
@@ -977,6 +1067,22 @@ export const AuthProvider = ({ children }) => {
 
   const isPortalUser = user?.role ? PORTAL_ROLES.includes(user.role.toLowerCase()) : false;
 
+  /**
+   * switchCompany: Allows a logged-in user to switch to a different company workspace.
+   * Updates their profile.company_id in Supabase and reloads auth state so all data queries
+   * reflect the new company context.
+   */
+  const switchCompany = useCallback(async (targetCompanyId) => {
+    if (!targetCompanyId || !userRef.current?.id) return;
+    try {
+      await supabase.from('profiles').update({ company_id: targetCompanyId }).eq('id', userRef.current.id);
+      // Force full auth reload so user context refreshes with new company_id
+      await checkUserAuth(null, true);
+    } catch (e) {
+      console.error('[AuthContext] switchCompany failed:', e);
+    }
+  }, [checkUserAuth]);
+
   const contextValue = useMemo(() => ({
     user, 
     isPortalUser,
@@ -990,6 +1096,7 @@ export const AuthProvider = ({ children }) => {
     logout,
     navigateToLogin,
     switchAccount,
+    switchCompany,
     checkUserAuth,
     checkAppState,
     refreshUser
@@ -1006,6 +1113,7 @@ export const AuthProvider = ({ children }) => {
     logout,
     navigateToLogin,
     switchAccount,
+    switchCompany,
     checkUserAuth,
     checkAppState,
     refreshUser

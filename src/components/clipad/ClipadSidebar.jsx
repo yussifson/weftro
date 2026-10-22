@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Code2, TerminalSquare, LayoutGrid, Folder, Shield, BarChart2, Network, Clock, Scale, CheckSquare, Map as MapIcon, Plug, Search, Settings, HelpCircle, PanelLeftClose, PanelLeft, ChevronUp, ChevronDown, Activity, LogOut, Target, TrendingUp, GitMerge, HeartPulse, Sparkles, Home, Inbox } from 'lucide-react';
+import { Code2, TerminalSquare, LayoutGrid, Folder, Shield, BarChart2, Network, Clock, Scale, CheckSquare, Map as MapIcon, Plug, Search, Settings, HelpCircle, PanelLeftClose, PanelLeft, ChevronUp, ChevronDown, Activity, LogOut, Target, TrendingUp, GitMerge, HeartPulse, Sparkles, Home, Inbox, Building2, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CliPadLogo } from '@/components/ui/CliPadLogo';
 import { useAuth } from '@/lib/AuthContext';
@@ -19,7 +19,7 @@ import {
 export default function ClipadSidebar({ forceMobile }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout } = useAuth();
+  const { user, logout, switchCompany } = useAuth();
   const { toast } = useToast();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [openSections, setOpenSections] = useState({ intelligence: true, admin: true });

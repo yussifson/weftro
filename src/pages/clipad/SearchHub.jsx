@@ -843,31 +843,30 @@ Guidelines:
             {/* Removed top header search bar per user request */}
 
           
-            {/* CLEAN COMPACT TOP HEADER */}
-            <div className="shrink-0 bg-white dark:bg-card border-b border-slate-200 dark:border-border px-4 md:px-6 py-2.5 flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
+            {/* CORPORATE CLEAN HEADER (Claude / ChatGPT style) */}
+            <div className="shrink-0 bg-background border-b border-border/40 px-4 md:px-8 py-3 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3 min-w-0">
                 <button
                   onClick={handleNewSearch}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-colors bg-primary text-white shadow-xs hover:bg-primary/90"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border border-border/80 bg-background hover:bg-secondary text-foreground active:scale-95 cursor-pointer"
                 >
-                  <ArrowLeft className="w-3.5 h-3.5" /> New Search
+                  <ArrowLeft className="w-3.5 h-3.5" /> New Chat
                 </button>
                 {query && (
-                  <span className="text-xs text-slate-500 dark:text-muted-foreground hidden sm:inline">
-                    Query: <strong className="text-slate-800 dark:text-slate-200">"{query}"</strong>
+                  <span className="text-xs text-muted-foreground truncate hidden sm:inline font-normal">
+                    "<strong className="text-foreground font-medium">{query}</strong>"
                   </span>
                 )}
               </div>
 
-              {/* Context Session Attachment Selector (Milestone 4) */}
+              {/* Context Session Attachment Selector */}
               {isContextSessionsEnabled && availableContextSessions.length > 0 && (
                 <div className="flex items-center gap-1.5 shrink-0">
                   <Compass className="w-3.5 h-3.5 text-primary shrink-0" />
-                  <span className="text-xs font-bold text-slate-500 dark:text-muted-foreground whitespace-nowrap hidden sm:inline">Session:</span>
                   <select
                     value={selectedContextSessionId}
                     onChange={(e) => handleSelectContextSession(e.target.value)}
-                    className="text-xs bg-slate-100 dark:bg-secondary border border-slate-200 dark:border-border rounded-lg px-2.5 py-1 text-slate-700 dark:text-slate-200 font-medium outline-none focus:ring-1 focus:ring-primary cursor-pointer max-w-[180px] truncate"
+                    className="text-xs bg-secondary/50 border border-border/60 rounded-md px-2.5 py-1 text-foreground font-medium outline-none focus:ring-1 focus:ring-primary cursor-pointer max-w-[180px] truncate"
                     title="Attach search synthesis to an active Context Session"
                   >
                     <option value="">No Active Session</option>
@@ -881,11 +880,11 @@ Guidelines:
               )}
             </div>
 
-          {/* MAIN CONTENT AREA: Responsive Split. Chat on Left, Results + Right Filters on Right */}
-          <div className="flex-1 w-full max-w-screen-2xl mx-auto p-3 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 h-full overflow-hidden transition-all duration-300">
+          {/* MAIN CONTENT AREA: Full-width Corporate AI Chat (Claude / ChatGPT style) */}
+          <div className="flex-1 w-full h-full overflow-hidden flex flex-col bg-background">
              
-             {/* LEFT SIDE: ORBIT AI CHAT (Takes 7-8 columns, full width on mobile) */}
-             <div className="col-span-1 lg:col-span-7 xl:col-span-8 flex flex-col h-full bg-white dark:bg-card border border-slate-200 dark:border-border rounded-2xl shadow-xs overflow-hidden relative">
+             {/* AI CHAT COLUMN (Centered, clean, no heavy shadows or cards) */}
+             <div className="flex-1 flex flex-col h-full w-full max-w-3xl lg:max-w-4xl mx-auto overflow-hidden relative">
                 
                 {/* Chat Messages */}
                 <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
@@ -918,7 +917,7 @@ Guidelines:
                                  {msg.role === 'user' ? 'You' : 'Orbit AI'}
                                 </span>
                                
-                                <div className={`text-sm leading-relaxed ${msg.role === 'user' ? 'px-5 py-3 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-foreground shadow-xs rounded-3xl rounded-tr-sm' : 'py-2 text-slate-800 dark:text-slate-200 w-full'}`}>
+                                <div className={`text-sm leading-relaxed ${msg.role === 'user' ? 'px-4 py-2.5 bg-secondary text-secondary-foreground rounded-2xl max-w-[85%]' : 'py-1 text-foreground w-full'}`}>
                                    {msg.role === 'assistant' ? (
                                      <>
                                       <ReactMarkdown 
@@ -1114,33 +1113,32 @@ Guidelines:
                    <div ref={chatBottomRef} />
                 </div>
                 
-                {/* Chat Input */}
-                <div className="p-4 bg-white dark:bg-card border-t border-slate-100 dark:border-border shrink-0">
-                   <form onSubmit={handleFollowUp} className="relative flex items-center bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-border rounded-xl px-2 py-1.5 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary transition-all shadow-xs">
+                {/* Corporate Chat Input (Claude / ChatGPT style) */}
+                <div className="p-4 md:p-6 bg-background shrink-0">
+                   <form onSubmit={handleFollowUp} className="relative flex items-center bg-card border border-border/80 rounded-2xl pl-4 pr-2 py-2 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/80 transition-all">
                       <input
                         value={followUpInput}
                         onChange={e => setFollowUpInput(e.target.value)}
-                        placeholder="Ask a follow-up question..."
-                        className="flex-1 bg-transparent border-none outline-none ring-0 text-sm px-3 py-2 text-slate-900 dark:text-foreground placeholder:text-slate-400 focus:ring-0"
+                        placeholder="Ask a follow-up or search anything..."
+                        className="flex-1 bg-transparent border-0 outline-none ring-0 focus:ring-0 text-sm text-foreground placeholder:text-muted-foreground min-w-0"
                       />
                       <button
                         type="submit"
                         disabled={!followUpInput.trim() || isSynthesizing}
-                        className="p-2 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground disabled:opacity-40 transition-colors shrink-0 shadow-xs"
+                        className="w-8 h-8 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground disabled:opacity-30 transition-all flex items-center justify-center shrink-0"
                       >
-                         {isSynthesizing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4 ml-0.5" />}
+                         {isSynthesizing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
                       </button>
                    </form>
-                   <p className="text-center text-[10px] text-slate-400 font-medium mt-2">
-                      Orbit AI synthesizes across live organizational memory and documents. Verify critical items directly with sources.
+                   <p className="text-center text-[11px] text-muted-foreground mt-2 font-normal">
+                      Orbit AI connects across verified organizational documents, decisions, and meetings.
                    </p>
                 </div>
 
              </div>
 
-              {/* RIGHT SIDE: SIDEBAR CATEGORY FILTERS & SEARCH RESULTS */}
-              {/* Category filters are PERMANENTLY accessible on the right side. The results list automatically opens when results exist, closes when none. */}
-              <div className={`col-span-1 ${searchMode === 'find' ? 'lg:col-span-12 xl:col-span-12' : 'lg:col-span-5 xl:col-span-4'} flex flex-col h-full overflow-hidden bg-white dark:bg-card border border-slate-200 dark:border-border rounded-2xl shadow-xs p-4 animate-in fade-in duration-300`}>
+              {/* RIGHT SIDE: SIDEBAR CATEGORY FILTERS & SEARCH RESULTS (Hidden per user request for pure chatbot interface) */}
+              <div className="hidden" aria-hidden="true">
                  {/* Right Sidebar Header: Category Filters / Quick Links */}
                  <div className="flex items-center justify-between mb-3 shrink-0">
                     <div className="flex items-center gap-2">
