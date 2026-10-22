@@ -5,7 +5,7 @@ import { FileText, CheckCircle, MessageSquare, Calendar, Video,
   Users, ArrowUpRight, Send, Plus, Volume2, VolumeX, ThumbsUp, ThumbsDown, Edit,
   Search, Sparkles, ArrowLeft
 , BrainCircuit, Inbox, Compass, Code2, CheckCircle2, MessageSquareText } from 'lucide-react';
-import { CliPadLogo } from '@/components/ui/CliPadLogo';
+import { CliPadLogo, WeftroLogo } from '@/components/ui/CliPadLogo';
 import { supabase } from '@/api/supabaseClient';
 import { generateText } from '@/lib/cloudflareAI';
 import { buildOrgContext } from '@/lib/clipadIntelligence';
@@ -68,6 +68,16 @@ const FILTER_TYPE_MAP = {
   integration: ['integration'],
 };
 
+const STOP_WORDS = new Set(['a','about','above','after','again','against','all','am','an','and','any','are','aren\'t','as','at','be','because','been','before','being','below','between','both','but','by','can','can\'t','cannot','could','couldn\'t','did','didn\'t','do','does','doesn\'t','doing','don\'t','down','during','each','few','for','from','further','had','hadn\'t','has','hasn\'t','have','haven\'t','having','he','he\'d','he\'ll','he\'s','her','here','here\'s','hers','herself','him','himself','his','how','how\'s','i','i\'d','i\'ll','i\'m','i\'ve','if','in','into','is','isn\'t','it','it\'s','its','itself','let\'s','me','more','most','mustn\'t','my','myself','no','nor','not','of','off','on','once','only','or','other','ought','our','ours','ourselves','out','over','own','same','shan\'t','she','she\'d','she\'ll','she\'s','should','shouldn\'t','so','some','such','than','that','that\'s','the','their','theirs','them','themselves','then','there','there\'s','these','they','they\'d','they\'ll','they\'re','they\'ve','this','those','through','to','too','under','until','up','very','was','wasn\'t','we','we\'d','we\'ll','we\'re','we\'ve','were','weren\'t','what','what\'s','when','when\'s','where','where\'s','which','while','who','who\'s','whom','why','why\'s','with','won\'t','would','wouldn\'t','you','you\'d','you\'ll','you\'re','you\'ve','check','want','please','tell','find','show']);
+
+function extractKeywords(text) {
+  if (!text) return [];
+  return text.toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .split(/\s+/)
+    .filter(w => w.length > 2 && !STOP_WORDS.has(w));
+}
+
 const matchesFilter = (itemType, filterId) => {
   if (!filterId || filterId === 'all') return true;
   const allowed = FILTER_TYPE_MAP[filterId];
@@ -92,7 +102,11 @@ async function fetchAccessibleSpaceIds(user) {
     (publicSpaces || []).forEach(s => memberSpaceIds.add(s.id));
     ids = memberSpaceIds;
   }
-  // Dedicated Code Block component for SearchHub with top bar and snippet copy button
+  _spaceIdCache.set(cacheKey, { ids, expiry: Date.now() + 60_000 });
+  return ids;
+}
+
+// Dedicated Code Block component for SearchHub with top bar and snippet copy button
 function SearchCodeSnippetBlock({ children, className }) {
   const [copied, setCopied] = useState(false);
   const match = /language-(\w+)/.exec(className || '');
@@ -146,10 +160,6 @@ function SearchCodeSnippetBlock({ children, className }) {
       </div>
     </div>
   );
-}
-
-_spaceIdCache.set(cacheKey, { ids, expiry: Date.now() + 60_000 });
-  return ids;
 }
 
 export default function SearchHub() {
@@ -448,16 +458,28 @@ export default function SearchHub() {
     const term = `%${q}%`;
     const cid = companyId;
 
+    // Extract core keywords from query for broader recall (e.g. "standups", "roadmap")
+    const keywords = extractKeywords(q);
+    const keywordTerms = keywords.map(kw => `%${kw}%`);
+    const primaryKwTerm = keywordTerms.length > 0 ? keywordTerms[0] : term;
+
     const [docs, tasks, messages, meetings, decisions, videos, blockers, standups, integrations, people, memories, captures, moments, cloudDocs] = await Promise.all([
-      safeQuery(spaceIdArr.length > 0 ? supabase.from('clipad_docs').select('id, title, content, space_id, created_at').in('space_id', spaceIdArr).or(`title.ilike.${term},content.ilike.${term}`).limit(20) : []),
-      safeQuery(spaceIdArr.length > 0 ? supabase.from('clipad_action_items').select('id, title, context, space_id, created_at').in('space_id', spaceIdArr).or(`title.ilike.${term},context.ilike.${term}`).limit(20) : []),
-      safeQuery(spaceIdArr.length > 0 ? supabase.from('clipad_messages').select('id, content, space_id, created_at').in('space_id', spaceIdArr).ilike('content', term).limit(20) : []),
-      safeQuery(spaceIdArr.length > 0 ? supabase.from('clipad_meeting_records').select('id, title, ai_summary, space_id, created_at').in('space_id', spaceIdArr).or(`title.ilike.${term},ai_summary.ilike.${term}`).limit(20) : []),
-      safeQuery(spaceIdArr.length > 0 ? supabase.from('clipad_decisions').select('id, decision_text, team_space_id, created_at').in('team_space_id', spaceIdArr).ilike('decision_text', term).limit(20) : []),
+      safeQuery(spaceIdArr.length > 0 ? supabase.from('clipad_docs').select('id, title, content, space_id, created_at').in('space_id', spaceIdArr).or(`title.ilike.${term},content.ilike.${term},title.ilike.${primaryKwTerm},content.ilike.${primaryKwTerm}`).limit(20) : []),
+      safeQuery(spaceIdArr.length > 0 ? supabase.from('clipad_action_items').select('id, title, context, space_id, created_at').in('space_id', spaceIdArr).or(`title.ilike.${term},context.ilike.${term},title.ilike.${primaryKwTerm}`).limit(20) : []),
+      safeQuery(spaceIdArr.length > 0 ? supabase.from('clipad_messages').select('id, content, space_id, created_at').in('space_id', spaceIdArr).or(`content.ilike.${term},content.ilike.${primaryKwTerm}`).limit(20) : []),
+      safeQuery(spaceIdArr.length > 0 ? supabase.from('clipad_meeting_records').select('id, title, ai_summary, space_id, created_at').in('space_id', spaceIdArr).or(`title.ilike.${term},ai_summary.ilike.${term},title.ilike.${primaryKwTerm},ai_summary.ilike.${primaryKwTerm}`).limit(20) : []),
+      safeQuery(spaceIdArr.length > 0 ? supabase.from('clipad_decisions').select('id, decision_text, team_space_id, created_at').in('team_space_id', spaceIdArr).or(`decision_text.ilike.${term},decision_text.ilike.${primaryKwTerm}`).limit(20) : []),
       safeQuery(spaceIdArr.length > 0 ? supabase.from('clipad_videos').select('id, title, ai_summary, space_id, created_at').in('space_id', spaceIdArr).eq('company_id', cid).or(`title.ilike.${term},ai_summary.ilike.${term}`).limit(20) : []),
-      safeQuery(spaceIdArr.length > 0 ? supabase.from('clipad_blockers').select('id, description, team_space_id, detected_at').in('team_space_id', spaceIdArr).ilike('description', term).limit(20) : []),
-      safeQuery(spaceIdArr.length > 0 ? supabase.from('clipad_standups').select('id, user_name, today, yesterday, blockers, space_id, created_at').in('space_id', spaceIdArr).or(`today.ilike.${term},yesterday.ilike.${term},blockers.ilike.${term}`).limit(20) : []),
-      safeQuery(supabase.from('clipad_imported_knowledge').select('id, title, content, provider, content_type, updated_at').eq('company_id', cid).or(`title.ilike.${term},content.ilike.${term}`).limit(20)),
+      safeQuery(spaceIdArr.length > 0 ? supabase.from('clipad_blockers').select('id, description, team_space_id, detected_at').in('team_space_id', spaceIdArr).or(`description.ilike.${term},description.ilike.${primaryKwTerm}`).limit(20) : []),
+      safeQuery(
+        // For standups: if user asks about standups/today/updates, query all recent company standups if no keyword match
+        spaceIdArr.length > 0 
+          ? (keywords.some(k => ['standup', 'standups', 'today', 'daily', 'update', 'updates'].includes(k))
+              ? supabase.from('clipad_standups').select('id, user_name, today, yesterday, blockers, space_id, created_at').in('space_id', spaceIdArr).order('created_at', { ascending: false }).limit(20)
+              : supabase.from('clipad_standups').select('id, user_name, today, yesterday, blockers, space_id, created_at').in('space_id', spaceIdArr).or(`today.ilike.${term},yesterday.ilike.${term},blockers.ilike.${term},today.ilike.${primaryKwTerm}`).limit(20))
+          : []
+      ),
+      safeQuery(supabase.from('clipad_imported_knowledge').select('id, title, content, provider, content_type, updated_at').eq('company_id', cid).or(`title.ilike.${term},content.ilike.${term},title.ilike.${primaryKwTerm}`).limit(20)),
       searchPeople(q, cid),
       searchMemoriesHybrid({
         queryText: q,
@@ -470,8 +492,8 @@ export default function SearchHub() {
         console.warn('[SearchHub] Hybrid retrieval fallback:', err);
         return [];
       }),
-      safeQuery(supabase.from('clipad_v3_captures').select('id, title, content, created_at').eq('user_id', user.id).ilike('content', term).limit(10)),
-      safeQuery(supabase.from('clipad_v3_smart_moments').select('id, title, description, created_at').eq('company_id', cid).ilike('description', term).limit(10)),
+      safeQuery(supabase.from('clipad_v3_captures').select('id, title, content, created_at').eq('user_id', user.id).or(`content.ilike.${term},content.ilike.${primaryKwTerm}`).limit(10)),
+      safeQuery(supabase.from('clipad_v3_smart_moments').select('id, title, description, created_at').eq('company_id', cid).or(`description.ilike.${term},description.ilike.${primaryKwTerm}`).limit(10)),
       safeQuery(supabase.from('documents').select('id, name, file_url, category, notes, ai_summary, created_at').eq('company_id', cid).or(`name.ilike.${term},notes.ilike.${term},ai_summary.ilike.${term}`).limit(20))
     ]);
 
@@ -554,7 +576,6 @@ export default function SearchHub() {
 
         const sid = await getOrCreateSession();
         if (sid) {
-          await supabase.from('orbit_chat_messages').delete().eq('session_id', sid);
           await supabase.from('orbit_chat_messages').insert([
             {
               id: crypto.randomUUID(),
@@ -638,7 +659,6 @@ export default function SearchHub() {
         setChatHistory([{ role: 'assistant', content: fullText }]);
         const sid = await getOrCreateSession();
         if (sid) {
-          await supabase.from('orbit_chat_messages').delete().eq('session_id', sid);
           await supabase.from('orbit_chat_messages').insert([
             {
               id: crypto.randomUUID(),
@@ -883,13 +903,11 @@ Guidelines:
           {/* MAIN CONTENT AREA: Full-width Corporate AI Chat (Claude / ChatGPT style) */}
           <div className="flex-1 w-full h-full overflow-hidden flex flex-col bg-background">
              
-             {/* AI CHAT COLUMN (Centered, clean, no heavy shadows or cards) */}
-             <div className="flex-1 flex flex-col h-full w-full max-w-3xl lg:max-w-4xl mx-auto overflow-hidden relative">
-                
-                {/* Chat Messages */}
-                <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
+             {/* Messages Scroll Area at Full Width so scrollbar is at the right viewport edge */}
+             <div className="flex-1 overflow-y-auto w-full">
+                <div className="w-full max-w-3xl lg:max-w-4xl mx-auto p-4 md:p-6 space-y-6">
                    {chatHistory.length === 0 && !isSynthesizing ? (
-                      <div className="flex flex-col items-center justify-center h-full text-center max-w-sm mx-auto">
+                      <div className="flex flex-col items-center justify-center min-h-[50vh] text-center max-w-sm mx-auto">
                          <div className="w-16 h-16 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center mb-4 border border-slate-100 dark:border-border">
                            <Sparkles className="w-8 h-8 text-slate-300 dark:text-slate-600 dark:text-muted-foreground" />
                          </div>
@@ -906,8 +924,8 @@ Guidelines:
                                     {firstName.charAt(0)}
                                   </div>
                                ) : (
-                                  <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center shadow-xs">
-                                    <CliPadLogo size={18} color="#ffffff" />
+                                  <div className="w-8 h-8 rounded-xl flex items-center justify-center shadow-xs overflow-hidden">
+                                    <WeftroLogo height={32} iconOnly />
                                   </div>
                                )}
                             </div>
@@ -1097,8 +1115,8 @@ Guidelines:
                    {isSynthesizing && (
                       <div className="flex gap-4 max-w-3xl mr-auto">
                          <div className="shrink-0 mt-1">
-                            <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center shadow-md animate-pulse">
-                              <CliPadLogo size={18} color="#ffffff" />
+                            <div className="w-8 h-8 rounded-xl flex items-center justify-center shadow-md animate-pulse overflow-hidden">
+                              <WeftroLogo height={32} iconOnly />
                             </div>
                          </div>
                          <div className="flex flex-col gap-1.5 items-start">
@@ -1112,9 +1130,11 @@ Guidelines:
                    )}
                    <div ref={chatBottomRef} />
                 </div>
-                
-                {/* Corporate Chat Input (Claude / ChatGPT style) */}
-                <div className="p-4 md:p-6 bg-background shrink-0">
+             </div>
+             
+             {/* Corporate Chat Input (Claude / ChatGPT style) */}
+             <div className="p-4 md:p-6 bg-background shrink-0 w-full border-t border-border/40">
+                <div className="max-w-3xl lg:max-w-4xl mx-auto">
                    <form onSubmit={handleFollowUp} className="relative flex items-center bg-card border border-border/80 rounded-2xl pl-4 pr-2 py-2 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/80 transition-all">
                       <input
                         value={followUpInput}
@@ -1134,7 +1154,6 @@ Guidelines:
                       Orbit AI connects across verified organizational documents, decisions, and meetings.
                    </p>
                 </div>
-
              </div>
 
               {/* RIGHT SIDE: SIDEBAR CATEGORY FILTERS & SEARCH RESULTS (Hidden per user request for pure chatbot interface) */}
