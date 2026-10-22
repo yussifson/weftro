@@ -1272,7 +1272,7 @@ Guidelines:
           {/* Corporate Capsule Search Input Box */}
           <div className="w-full max-w-2xl">
             <form onSubmit={(e) => { e.preventDefault(); setSearchParams({ q: query }); runSearch(); }}>
-              <div className="relative flex items-center bg-card border border-border hover:border-primary/40 focus-within:border-primary rounded-full px-3.5 py-2.5 shadow-sm transition-all w-full">
+              <div className="relative flex items-center bg-card border border-border/80 hover:border-border focus-within:border-white/20 dark:focus-within:border-white/20 rounded-full px-3.5 py-2.5 shadow-sm transition-all w-full">
                 <button
                   type="button"
                   onClick={handleStartNewChat}
@@ -1285,7 +1285,8 @@ Guidelines:
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Ask Orbit anything..."
-                  className="flex-1 bg-transparent border-0 outline-none ring-0 focus:ring-0 focus:outline-none text-sm text-foreground placeholder:text-muted-foreground px-2 min-w-0 w-full font-normal"
+                  className="chat-input-raw flex-1 bg-transparent border-0 outline-none ring-0 focus:ring-0 focus:outline-none text-sm text-foreground placeholder:text-muted-foreground px-2 min-w-0 w-full font-normal shadow-none"
+                  style={{ border: 'none', outline: 'none', boxShadow: 'none' }}
                 />
 
                 <div className="flex items-center gap-1 shrink-0 ml-1">
@@ -1571,7 +1572,7 @@ Guidelines:
                 <div className="max-w-3xl lg:max-w-4xl mx-auto">
                    <form 
                      onSubmit={handleFollowUp} 
-                     className="relative flex items-center bg-card border border-border hover:border-primary/40 focus-within:border-primary rounded-full px-3.5 py-2 shadow-sm transition-all"
+                     className="relative flex items-center bg-card border border-border/80 hover:border-border focus-within:border-white/20 dark:focus-within:border-white/20 rounded-full px-3.5 py-2 shadow-sm transition-all"
                    >
                       {/* Plus Action Button */}
                       <button
@@ -1588,7 +1589,8 @@ Guidelines:
                         value={followUpInput}
                         onChange={e => setFollowUpInput(e.target.value)}
                         placeholder="Ask Orbit anything..."
-                        className="flex-1 bg-transparent border-0 outline-none ring-0 focus:ring-0 text-sm text-foreground placeholder:text-muted-foreground min-w-0 px-2 font-normal"
+                        className="chat-input-raw flex-1 bg-transparent border-0 outline-none ring-0 focus:ring-0 focus:outline-none text-sm text-foreground placeholder:text-muted-foreground min-w-0 px-2 font-normal shadow-none"
+                        style={{ border: 'none', outline: 'none', boxShadow: 'none' }}
                       />
 
                       {/* Right Control: Send */}

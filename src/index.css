@@ -634,17 +634,28 @@ button[class*="bg-primary"]:hover, button[class*="bg-blue"]:hover, button[class*
 }
 
 /* Input Refinements */
-input, select, textarea {
+input:not(.chat-input-raw), select, textarea {
   transition: border-color 150ms ease, box-shadow 150ms ease !important;
 }
-input:focus, select:focus, textarea:focus {
+input:not(.chat-input-raw):focus, select:focus, textarea:focus {
   box-shadow: 0 0 0 3px rgba(25, 184, 110, 0.12) !important;
   border-color: rgba(25, 184, 110, 0.5) !important;
   outline: none !important;
 }
-.dark input:focus, .dark select:focus, .dark textarea:focus {
+.dark input:not(.chat-input-raw):focus, .dark select:focus, .dark textarea:focus {
   box-shadow: 0 0 0 3px rgba(31, 224, 134, 0.12) !important;
   border-color: rgba(31, 224, 134, 0.5) !important;
+}
+
+/* Chat Input Raw: absolute zero outline/borders/shadows to ensure pure capsule look matching ChatGPT */
+.chat-input-raw, .chat-input-raw:focus, .chat-input-raw:active, .chat-input-raw:focus-visible {
+  border: none !important;
+  border-color: transparent !important;
+  outline: none !important;
+  outline-width: 0 !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  background: transparent !important;
 }
 
 /* Interactive Rows and Lists */
