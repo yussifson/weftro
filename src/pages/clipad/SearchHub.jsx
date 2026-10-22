@@ -229,7 +229,9 @@ export default function SearchHub() {
 
   const [query, setQuery] = useState(searchParams.get('q') || '');
   const [activeFilter, setActiveFilter] = useState('all');
-  const [searchMode, setSearchMode] = useState('answer'); // 'answer' (AI synthesized answer) | 'find' (direct record locator)
+  const [searchMode, setSearchMode] = useState('answer'); // 'answer' (AI synthesized answer) | 'search' (Google-like organizational search)
+  const [searchSummary, setSearchSummary] = useState(''); // AI Overview summary for Search Mode
+  const [isSearchSummarizing, setIsSearchSummarizing] = useState(false); // loading state for Search Mode AI summary
   const [results, setResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [selectedResult, setSelectedResult] = useState(null);
@@ -886,15 +888,26 @@ export default function SearchHub() {
       ...(cloudDocs || []).map(cd => ({ type: 'doc', id: cd.id, space_id: null, label: cd.name, snippet: cd.ai_summary || cd.notes, created_at: cd.created_at, url: cd.file_url })),
     ];
 
-    setResults(raw);
+    // Sort results by relevance score (highest first) for ranking
+    const scored = raw.map((r, i) => ({ ...r, _rank: i + 1, score: r.score || 0 }));
+    scored.sort((a, b) => (b.score || 0) - (a.score || 0));
+    // Re-assign rank after score sort
+    scored.forEach((r, i) => { r._rank = i + 1; });
+
+    setResults(scored);
     setIsSearching(false);
-    if (raw.length > 0) setSelectedResult(raw[0]);
+    if (scored.length > 0) setSelectedResult(scored[0]);
 
     if (!skipAISynthesis) {
-      // AI Executive Synthesis — bump session id to prevent stale callbacks
-      runAISynthesis(q, raw, spaceIdArr);
+      if (searchMode === 'search') {
+        // Search Mode: Generate a concise AI Overview summary (not a chat conversation)
+        runSearchSummary(q, scored, spaceIdArr);
+      } else {
+        // Answer Mode: Full conversational AI synthesis
+        runAISynthesis(q, scored, spaceIdArr);
+      }
     }
-  }, [query, companyId, user]);
+  }, [query, companyId, user, searchMode]);
   // Keep the ref up-to-date every render so the persistent-load effect can call it safely
   runSearchRef.current = runSearch;
 
@@ -1072,6 +1085,53 @@ export default function SearchHub() {
       if (synthSessionRef.current === sessionId) {
         setIsSynthesizing(false);
       }
+    }
+  };
+
+  // Search Mode: Generate AI Overview summary (Google AI Overview style — short summary of results)
+  const runSearchSummary = async (q, matchedResults, spaceIdArr) => {
+    setIsSearchSummarizing(true);
+    setSearchSummary('');
+
+    try {
+      const resContext = matchedResults.length > 0
+        ? matchedResults.slice(0, 20).map((r, i) => `[${i + 1}. ${r.type.toUpperCase()} ID:${r.id}] ${r.label}: ${r.snippet?.substring(0, 200) || ''}`).join('\n')
+        : 'No matching records found.';
+
+      const promptMessages = [
+        {
+          role: 'system',
+          content: `You are Orbit Search — a private organizational search engine AI. Provide a concise AI Overview (2-4 sentences max) summarizing the most relevant findings from the search results. Be direct, factual, and highlight the key insights. Use clean markdown. Do not repeat the query. End with a brief note on the total number of results found.`
+        },
+        {
+          role: 'user',
+          content: `Search query: "${q}"\n\nSEARCH RESULTS (${matchedResults.length} total):\n${resContext}`
+        }
+      ];
+
+      const cleanText = (raw) => {
+        return raw
+          .replace(/<(think|thought)>[\s\S]*?<\/\1>/gi, '')
+          .replace(/<(think|thought)>[\s\S]*$/gi, '')
+          .replace(/<\/(think|thought)>/gi, '')
+          .replace(/\\([\\`*_{}[\]()#+\-.!])/g, '$1')
+          .replace(/[\uFFFD\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '')
+          .trim();
+      };
+
+      let fullText = '';
+      await generateText(promptMessages, (accumulated) => {
+        const clean = cleanText(accumulated);
+        fullText = clean;
+        setSearchSummary(clean);
+      });
+
+      setSearchSummary(fullText);
+    } catch (e) {
+      console.error('[SearchHub] Search summary error:', e);
+      setSearchSummary('');
+    } finally {
+      setIsSearchSummarizing(false);
     }
   };
 
@@ -1261,11 +1321,11 @@ Guidelines:
             </button>
             <button
               type="button"
-              onClick={() => setSearchMode('find')}
-              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all ${searchMode === 'find' ? 'bg-primary text-primary-foreground shadow-xs ring-2 ring-primary/20' : 'bg-secondary/60 text-muted-foreground hover:bg-secondary hover:text-foreground'}`}
+              onClick={() => setSearchMode('search')}
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all ${searchMode === 'search' ? 'bg-primary text-primary-foreground shadow-xs ring-2 ring-primary/20' : 'bg-secondary/60 text-muted-foreground hover:bg-secondary hover:text-foreground'}`}
             >
               <Search className="w-3.5 h-3.5" />
-              <span>Find Mode</span>
+              <span>Search Mode</span>
             </button>
           </div>
 
@@ -1325,12 +1385,209 @@ Guidelines:
         /* ── SEARCH STATE (Premium Split Layout) ── */
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Header specific to search state */}
-            {/* Removed top header search bar per user request */}
+          <div className="shrink-0 border-b border-border bg-card/60 px-4 py-2.5 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setSearchMode('answer')}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all ${searchMode === 'answer' ? 'bg-primary text-primary-foreground shadow-xs' : 'bg-secondary/70 text-muted-foreground hover:bg-secondary hover:text-foreground'}`}
+              >
+                <MessageSquareText className="w-3.5 h-3.5" />
+                <span>Answer Mode</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setSearchMode('search')}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all ${searchMode === 'search' ? 'bg-primary text-primary-foreground shadow-xs' : 'bg-secondary/70 text-muted-foreground hover:bg-secondary hover:text-foreground'}`}
+              >
+                <Search className="w-3.5 h-3.5" />
+                <span>Search Mode</span>
+              </button>
+            </div>
 
-          
-{/* Top bar completely eliminated per user request */}
+            <div className="flex-1 max-w-xl">
+              <form onSubmit={(e) => { e.preventDefault(); setSearchParams({ q: query }); runSearch(query); }} className="relative flex items-center">
+                <input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder={searchMode === 'search' ? "Search across all company data..." : "Ask Orbit anything..."}
+                  className="w-full bg-background border border-border/80 focus:border-primary/50 rounded-full px-4 py-1.5 text-xs text-foreground placeholder:text-muted-foreground outline-none transition-all pr-8"
+                />
+                <button type="submit" disabled={!query.trim() || isSearching} className="absolute right-1.5 p-1 rounded-full text-muted-foreground hover:text-primary">
+                  {isSearching ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Search className="w-3.5 h-3.5" />}
+                </button>
+              </form>
+            </div>
 
-          {/* MAIN CONTENT AREA: Full-width Corporate AI Chat (Claude / ChatGPT style) */}
+            <Button size="sm" variant="ghost" onClick={handleStartNewChat} className="h-7 text-xs gap-1">
+              <Plus className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">New</span>
+            </Button>
+          </div>
+
+          {searchMode === 'search' ? (
+            /* ═══════════════════════════════════════════════════════════
+               SEARCH MODE: Google-like indexed search & AI Overview
+               ═══════════════════════════════════════════════════════════ */
+            <div className="flex-1 overflow-y-auto w-full bg-background">
+              <div className="max-w-5xl mx-auto p-4 md:p-6 space-y-6">
+                
+                {/* Horizontal Category Filters (All, Docs, Tasks, Meetings, etc.) */}
+                <div className="flex items-center gap-2 overflow-x-auto pb-1 hide-scrollbar border-b border-border/50">
+                  {FILTER_TABS.map(tab => {
+                    const Icon = tab.icon;
+                    const isActive = activeFilter === tab.id;
+                    const count = tab.id === 'all' 
+                      ? results.length 
+                      : results.filter(r => matchesFilter(r.type, tab.id)).length;
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveFilter(tab.id)}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
+                          isActive
+                            ? 'bg-primary text-primary-foreground font-semibold shadow-xs'
+                            : 'bg-secondary/50 text-muted-foreground hover:bg-secondary hover:text-foreground'
+                        }`}
+                      >
+                        <Icon className="w-3.5 h-3.5" />
+                        <span>{tab.label}</span>
+                        {count > 0 && (
+                          <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${isActive ? 'bg-primary-foreground/20 text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
+                            {count}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Google-style AI Overview Box */}
+                {(isSearchSummarizing || searchSummary) && (
+                  <div className="rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/5 via-card to-card p-4 md:p-5 shadow-xs relative overflow-hidden">
+                    <div className="flex items-center justify-between gap-2 mb-2.5">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                          <Sparkles className="w-3.5 h-3.5" />
+                        </div>
+                        <span className="text-xs font-bold uppercase tracking-wider text-primary">AI Overview</span>
+                      </div>
+                      {isSearchSummarizing && (
+                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                          <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" />
+                          <span>Synthesizing index...</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {searchSummary ? (
+                      <div className="text-sm leading-relaxed text-foreground prose prose-sm dark:prose-invert max-w-none">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {searchSummary}
+                        </ReactMarkdown>
+                      </div>
+                    ) : (
+                      <div className="space-y-2 py-1">
+                        <div className="h-3 bg-primary/10 rounded animate-pulse w-3/4" />
+                        <div className="h-3 bg-primary/10 rounded animate-pulse w-5/6" />
+                        <div className="h-3 bg-primary/10 rounded animate-pulse w-1/2" />
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Search Results Count & Status */}
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span>
+                    About {filteredResults.length} {filteredResults.length === 1 ? 'result' : 'results'} for <strong className="text-foreground">"{lastQueryRef.current || query}"</strong>
+                  </span>
+                </div>
+
+                {/* Search Results List (Google layout) */}
+                {isSearching ? (
+                  <div className="py-16 flex flex-col items-center justify-center">
+                    <Loader2 className="w-7 h-7 text-primary animate-spin mb-3" />
+                    <p className="text-xs text-muted-foreground">Indexing & searching organizational records...</p>
+                  </div>
+                ) : filteredResults.length === 0 ? (
+                  <div className="py-16 text-center border border-dashed border-border rounded-2xl bg-card/40">
+                    <Search className="w-8 h-8 text-muted-foreground/40 mx-auto mb-2" />
+                    <h3 className="text-sm font-semibold text-foreground">No matches found</h3>
+                    <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
+                      Try different keywords or switch filters to find the documents, conversations, or tasks you need.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {filteredResults.map((item, idx) => {
+                      const meta = TYPE_META[item.type] || TYPE_META.doc;
+                      const Icon = meta.icon;
+                      const routeUrl = item.url || (meta.route ? meta.route(item.id, item.space_id) : null);
+
+                      return (
+                        <div
+                          key={`${item.type}-${item.id}-${idx}`}
+                          className="group p-4 rounded-xl border border-border/70 hover:border-primary/40 bg-card hover:bg-card/80 transition-all shadow-2xs"
+                        >
+                          {/* Breadcrumb row: Type, Provider, Space, Link */}
+                          <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                            <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${meta.bg} ${meta.color}`}>
+                              <Icon className="w-2.5 h-2.5" />
+                              {meta.label}
+                            </span>
+                            {item.provider && (
+                              <span className="text-[10px] font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+                                {item.provider}
+                              </span>
+                            )}
+                            {item.created_at && (
+                              <span className="text-[11px] text-muted-foreground">
+                                {new Date(item.created_at).toLocaleDateString()}
+                              </span>
+                            )}
+                            {item.score > 0 && (
+                              <span className="text-[10px] text-primary/80 font-mono ml-auto">
+                                score: {typeof item.score === 'number' ? item.score.toFixed(3) : item.score}
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Result Title as clickable link (opens in new tab) */}
+                          <h3 className="text-base font-semibold leading-snug mb-1">
+                            {routeUrl ? (
+                              <a
+                                href={routeUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-primary hover:underline inline-flex items-center gap-1 group-hover:text-primary"
+                              >
+                                <span>{item.label}</span>
+                                <ExternalLink className="w-3.5 h-3.5 opacity-60 group-hover:opacity-100 transition-opacity" />
+                              </a>
+                            ) : (
+                              <span className="text-foreground">{item.label}</span>
+                            )}
+                          </h3>
+
+                          {/* Snippet preview */}
+                          {item.snippet && (
+                            <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3">
+                              {item.snippet}
+                            </p>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+              </div>
+            </div>
+          ) : (
+            /* ═══════════════════════════════════════════════════════════
+               ANSWER MODE: Corporate ChatGPT-style AI conversation
+               ═══════════════════════════════════════════════════════════ */
+          /* MAIN CONTENT AREA: Full-width Corporate AI Chat (Claude / ChatGPT style) */
           <div className="flex-1 w-full h-full overflow-hidden flex flex-col bg-background">
              
              {/* Messages Scroll Area at Full Width so scrollbar is at the right viewport edge */}
@@ -1807,6 +2064,7 @@ Guidelines:
                  )}
               </div>
           </div>
+          )}
         </div>
       )}
 
