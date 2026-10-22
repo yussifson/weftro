@@ -39,6 +39,46 @@ import { isV3FeatureEnabled, V3_FLAGS } from '@/lib/clipadV3Flags';
 import { getUserContextSessions, appendSessionAudit } from '@/lib/clipadContextSessionService';
 import { getConnectedRecordsForEntity } from '@/lib/clipadEntityService';
 
+
+// Safe encoding/decoding of message content with sources and citations preservation across devices & reloads
+function packMessagePayload(content, sources, citations, grounded, status) {
+  if (!sources?.length && !citations) return content;
+  try {
+    return JSON.stringify({
+      __orbit_structured: true,
+      text: content,
+      sources: sources || [],
+      citations: citations || null,
+      grounded: !!grounded,
+      status: status || null
+    });
+  } catch (e) {
+    return content;
+  }
+}
+
+function unpackMessagePayload(rawContent, role) {
+  if (!rawContent || typeof rawContent !== 'string') {
+    return { role, content: rawContent || '' };
+  }
+  if (rawContent.startsWith('{"__orbit_structured":true')) {
+    try {
+      const parsed = JSON.parse(rawContent);
+      return {
+        role,
+        content: parsed.text || '',
+        sources: parsed.sources || [],
+        citations: parsed.citations || null,
+        grounded: parsed.grounded,
+        status: parsed.status
+      };
+    } catch (e) {
+      return { role, content: rawContent };
+    }
+  }
+  return { role, content: rawContent };
+}
+
 const TYPE_META = {
   person:      { icon: Users,         label: 'Person',    color: 'text-primary', bg: 'bg-primary/10 border border-primary/20' },
   meeting:     { icon: Calendar,      label: 'Meeting',   color: 'text-primary', bg: 'bg-primary/10 border border-primary/20', route: (id) => `/meetings/${id}` },
@@ -346,6 +386,13 @@ export default function SearchHub() {
     if (user?.id) {
       localStorage.removeItem(`search_hub_new_chat_${user.id}`);
       localStorage.setItem(`search_hub_active_session_${user.id}`, sessId);
+      try {
+        supabase.auth.updateUser({
+          data: { search_hub_new_chat: false, search_hub_active_session: sessId }
+        });
+      } catch (e) {
+        // ignore
+      }
     }
     setActiveSessionId(sessId);
     setShowHistoryModal(false);
@@ -359,10 +406,7 @@ export default function SearchHub() {
         .order('created_at', { ascending: true });
 
       if (msgs && msgs.length > 0) {
-        setChatHistory(msgs.map(m => ({
-          role: m.role,
-          content: m.content
-        })));
+        setChatHistory(msgs.map(m => unpackMessagePayload(m.content, m.role)));
         setHasPerformedSearch(true);
         const firstUser = msgs.find(m => m.role === 'user');
         if (firstUser?.content) {
@@ -387,6 +431,13 @@ export default function SearchHub() {
       localStorage.removeItem(`search_hub_active_session_${user.id}`);
       localStorage.removeItem(`search_hub_query_${user.id}`);
       localStorage.removeItem(`search_hub_followup_${user.id}`);
+      try {
+        supabase.auth.updateUser({
+          data: { search_hub_new_chat: true, search_hub_active_session: null }
+        });
+      } catch (e) {
+        // ignore
+      }
     }
     setQuery('');
     setFollowUpInput('');
@@ -438,7 +489,129 @@ export default function SearchHub() {
     });
   };
 
-  // Context Session Integration (Milestone 4)
+  // Dynamic Personalized Quick Prompts based on workspace & recent company activity
+  const [personalizedPrompts, setPersonalizedPrompts] = useState(SUGGESTED_PROMPTS);
+
+  useEffect(() => {
+    if (!user?.id || !companyId) return;
+
+    let isMounted = true;
+    const fetchDynamicPrompts = async () => {
+      try {
+        const accessibleSpaceIds = await fetchAccessibleSpaceIds(user);
+        const spaceIdArr = Array.from(accessibleSpaceIds);
+
+        // Fetch recent activity across accessible workspace tables
+        const [
+          { data: recentBlockers },
+          { data: recentDecisions },
+          { data: recentMeetings },
+          { data: recentDocs },
+          { data: recentTasks },
+          { data: recentStandups }
+        ] = await Promise.all([
+          spaceIdArr.length > 0
+            ? supabase.from('clipad_blockers').select('id, description, team_space_id, detected_at').in('team_space_id', spaceIdArr).order('detected_at', { ascending: false }).limit(3)
+            : Promise.resolve({ data: [] }),
+          spaceIdArr.length > 0
+            ? supabase.from('clipad_decisions').select('id, decision_text, created_at').in('team_space_id', spaceIdArr).order('created_at', { ascending: false }).limit(3)
+            : Promise.resolve({ data: [] }),
+          spaceIdArr.length > 0
+            ? supabase.from('clipad_meeting_records').select('id, title, ai_summary, created_at').in('space_id', spaceIdArr).order('created_at', { ascending: false }).limit(3)
+            : Promise.resolve({ data: [] }),
+          spaceIdArr.length > 0
+            ? supabase.from('clipad_docs').select('id, title, created_at').in('space_id', spaceIdArr).order('created_at', { ascending: false }).limit(3)
+            : Promise.resolve({ data: [] }),
+          spaceIdArr.length > 0
+            ? supabase.from('clipad_action_items').select('id, title, status, created_at').in('space_id', spaceIdArr).eq('status', 'open').order('created_at', { ascending: false }).limit(3)
+            : Promise.resolve({ data: [] }),
+          spaceIdArr.length > 0
+            ? supabase.from('clipad_standups').select('id, user_name, today, blockers, created_at').in('space_id', spaceIdArr).order('created_at', { ascending: false }).limit(2)
+            : Promise.resolve({ data: [] })
+        ]);
+
+        if (!isMounted) return;
+
+        const dynamicList = [];
+
+        // 1. Personalized blocker prompt if company has active blockers
+        if (recentBlockers && recentBlockers.length > 0) {
+          const sample = recentBlockers[0]?.description ? ` "${recentBlockers[0].description.slice(0, 35)}..."` : '';
+          dynamicList.push({
+            title: "Active Blockers",
+            desc: sample ? `What are our current blockers including${sample}?` : "Summarize key active blockers across engineering spaces",
+            icon: AlertTriangle
+          });
+        }
+
+        // 2. Recent strategic decisions
+        if (recentDecisions && recentDecisions.length > 0) {
+          const firstDec = recentDecisions[0]?.decision_text ? ` regarding "${recentDecisions[0].decision_text.slice(0, 32)}..."` : '';
+          dynamicList.push({
+            title: "Latest Decisions",
+            desc: `Review recent team decisions${firstDec}`,
+            icon: ShieldAlert
+          });
+        }
+
+        // 3. Recent Meeting summaries
+        if (recentMeetings && recentMeetings.length > 0 && recentMeetings[0]?.title) {
+          const mTitle = recentMeetings[0].title.slice(0, 36);
+          dynamicList.push({
+            title: "Meeting Insights",
+            desc: `Summarize discussion and takeaways from "${mTitle}"`,
+            icon: Calendar
+          });
+        }
+
+        // 4. Open tasks / Action items
+        if (recentTasks && recentTasks.length > 0) {
+          dynamicList.push({
+            title: "Open Action Items",
+            desc: `What are the top open action items and who is responsible?`,
+            icon: CheckCircle
+          });
+        }
+
+        // 5. Recent documentation or specs
+        if (recentDocs && recentDocs.length > 0 && recentDocs[0]?.title) {
+          const dTitle = recentDocs[0].title.slice(0, 36);
+          dynamicList.push({
+            title: "Recent Document",
+            desc: `What are the key points in the doc "${dTitle}"?`,
+            icon: FileText
+          });
+        }
+
+        // 6. Standup updates
+        if (recentStandups && recentStandups.length > 0) {
+          dynamicList.push({
+            title: "Team Standups",
+            desc: `What did the team report in recent standup updates?`,
+            icon: Zap
+          });
+        }
+
+        // Fill remaining slots with fallbacks if company data is sparse
+        if (dynamicList.length < 4) {
+          for (const fallback of SUGGESTED_PROMPTS) {
+            if (!dynamicList.some(d => d.title === fallback.title)) {
+              dynamicList.push(fallback);
+            }
+            if (dynamicList.length >= 4) break;
+          }
+        }
+
+        // Limit to top 4 most pertinent dynamic links
+        setPersonalizedPrompts(dynamicList.slice(0, 4));
+      } catch (err) {
+        console.warn('[SearchHub] Error generating dynamic prompts:', err);
+      }
+    };
+
+    fetchDynamicPrompts();
+    return () => { isMounted = false; };
+  }, [user?.id, companyId]);
   const isContextSessionsEnabled = isV3FeatureEnabled(V3_FLAGS.CONTEXT_SESSIONS_ENABLED, user);
   const [availableContextSessions, setAvailableContextSessions] = useState([]);
   const [selectedContextSessionId, setSelectedContextSessionId] = useState(() => {
@@ -519,10 +692,7 @@ export default function SearchHub() {
           if (msgs && msgs.length > 0) {
             setActiveSessionId(sid);
             localStorage.setItem(`search_hub_active_session_${user.id}`, sid);
-            setChatHistory(msgs.map(m => ({
-              role: m.role,
-              content: m.content
-            })));
+            setChatHistory(msgs.map(m => unpackMessagePayload(m.content, m.role)));
             setHasPerformedSearch(true);
 
             const firstUserMsg = msgs.find(m => m.role === 'user');
@@ -540,50 +710,45 @@ export default function SearchHub() {
     loadPersistentChat();
   }, [user?.id, companyId]);
 
-  const getOrCreateSession = async () => {
+  const getOrCreateSession = async (customTitle) => {
     if (!user?.id) return null;
     if (activeSessionId) return activeSessionId;
 
     try {
-      const { data, error } = await supabase
-        .from('orbit_chat_sessions')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('title', 'Search Hub AI Chat')
-        .order('updated_at', { ascending: false })
-        .limit(1);
-
-      if (error) throw error;
-
-      if (data && data.length > 0) {
-        setActiveSessionId(data[0].id);
-        return data[0].id;
-      }
-
       const sid = crypto.randomUUID();
-      const sessionTitle = (query || followUpInput || 'Search Hub AI Chat').trim().slice(0, 50);
+      const rawTitle = customTitle || query || followUpInput || 'New Conversation';
+      const sessionTitle = rawTitle.trim().slice(0, 60);
+
       if (user?.id) {
         localStorage.removeItem(`search_hub_new_chat_${user.id}`);
         localStorage.setItem(`search_hub_active_session_${user.id}`, sid);
+        try {
+          await supabase.auth.updateUser({
+            data: { search_hub_active_session: sid, search_hub_new_chat: false }
+          });
+        } catch (e) {
+          // ignore
+        }
       }
+
       const { error: insErr } = await supabase
         .from('orbit_chat_sessions')
         .insert({
           id: sid,
           user_id: user.id,
           company_id: companyId || null,
-          title: sessionTitle || 'Search Hub AI Chat',
+          title: sessionTitle || 'New Conversation',
           model: 'moonshotai/kimi-k3',
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         });
-      loadAllSessions();
 
       if (insErr) throw insErr;
       setActiveSessionId(sid);
+      loadAllSessions();
       return sid;
     } catch (err) {
-      console.warn('Failed to load/create persistent search session:', err);
+      console.warn('Failed to create persistent search session:', err);
       return null;
     }
   };
@@ -780,8 +945,15 @@ export default function SearchHub() {
           }
         ]);
 
-        const sid = await getOrCreateSession();
+        const sid = await getOrCreateSession(q);
         if (sid) {
+          const packedAssistant = packMessagePayload(
+            finalContent,
+            ragResult.sources || [],
+            ragResult.citations || null,
+            ragResult.grounded,
+            ragResult.status
+          );
           await supabase.from('orbit_chat_messages').insert([
             {
               id: crypto.randomUUID(),
@@ -794,10 +966,11 @@ export default function SearchHub() {
               id: crypto.randomUUID(),
               session_id: sid,
               role: 'assistant',
-              content: finalContent,
+              content: packedAssistant,
               created_at: new Date().toISOString()
             }
           ]);
+          await supabase.from('orbit_chat_sessions').update({ updated_at: new Date().toISOString() }).eq('id', sid);
         }
 
         // Attach search & synthesis audit event to active context session if selected
@@ -869,7 +1042,7 @@ export default function SearchHub() {
           { role: 'user', content: q },
           { role: 'assistant', content: fullText }
         ]);
-        const sid = await getOrCreateSession();
+        const sid = await getOrCreateSession(q);
         if (sid) {
           await supabase.from('orbit_chat_messages').insert([
             {
@@ -887,6 +1060,7 @@ export default function SearchHub() {
               created_at: new Date().toISOString()
             }
           ]);
+          await supabase.from('orbit_chat_sessions').update({ updated_at: new Date().toISOString() }).eq('id', sid);
         }
       }
     } catch (e) {
@@ -1127,18 +1301,19 @@ Guidelines:
               </div>
             </form>
 
-            {/* Suggestion chips */}
+            {/* Suggestion chips (Personalized & Dynamic based on Workspace Activity) */}
             <div className="flex flex-wrap items-center justify-center gap-2 mt-6">
-              {SUGGESTED_PROMPTS.map((item, idx) => {
-                const Icon = item.icon;
+              {personalizedPrompts.map((item, idx) => {
+                const Icon = item.icon || Sparkles;
                 return (
                   <button
                     key={idx}
                     onClick={() => { setQuery(item.desc); setSearchParams({ q: item.desc }); runSearch(item.desc); }}
                     className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-card border border-border hover:bg-secondary hover:border-primary/30 text-foreground text-xs font-semibold transition-all group shadow-xs active:scale-95"
+                    title={item.desc}
                   >
                     <Icon className="w-3.5 h-3.5 text-primary shrink-0" />
-                    {item.title}
+                    <span>{item.title}</span>
                   </button>
                 );
               })}
@@ -1367,7 +1542,7 @@ Guidelines:
                    )}
 
                    {isSynthesizing && (
-                      <div className="flex gap-3 max-w-3xl mr-auto animate-in fade-in slide-in-from-bottom-2 duration-300">
+                      <div className="flex gap-3.5 max-w-3xl mr-auto animate-in fade-in slide-in-from-bottom-2 duration-300 items-start">
                          <div className="shrink-0 mt-1">
                             <div className="w-8 h-8 rounded-xl flex items-center justify-center shadow-xs overflow-hidden">
                               <WeftroLogo height={32} iconOnly />
@@ -1375,17 +1550,14 @@ Guidelines:
                          </div>
                          <div className="flex flex-col gap-1.5 items-start">
                             <span className="text-[10px] font-bold text-primary uppercase tracking-wider px-1">Orbit</span>
-                            {/* Gemini-inspired breathing stream bubble with animated glowing gradient & dot pulse */}
-                            <div className="relative overflow-hidden rounded-2xl rounded-tl-sm px-4 py-3 bg-card border border-primary/20 shadow-xs flex items-center gap-3">
-                               <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent animate-pulse" />
-                               <div className="relative flex items-center gap-1.5 z-10">
-                                  <span className="w-2 h-2 rounded-full bg-primary animate-ping" />
-                                  <span className="w-1.5 h-1.5 rounded-full bg-primary/70 animate-bounce" style={{ animationDelay: '150ms' }} />
-                                  <span className="w-1.5 h-1.5 rounded-full bg-primary/50 animate-bounce" style={{ animationDelay: '300ms' }} />
+                            {/* Clear, slightly enlarged, pure corporate streaming bubble without any text */}
+                            <div className="relative overflow-hidden rounded-2xl rounded-tl-xs px-5 py-3.5 bg-card border border-primary/30 shadow-sm flex items-center justify-center min-w-[76px]">
+                               <div className="absolute inset-0 bg-gradient-to-r from-primary/15 via-primary/5 to-transparent animate-pulse" />
+                               <div className="relative flex items-center gap-2 z-10 py-0.5 px-1">
+                                  <span className="w-2.5 h-2.5 rounded-full bg-primary animate-bounce shadow-xs" style={{ animationDuration: '900ms', animationDelay: '0ms' }} />
+                                  <span className="w-2.5 h-2.5 rounded-full bg-primary/80 animate-bounce shadow-xs" style={{ animationDuration: '900ms', animationDelay: '180ms' }} />
+                                  <span className="w-2.5 h-2.5 rounded-full bg-primary/60 animate-bounce shadow-xs" style={{ animationDuration: '900ms', animationDelay: '360ms' }} />
                                </div>
-                               <span className="relative z-10 text-xs font-medium text-foreground tracking-wide">
-                                  Orbit is synthesizing knowledge...
-                                </span>
                             </div>
                          </div>
                       </div>
