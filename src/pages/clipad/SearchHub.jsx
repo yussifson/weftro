@@ -4,7 +4,7 @@ import { FileText, CheckCircle, MessageSquare, Calendar, Video,
   Loader2, X, ShieldAlert, AlertTriangle, ExternalLink, Zap, Layers, Copy, CheckCheck,
   Users, ArrowUpRight, Send, Plus, Volume2, VolumeX, ThumbsUp, ThumbsDown, Edit,
   Search, Sparkles, ArrowLeft, BrainCircuit, Inbox, Compass, Code2, CheckCircle2, MessageSquareText,
-  Trash2, History, PlusCircle, Mic, Brain, Clock } from 'lucide-react';
+  Trash2, History, PlusCircle, SlidersHorizontal, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -177,126 +177,6 @@ function SearchCodeSnippetBlock({ children, className }) {
           {children}
         </pre>
       </div>
-
-      {/* Consultation & Search History Popup Modal */}
-      <Dialog open={showHistoryModal} onOpenChange={setShowHistoryModal}>
-        <DialogContent className="rounded-2xl max-w-lg p-0 overflow-hidden bg-card border-border shadow-xl">
-          <DialogHeader className="p-4 pb-3 border-b border-border/70 flex flex-row items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
-                <History className="w-4 h-4" />
-              </div>
-              <div>
-                <DialogTitle className="text-sm font-bold text-foreground">
-                  Chat History
-                </DialogTitle>
-                <DialogDescription className="text-xs text-muted-foreground">
-                  Select any previous conversation to review and continue chatting.
-                </DialogDescription>
-              </div>
-            </div>
-            <Button
-              size="sm"
-              onClick={handleStartNewChat}
-              className="h-8 px-3 text-xs gap-1.5 rounded-lg shadow-xs"
-            >
-              <PlusCircle className="w-3.5 h-3.5" />
-              <span>New Chat</span>
-            </Button>
-          </DialogHeader>
-
-          {/* Scrollable Chat Sessions List */}
-          <div className="max-h-[380px] overflow-y-auto p-3 space-y-2 scrollbar-thin">
-            {sessions.length === 0 ? (
-              <div className="py-8 text-center text-xs text-muted-foreground">
-                No saved conversations found.
-              </div>
-            ) : (
-              sessions.map((sess) => {
-                const isActive = sess.id === activeSessionId;
-                const formattedDate = new Date(sess.updated_at || sess.created_at).toLocaleDateString(undefined, {
-                  month: 'short',
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit'
-                });
-
-                return (
-                  <div
-                    key={sess.id}
-                    onClick={() => handleSelectSession(sess.id)}
-                    className={`group w-full text-left p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
-                      isActive
-                        ? 'bg-primary/10 border-primary/40 shadow-xs'
-                        : 'bg-card border-border/70 hover:bg-secondary hover:border-primary/30'
-                    }`}
-                  >
-                    <div className="flex items-start gap-2.5 min-w-0 flex-1">
-                      <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${
-                        isActive ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground group-hover:text-foreground'
-                      }`}>
-                        <MessageSquare className="w-3.5 h-3.5" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
-                          <p className={`text-xs font-semibold truncate ${isActive ? 'text-primary' : 'text-foreground'}`}>
-                            {sess.title || 'Untitled Conversation'}
-                          </p>
-                          {isActive && (
-                            <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-primary/40 text-primary bg-primary/5 shrink-0">
-                              Active
-                            </Badge>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-2 mt-1 text-[11px] text-muted-foreground">
-                          <Clock className="w-3 h-3" />
-                          <span>{formattedDate}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSessionToDelete(sess);
-                        setShowDeleteConfirm(true);
-                      }}
-                      className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 transition-all shrink-0"
-                      title="Delete this chat"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Confirmation Modal: Delete Chat Session */}
-      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-        <AlertDialogContent className="rounded-2xl max-w-md">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-base font-bold flex items-center gap-2 text-rose-500">
-              <Trash2 className="w-4 h-4" />
-              Delete Conversation?
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-xs text-muted-foreground leading-relaxed">
-              Are you sure you want to delete <strong className="text-foreground">"{sessionToDelete?.title || 'this conversation'}"</strong>? All messages in this chat will be permanently removed.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="mt-4 gap-2">
-            <AlertDialogCancel className="rounded-xl text-xs">Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleConfirmDeleteSession}
-              className="rounded-xl text-xs bg-rose-600 hover:bg-rose-700 text-white font-medium"
-            >
-              Delete Chat
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }
@@ -398,7 +278,7 @@ export default function SearchHub() {
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [sessionToDelete, setSessionToDelete] = useState(null);
-  const [isDeepThinking, setIsDeepThinking] = useState(false);
+  const [isControlsCollapsed, setIsControlsCollapsed] = useState(false);
 
   // Load all user chat sessions from Supabase
   const loadAllSessions = useCallback(async () => {
@@ -424,6 +304,10 @@ export default function SearchHub() {
 
   // Switch to an existing session from history
   const handleSelectSession = async (sessId) => {
+    if (user?.id) {
+      localStorage.removeItem(`search_hub_new_chat_${user.id}`);
+      localStorage.setItem(`search_hub_active_session_${user.id}`, sessId);
+    }
     setActiveSessionId(sessId);
     setShowHistoryModal(false);
     setIsSearching(true);
@@ -459,6 +343,12 @@ export default function SearchHub() {
 
   // Start fresh conversation (New Chat)
   const handleStartNewChat = () => {
+    if (user?.id) {
+      localStorage.setItem(`search_hub_new_chat_${user.id}`, 'true');
+      localStorage.removeItem(`search_hub_active_session_${user.id}`);
+      localStorage.removeItem(`search_hub_query_${user.id}`);
+      localStorage.removeItem(`search_hub_followup_${user.id}`);
+    }
     setQuery('');
     setFollowUpInput('');
     if (user?.id) {
@@ -558,19 +448,29 @@ export default function SearchHub() {
     }
 
     const loadPersistentChat = async () => {
+      // If user explicitly initiated New Chat and hasn't started a new conversation yet, stay in empty state
+      const isNewChatPending = localStorage.getItem(`search_hub_new_chat_${user.id}`) === 'true';
+      if (isNewChatPending) {
+        return;
+      }
+
+      const lastActiveId = localStorage.getItem(`search_hub_active_session_${user.id}`);
+
       try {
-        const { data: sessions } = await supabase
-          .from('orbit_chat_sessions')
-          .select('id')
-          .eq('user_id', user.id)
-          .eq('title', 'Search Hub AI Chat')
-          .order('updated_at', { ascending: false })
-          .limit(1);
+        let sid = lastActiveId;
+        if (!sid) {
+          const { data: latestSessions } = await supabase
+            .from('orbit_chat_sessions')
+            .select('id, title')
+            .eq('user_id', user.id)
+            .order('updated_at', { ascending: false })
+            .limit(1);
+          if (latestSessions && latestSessions.length > 0) {
+            sid = latestSessions[0].id;
+          }
+        }
 
-        if (sessions && sessions.length > 0) {
-          const sid = sessions[0].id;
-          setActiveSessionId(sid);
-
+        if (sid) {
           const { data: msgs } = await supabase
             .from('orbit_chat_messages')
             .select('*')
@@ -578,13 +478,14 @@ export default function SearchHub() {
             .order('created_at', { ascending: true });
 
           if (msgs && msgs.length > 0) {
+            setActiveSessionId(sid);
+            localStorage.setItem(`search_hub_active_session_${user.id}`, sid);
             setChatHistory(msgs.map(m => ({
               role: m.role,
               content: m.content
             })));
             setHasPerformedSearch(true);
 
-            // Re-run search matching records silently without restarting AI synthesis
             const firstUserMsg = msgs.find(m => m.role === 'user');
             const queryToUse = savedQuery || firstUserMsg?.content;
             if (queryToUse) {
@@ -622,6 +523,10 @@ export default function SearchHub() {
 
       const sid = crypto.randomUUID();
       const sessionTitle = (query || followUpInput || 'Search Hub AI Chat').trim().slice(0, 50);
+      if (user?.id) {
+        localStorage.removeItem(`search_hub_new_chat_${user.id}`);
+        localStorage.setItem(`search_hub_active_session_${user.id}`, sid);
+      }
       const { error: insErr } = await supabase
         .from('orbit_chat_sessions')
         .insert({
@@ -1048,60 +953,79 @@ Guidelines:
   const showLeftPanel = hasResults;
   return (
     <div className="flex flex-col h-full bg-background font-sans text-foreground overflow-hidden relative">
-      {/* Top Right Floating Action Controls (Like Developer Copilot: History, New Chat, Delete Chat) */}
-      <div className="absolute top-3 right-4 sm:right-6 z-40 flex items-center gap-1 bg-background/80 dark:bg-card/80 backdrop-blur-md px-1.5 py-1 rounded-xl border border-border/60 shadow-xs">
-        {isContextSessionsEnabled && availableContextSessions.length > 0 && (
-          <div className="hidden md:flex items-center gap-1 mr-1 pr-1.5 border-r border-border/60">
-            <Compass className="w-3.5 h-3.5 text-primary shrink-0" />
-            <select
-              value={selectedContextSessionId}
-              onChange={(e) => handleSelectContextSession(e.target.value)}
-              className="text-xs bg-transparent text-muted-foreground hover:text-foreground font-medium outline-none cursor-pointer max-w-[130px] truncate"
-              title="Attach to active Context Session"
+      {/* Top Right Floating Action Controls with Collapsible Toggle */}
+      <div className="absolute top-3 right-4 sm:right-6 z-40 flex items-center gap-1 bg-card/90 backdrop-blur-md px-1.5 py-1 rounded-xl border border-border shadow-xs transition-all duration-300">
+        {!isControlsCollapsed && (
+          <div className="flex items-center gap-1">
+            {isContextSessionsEnabled && availableContextSessions.length > 0 && (
+              <div className="hidden md:flex items-center gap-1 mr-1 pr-1.5 border-r border-border/60">
+                <Compass className="w-3.5 h-3.5 text-primary shrink-0" />
+                <select
+                  value={selectedContextSessionId}
+                  onChange={(e) => handleSelectContextSession(e.target.value)}
+                  className="text-xs bg-transparent text-muted-foreground hover:text-foreground font-medium outline-none cursor-pointer max-w-[130px] truncate"
+                  title="Attach to active Context Session"
+                >
+                  <option value="">No Active Session</option>
+                  {availableContextSessions.map((sess) => (
+                    <option key={sess.id} value={sess.id}>
+                      {sess.title}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => { loadAllSessions(); setShowHistoryModal(true); }}
+              className="h-7 px-2.5 text-xs text-muted-foreground hover:text-foreground flex items-center gap-1.5 rounded-lg transition-colors"
+              title="View conversation history"
             >
-              <option value="">No Active Session</option>
-              {availableContextSessions.map((sess) => (
-                <option key={sess.id} value={sess.id}>
-                  {sess.title}
-                </option>
-              ))}
-            </select>
+              <History className="w-3.5 h-3.5 text-primary" />
+              <span className="text-[11px] font-medium hidden sm:inline">History</span>
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleStartNewChat}
+              className="h-7 px-2.5 text-xs text-muted-foreground hover:text-foreground flex items-center gap-1.5 rounded-lg transition-colors"
+              title="Start new conversation"
+            >
+              <PlusCircle className="w-3.5 h-3.5 text-primary" />
+              <span className="text-[11px] font-medium hidden sm:inline">New Chat</span>
+            </Button>
+
+            {hasPerformedSearch && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleDeleteCurrentChat}
+                className="h-7 w-7 p-0 text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 transition-colors rounded-lg"
+                title="Delete this chat"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </Button>
+            )}
+
+            <div className="w-px h-3.5 bg-border mx-0.5" />
           </div>
         )}
 
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => { loadAllSessions(); setShowHistoryModal(true); }}
-          className="h-7 px-2.5 text-xs text-muted-foreground hover:text-foreground flex items-center gap-1.5 rounded-lg transition-colors"
-          title="View conversation history"
+        <button
+          type="button"
+          onClick={() => setIsControlsCollapsed(!isControlsCollapsed)}
+          className="h-7 px-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted flex items-center gap-1 transition-colors text-xs font-medium"
+          title={isControlsCollapsed ? "Show controls (History, New Chat)" : "Collapse controls"}
+          aria-label={isControlsCollapsed ? "Show controls" : "Collapse controls"}
         >
-          <History className="w-3.5 h-3.5 text-primary" />
-          <span className="text-[11px] font-medium hidden sm:inline">History</span>
-        </Button>
-
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleStartNewChat}
-          className="h-7 px-2.5 text-xs text-muted-foreground hover:text-foreground flex items-center gap-1.5 rounded-lg transition-colors"
-          title="Start new conversation"
-        >
-          <PlusCircle className="w-3.5 h-3.5 text-primary" />
-          <span className="text-[11px] font-medium hidden sm:inline">New Chat</span>
-        </Button>
-
-        {hasPerformedSearch && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleDeleteCurrentChat}
-            className="h-7 w-7 p-0 text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 transition-colors rounded-lg"
-            title="Delete this chat"
-          >
-            <Trash2 className="w-3.5 h-3.5" />
-          </Button>
-        )}
+          <SlidersHorizontal className="w-3.5 h-3.5 text-primary" />
+          {isControlsCollapsed && (
+            <span className="text-[11px] font-medium text-foreground pr-0.5">Actions</span>
+          )}
+        </button>
       </div>
       
       {!hasPerformedSearch ? (
@@ -1132,49 +1056,30 @@ Guidelines:
             </button>
           </div>
 
-          {/* ChatGPT-style Search Input Capsule */}
+          {/* Corporate Capsule Search Input Box */}
           <div className="w-full max-w-2xl">
             <form onSubmit={(e) => { e.preventDefault(); setSearchParams({ q: query }); runSearch(); }}>
-              <div className="relative flex items-center bg-[#212121] dark:bg-[#212121] border border-white/10 rounded-full px-3 py-2.5 shadow-lg focus-within:border-white/20 transition-all w-full">
+              <div className="relative flex items-center bg-card border border-border hover:border-primary/40 focus-within:border-primary rounded-full px-3.5 py-2.5 shadow-sm transition-all w-full">
                 <button
                   type="button"
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-colors shrink-0 mr-1"
+                  onClick={handleStartNewChat}
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shrink-0 mr-1"
+                  title="New chat"
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus className="w-4 h-4 text-primary" />
                 </button>
                 <input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Ask Orbit AI anything..."
-                  className="flex-1 bg-transparent border-0 outline-none ring-0 focus:ring-0 focus:outline-none text-sm text-white placeholder:text-white/40 px-2 min-w-0 w-full font-normal"
+                  className="flex-1 bg-transparent border-0 outline-none ring-0 focus:ring-0 focus:outline-none text-sm text-foreground placeholder:text-muted-foreground px-2 min-w-0 w-full font-normal"
                 />
 
-                <div className="flex items-center gap-1.5 shrink-0 ml-1">
-                  <button
-                    type="button"
-                    onClick={() => setIsDeepThinking(!isDeepThinking)}
-                    className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all ${
-                      isDeepThinking
-                        ? 'bg-primary/20 text-primary border border-primary/40'
-                        : 'text-white/70 hover:text-white hover:bg-white/10'
-                    }`}
-                  >
-                    <Brain className="w-3.5 h-3.5" />
-                    <span>Think</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => toast({ title: "Voice Search", description: "Voice dictation is active." })}
-                    className="w-8 h-8 rounded-full flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-colors"
-                  >
-                    <Mic className="w-4 h-4" />
-                  </button>
-
+                <div className="flex items-center gap-1 shrink-0 ml-1">
                   <button
                     type="submit"
                     disabled={!query.trim()}
-                    className="w-8 h-8 rounded-full bg-[#3b82f6] hover:bg-[#2563eb] disabled:bg-white/10 text-white disabled:text-white/30 transition-all flex items-center justify-center shrink-0 shadow-sm"
+                    className="w-8 h-8 rounded-full bg-primary hover:opacity-90 disabled:opacity-30 text-primary-foreground transition-all flex items-center justify-center shrink-0 shadow-xs"
                     title="Search"
                   >
                     {isSearching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
@@ -1245,7 +1150,7 @@ Guidelines:
                                  {msg.role === 'user' ? 'You' : 'Orbit AI'}
                                 </span>
                                
-                                <div className={`text-sm leading-relaxed ${msg.role === 'user' ? 'px-4 py-3 bg-[#1e293b] dark:bg-[#1e293b] text-white rounded-2xl max-w-[85%] shadow-xs' : 'py-1 text-foreground w-full'}`}>
+                                <div className={`text-sm leading-relaxed ${msg.role === 'user' ? 'px-4 py-3 bg-secondary text-secondary-foreground border border-border/70 rounded-2xl max-w-[85%] shadow-xs' : 'py-1 text-foreground w-full'}`}>
                                    {msg.role === 'assistant' ? (
                                      <>
                                       <ReactMarkdown 
@@ -1442,21 +1347,21 @@ Guidelines:
                 </div>
              </div>
              
-             {/* ChatGPT-style Floating Capsule Input */}
+             {/* Corporate Capsule Floating Input */}
              <div className="px-4 pb-4 pt-2 bg-gradient-to-t from-background via-background/95 to-transparent shrink-0 w-full">
                 <div className="max-w-3xl lg:max-w-4xl mx-auto">
                    <form 
                      onSubmit={handleFollowUp} 
-                     className="relative flex items-center bg-[#212121] dark:bg-[#212121] border border-white/10 dark:border-white/10 rounded-full px-3 py-2 shadow-lg focus-within:border-white/20 transition-all"
+                     className="relative flex items-center bg-card border border-border hover:border-primary/40 focus-within:border-primary rounded-full px-3.5 py-2 shadow-sm transition-all"
                    >
                       {/* Plus Action Button */}
                       <button
                         type="button"
                         onClick={handleStartNewChat}
-                        className="w-8 h-8 rounded-full flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-colors shrink-0 mr-1"
+                        className="w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shrink-0 mr-1"
                         title="New Chat"
                       >
-                         <Plus className="w-4 h-4" />
+                         <Plus className="w-4 h-4 text-primary" />
                       </button>
 
                       {/* Text Input */}
@@ -1464,38 +1369,15 @@ Guidelines:
                         value={followUpInput}
                         onChange={e => setFollowUpInput(e.target.value)}
                         placeholder="Ask Orbit AI anything..."
-                        className="flex-1 bg-transparent border-0 outline-none ring-0 focus:ring-0 text-sm text-white placeholder:text-white/40 min-w-0 px-2 font-normal"
+                        className="flex-1 bg-transparent border-0 outline-none ring-0 focus:ring-0 text-sm text-foreground placeholder:text-muted-foreground min-w-0 px-2 font-normal"
                       />
 
-                      {/* Right Controls: Deep Think toggle pill, Mic, Send */}
-                      <div className="flex items-center gap-1.5 shrink-0 ml-1">
-                         <button
-                           type="button"
-                           onClick={() => setIsDeepThinking(!isDeepThinking)}
-                           className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all ${
-                             isDeepThinking
-                               ? 'bg-primary/20 text-primary border border-primary/40'
-                               : 'text-white/70 hover:text-white hover:bg-white/10'
-                           }`}
-                           title="Enable Deep Organizational Analysis"
-                         >
-                            <Brain className="w-3.5 h-3.5" />
-                            <span>Think</span>
-                         </button>
-
-                         <button
-                           type="button"
-                           onClick={() => toast({ title: "Voice Search", description: "Voice dictation is active." })}
-                           className="w-8 h-8 rounded-full flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-colors"
-                           title="Voice search"
-                         >
-                            <Mic className="w-4 h-4" />
-                         </button>
-
+                      {/* Right Control: Send */}
+                      <div className="flex items-center gap-1 shrink-0 ml-1">
                          <button
                            type="submit"
                            disabled={!followUpInput.trim() || isSynthesizing}
-                           className="w-8 h-8 rounded-full bg-[#3b82f6] hover:bg-[#2563eb] disabled:bg-white/10 text-white disabled:text-white/30 transition-all flex items-center justify-center shrink-0 shadow-sm"
+                           className="w-8 h-8 rounded-full bg-primary hover:opacity-90 disabled:opacity-30 text-primary-foreground transition-all flex items-center justify-center shrink-0 shadow-xs"
                            title="Send message"
                          >
                             {isSynthesizing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
@@ -1706,7 +1588,125 @@ Guidelines:
           </div>
         </div>
       )}
+
+<Dialog open={showHistoryModal} onOpenChange={setShowHistoryModal}>
+        <DialogContent className="rounded-2xl max-w-lg p-0 overflow-hidden bg-card border-border shadow-xl">
+          <DialogHeader className="p-4 pb-3 border-b border-border/70 flex flex-row items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                <History className="w-4 h-4" />
+              </div>
+              <div>
+                <DialogTitle className="text-sm font-bold text-foreground">
+                  Chat History
+                </DialogTitle>
+                <DialogDescription className="text-xs text-muted-foreground">
+                  Select any previous conversation to review and continue chatting.
+                </DialogDescription>
+              </div>
+            </div>
+            <Button
+              size="sm"
+              onClick={handleStartNewChat}
+              className="h-8 px-3 text-xs gap-1.5 rounded-lg shadow-xs"
+            >
+              <PlusCircle className="w-3.5 h-3.5" />
+              <span>New Chat</span>
+            </Button>
+          </DialogHeader>
+
+          {/* Scrollable Chat Sessions List */}
+          <div className="max-h-[380px] overflow-y-auto p-3 space-y-2 scrollbar-thin">
+            {sessions.length === 0 ? (
+              <div className="py-8 text-center text-xs text-muted-foreground">
+                No saved conversations found.
+              </div>
+            ) : (
+              sessions.map((sess) => {
+                const isActive = sess.id === activeSessionId;
+                const formattedDate = new Date(sess.updated_at || sess.created_at).toLocaleDateString(undefined, {
+                  month: 'short',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                });
+
+                return (
+                  <div
+                    key={sess.id}
+                    onClick={() => handleSelectSession(sess.id)}
+                    className={`group w-full text-left p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                      isActive
+                        ? 'bg-primary/10 border-primary/40 shadow-xs'
+                        : 'bg-card border-border/70 hover:bg-secondary hover:border-primary/30'
+                    }`}
+                  >
+                    <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                      <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${
+                        isActive ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground group-hover:text-foreground'
+                      }`}>
+                        <MessageSquare className="w-3.5 h-3.5" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <p className={`text-xs font-semibold truncate ${isActive ? 'text-primary' : 'text-foreground'}`}>
+                            {sess.title || 'Untitled Conversation'}
+                          </p>
+                          {isActive && (
+                            <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-primary/40 text-primary bg-primary/5 shrink-0">
+                              Active
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2 mt-1 text-[11px] text-muted-foreground">
+                          <Clock className="w-3 h-3" />
+                          <span>{formattedDate}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSessionToDelete(sess);
+                        setShowDeleteConfirm(true);
+                      }}
+                      className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 transition-all shrink-0"
+                      title="Delete this chat"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Confirmation Modal: Delete Chat Session */}
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent className="rounded-2xl max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-base font-bold flex items-center gap-2 text-rose-500">
+              <Trash2 className="w-4 h-4" />
+              Delete Conversation?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-xs text-muted-foreground leading-relaxed">
+              Are you sure you want to delete <strong className="text-foreground">"{sessionToDelete?.title || 'this conversation'}"</strong>? All messages in this chat will be permanently removed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="mt-4 gap-2">
+            <AlertDialogCancel className="rounded-xl text-xs">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDeleteSession}
+              className="rounded-xl text-xs bg-rose-600 hover:bg-rose-700 text-white font-medium"
+            >
+              Delete Chat
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
-
