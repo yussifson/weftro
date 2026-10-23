@@ -2,8 +2,18 @@ import posthog from 'posthog-js';
 import { pushDataLayer } from './analytics';
 
 // Environment-driven PostHog initialization
-const POSTHOG_KEY = import.meta.env.VITE_POSTHOG_KEY || 'phc_oZHRKhyn7nDqLYddUUF2moLsnV9drQkdioPH5T2V9W5a';
-const POSTHOG_HOST = import.meta.env.VITE_POSTHOG_HOST || 'https://us.i.posthog.com';
+// Reads standard Vite env vars (VITE_POSTHOG_KEY, VITE_POSTHOG_HOST)
+// Also supports NEXT_PUBLIC_ variants if provided via build flags
+const POSTHOG_KEY = 
+  import.meta.env.VITE_POSTHOG_KEY || 
+  import.meta.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN || 
+  import.meta.env.NEXT_PUBLIC_POSTHOG_KEY || 
+  '';
+
+const POSTHOG_HOST = 
+  import.meta.env.VITE_POSTHOG_HOST || 
+  import.meta.env.NEXT_PUBLIC_POSTHOG_HOST || 
+  'https://us.i.posthog.com';
 
 const isLocalhost = typeof window !== 'undefined' && 
   (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
