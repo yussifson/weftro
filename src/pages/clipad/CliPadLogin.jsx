@@ -98,8 +98,9 @@ export default function CliPadLogin() {
   return (
     <>
       <Helmet>
-        <title>Log In — Weftro Collaborative Workspace</title>
-        <meta name="description" content="Log in to your enterprise-grade collaborative productivity workspace." />
+        <title>Log In — Weftro V3 — #1 Enterprise Intelligence Platform</title>
+        <meta name="description" content="Sign in to your Weftro V3 enterprise workspace to search connected company knowledge and intelligence." />
+        <link rel="canonical" href="https://weftro.com/login" />
         <link rel="icon" type="image/svg+xml" href="/clipad-logo.svg" />
       </Helmet>
       <div className="min-h-screen w-full bg-background flex flex-col lg:flex-row font-sans text-foreground overflow-hidden select-none">

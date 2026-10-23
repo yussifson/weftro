@@ -430,9 +430,9 @@ export default function MeetLandingPage() {
         <div className="absolute -bottom-[20%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-[#fad503]/5 blur-[120px]" />
       </div>
       <SEO 
-        title="Weftro by Clipad — #1 Enterprise AI-Powered Collaborative Workspace & Memory Platform"
-          url="https://clipad.com/" 
-        description="Weftro is a free, secure, enterprise-grade collaborative productivity workspace. Connect your team with chat, spaces, and HD video meetings instantly. Trusted by teams worldwide." 
+        title="Weftro V3 — #1 Enterprise Intelligence Platform"
+        url="https://weftro.com/" 
+        description="Weftro V3 helps companies search connected knowledge sources, discover relevant information, retrieve evidence-grounded answers, and connect company knowledge with compatible applications and AI systems." 
         type="website"
       />
       <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur-md shadow-sm">

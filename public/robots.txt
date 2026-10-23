@@ -8,6 +8,11 @@ Allow: /security
 Allow: /custom-pricing
 Allow: /about
 
+# Disallow password recovery flows & internal callbacks from being indexed
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /auth/*
+
 # Disallow authenticated app routes from being crawled
 Disallow: /dashboard
 Disallow: /admin/*

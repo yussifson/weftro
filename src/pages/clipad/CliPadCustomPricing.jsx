@@ -226,7 +226,11 @@ export default function CliPadCustomPricing() {
 
   return (
     <>
-      <SEO title="Enterprise Custom Pricing & SLA — Weftro by Clipad" description="Tailored deployment options, custom data retention policies, and dedicated SLA contracts for enterprise organizations." url="https://clipad.com/custom-pricing" />
+      <SEO 
+        title="Enterprise Custom Pricing & SLA — Weftro V3 — #1 Enterprise Intelligence Platform" 
+        description="Tailored deployment options, custom data retention policies, and dedicated SLA contracts for enterprise organizations using Weftro V3." 
+        url="https://weftro.com/custom-pricing" 
+      />
     <div className="min-h-screen bg-background text-foreground flex flex-col selection:bg-orange-500 selection:text-white">
       {/* Top Header */}
       <header className="sticky top-0 z-50 backdrop-blur-md bg-background/85 border-b border-border px-6 md:px-12 py-3.5">

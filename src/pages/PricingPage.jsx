@@ -43,7 +43,11 @@ export default function PricingPage() {
 
   return (
     <div className="dark min-h-screen bg-[#0B1418] text-white font-sans">
-      <SEO title="Pricing & Plans — Weftro by Clipad" description="Simple, transparent pricing for teams of all sizes. From free collaborative spaces to enterprise knowledge intelligence." url="https://clipad.com/pricing" />
+      <SEO 
+        title="Pricing & Plans — Weftro V3 — #1 Enterprise Intelligence Platform" 
+        description="Simple, transparent enterprise pricing for teams. Connect company knowledge, empower AI search, and scale your intelligence layer with Weftro V3." 
+        url="https://weftro.com/pricing" 
+      />
       
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background/85 backdrop-blur-md border-b border-border">

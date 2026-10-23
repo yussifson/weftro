@@ -48,8 +48,9 @@ export default function CliPadForgotPassword() {
   return (
     <>
       <Helmet>
-        <title>Reset Password — Weftro Collaborative Workspace</title>
-        <meta name="description" content="Reset your Weftro password and regain access to your workspace." />
+        <title>Reset Password — Weftro V3 — #1 Enterprise Intelligence Platform</title>
+        <meta name="description" content="Reset your Weftro V3 account password to regain access to your enterprise intelligence workspace." />
+        <meta name="robots" content="noindex, follow" />
         <link rel="icon" type="image/svg+xml" href="/clipad-logo.svg" />
       </Helmet>
       <div className="min-h-screen w-full bg-background flex flex-col lg:flex-row font-sans text-foreground overflow-hidden select-none">
