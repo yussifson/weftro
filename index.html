@@ -31,18 +31,37 @@
     <meta name="twitter:description" content="Weftro V3 helps companies search connected knowledge sources, discover relevant information, retrieve evidence-grounded answers, and connect company knowledge with compatible applications and AI systems." />
     <meta name="twitter:image" content="https://weftro.com/clipad-logo.svg" />
 
-    <!-- Structured Data: Organization & WebSite -->
+    <!-- Structured Data: Organization (Optavel Technologies), Product/SoftwareApplication (Weftro V3), & WebSite -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@graph": [
           {
             "@type": "Organization",
-            "@id": "https://weftro.com/#organization",
-            "name": "Weftro",
-            "url": "https://weftro.com",
+            "@id": "https://optavel.com/#organization",
+            "name": "Optavel Technologies",
+            "url": "https://optavel.com",
             "logo": "https://weftro.com/clipad-logo.svg",
-            "description": "Weftro is an AI-powered enterprise intelligence platform that connects company knowledge, business applications, and compatible AI systems."
+            "description": "Optavel Technologies is an enterprise software company developing intelligent workplace operating systems, workflow automation solutions, and business data platforms.",
+            "sameAs": [
+              "https://github.com/yussifson/weftro"
+            ]
+          },
+          {
+            "@type": "SoftwareApplication",
+            "@id": "https://weftro.com/#software",
+            "name": "Weftro V3",
+            "alternateName": "Weftro",
+            "applicationCategory": "BusinessApplication",
+            "operatingSystem": "All",
+            "url": "https://weftro.com",
+            "description": "Weftro is an AI-powered enterprise intelligence platform developed by Optavel Technologies that helps companies connect, retrieve, and use knowledge across their business systems and compatible AI tools.",
+            "creator": {
+              "@id": "https://optavel.com/#organization"
+            },
+            "publisher": {
+              "@id": "https://optavel.com/#organization"
+            }
           },
           {
             "@type": "WebSite",
@@ -50,7 +69,10 @@
             "url": "https://weftro.com",
             "name": "Weftro V3 — #1 Enterprise Intelligence Platform",
             "publisher": {
-              "@id": "https://weftro.com/#organization"
+              "@id": "https://optavel.com/#organization"
+            },
+            "about": {
+              "@id": "https://weftro.com/#software"
             }
           }
         ]

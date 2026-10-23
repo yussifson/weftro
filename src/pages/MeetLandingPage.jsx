@@ -458,6 +458,13 @@ export default function MeetLandingPage() {
               Pricing
             </a>
             <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
+            <a 
+              href="/about" 
+              className="px-4 py-1.5 text-xs font-semibold tracking-wide text-foreground/80 hover:text-foreground hover:bg-background/80 rounded-full transition-all duration-150"
+            >
+              About
+            </a>
+            <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
             <button 
               onClick={() => {
                 setSupportPanel('chat');
@@ -488,11 +495,16 @@ export default function MeetLandingPage() {
 
       <main className="relative z-10 flex-1 flex flex-col md:flex-row items-center justify-center p-6 md:p-12 gap-12 md:gap-16 max-w-7xl mx-auto w-full">
         <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left space-y-6 max-w-xl">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/80 border border-border">
+            <span className="text-[11px] font-bold text-emerald-500 uppercase tracking-wider">
+              Optavel Technologies Platform
+            </span>
+          </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-normal text-foreground leading-[1.12] tracking-tight">
             The AI memory and intelligence layer for your entire company.
           </h1>
-          <p className="text-lg text-slate-500 dark:text-muted-foreground leading-relaxed">
-            Weftro continuously captures, links, and reasons across meetings, conversations, documents, and business systems. Powered by universal integrations, MCP protocols, and automated decision support.
+          <p className="text-lg text-slate-300 dark:text-muted-foreground leading-relaxed">
+            <strong>Weftro V3</strong> is an AI-powered enterprise intelligence platform developed by <strong>Optavel Technologies</strong> that helps companies connect, retrieve, and use knowledge across their business systems and compatible AI tools.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center gap-4 w-full pt-2">

@@ -30,8 +30,11 @@ assert(indexHtml.includes('<link rel="canonical" href="https://weftro.com/" />')
 assert(indexHtml.includes('property="og:site_name" content="Weftro"'), 'index.html has og:site_name Weftro');
 assert(indexHtml.includes('name="twitter:card" content="summary_large_image"'), 'index.html has twitter:card summary_large_image');
 
-// 4. JSON-LD structured data in index.html
-assert(indexHtml.includes('"@type": "Organization"') && indexHtml.includes('"@type": "WebSite"'), 'index.html includes valid Organization and WebSite JSON-LD graph');
+// 4. JSON-LD structured data in index.html (Brand entity disambiguation: Optavel Technologies + Weftro V3 + WebSite)
+assert(indexHtml.includes('"name": "Optavel Technologies"'), 'index.html includes Optavel Technologies in Organization entity');
+assert(indexHtml.includes('"@type": "SoftwareApplication"'), 'index.html includes SoftwareApplication entity');
+assert(indexHtml.includes('"name": "Weftro V3"'), 'index.html specifies Weftro V3 as official SoftwareApplication');
+assert(indexHtml.includes('"@type": "WebSite"'), 'index.html includes WebSite entity');
 
 // 5. Sitemap validation
 const sitemap = fs.readFileSync(path.join(rootDir, 'public/sitemap.xml'), 'utf8');
@@ -69,6 +72,12 @@ assert(forgotPw.includes('content="noindex, follow"'), 'CliPadForgotPassword con
 
 const resetPw = fs.readFileSync(path.join(rootDir, 'src/pages/clipad/CliPadResetPassword.jsx'), 'utf8');
 assert(resetPw.includes('content="noindex, nofollow"'), 'CliPadResetPassword contains noindex directive');
+
+// 9. Dedicated About & Product Definition Page validation
+const aboutPage = fs.readFileSync(path.join(rootDir, 'src/pages/AboutPage.jsx'), 'utf8');
+assert(aboutPage.includes('What is Weftro?'), 'AboutPage includes explicit What is Weftro? heading');
+assert(aboutPage.includes('Optavel Technologies'), 'AboutPage explicitly attributes Weftro to Optavel Technologies');
+assert(aboutPage.includes('https://weftro.com/about'), 'AboutPage has canonical url to https://weftro.com/about');
 
 console.log('SUMMARY: ' + passed + ' passed, ' + failed + ' failed.');
 if (failed > 0) process.exit(1);

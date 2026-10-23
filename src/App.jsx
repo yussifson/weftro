@@ -36,6 +36,7 @@ const ActionItems = safeLazy(() => import('@/pages/clipad/ActionItems'));
 const KnowledgeJourney = safeLazy(() => import('@/pages/clipad/KnowledgeJourney'));
 const IntegrationAnalytics = safeLazy(() => import('@/pages/clipad/IntegrationAnalytics'));
 const MeetLandingPage = safeLazy(() => import('@/pages/MeetLandingPage'));
+const AboutPage = safeLazy(() => import('@/pages/AboutPage'));
 const PricingPage = safeLazy(() => import('@/pages/PricingPage'));
 const SecurityPage = safeLazy(() => import('@/pages/SecurityPage'));
 const CliPadDashboard = safeLazy(() => import('@/pages/clipad/CliPadDashboard'));
@@ -117,7 +118,7 @@ function App() {
                         <Route path="/security" element={<SecurityPage />} />
                         <Route path="/home" element={<MeetLandingPage />} />
                         <Route path="/marketing" element={<MeetLandingPage />} />
-                        <Route path="/about" element={<MeetLandingPage />} />
+                        <Route path="/about" element={<AboutPage />} />
                         <Route path="/meet" element={<MeetLandingPage />} />
 
                         <Route element={<ClipadLayout />}>
