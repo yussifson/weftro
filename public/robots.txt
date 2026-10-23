@@ -1,4 +1,4 @@
-﻿User-agent: *
+User-agent: *
 Allow: /
 Allow: /login
 Allow: /signup
@@ -32,4 +32,4 @@ Disallow: /settings/*
 Disallow: /chat/*
 Disallow: /api/*
 
-Sitemap: https://clipad.com/sitemap.xml
+Sitemap: https://weftro.com/sitemap.xml

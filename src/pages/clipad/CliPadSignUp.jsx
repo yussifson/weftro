@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { supabase } from '@/api/supabaseClient';
 import { trackEvent } from '@/lib/posthog';
+import { trackAnalyticsEvent } from '@/lib/analytics';
 import { useToast } from '@/components/ui/use-toast';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { Logo } from '@/components/ui/Logo';
@@ -51,6 +52,7 @@ export default function CliPadSignUp() {
       if (error) throw error;
       
       trackEvent('user_signed_up', { method: 'email', has_session: !!data?.session });
+      trackAnalyticsEvent('sign_up', { method: 'email', has_session: !!data?.session });
       toast({ title: 'Sign up successful', description: 'Please check your email to verify your account if required, or wait to be redirected.', variant: 'default' });
       
       // Auto-redirect or let auth state change handle it

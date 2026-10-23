@@ -1,7 +1,8 @@
-﻿import posthog from 'posthog-js';
+import posthog from 'posthog-js';
+import { pushDataLayer } from './analytics';
 
 // Environment-driven PostHog initialization
-const POSTHOG_KEY = import.meta.env.VITE_POSTHOG_KEY || '';
+const POSTHOG_KEY = import.meta.env.VITE_POSTHOG_KEY || 'phc_oZHRKhyn7nDqLYddUUF2moLsnV9drQkdioPH5T2V9W5a';
 const POSTHOG_HOST = import.meta.env.VITE_POSTHOG_HOST || 'https://us.i.posthog.com';
 
 const isLocalhost = typeof window !== 'undefined' && 
@@ -22,34 +23,56 @@ export const initPostHog = () => {
   try {
     posthog.init(POSTHOG_KEY, {
       api_host: POSTHOG_HOST,
-      capture_pageview: false, // Managed manually with React Router to prevent duplicates
+      capture_pageview: false, // Managed cleanly with React Router in AnalyticsTracker to prevent duplicates
       capture_pageleave: true,
       autocapture: true,
       disable_session_recording: isLocalhost,
       loaded: (ph) => {
-        if (isLocalhost) {
-          ph.opt_out_capturing();
-        }
+        // Expose to window for global analytics bridge
+        window.posthog = ph;
       }
     });
     isInitialized = true;
+    window.posthog = posthog;
   } catch (err) {
     console.warn('[PostHog] Initialization error:', err);
   }
 };
 
 /**
- * Safely identify an authenticated user
+ * Safely identify an authenticated user and organization
  */
 export const identifyUser = (user) => {
   if (!user || typeof window === 'undefined' || !isInitialized) return;
   try {
+    const orgId = user.company_id || user.user_metadata?.company_id;
+    const planTier = user.clipad_plan || user.subscription_plan || 'free';
+
     posthog.identify(user.id, {
       email: user.email,
       name: user.full_name || user.user_metadata?.full_name,
       role: user.role,
-      company_id: user.company_id || user.user_metadata?.company_id,
-      plan: user.clipad_plan || user.subscription_plan || 'free',
+      company_id: orgId,
+      plan: planTier,
+      created_at: user.created_at || user.created_date
+    });
+
+    // Group / organization association if company_id is present
+    if (orgId && typeof posthog.group === 'function') {
+      try {
+        posthog.group('company', orgId, {
+          company_id: orgId,
+          plan: planTier
+        });
+      } catch (_) {}
+    }
+
+    // Also notify GTM dataLayer
+    pushDataLayer({
+      event: 'user_identified',
+      user_id: user.id,
+      company_id: orgId,
+      user_role: user.role
     });
   } catch (err) {
     console.warn('[PostHog] Identify error:', err);
@@ -63,18 +86,19 @@ export const resetUser = () => {
   if (typeof window === 'undefined' || !isInitialized) return;
   try {
     posthog.reset();
+    pushDataLayer({ event: 'user_signed_out' });
   } catch (err) {
     console.warn('[PostHog] Reset error:', err);
   }
 };
 
 /**
- * Track custom events safely with data sanitization
+ * Track custom events safely with data sanitization across PostHog & GTM/GA4
  */
 export const trackEvent = (eventName, properties = {}) => {
-  if (typeof window === 'undefined' || !isInitialized) return;
+  if (typeof window === 'undefined') return;
 
-  // Strict sanitization: ensure no sensitive content, transcripts, tokens or passwords leak
+  // Strict sanitization: ensure no sensitive content, transcripts, tokens, secrets, or passwords leak
   const sanitized = { ...properties };
   delete sanitized.password;
   delete sanitized.token;
@@ -84,10 +108,18 @@ export const trackEvent = (eventName, properties = {}) => {
   delete sanitized.content;
 
   try {
-    posthog.capture(eventName, sanitized);
+    if (isInitialized) {
+      posthog.capture(eventName, sanitized);
+    }
   } catch (err) {
     console.warn('[PostHog] Event capture error:', err);
   }
+
+  // Dual-dispatch to GTM dataLayer for GA4 custom event tracking
+  pushDataLayer({
+    event: eventName,
+    ...sanitized
+  });
 };
 
 /**
