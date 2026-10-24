@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import SEO from '@/components/seo/SEO';
 import { generateShortId } from '@/utils/idGenerator';
 import { formatMeetingUrl } from '@/utils/meetingUrl';
@@ -66,8 +66,8 @@ const pillars = [
   },
   {
     icon: Zap,
-    color: 'from-[#D9A400] to-yellow-400',
-    glow: 'shadow-yellow-500/20',
+    color: 'from-orange-500 to-amber-500',
+    glow: 'shadow-orange-500/20',
     title: 'Autonomous Action Execution',
     desc: 'Transforms spoken consensus into structured tasks, follow-up briefs, and automated team workflows without manual note-taking.'
   },
@@ -234,6 +234,19 @@ export default function MeetLandingPage() {
   const [isProcessingPay, setIsProcessingPay] = useState(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Single-page navigation hash scroller
+  useEffect(() => {
+    if (location.hash) {
+      const el = document.querySelector(location.hash);
+      if (el) {
+        setTimeout(() => {
+          el.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
+    }
+  }, [location.hash]);
   const { toast } = useToast();
   const now = useLiveClock();
 
@@ -438,7 +451,7 @@ export default function MeetLandingPage() {
       />
       <MarketingHeader onOpenSupport={(type) => setSupportPanel(type || 'chat')} />
 
-      <main className="relative z-10 flex-1 flex flex-col md:flex-row items-center justify-center pt-24 pb-6 px-6 md:pt-28 md:pb-12 md:px-12 gap-12 md:gap-16 max-w-7xl mx-auto w-full">
+      <main id="hero" className="relative z-10 flex-1 flex flex-col md:flex-row items-center justify-center pt-24 pb-6 px-6 md:pt-28 md:pb-12 md:px-12 gap-12 md:gap-16 max-w-7xl mx-auto w-full">
         <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left space-y-6 max-w-xl">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-normal text-foreground leading-[1.12] tracking-tight">
             The AI memory and intelligence layer for your entire company.
@@ -560,7 +573,9 @@ export default function MeetLandingPage() {
         <FeaturesCircle />
       </section>
 
+        <div id="intelligence">
         <AdvancedFeaturesBento />
+      </div>
         <WithoutCliPadSection />
         <WithCliPadSection />
 
@@ -1005,20 +1020,41 @@ export default function MeetLandingPage() {
         </div>
 
         {/* ΓöÇΓöÇ FOOTER ΓöÇΓöÇ */}
-        <footer className="border-t border-border py-6 px-6 md:px-12 bg-slate-50 dark:bg-background/50">
-          <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2 text-slate-500 dark:text-muted-foreground text-sm font-medium">
-              <CliPadLogo size={18} iconOnly={true} />
-              <span>&copy; {new Date().getFullYear()} Optavel Technologies</span>
+        <footer className="border-t border-border py-12 px-6 md:px-12 bg-slate-50 dark:bg-background/50">
+        <div className="max-w-7xl mx-auto space-y-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6 pb-8 border-b border-border/60">
+            <div className="flex items-center gap-3">
+              <CliPadLogo height={28} />
+              <span className="text-xs text-muted-foreground font-medium">&copy; {new Date().getFullYear()} Optavel Technologies. All rights reserved.</span>
             </div>
-            <div className="flex items-center gap-6 text-sm text-muted-foreground">
-              <span className="hover:text-muted-foreground cursor-pointer transition-colors">Privacy</span>
-              <span className="hover:text-muted-foreground cursor-pointer transition-colors">Terms</span>
-              <span className="hover:text-muted-foreground cursor-pointer transition-colors">Security</span>
-              <a href="https://optavel.com" className="hover:text-muted-foreground transition-colors flex items-center gap-1"><Globe className="w-3 h-3" /> optavel.com</a>
+            
+            <div className="flex flex-wrap items-center justify-center gap-6 text-xs text-muted-foreground">
+              <a href="#hero" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="hover:text-foreground transition-colors font-medium">Home</a>
+              <a href="#features" className="hover:text-foreground transition-colors font-medium">Features</a>
+              <a href="#intelligence" className="hover:text-foreground transition-colors font-medium">Intelligence</a>
+              <a href="#pricing" className="hover:text-foreground transition-colors font-medium">Pricing</a>
+              <button type="button" onClick={() => setSupportPanel('chat')} className="hover:text-foreground transition-colors font-medium cursor-pointer">Support</button>
             </div>
           </div>
-        </footer>
+
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-foreground uppercase tracking-wider text-[10px]">Quick Links:</span>
+              <div className="flex flex-wrap items-center gap-4">
+                <button type="button" onClick={() => navigate('/pricing')} className="hover:text-foreground hover:underline transition-colors cursor-pointer">Pricing Plans</button>
+                <button type="button" onClick={() => navigate('/security')} className="hover:text-foreground hover:underline transition-colors cursor-pointer">Security & Compliance</button>
+                <button type="button" onClick={() => navigate('/custom-pricing')} className="hover:text-foreground hover:underline transition-colors cursor-pointer">Enterprise Solutions</button>
+                <button type="button" onClick={() => navigate('/about')} className="hover:text-foreground hover:underline transition-colors cursor-pointer">About Weftro</button>
+                <button type="button" onClick={() => navigate('/developers')} className="hover:text-foreground hover:underline transition-colors cursor-pointer">Developer Platform</button>
+              </div>
+            </div>
+
+            <a href="https://optavel.com" target="_blank" rel="noreferrer" className="hover:text-foreground transition-colors flex items-center gap-1.5 font-medium">
+              <Globe className="w-3.5 h-3.5 text-primary" /> optavel.com
+            </a>
+          </div>
+        </div>
+      </footer>
       
 
       {/* Share Link Dialog */}

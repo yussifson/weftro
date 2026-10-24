@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { CliPadLogo } from '@/components/ui/CliPadLogo';
 import { Button } from '@/components/ui/button';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { useAuth } from '@/lib/AuthContext';
-import { Layers, Menu, X, ArrowRight } from 'lucide-react';
+import { Layers, Menu, X } from 'lucide-react';
 
 export default function MarketingHeader({ onOpenSupport }) {
   const navigate = useNavigate();
@@ -14,24 +14,23 @@ export default function MarketingHeader({ onOpenSupport }) {
 
   const isHome = location.pathname === '/' || location.pathname === '/home' || location.pathname === '/marketing' || location.pathname === '/meet';
 
-  const handleNavClick = (hash) => {
+  const scrollToSection = (sectionId) => {
     setMobileOpen(false);
     if (isHome) {
-      const el = document.querySelector(hash);
+      const el = document.getElementById(sectionId);
       if (el) {
         el.scrollIntoView({ behavior: 'smooth' });
+        return;
       }
-    } else {
-      navigate(`/${hash}`);
     }
+    // If on another page, navigate to home with the hash
+    navigate(`/#${sectionId}`);
   };
 
-  const navLinks = [
-    { label: 'Features', action: () => handleNavClick('#features') },
-    { label: 'Pricing', path: '/pricing', action: () => { setMobileOpen(false); navigate('/pricing'); } },
-    { label: 'Security', path: '/security', action: () => { setMobileOpen(false); navigate('/security'); } },
-    { label: 'Enterprise', path: '/custom-pricing', action: () => { setMobileOpen(false); navigate('/custom-pricing'); } },
-    { label: 'About', path: '/about', action: () => { setMobileOpen(false); navigate('/about'); } },
+  const navItems = [
+    { label: 'Features', action: () => scrollToSection('features') },
+    { label: 'Pricing', action: () => scrollToSection('pricing') },
+    { label: 'About', action: () => { setMobileOpen(false); navigate('/about'); } },
   ];
 
   return (
@@ -51,27 +50,20 @@ export default function MarketingHeader({ onOpenSupport }) {
           <CliPadLogo height={32} />
         </div>
         
-        {/* Desktop Nav - Centered Executive Unified Navigation */}
-        <nav className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary/60 border border-border/80 shadow-inner">
-          {navLinks.map((item, idx) => {
-            const isActive = item.path && location.pathname === item.path;
-            return (
-              <React.Fragment key={item.label}>
-                {idx > 0 && <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />}
-                <button
-                  type="button"
-                  onClick={item.action}
-                  className={`px-3.5 py-1.5 text-xs font-semibold tracking-wide rounded-full transition-all duration-150 cursor-pointer ${
-                    isActive 
-                      ? 'text-foreground bg-background shadow-xs font-bold' 
-                      : 'text-foreground/80 hover:text-foreground hover:bg-background/80'
-                  }`}
-                >
-                  {item.label}
-                </button>
-              </React.Fragment>
-            );
-          })}
+        {/* Desktop Nav - In-page jump links for marketing */}
+        <nav className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary/60 border border-border/80 shadow-inner">
+          {navItems.map((item, idx) => (
+            <React.Fragment key={item.label}>
+              {idx > 0 && <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />}
+              <button
+                type="button"
+                onClick={item.action}
+                className="px-4 py-1.5 text-xs font-semibold tracking-wide text-foreground/80 hover:text-foreground hover:bg-background/80 rounded-full transition-all duration-150 cursor-pointer"
+              >
+                {item.label}
+              </button>
+            </React.Fragment>
+          ))}
           
           {onOpenSupport && (
             <>
@@ -79,7 +71,7 @@ export default function MarketingHeader({ onOpenSupport }) {
               <button 
                 type="button"
                 onClick={() => { setMobileOpen(false); onOpenSupport('chat'); }}
-                className="px-3.5 py-1.5 text-xs font-semibold tracking-wide text-foreground/80 hover:text-foreground hover:bg-background/80 rounded-full transition-all duration-150 cursor-pointer"
+                className="px-4 py-1.5 text-xs font-semibold tracking-wide text-foreground/80 hover:text-foreground hover:bg-background/80 rounded-full transition-all duration-150 cursor-pointer"
               >
                 Support
               </button>
@@ -88,9 +80,9 @@ export default function MarketingHeader({ onOpenSupport }) {
         </nav>
         
         {/* Right Action Items */}
-        <div className="flex items-center gap-2.5 shrink-0">
+        <div className="flex items-center gap-3 shrink-0">
           <div className="hidden sm:block">
-            <LanguageSwitcher className="h-9 w-[125px] rounded-xl border border-border bg-background hover:bg-secondary text-foreground text-xs font-medium" />
+            <LanguageSwitcher className="h-9 w-[130px] rounded-xl border border-border bg-background hover:bg-secondary text-foreground text-xs font-medium" />
           </div>
 
           {user ? (
@@ -102,7 +94,7 @@ export default function MarketingHeader({ onOpenSupport }) {
               <Button onClick={() => navigate('/login')} variant="outline" className="hidden sm:inline-flex rounded-xl border-border bg-background hover:bg-secondary text-foreground text-xs font-semibold px-4 h-9">
                 Sign In
               </Button>
-              <Button onClick={() => navigate('/signup')} className="rounded-xl bg-[#fad503] hover:bg-yellow-400 text-[#0B1418] text-xs font-bold px-4 h-9 shadow-sm">
+              <Button onClick={() => navigate('/signup')} className="rounded-xl bg-[#0C5C3C] hover:bg-[#0E6C47] text-white text-xs font-bold px-4 h-9 shadow-sm">
                 Get Started
               </Button>
             </>
@@ -112,7 +104,7 @@ export default function MarketingHeader({ onOpenSupport }) {
           <button
             type="button"
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="lg:hidden p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+            className="md:hidden p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
             aria-label="Toggle navigation menu"
           >
             {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -122,9 +114,9 @@ export default function MarketingHeader({ onOpenSupport }) {
 
       {/* Mobile Menu Dropdown */}
       {mobileOpen && (
-        <div className="lg:hidden border-b border-border bg-background/95 backdrop-blur-xl px-6 py-4 space-y-3 shadow-xl animate-in slide-in-from-top-2 duration-200">
+        <div className="md:hidden border-b border-border bg-background/95 backdrop-blur-xl px-6 py-4 space-y-3 shadow-xl animate-in slide-in-from-top-2 duration-200">
           <div className="grid grid-cols-2 gap-2">
-            {navLinks.map((item) => (
+            {navItems.map((item) => (
               <button
                 key={item.label}
                 type="button"
