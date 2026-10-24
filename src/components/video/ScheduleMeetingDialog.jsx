@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/api/supabaseClient';
 import { generateShortId } from '@/utils/idGenerator';
+import { formatMeetingUrl } from '@/utils/meetingUrl';
 import { powerSync } from '@/api/PowerSyncConnector';
 import { useAuth } from '@/lib/AuthContext';
 import { useCompanyId } from '@/hooks/useCompanyId';
@@ -114,18 +115,7 @@ export default function ScheduleMeetingDialog({ open, onOpenChange, onScheduled 
       const roomName = dailyData?.name || shortId;
       const realUrl = dailyData?.url || `https://optalflow.daily.co/${roomName}`;
 
-      let meetingDomain = window.location.hostname;
-      if (meetingDomain.includes('localhost') || meetingDomain.includes('127.0.0.1')) {
-        meetingDomain = `meet.localhost`;
-      } else if (meetingDomain.includes('optavel.com')) {
-        meetingDomain = `clipad.optavel.com`;
-      } else if (meetingDomain.includes('oatstack.com')) {
-        meetingDomain = `meet.oatstack.com`;
-      } else {
-        meetingDomain = `meet.${meetingDomain}`;
-      }
-      
-      const customMeetingOrigin = `${window.location.protocol}//${meetingDomain}${window.location.port ? ':' + window.location.port : ''}`;
+      const canonicalMeetingLink = formatMeetingUrl(roomName);
 
       const _payload = {
         id: dbId,
@@ -140,7 +130,7 @@ export default function ScheduleMeetingDialog({ open, onOpenChange, onScheduled 
         privacy_type: isPrivate ? 'private' : 'public',
         scheduled_start_time: scheduledStart.toISOString(),
         participants: JSON.stringify(selectedParticipants.map(p => ({ id: p.id, email: p.email, name: p.full_name }))),
-        meeting_link: `${customMeetingOrigin}/join/${roomName}`
+        meeting_link: canonicalMeetingLink
       };
 
       try {
