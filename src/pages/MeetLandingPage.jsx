@@ -495,11 +495,6 @@ export default function MeetLandingPage() {
 
       <main className="relative z-10 flex-1 flex flex-col md:flex-row items-center justify-center p-6 md:p-12 gap-12 md:gap-16 max-w-7xl mx-auto w-full">
         <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left space-y-6 max-w-xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/80 border border-border">
-            <span className="text-[11px] font-bold text-emerald-500 uppercase tracking-wider">
-              Optavel Technologies Platform
-            </span>
-          </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-normal text-foreground leading-[1.12] tracking-tight">
             The AI memory and intelligence layer for your entire company.
           </h1>
