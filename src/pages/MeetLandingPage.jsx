@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SEO from '@/components/seo/SEO';
 import { generateShortId } from '@/utils/idGenerator';
+import { formatMeetingUrl } from '@/utils/meetingUrl';
 import { supabase } from '@/api/supabaseClient';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
@@ -24,6 +25,7 @@ import ContactSalesModal from '@/components/clipad/ContactSalesModal';
 import PaymentReceiptModal from '@/components/clipad/PaymentReceiptModal';
 import SupportAIChat from '@/components/clipad/SupportAIChat';
 import ClipadMobileNav from '@/components/clipad/ClipadMobileNav';
+import MarketingHeader from '@/components/clipad/MarketingHeader';
 
 
 const pillars = [
@@ -139,14 +141,14 @@ const slides = [
     description: 'Integrates natively across Slack, Notion, GitHub, Google Workspace, external LLMs, and Model Context Protocol servers.',
     render: () => (
       <div className="relative flex flex-col items-center justify-center w-full h-full select-none">
-        <div className="absolute w-64 h-64 rounded-full border-2 border-[#0C5C3C]/30 animate-pulse" />
-        <div className="absolute w-44 h-44 rounded-full bg-[#0C5C3C]/10" />
-        <div className="relative w-32 h-32 rounded-full bg-[#0C5C3C] flex items-center justify-center shadow-2xl shadow-[#0C5C3C]/40 border-2 border-[#0C5C3C]">
+        <div className="absolute w-64 h-64 rounded-full border-2 border-orange-500/30 animate-pulse" />
+        <div className="absolute w-44 h-44 rounded-full bg-orange-500/10" />
+        <div className="relative w-32 h-32 rounded-full bg-orange-500 flex items-center justify-center shadow-2xl shadow-orange-500/40 border-2 border-orange-500">
           <Network className="w-14 h-14 text-white" strokeWidth={1.5} />
         </div>
         <div className="absolute top-4 right-8 bg-card border border-border rounded-xl px-3 py-1.5 shadow-lg flex items-center gap-2">
-          <Cpu className="w-3.5 h-3.5 text-[#0C5C3C]" />
-          <span className="text-xs font-semibold text-[#0C5C3C]">MCP Protocol</span>
+          <Cpu className="w-3.5 h-3.5 text-orange-500" />
+          <span className="text-xs font-semibold text-orange-500">MCP Protocol</span>
         </div>
         <div className="absolute bottom-8 left-4 bg-card border border-border rounded-xl px-3 py-2 shadow-lg text-center">
           <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider block">Unified Context</span>
@@ -393,8 +395,7 @@ export default function MeetLandingPage() {
       if (type === 'instant') {
         navigate(`/join/${targetRoomName}`);
       } else {
-        const { protocol, hostname, port } = window.location;
-        setLaterLink(`${protocol}//${hostname}${port ? ':' + port : ''}/join/${targetRoomName}`);
+        setLaterLink(formatMeetingUrl(targetRoomName));
         setIsDialogOpen(true);
       }
     } catch (err) {
@@ -435,65 +436,9 @@ export default function MeetLandingPage() {
         description="Weftro V3 helps companies search connected knowledge sources, discover relevant information, retrieve evidence-grounded answers, and connect company knowledge with compatible applications and AI systems." 
         type="website"
       />
-      <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur-md shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
-          {/* Brand Logo */}
-          <div className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            <CliPadLogo height={32} />
-          </div>
-          
-          {/* Desktop Nav - Centered Executive Navigation */}
-          <nav className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary/60 border border-border/80 shadow-inner">
-            <a 
-              href="#features" 
-              className="px-4 py-1.5 text-xs font-semibold tracking-wide text-foreground/80 hover:text-foreground hover:bg-background/80 rounded-full transition-all duration-150"
-            >
-              Features
-            </a>
-            <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
-            <a 
-              href="#pricing" 
-              className="px-4 py-1.5 text-xs font-semibold tracking-wide text-foreground/80 hover:text-foreground hover:bg-background/80 rounded-full transition-all duration-150"
-            >
-              Pricing
-            </a>
-            <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
-            <a 
-              href="/about" 
-              className="px-4 py-1.5 text-xs font-semibold tracking-wide text-foreground/80 hover:text-foreground hover:bg-background/80 rounded-full transition-all duration-150"
-            >
-              About
-            </a>
-            <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
-            <button 
-              onClick={() => {
-                setSupportPanel('chat');
-              }}
-              className="px-4 py-1.5 text-xs font-semibold tracking-wide text-foreground/80 hover:text-foreground hover:bg-background/80 rounded-full transition-all duration-150 cursor-pointer"
-            >
-              Support
-            </button>
-          </nav>
-          
-          {/* Right Action Items */}
-          <div className="flex items-center gap-3 shrink-0">
-            <LanguageSwitcher className="h-9 w-[130px] rounded-xl border border-border bg-background hover:bg-secondary text-foreground text-xs font-medium" />
-            {user ? (
-              <Button onClick={() => navigate('/dashboard')} className="rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold px-4 h-9 shadow-sm">
-                <Layers className="w-4 h-4 mr-1.5" /> Dashboard
-              </Button>
-            ) : (
-              <Button onClick={() => navigate('/login')} variant="outline" className="rounded-xl border-border bg-background hover:bg-secondary text-foreground text-xs font-semibold px-4 h-9">
-                Sign In
-              </Button>
-            )}
-          </div>
-        </div>
-      </header>
+      <MarketingHeader onOpenSupport={(type) => setSupportPanel(type || 'chat')} />
 
-
-
-      <main className="relative z-10 flex-1 flex flex-col md:flex-row items-center justify-center p-6 md:p-12 gap-12 md:gap-16 max-w-7xl mx-auto w-full">
+      <main className="relative z-10 flex-1 flex flex-col md:flex-row items-center justify-center pt-24 pb-6 px-6 md:pt-28 md:pb-12 md:px-12 gap-12 md:gap-16 max-w-7xl mx-auto w-full">
         <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left space-y-6 max-w-xl">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-normal text-foreground leading-[1.12] tracking-tight">
             The AI memory and intelligence layer for your entire company.

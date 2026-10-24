@@ -4,6 +4,7 @@ import SEO from '@/components/seo/SEO';
 import { Button } from '@/components/ui/button';
 import { Shield, Lock, Key, Users, CheckCircle, Database } from 'lucide-react';
 import { CliPadLogo } from '@/components/ui/CliPadLogo';
+import MarketingHeader from '@/components/clipad/MarketingHeader';
 
 export default function SecurityPage() {
   const navigate = useNavigate();
@@ -18,16 +19,9 @@ export default function SecurityPage() {
         description="Bank-grade multi-tenant security, end-to-end encryption, and rigorous access controls protecting your connected company knowledge in Weftro V3." 
         url="https://weftro.com/security" 
       />
-      <header className="sticky top-0 z-50 bg-background/85 backdrop-blur-md border-b border-border">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center cursor-pointer" onClick={() => navigate('/')}>
-            <CliPadLogo height={32} />
-          </div>
-          <Button onClick={() => navigate('/login')} className="bg-[#fad503] text-[#0B1418] hover:bg-yellow-400 font-bold rounded-full">Sign In</Button>
-        </div>
-      </header>
+      <MarketingHeader />
 
-      <main className="max-w-7xl mx-auto px-6 py-24">
+      <main className="max-w-7xl mx-auto px-6 pt-28 pb-24">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary border border-border mb-6">
             <span className="text-[11px] font-bold text-[#fad503] uppercase tracking-widest">Enterprise Trust & Security</span>

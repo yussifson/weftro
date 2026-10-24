@@ -5,6 +5,7 @@ import { trackEvent } from '@/lib/posthog';
 import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
 import { CliPadLogo } from '@/components/ui/CliPadLogo';
+import MarketingHeader from '@/components/clipad/MarketingHeader';
 
 const plans = [
   {
@@ -50,21 +51,7 @@ export default function PricingPage() {
       />
       
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-background/85 backdrop-blur-md border-b border-border">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center cursor-pointer" onClick={() => navigate('/')}>
-            <CliPadLogo height={32} />
-          </div>
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" onClick={() => navigate('/login')} className="text-muted-foreground font-semibold hover:text-foreground">
-              Sign In
-            </Button>
-            <Button onClick={() => navigate('/signup')} className="bg-[#fad503] text-[#0B1418] hover:bg-yellow-400 rounded-full font-bold">
-              Get Started Free
-            </Button>
-          </div>
-        </div>
-      </header>
+      <MarketingHeader />
 
       <main className="max-w-7xl mx-auto px-6 py-24">
         {/* Hero */}

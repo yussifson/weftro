@@ -8,7 +8,7 @@ export default function WithCliPadSection() {
     <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto overflow-hidden relative">
       {/* Ambient background glows for corporate unity */}
       <div className="absolute top-1/2 left-0 w-96 h-96 bg-primary/10 rounded-full blur-[120px] pointer-events-none -translate-y-1/2" />
-      <div className="absolute top-1/2 right-0 w-96 h-96 bg-[#D9A400]/5 rounded-full blur-[120px] pointer-events-none -translate-y-1/2" />
+      <div className="absolute top-1/2 right-0 w-96 h-96 bg-[#f97316]/5 rounded-full blur-[120px] pointer-events-none -translate-y-1/2" />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
         
@@ -43,7 +43,7 @@ export default function WithCliPadSection() {
             />
             <motion.path 
               d="M 440 250 C 360 250, 310 250, 250 250" 
-              stroke="#D9A400" strokeWidth="2.5" fill="transparent" strokeDasharray="4,4"
+              stroke="#f97316" strokeWidth="2.5" fill="transparent" strokeDasharray="4,4"
               animate={{ strokeDashoffset: [0, 20] }} transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
             />
             <motion.path 
@@ -86,9 +86,9 @@ export default function WithCliPadSection() {
           {/* Bottom Right: Decision Ledger */}
           <motion.div 
             animate={{ y: [0, 5, 0] }} transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
-            className="absolute bottom-16 right-20 w-14 h-14 bg-card rounded-2xl border border-[#D9A400]/30 flex items-center justify-center shadow-lg shadow-[#D9A400]/10 z-10"
+            className="absolute bottom-16 right-20 w-14 h-14 bg-card rounded-2xl border border-[#f97316]/30 flex items-center justify-center shadow-lg shadow-[#f97316]/10 z-10"
           >
-            <Database className="w-5 h-5 text-[#D9A400]" />
+            <Database className="w-5 h-5 text-[#f97316]" />
           </motion.div>
 
           {/* Right Floating Badge: Unified Knowledge Record */}
