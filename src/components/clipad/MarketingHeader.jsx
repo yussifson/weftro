@@ -30,7 +30,6 @@ export default function MarketingHeader({ onOpenSupport }) {
   const navItems = [
     { label: 'Features', action: () => scrollToSection('features') },
     { label: 'Pricing', action: () => scrollToSection('pricing') },
-    { label: 'About', action: () => { setMobileOpen(false); navigate('/about'); } },
   ];
 
   return (
