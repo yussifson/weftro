@@ -119,37 +119,64 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        background: #ffffff;
+        background: #0B1418;
         z-index: 999999;
-        color: #0f172a;
+        color: #ffffff;
+        overflow: hidden;
       }
-      html.dark .app-preloader { background: #0B0F14; color: #ffffff; }
-      html.dark .app-preloader-text { color: #94a3b8; }
+      .app-preloader-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 36px 44px;
+        background: rgba(16, 29, 34, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 24px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+      }
       .app-preloader-logo {
-        width: 64px;
-        height: 64px;
-        margin-bottom: 24px;
+        height: 44px;
+        width: auto;
+        margin-bottom: 22px;
         object-fit: contain;
-        animation: logoBreathe 2.5s ease-in-out infinite;
+        animation: logoPulse 2.4s ease-in-out infinite;
       }
       .app-preloader-spinner {
+        position: relative;
         width: 32px;
         height: 32px;
-        border: 2px solid rgba(0, 96, 101, 0.15); /* very light teal */
-        border-radius: 50%;
-        border-top-color: #006065; /* Weftro teal */
-        animation: spin 1s linear infinite;
         margin-bottom: 16px;
       }
-      .app-preloader-text {
-        font-size: 12px;
-        font-weight: 500;
-        color: #71717a;
-        letter-spacing: 0.04em;
+      .app-preloader-spinner::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        border: 2.5px solid rgba(12, 92, 60, 0.2);
       }
-      @keyframes logoBreathe {
-        0%, 100% { opacity: 0.9; transform: scale(1); }
-        50% { opacity: 1; transform: scale(1.05); }
+      .app-preloader-spinner::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        border: 2.5px solid transparent;
+        border-top-color: #10B981;
+        border-right-color: #0C5C3C;
+        animation: spin 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      }
+      .app-preloader-text {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: #94a3b8;
+      }
+      @keyframes logoPulse {
+        0%, 100% { opacity: 0.85; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.04); }
       }
       @keyframes spin {
         0% { transform: rotate(0deg); }
@@ -198,9 +225,11 @@
     <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     <div id="root">
       <div class="app-preloader">
-        <img src="/clipad-logo.svg" alt="Weftro" class="app-preloader-logo" id="dynamic-preloader-logo" />
-        <div class="app-preloader-spinner"></div>
-        <div class="app-preloader-text">Loading Weftro...</div>
+        <div class="app-preloader-card">
+          <img src="/clipad-logo.svg" alt="Weftro" class="app-preloader-logo" id="dynamic-preloader-logo" />
+          <div class="app-preloader-spinner"></div>
+          <div class="app-preloader-text">Loading Weftro...</div>
+        </div>
       </div>
     </div>
     <script>
