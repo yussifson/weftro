@@ -2,6 +2,48 @@
 -- Phase 4 Security Hardening for Weftro V3 Meetings
 -- Migration: 20261025140000_secure_video_rooms_tenant_isolation.sql
 
+-- 0. Ensure tenant helper functions exist if not previously installed
+CREATE OR REPLACE FUNCTION public.get_auth_company_id()
+RETURNS text
+LANGUAGE sql STABLE SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT COALESCE(
+    company_id::text,
+    (SELECT raw_app_meta_data->>'company_id' FROM auth.users WHERE id = auth.uid()),
+    (auth.jwt() -> 'user_metadata' ->> 'company_id')
+  )
+  FROM public.profiles WHERE id = auth.uid() LIMIT 1;
+$$;
+
+CREATE OR REPLACE FUNCTION public.is_super_admin()
+RETURNS boolean
+LANGUAGE sql STABLE SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role IN ('super_admin', 'owner')
+  );
+$$;
+
+CREATE OR REPLACE FUNCTION public.user_has_space_access(check_space_id UUID)
+RETURNS boolean
+LANGUAGE sql STABLE SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT (
+    check_space_id IS NOT NULL AND EXISTS (
+      SELECT 1 FROM public.clipad_spaces s
+      WHERE s.id = check_space_id
+        AND (
+          s.company_id::text = public.get_auth_company_id()
+          OR s.created_by = auth.uid()
+          OR public.is_super_admin()
+        )
+    )
+  );
+$$;
+
 -- 1. Ensure columns exist on public.video_rooms for multi-tenant isolation and privacy enforcement
 ALTER TABLE public.video_rooms 
   ADD COLUMN IF NOT EXISTS privacy_type TEXT DEFAULT 'public' CHECK (privacy_type IN ('public', 'private')),
