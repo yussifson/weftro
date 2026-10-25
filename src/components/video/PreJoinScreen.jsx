@@ -112,7 +112,8 @@ export default function PreJoinScreen({ roomName, onJoin, defaultName = 'Guest',
 
   // Fix #15: Audio Visualizer — deterministic heights, no Math.random() in render loop
   useEffect(() => {
-    if (!localStream || !isMicOn) {
+    const audioTracks = localStream ? localStream.getAudioTracks() : [];
+    if (!localStream || !isMicOn || audioTracks.length === 0 || audioTracks[0].readyState !== 'live') {
       setBarHeights([20, 20, 20, 20, 20]);
       return;
     }

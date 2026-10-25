@@ -333,7 +333,8 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
      }
    }).catch(e => console.warn('updateSendSettings failed:', e));
    // Only attempt cloud transcription — silent failure is fine if not enabled
-   if (typeof daily?.startTranscription === 'function') {
+   const local = daily?.participants()?.local;
+   if (local?.owner && typeof daily?.startTranscription === 'function') {
       try {
         const tr = daily.startTranscription();
         if (tr && typeof tr.catch === 'function') tr.catch(() => {});
