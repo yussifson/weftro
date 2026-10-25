@@ -163,7 +163,24 @@ export default function SpaceDashboard() {
   const [privacyType, setPrivacyType] = useState('private');
   const { toast } = useToast();
 
-  useEffect(() => { if (spaceId) fetchAll(); }, [spaceId]);
+  useEffect(() => { 
+    if (!spaceId) return;
+    fetchAll();
+
+    // Supabase Realtime subscription: dynamically update live meeting indicator
+    const channel = supabase.channel(`space-live-meeting-${spaceId}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'video_rooms' }, () => {
+        fetchAll();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'clipad_spaces', filter: `id=eq.${spaceId}` }, () => {
+        fetchAll();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [spaceId]);
 
   useEffect(() => {
     const tab = searchParams.get('tab');
@@ -346,6 +363,7 @@ export default function SpaceDashboard() {
           privacy_type: privacyType || 'public',
           host_id: user?.id || null,
           status: 'active',
+          space_id: spaceId,
           meeting_type: 'instant'
         });
       } catch (_) { /* db insert failed — meeting still works */ }

@@ -17,7 +17,7 @@ import {
  useActiveSpeakerId,
  useWaitingParticipants
 } from '@daily-co/daily-react';
-import { Home, ArrowLeft, Mic, MicOff, Video as VideoIcon, VideoOff, PhoneOff, MonitorUp, Sparkles, ExternalLink, MessageSquare, Send, UserPlus, Mail, Settings, Smile, PanelRightClose, PenTool, MoreHorizontal, Wifi, WifiOff, Users, Shield, Lock, Copy, Check, Sun, Moon } from 'lucide-react';
+import { Home, ArrowLeft, Mic, MicOff, Video as VideoIcon, VideoOff, PhoneOff, MonitorUp, Sparkles, ExternalLink, MessageSquare, Send, UserPlus, Mail, Settings, Smile, PanelRightClose, PenTool, MoreHorizontal, Wifi, WifiOff, Users, Shield, Lock, Copy, Check, Sun, Moon, Captions, CaptionsOff } from 'lucide-react';
 import { Button} from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -154,6 +154,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
  const [isAiLoading, setIsAiLoading] = useState(false);
  const [aiResponse, setAiResponse] = useState(null);
  const [transcriptData, setTranscriptData] = useState([]);
+  const [showCaptions, setShowCaptions] = useState(false);
  const transcriptDataRef = useRef([]);
  const [showSettings, setShowSettings] = useState(false);
  const [showInvite, setShowInvite] = useState(false);
@@ -1221,6 +1222,20 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           <UserPlus className="w-5 h-5" />
         </button>
 
+        {/* Live Captions Toggle */}
+        <button
+          onClick={() => setShowCaptions(!showCaptions)}
+          className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
+            showCaptions
+              ? 'bg-[#00828a] text-white shadow-sm'
+              : 'bg-slate-100 hover:bg-slate-200 dark:bg-[#15262D] dark:hover:bg-[#1C333C] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#1A2F38]'
+          }`}
+          title={showCaptions ? "Turn off captions" : "Turn on captions"}
+          aria-label={showCaptions ? "Turn off captions" : "Turn on captions"}
+        >
+          {showCaptions ? <Captions className="w-5 h-5 text-white" /> : <CaptionsOff className="w-5 h-5" />}
+        </button>
+
         {/* AI Summary */}
         <button
           onClick={handleAiAssist}
@@ -1295,8 +1310,18 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
         )}
       </div>
 
-      {/* Right: Premium Google Meet Style Copy Link Button */}
+      {/* Right: Host End Meeting & Copy Link Button */}
       <div className="flex items-center gap-3">
+        {isHost && (
+          <button
+            onClick={() => setShowLeaveModal(true)}
+            className="h-9 px-3.5 rounded-full text-xs font-bold flex items-center gap-1.5 transition-all bg-rose-600 hover:bg-rose-700 text-white shadow-md shadow-rose-600/20 active:scale-95"
+            title="End meeting for all participants"
+          >
+            <PhoneOff className="w-3.5 h-3.5 text-white" />
+            <span className="hidden sm:inline">End Meeting</span>
+          </button>
+        )}
         <button
           onClick={handleCopyLink}
           className={`h-9 px-4 rounded-full text-xs font-bold flex items-center gap-2 transition-all shadow-md active:scale-95 ${
@@ -1398,9 +1423,9 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           ) : null}
         </div>
         {/* Participant Sidebar — always visible, even in 2-person calls */}
-        <div className="w-full lg:w-auto lg:max-w-[320px] flex flex-row lg:flex-col gap-2 sm:gap-3 overflow-x-auto lg:overflow-y-auto shrink-0 h-28 sm:h-36 lg:h-auto items-center lg:items-stretch content-start scrollbar-thin scrollbar-thumb-[#28313b] py-1">
+        <div className="flex-1 lg:max-w-[320px] flex flex-row lg:flex-col gap-3 overflow-x-auto lg:overflow-y-auto min-h-[140px] lg:min-h-0 max-h-full items-center lg:items-stretch content-start scrollbar-thin scrollbar-thumb-[#28313b] py-1 lg:py-0">
           {sidebarParticipants.map(id => (
-            <ParticipantTile key={id} id={id} isLocal={id === localSessionId} activeSpeakerId={activeSpeakerId} className="w-40 sm:w-64 min-w-[10rem] sm:min-w-[16rem] lg:w-full lg:min-w-0 shrink-0 m-0 h-full lg:h-auto" />
+            <ParticipantTile key={id} id={id} isLocal={id === localSessionId} activeSpeakerId={activeSpeakerId} className="w-64 min-w-[16rem] lg:w-full lg:min-w-0 shrink-0 m-0" />
           ))}
           {/* Always show local self-view when we're the only person on screen */}
           {totalCount === 1 && mainSpeakerId === localSessionId && (
@@ -1417,12 +1442,12 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
         </div>
 
         {/* Live Captions Overlay */}
-        {transcriptData.length > 0 && (
-          <div className="absolute bottom-24 left-1/2 -translate-x-1/2 w-full max-w-xl z-30 pointer-events-none flex flex-col items-center gap-2 px-4">
+        {showCaptions && transcriptData.length > 0 && (
+          <div className="absolute bottom-20 left-1/2 -translate-x-1/2 w-full max-w-2xl z-30 pointer-events-none flex flex-col items-center gap-2 px-4">
             {transcriptData.slice(-2).map((cap, idx) => (
-              <div key={idx} className="bg-black/40 backdrop-blur-sm text-white px-4 py-2 rounded-xl shadow-lg text-center animate-in slide-in-from-bottom-2 fade-in max-w-full">
-                <span className="font-semibold text-primary mr-2 text-sm drop-shadow-md">{cap.name}:</span>
-                <span className="text-base font-medium tracking-wide drop-shadow-md">{cap.text}</span>
+              <div key={idx} className="bg-slate-900/90 dark:bg-black/85 backdrop-blur-md text-white px-4 py-2.5 rounded-xl shadow-2xl border border-white/10 text-center animate-in slide-in-from-bottom-2 fade-in max-w-full">
+                <span className="font-semibold text-emerald-400 mr-2 text-xs uppercase tracking-wider">{cap.name}:</span>
+                <span className="text-sm font-medium tracking-normal text-slate-100">{cap.text}</span>
               </div>
             ))}
           </div>
@@ -1576,6 +1601,20 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
       {chatMessages.length > 0 && !showChat && (
         <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-emerald-400" />
       )}
+    </button>
+
+    {/* Captions (CC) */}
+    <button
+      onClick={() => setShowCaptions(!showCaptions)}
+      className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${
+        showCaptions
+          ? 'bg-[#00828a] text-white'
+          : 'bg-slate-100 dark:bg-[#15262D] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#1A2F38]'
+      }`}
+      title={showCaptions ? "Turn off captions" : "Turn on captions"}
+      aria-label="Captions"
+    >
+      {showCaptions ? <Captions className="w-5 h-5 text-white" /> : <CaptionsOff className="w-5 h-5" />}
     </button>
 
     {/* Settings */}
@@ -1990,6 +2029,45 @@ export default function VideoRoom({ roomUrl, userName, token, initialAudio = tru
       setProvisioningState('resolving');
       setProvisioningError(null);
       try {
+        // Enforce private meeting & space access gate
+        try {
+          const { data: dbRoom } = await supabase
+            .from('video_rooms')
+            .select('id, space_id, company_id, host_id, privacy_type')
+            .eq('daily_room_name', cleanRoomId)
+            .maybeSingle();
+
+          if (dbRoom) {
+            const isPrivate = dbRoom.privacy_type === 'private';
+            const isHostUser = Boolean(user?.id && dbRoom.host_id === user.id);
+            const isCompanyAdmin = user?.role === 'admin' || user?.role === 'super_admin';
+
+            if (isPrivate && !isHostUser && !isCompanyAdmin) {
+              if (dbRoom.space_id) {
+                // Must be authenticated and a registered member of this space
+                if (!user?.id) {
+                  setProvisioningState('error');
+                  setProvisioningError('This is a private space meeting. Please log in with an authorized space member account.');
+                  return;
+                }
+                const { data: membership } = await supabase
+                  .from('clipad_space_members')
+                  .select('id')
+                  .eq('space_id', dbRoom.space_id)
+                  .eq('user_id', user.id)
+                  .maybeSingle();
+
+                if (!membership) {
+                  setProvisioningState('error');
+                  setProvisioningError('Access Denied: This meeting is private to members of this space.');
+                  return;
+                }
+              }
+            }
+          }
+        } catch (gateErr) {
+          console.warn('Privacy gate check warning:', gateErr);
+        }
         // Guarantee room exists on Daily.co by invoking create-daily-room (authoritative backend)
         const { data: fnData, error: fnError } = await supabase.functions.invoke('create-daily-room', {
           body: { 

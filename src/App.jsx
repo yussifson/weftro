@@ -182,7 +182,7 @@ function App() {
               </ImpersonationProvider>
             <Toaster />
             <SonnerToaster />
-            <HotToaster position="top-center" toastOptions={{ duration: 2500 }} />
+            <HotToaster position="bottom-left" toastOptions={{ duration: 2500 }} />
           </PowerSyncContext.Provider>
         </QueryClientProvider>
       </HelmetProvider>
