@@ -28,15 +28,20 @@ export const getMeetingOrigin = () => {
  */
 export const formatMeetingUrl = (roomName, options = {}) => {
   if (!roomName) return '';
-  // Strip any accidental leading/trailing slashes or duplicate /join/ segments
+  // Strip any accidental leading/trailing slashes, domain, prefix, or duplicate /join/ segments
   const cleanName = String(roomName)
     .replace(/^https?:\/\/[^/]+/i, '')
     .replace(/^\/?join\//i, '')
+    .replace(/^optavel\//i, '')
+    .replace(/^optalflow\//i, '')
     .replace(/^\/+|\/+$/g, '')
     .split('?')[0];
 
+  if (!cleanName) return '';
+
   const origin = getMeetingOrigin();
-  const url = `${origin}/join/${cleanName}`;
+  const encodedName = encodeURIComponent(cleanName);
+  const url = `${origin}/join/${encodedName}`;
   if (options.spaceId) {
     return `${url}?spaceId=${encodeURIComponent(options.spaceId)}`;
   }

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { VIRTUAL_BACKGROUNDS } from './VideoRoom';
 
-export default function PreJoinScreen({ roomName, onJoin, defaultName = 'Guest' }) {
+export default function PreJoinScreen({ roomName, onJoin, defaultName = 'Guest', onLeave }) {
   const [isMicOn, setIsMicOn] = useState(true);
   const [isVideoOn, setIsVideoOn] = useState(true);
   const [error, setError] = useState(null);
@@ -319,6 +319,14 @@ export default function PreJoinScreen({ roomName, onJoin, defaultName = 'Guest' 
       {/* Right Side: Join Form */}
       <div className="relative z-10 flex-1 flex flex-col items-center md:items-start text-center md:text-left justify-center w-full max-w-md bg-transparent p-6 md:p-10 space-y-8">
         <div>
+          <button
+            type="button"
+            onClick={() => onLeave ? onLeave(null) : navigate("/meetings")}
+            className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 mb-3 transition-colors cursor-pointer"
+            aria-label="Return to meetings"
+          >
+            &larr; Back to Meetings
+          </button>
           <h1 className="text-[2rem] font-medium text-slate-900 dark:text-foreground tracking-tight leading-tight">Ready to join?</h1>
           <p className="text-slate-500 dark:text-muted-foreground mt-1 text-base">{roomName || 'Secure Meeting'}</p>
         </div>
@@ -333,7 +341,7 @@ export default function PreJoinScreen({ roomName, onJoin, defaultName = 'Guest' 
             className="w-full py-6 text-lg rounded-full font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all"
             onClick={handleJoinClick}
           >
-            Ask to join
+            Join Meeting
           </Button>
 
           <Button

@@ -184,7 +184,7 @@ class SupabaseConnector {
               
               // Cast text id to UUID for tables that use UUID primary keys
               if (op.table === 'invoices' && payload.id && typeof payload.id === 'string') {
-                try { payload.id = payload.id; } catch(e) { /* keep as-is */ }
+                payload.id = String(payload.id).trim();
               }
               
               if (op.table === 'companies') {

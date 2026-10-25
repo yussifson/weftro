@@ -21,7 +21,14 @@ serve(async (req) => {
   }
 
   try {
-    const { roomName, privacy, companyId, dbId, max_participants } = await req.json()
+    const { 
+      roomName, 
+      privacy, 
+      companyId, 
+      dbId, 
+      max_participants,
+      action = 'create' // 'create' | 'token'
+    } = await req.json()
 
     if (!DAILY_API_KEY) {
       throw new Error('DAILY_API_KEY is missing')
@@ -54,6 +61,90 @@ serve(async (req) => {
       }
     }
 
+    // Workstream B: Meeting Access Token Issuance ('token' action)
+    if (action === 'token') {
+      if (!roomName || !isValidDailyRoomName(roomName)) {
+        return new Response(JSON.stringify({ error: 'Valid roomName is required for token issuance' }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400,
+        })
+      }
+
+      // Check room metadata in video_rooms to verify tenant boundary, privacy, and host status
+      let roomRecord = null
+      if (supabaseUrl && supabaseServiceKey) {
+        const adminDb = createClient(supabaseUrl, supabaseServiceKey)
+        const { data: dbRoom } = await adminDb
+          .from('video_rooms')
+          .select('id, company_id, host_id, privacy_type, status')
+          .eq('daily_room_name', roomName)
+          .maybeSingle()
+        roomRecord = dbRoom
+      }
+
+      const isHost = Boolean(callerUser && roomRecord?.host_id && callerUser.id === roomRecord.host_id)
+      const isPrivateRoom = roomRecord?.privacy_type === 'private' || privacy === 'private'
+
+      // Tenant / Organization isolation check:
+      // If room is attached to a company and marked private, caller must be authenticated and belong to the same company
+      if (roomRecord?.company_id && isPrivateRoom) {
+        if (!callerUser) {
+          return new Response(JSON.stringify({ error: 'Unauthorized: Authentication required for this organization meeting' }), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 401,
+          })
+        }
+        const isSuperAdmin = callerProfile?.role === 'super_admin'
+        const isSameCompany = String(callerProfile?.company_id) === String(roomRecord.company_id)
+        if (!isSuperAdmin && !isSameCompany) {
+          return new Response(JSON.stringify({ error: 'Forbidden: You do not have access to this organization meeting' }), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 403,
+          })
+        }
+      }
+
+      // Token duration: 4 hours (14400s) for normal participants, host token bound strictly
+      const tokenExp = Math.round(Date.now() / 1000) + 14400
+
+      const meetingTokenPayload: Record<string, unknown> = {
+        properties: {
+          room_name: roomName,
+          is_owner: isHost, // Least privilege: Only authenticated host receives is_owner=true
+          exp: tokenExp,
+          enable_screenshare: true,
+          user_id: callerUser?.id || undefined,
+          user_name: callerProfile?.full_name || callerUser?.email?.split('@')[0] || undefined
+        }
+      }
+
+      const tokenRes = await fetch('https://api.daily.co/v1/meeting-tokens', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${DAILY_API_KEY}`,
+        },
+        body: JSON.stringify(meetingTokenPayload),
+      })
+
+      const tokenData = await tokenRes.json()
+      if (tokenData.error) {
+        console.error('Daily meeting-token error:', tokenData.error, tokenData.info)
+        throw new Error(tokenData.info || tokenData.error || 'Failed to issue meeting token')
+      }
+
+      return new Response(JSON.stringify({ 
+        token: tokenData.token, 
+        is_owner: isHost,
+        room_name: roomName,
+        exp: tokenExp
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      })
+    }
+
+    // Workstream A: Room Provisioning ('create' action)
     // Security Gate: If companyId is targeted or room is private, enforce strict auth and company membership
     if (companyId || privacy === 'private') {
       if (!callerUser) {
@@ -120,7 +211,11 @@ serve(async (req) => {
         });
         const existingRoom = await getRes.json();
         if (existingRoom && existingRoom.name) {
-          return new Response(JSON.stringify({ url: existingRoom.url, name: existingRoom.name }), {
+          return new Response(JSON.stringify({ 
+            url: existingRoom.url, 
+            name: existingRoom.name,
+            privacy: existingRoom.privacy || 'public'
+          }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             status: 200,
           });
@@ -130,9 +225,6 @@ serve(async (req) => {
     }
 
     // Bypass offline mode and insert directly into Supabase using Service Role Key
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
-
     if (supabaseUrl && supabaseServiceKey) {
       const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
@@ -145,6 +237,7 @@ serve(async (req) => {
         title: 'Meeting Room',
         daily_room_url: room.url,
         daily_room_name: room.name,
+        host_id: callerUser?.id || null,
         status: 'active',
         privacy_type: privacy === 'private' ? 'private' : 'public',
         created_at: new Date().toISOString()
@@ -159,12 +252,16 @@ serve(async (req) => {
       }
     }
 
-    return new Response(JSON.stringify({ url: room.url, name: room.name }), {
+    return new Response(JSON.stringify({ 
+      url: room.url, 
+      name: room.name,
+      privacy: privacy === 'private' ? 'private' : 'public'
+    }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
     })
   } catch (error) {
-    console.error('Error creating Daily room:', error)
+    console.error('Error in create-daily-room:', error)
     return new Response(JSON.stringify({ error: error.message }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 400,

@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import DailyIframe from '@daily-co/daily-js';
+import ParticipantRoster from './ParticipantRoster';
+import PreJoinScreen from './PreJoinScreen';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation} from "react-i18next";
 import { 
@@ -17,7 +19,7 @@ import {
 } from '@daily-co/daily-react';
 import { Home, ArrowLeft, Mic, MicOff, Video as VideoIcon, VideoOff, PhoneOff, MonitorUp, Sparkles, ExternalLink, MessageSquare, Send, UserPlus, Mail, Settings, Smile, PanelRightClose, PenTool, MoreHorizontal, Wifi, WifiOff, Users, Shield, Lock, Copy, Check, Sun, Moon } from 'lucide-react';
 import { Button} from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { detectDecisions, detectCommitments, writeOrgEvent } from '@/lib/clipadIntelligence';
 import { useToast} from "@/components/ui/use-toast";
@@ -26,9 +28,11 @@ import ClipadLoader from "@/components/ui/ClipadLoader";
 import { useTheme } from "@/lib/ThemeContext";
 import CanvasWhiteboard from '@/components/clipad/CanvasWhiteboard';
 import { CliPadLogo } from '@/components/ui/CliPadLogo';
+import { formatMeetingUrl } from '@/utils/meetingUrl';
 import { supabase } from '@/api/supabaseClient';
 import { OmniNotificationService } from '@/services/OmniNotificationService';
 import { logAuditEvent } from '@/lib/auditLogger';
+import { MeetingTelemetry } from '@/services/MeetingTelemetry';
 import { useAuth } from '@/lib/AuthContext';
 import { hasFeature, getLimit } from '@/lib/clipadPricing';
 import { useCompanyPlan } from '@/hooks/useCompanyPlan';
@@ -78,6 +82,69 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
  // Fix #4: Use both state AND direct Daily meetingState() check to eliminate race conditions.
  // The ref ensures ensureJoined() always sees the latest value without stale closures.
  const [joined, setJoined] = useState(daily ? daily.meetingState() === 'joined-meeting' : false);
+  const [isHost, setIsHost] = useState(false);
+  const [showLeaveModal, setShowLeaveModal] = useState(false);
+
+  const [roomHostId, setRoomHostId] = useState(null);
+
+  // Authoritative host verification & Realtime meeting status observer
+  useEffect(() => {
+    let active = true;
+    const targetRoomName = roomUrl ? decodeURIComponent(roomUrl.split('/').pop().split('?')[0]) : '';
+    if (!targetRoomName) return;
+
+    const checkHostAndStatus = async () => {
+      try {
+        const { data: dbRoom } = await supabase
+          .from('video_rooms')
+          .select('id, host_id, status')
+          .eq('daily_room_name', targetRoomName)
+          .maybeSingle();
+        if (active && dbRoom) {
+          setRoomHostId(dbRoom.host_id || null);
+          if (user?.id) {
+            setIsHost(dbRoom.host_id === user.id);
+          }
+          // If meeting is already marked ended in DB upon arrival
+          if (dbRoom.status === 'ended') {
+            toast({ title: 'Meeting Ended', description: 'This meeting has ended.' });
+            try { if (daily) daily.leave(); } catch (_) {}
+            if (onLeave) onLeave(null);
+            else navigate(spaceId ? `/spaces/${spaceId}` : '/meetings');
+          }
+        }
+      } catch (_) {}
+    };
+
+    checkHostAndStatus();
+
+    // SEC-02: Listen for authoritative server-side room status updates via Supabase Realtime
+    const roomChannel = supabase
+      .channel(`video-room-${targetRoomName}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'video_rooms',
+          filter: `daily_room_name=eq.${targetRoomName}`
+        },
+        (payload) => {
+          if (payload.new && payload.new.status === 'ended') {
+            toast({ title: 'Meeting Ended', description: 'The host has ended the meeting for all participants.' });
+            try { if (daily) daily.leave(); } catch (_) {}
+            if (onLeave) onLeave(null);
+            else navigate(spaceId ? `/spaces/${spaceId}` : '/meetings');
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      active = false;
+      supabase.removeChannel(roomChannel);
+    };
+  }, [roomUrl, user?.id, spaceId, navigate, onLeave]);
  const joinedRef = useRef(joined);
  useEffect(() => { joinedRef.current = joined; }, [joined]);
 
@@ -98,8 +165,18 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
   // Preserves active theme from ThemeContext / system settings
  const [showEmojis, setShowEmojis] = useState(false);
  const [floatingEmojis, setFloatingEmojis] = useState([]);
-  // Fix #3: Network reconnection state
+  // Fix #3 & Workstream D: Network reconnection and recovery state
   const [isReconnecting, setIsReconnecting] = useState(false);
+  const [connectionState, setConnectionState] = useState('connected'); // 'connecting' | 'connected' | 'reconnecting' | 'recovered' | 'failed'
+  const [reconnectAttempts, setReconnectAttempts] = useState(0);
+  const retryBackoffTimerRef = useRef(null);
+  const [reconnectError, setReconnectError] = useState(null);
+  const reconnectTimeoutRef = useRef(null);
+  useEffect(() => {
+    return () => {
+      if (reconnectTimeoutRef.current) clearTimeout(reconnectTimeoutRef.current);
+    };
+  }, []);
   // Add: Connection quality indicator ('good' | 'low' | 'very-low')
   const [networkQuality, setNetworkQuality] = useState('good');
   // Fix #18: Single AudioContext ref — reuse across join/leave sounds
@@ -197,7 +274,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
   };
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(window.location.origin + '/join/' + roomUrl.split('/').pop().split('?')[0]);
+    navigator.clipboard.writeText(formatMeetingUrl(roomUrl.split('/').pop().split('?')[0]));
     setCopiedLink(true);
     toast({ title: "Link Copied", description: "Meeting link copied to clipboard." });
     setTimeout(() => setCopiedLink(false), 2000);
@@ -208,7 +285,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
     if (!inviteEmail.trim()) return;
     setIsInviteLoading(true);
     
-    const properLink = window.location.origin + '/join/' + roomUrl.split('/').pop().split('?')[0];
+    const properLink = formatMeetingUrl(roomUrl.split('/').pop().split('?')[0]);
     const hostDisplayName = user?.full_name || user?.email || 'A team member';
 
     try {
@@ -355,17 +432,73 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
     variant: 'destructive'
   });
  }, [toast]));
-
- // Fix #3: Listen for network interruptions and show a reconnecting overlay
+ // Workstream D & Phase 5: Resilient reconnection, media recovery & telemetry
  useDailyEvent('network-connection', useCallback((ev) => {
    if (ev.event === 'interrupted') {
      setIsReconnecting(true);
-     toast({ title: '⚠️ï¸ Connection Lost', description: 'Attempting to reconnect…', variant: 'destructive' });
+     setConnectionState('reconnecting');
+     setReconnectError(null);
+     setReconnectAttempts(prev => {
+       const next = prev + 1;
+       MeetingTelemetry.connectionStateChanged({
+         state: 'reconnecting',
+         roomId: roomUrl,
+         networkQuality,
+         reconnectAttempt: next
+       });
+       return next;
+     });
+
+     if (reconnectTimeoutRef.current) clearTimeout(reconnectTimeoutRef.current);
+     // 15s timeout before allowing explicit retry or graceful leave
+     reconnectTimeoutRef.current = setTimeout(() => {
+       setConnectionState('failed');
+       setReconnectError('Reconnection is taking longer than expected. Please verify your internet connection.');
+       MeetingTelemetry.connectionStateChanged({
+         state: 'failed',
+         roomId: roomUrl,
+         networkQuality
+       });
+     }, 15000);
+
+     toast({ title: '⚠️ Connection Lost', description: 'Attempting to reconnect…', variant: 'destructive' });
    } else if (ev.event === 'connected') {
      setIsReconnecting(false);
-     toast({ title: 'âœ… Reconnected', description: 'Your connection has been restored.' });
+     setConnectionState('recovered');
+     setReconnectError(null);
+     setReconnectAttempts(0);
+
+     if (reconnectTimeoutRef.current) {
+       clearTimeout(reconnectTimeoutRef.current);
+       reconnectTimeoutRef.current = null;
+     }
+     if (retryBackoffTimerRef.current) {
+       clearTimeout(retryBackoffTimerRef.current);
+       retryBackoffTimerRef.current = null;
+     }
+
+     MeetingTelemetry.connectionStateChanged({
+       state: 'recovered',
+       roomId: roomUrl,
+       networkQuality
+     });
+
+     toast({ title: '✅ Reconnected', description: 'Your connection has been restored.' });
+
+     // Re-synchronize local media track states post-reconnection
+     try {
+       if (daily) {
+         const currentAudio = localAudioTrack?.state === 'playable';
+         const currentVideo = localVideoTrack?.state === 'playable';
+         daily.setLocalAudio(currentAudio);
+         daily.setLocalVideo(currentVideo);
+       }
+     } catch (_) {}
+
+     // Transition recovered badge back to connected after 3s
+     setTimeout(() => setConnectionState('connected'), 3000);
    }
- }, [toast]));
+ }, [toast, roomUrl, networkQuality, daily, localAudioTrack, localVideoTrack]));
 
  // Add: Track network quality for the connection indicator
  useDailyEvent('network-quality-change', useCallback((ev) => {
@@ -378,7 +511,40 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
  // Fix #4: Use both the joinedRef (no stale closure) AND Daily's live meetingState()
  // Also check local participant presence as a 3rd check for the race window
  // between join() resolving and joined-meeting event firing.
- const ensureJoined = () => {
+ const handleManualReconnect = useCallback(() => {
+    if (!daily) return;
+    setConnectionState('reconnecting');
+    setReconnectError(null);
+
+    // Bounded retry with exponential backoff (1s, 2s, 4s capped)
+    const backoffMs = Math.min(1000 * Math.pow(2, reconnectAttempts), 4000);
+    MeetingTelemetry.connectionStateChanged({
+      state: 'reconnecting',
+      roomId: roomUrl,
+      networkQuality,
+      reconnectAttempt: reconnectAttempts + 1
+    });
+
+    if (retryBackoffTimerRef.current) clearTimeout(retryBackoffTimerRef.current);
+    retryBackoffTimerRef.current = setTimeout(async () => {
+      try {
+        // Daily load / reconnection attempt
+        if (typeof daily.load === 'function' && daily.meetingState() !== 'joined-meeting') {
+          await daily.load({ url: roomUrl });
+        }
+      } catch (loadErr) {
+        setConnectionState('failed');
+        setReconnectError('Manual reconnect failed. Please refresh your browser or check your connection.');
+        MeetingTelemetry.sessionError({
+          context: 'reconnection',
+          errorMessage: loadErr?.message,
+          roomId: roomUrl
+        });
+      }
+    }, backoffMs);
+  }, [daily, reconnectAttempts, roomUrl, networkQuality]);
+
+  const ensureJoined = () => {
    if (joinedRef.current) return true;
    if (daily && daily.meetingState() === 'joined-meeting') {
      // Sync state if Daily says we're joined but state hasn't updated yet
@@ -405,8 +571,19 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
     try {
       const currentAudio = localAudioTrack?.state === 'playable';
       daily.setLocalAudio(!currentAudio);
+      MeetingTelemetry.mediaRecoveryAttempted({
+        type: 'audio',
+        status: !currentAudio ? 'recovered' : 'started',
+        roomId: roomUrl
+      });
     } catch (err) {
       console.error(err);
+      MeetingTelemetry.mediaRecoveryAttempted({
+        type: 'audio',
+        status: 'failed',
+        errorType: err?.name || 'Unknown',
+        roomId: roomUrl
+      });
       const isDeviceNotFound = err?.name === 'NotFoundError' || err?.message?.includes('not found') || err?.message?.includes('device');
       const isPermission = err?.name === 'NotAllowedError' || err?.message?.includes('Permission') || err?.message?.includes('allowed');
       if (isDeviceNotFound) {
@@ -424,8 +601,19 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
     try {
       const currentVideo = localVideoTrack?.state === 'playable';
       daily.setLocalVideo(!currentVideo);
+      MeetingTelemetry.mediaRecoveryAttempted({
+        type: 'video',
+        status: !currentVideo ? 'recovered' : 'started',
+        roomId: roomUrl
+      });
     } catch (err) {
       console.error(err);
+      MeetingTelemetry.mediaRecoveryAttempted({
+        type: 'video',
+        status: 'failed',
+        errorType: err?.name || 'Unknown',
+        roomId: roomUrl
+      });
       const isDeviceNotFound = err?.name === 'NotFoundError' || err?.message?.includes('not found') || err?.message?.includes('device');
       const isPermission = err?.name === 'NotAllowedError' || err?.message?.includes('Permission') || err?.message?.includes('allowed');
       if (isDeviceNotFound) {
@@ -441,15 +629,24 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
  const toggleScreenShare = async () => {
  if (!ensureJoined()) return;
  try {
- if (isSharingScreen) {
- await stopScreenShare();
-} else {
- await startScreenShare();
-}
-} catch (err) {
- console.error(err);
- toast({ title: 'Screen share failed', description: err?.message || 'Could not share screen.', variant: 'destructive'});
-}
+   if (isSharingScreen) {
+     await stopScreenShare();
+     MeetingTelemetry.mediaRecoveryAttempted({ type: 'screen', status: 'started', roomId: roomUrl });
+   } else {
+     await startScreenShare();
+     MeetingTelemetry.mediaRecoveryAttempted({ type: 'screen', status: 'recovered', roomId: roomUrl });
+   }
+ } catch (err) {
+   console.error(err);
+   MeetingTelemetry.mediaRecoveryAttempted({ type: 'screen', status: 'failed', errorType: err?.name, roomId: roomUrl });
+   toast({ 
+     title: 'Screen share failed', 
+     description: err?.message?.includes('Permission') 
+       ? 'Screen sharing permission was canceled or blocked.' 
+       : 'Could not share screen. Please try again.', 
+     variant: 'destructive'
+   });
+ }
 };
 
   const joinTimeRef = useRef(Date.now());
@@ -458,8 +655,17 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
     if (joined) joinTimeRef.current = Date.now();
   }, [joined]);
 
-  const leaveCall = async () => {
+  const handleLeaveClick = () => {
+    if (isHost) {
+      setShowLeaveModal(true);
+    } else {
+      leaveCall(false);
+    }
+  };
+
+  const leaveCall = async (endMeetingForEveryone = false) => {
     if (!daily) return;
+    setShowLeaveModal(false);
 
     // Safety fallback: guaranteed exit after 2.5s even if network or DB stalls
     const safetyTimer = setTimeout(() => {
@@ -476,6 +682,13 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
       else navigate(spaceId ? `/spaces/${spaceId}` : '/meetings');
     };
 
+    // If host chose to end the meeting for everyone, broadcast event to all peers
+    if (isHost && endMeetingForEveryone) {
+      try {
+        daily.sendAppMessage({ type: 'meeting-ended' }, '*');
+      } catch (_) {}
+    }
+
     const meetingDuration = joinTimeRef.current ? Math.round((Date.now() - joinTimeRef.current) / 1000) : 0;
     if (joined || meetingDuration > 2) {
       // If currently recording, stop it and wait for the upload to finish before saving
@@ -483,65 +696,70 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
         toast({ title: "Finishing Recording", description: "Saving your video before leaving..." });
         await new Promise(resolve => {
            // Intercept the original onstop to add our resolve
-           const originalOnStop = mediaRecorderRef.current.onstop;
+           const prevStop = mediaRecorderRef.current.onstop;
            mediaRecorderRef.current.onstop = async (e) => {
-             if (originalOnStop) await originalOnStop(e);
+             if (prevStop) await prevStop(e);
              resolve();
            };
            mediaRecorderRef.current.stop();
-           setIsRecording(false);
         });
       }
 
+      // Auto-save meeting record if meeting had transcript content or lasted > 30 seconds
       try {
-        const durationSeconds = Math.round((Date.now() - joinTimeRef.current) / 1000);
-        const meetingTitle = `Meeting - ${new Date().toLocaleDateString()}`;
-        const rawTranscript = transcriptData.length > 0 
-          ? transcriptData.map(t => `${t.name}: ${t.text}`).join('\n')
-          : '';
-          
-        if (db) {
-          const companyId = user?.company_id || user?.user_metadata?.company_id || null;
-          const meetingData = {
-            title: meetingTitle,
-            daily_room_name: roomUrl.split('/').pop().split('?')[0] || 'room',
-            host_id: user?.id || null,
-            company_id: companyId,
-            ai_summary: rawTranscript ? 'Generating summary...' : 'No transcript recorded.',
-            started_at: new Date(joinTimeRef.current).toISOString(),
-            ended_at: new Date().toISOString(),
-            space_id: spaceId || null
+        const rawTranscript = transcriptData.map(t => `${t.name}: ${t.text}`).join('\n');
+        const hasContent = rawTranscript.trim().length > 0;
+        const lastedLongEnough = meetingDuration >= 30;
+
+        if (hasContent || lastedLongEnough) {
+          const roomTitle = roomUrl ? roomUrl.split('/').pop().split('?')[0].replace(/-/g, ' ') : 'Meeting';
+          const payload = {
+            title: `${roomTitle.charAt(0).toUpperCase() + roomTitle.slice(1)} - ${new Date().toLocaleDateString()}`,
+            space_id: spaceId || null,
+            created_by: user?.id,
+            duration_seconds: meetingDuration,
+            participant_count: Math.max(Object.keys(participants).length, 1),
+            transcript: rawTranscript || null,
+            ai_summary: hasContent ? 'Generating summary...' : 'No transcript recorded for this meeting.',
+            status: 'completed',
           };
-          
-          if (meetingVideoUrl || meetingVideoUrlRef.current) {
-            meetingData.video_url = meetingVideoUrl || meetingVideoUrlRef.current;
-          } else if (recordingSeconds > 0 && isUploading) {
-             toast({ title: "Warning", description: "Video upload was not finished yet, video may be missing." });
+          if (recordedVideoUrl) payload.video_url = recordedVideoUrl;
+
+          const db = getBase44Client();
+          const { data: insertedMeeting, error: insertError } = await db
+            .from('clipad_meeting_records')
+            .insert(payload)
+            .select()
+            .single();
+
+          if (!insertError && insertedMeeting) {
+            logAuditEvent({ action: 'meeting_created', user, details: `Auto-saved meeting record: ${insertedMeeting.id}` });
+            try {
+              await writeOrgEvent({
+                space_id: spaceId || null,
+                event_type: 'meeting_concluded',
+                title: insertedMeeting.title || 'Meeting Concluded',
+                actor_id: user?.id,
+                source_id: insertedMeeting.id,
+                source_table: 'clipad_meeting_records',
+                importance: 3,
+              });
+            } catch (_) {}
           }
 
-          const { data: insertedMeeting, error } = await db.from('clipad_meeting_records').insert(meetingData).select().single();
-          
-          if (!error && insertedMeeting && rawTranscript.trim().length > 10) {
-            // Run AI summary in background — always update the record, even on failure
+          // Trigger AI summary in background if there is transcript text
+          if (hasContent && insertedMeeting) {
             (async () => {
               try {
-                const { generateText } = await import('@/lib/cloudflareAI');
-                const aiResult = await generateText([
-                  { role: 'system', content: 'You are an AI assistant. Summarize the following meeting transcript. Return ONLY valid JSON with two keys: "summary" (a string summarizing the meeting concisely) and "action_items" (an array of objects, each with "title", "owner", and "context"). Do not wrap the JSON in markdown blocks.' },
-                  { role: 'user', content: rawTranscript.trim().substring(0, 4000) }
-                ]);
+                const summary = await generateMeetingSummary(rawTranscript);
+                await db.from('clipad_meeting_records')
+                  .update({ ai_summary: summary })
+                  .eq('id', insertedMeeting.id);
 
-                let text = typeof aiResult === 'string' ? aiResult : aiResult?.response || '';
-                text = text.replace(/```json/gi, '').replace(/```/gi, '').trim();
-                
-                let parsed = null;
-                try { parsed = JSON.parse(text); } catch { /* will use text as summary */ }
-
-                const summary = parsed?.summary || text.substring(0, 500) || 'Summary generation failed.';
-                await db.from('clipad_meeting_records').update({ ai_summary: summary }).eq('id', insertedMeeting.id);
-
-                if (parsed?.action_items && Array.isArray(parsed.action_items) && parsed.action_items.length > 0) {
-                  const inserts = parsed.action_items.map(ai => ({
+                // Extract action items
+                const actionItems = await extractActionItems(rawTranscript);
+                if (actionItems && actionItems.length > 0) {
+                  const inserts = actionItems.map(ai => ({
                     space_id: spaceId || null,
                     title: ai.title,
                     assigned_to: ai.owner || null,
@@ -551,7 +769,6 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
                   await db.from('clipad_action_items').insert(inserts);
                 }
 
-                // --- ORG MEMORY ENGINE: Decisions & Commitments ---
                 const [foundDecisions, foundCommitments] = await Promise.all([
                   detectDecisions(rawTranscript.trim(), { team_space_id: spaceId || null, related_meeting_id: insertedMeeting.id }),
                   detectCommitments(rawTranscript.trim(), { team_space_id: spaceId || null, meeting_id: insertedMeeting.id })
@@ -586,10 +803,8 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
                     });
                   }
                 }
-                // ------------------------------------------------
               } catch(e) {
                 console.warn('AI summary generation failed:', e);
-                // Always resolve the stuck 'Generating summary...' state
                 await db.from('clipad_meeting_records')
                   .update({ ai_summary: 'AI summary unavailable. Transcript saved.' })
                   .eq('id', insertedMeeting.id);
@@ -597,17 +812,36 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
             })();
           }
 
-          
-          // End meeting in video_rooms and clear space meeting_url if leaving last
-          const targetRoomName = roomUrl ? roomUrl.split('/').pop().split('?')[0] : '';
-          if (targetRoomName) {
+          // Authoritative room termination: ONLY if host ends the meeting for everyone
+          const targetRoomName = roomUrl ? decodeURIComponent(roomUrl.split('/').pop().split('?')[0]) : '';
+          if (isHost && endMeetingForEveryone && targetRoomName) {
             try {
-              await supabase.from('video_rooms').update({ status: 'ended', ended_at: new Date().toISOString() }).eq('daily_room_name', targetRoomName);
-            } catch (_) {}
-          }
-          if (spaceId) {
-            try {
-              await supabase.from('clipad_spaces').update({ meeting_url: null }).eq('id', spaceId);
+              // Primary: Atomic server-side RPC with strict host verification
+              const { error: rpcErr } = await supabase.rpc('terminate_meeting', {
+                p_room_name: targetRoomName,
+                p_space_id: spaceId || null
+              });
+              if (rpcErr) {
+                console.warn('terminate_meeting RPC call failed or unmigrated; attempting direct RLS update fallback:', rpcErr);
+                // Secondary: Direct update under RLS policy (strictly evaluated: USING auth.uid() = host_id)
+                const { error: updateErr } = await supabase
+                  .from('video_rooms')
+                  .update({ status: 'ended', ended_at: new Date().toISOString() })
+                  .eq('daily_room_name', targetRoomName);
+                if (updateErr) {
+                  console.error('Direct video_rooms status update failed:', updateErr);
+                  toast({
+                    title: 'Termination Warning',
+                    description: 'Could not update meeting status in database. Please check your network.',
+                    variant: 'destructive'
+                  });
+                }
+                if (spaceId) {
+                  try {
+                    await supabase.from('clipad_spaces').update({ meeting_url: null }).eq('id', spaceId);
+                  } catch (_) {}
+                }
+              }
             } catch (_) {}
           }
 
@@ -626,16 +860,36 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
       }
     }
     
-    // Also clean up if user left before meeting record inserted
-    const targetRoomName = roomUrl ? roomUrl.split('/').pop().split('?')[0] : '';
-    if (targetRoomName) {
+    // Authoritative room termination: ONLY if host ends the meeting for everyone
+    const targetRoomName = roomUrl ? decodeURIComponent(roomUrl.split('/').pop().split('?')[0]) : '';
+    if (isHost && endMeetingForEveryone && targetRoomName) {
       try {
-        await supabase.from('video_rooms').update({ status: 'ended', ended_at: new Date().toISOString() }).eq('daily_room_name', targetRoomName);
-      } catch (_) {}
-    }
-    if (spaceId) {
-      try {
-        await supabase.from('clipad_spaces').update({ meeting_url: null }).eq('id', spaceId);
+        // Primary: Atomic server-side RPC with strict host verification
+        const { error: rpcErr } = await supabase.rpc('terminate_meeting', {
+          p_room_name: targetRoomName,
+          p_space_id: spaceId || null
+        });
+        if (rpcErr) {
+          console.warn('terminate_meeting RPC call failed or unmigrated; attempting direct RLS update fallback:', rpcErr);
+          // Secondary: Direct update under RLS policy (strictly evaluated: USING auth.uid() = host_id)
+          const { error: updateErr } = await supabase
+            .from('video_rooms')
+            .update({ status: 'ended', ended_at: new Date().toISOString() })
+            .eq('daily_room_name', targetRoomName);
+          if (updateErr) {
+            console.error('Direct video_rooms status update failed:', updateErr);
+            toast({
+              title: 'Termination Warning',
+              description: 'Could not update meeting status in database. Please check your network.',
+              variant: 'destructive'
+            });
+          }
+          if (spaceId) {
+            try {
+              await supabase.from('clipad_spaces').update({ meeting_url: null }).eq('id', spaceId);
+            } catch (_) {}
+          }
+        }
       } catch (_) {}
     }
 
@@ -750,10 +1004,27 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
  const [chatMessages, setChatMessages] = useState([]);
  const [chatInput, setChatInput] = useState("");
  const [showChat, setShowChat] = useState(false);
+  const [showRoster, setShowRoster] = useState(false);
  const [showAiSidebar, setShowAiSidebar] = useState(false);
 
  // Handle incoming Daily messages
  useDailyEvent('app-message', useCallback((ev) => {
+   if (ev.data && ev.data.type === 'meeting-ended') {
+     // SEC-02: Validate sender authenticity. Check if sender matches authoritative host_id or Daily call owner
+     const senderParticipant = ev.fromId && daily?.participants() ? daily.participants()[ev.fromId] : null;
+     const isSenderOwner = senderParticipant?.owner === true;
+     const isSenderHostUser = roomHostId && senderParticipant?.user_id === roomHostId;
+
+     if (isSenderOwner || isSenderHostUser || !daily) {
+       toast({ title: 'Meeting Ended', description: 'The host has ended the meeting for all participants.' });
+       try { if (daily) daily.leave(); } catch (_) {}
+       if (onLeave) onLeave(null);
+       else navigate(spaceId ? `/spaces/${spaceId}` : '/meetings');
+       return;
+     } else {
+       console.warn('Rejected unauthorized peer meeting-ended signal from:', ev.fromId);
+     }
+   }
   if (ev.data && ev.data.type === 'chat') {
     setChatMessages(prev => [...prev, { from: ev.fromId, name: ev.data.name, text: ev.data.text, time: new Date()}]);
   }
@@ -899,9 +1170,29 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           <div className={`w-3 h-3 rounded-full ${isRecording ? 'bg-white' : 'bg-red-400'}`} />
         </button>
 
+        {/* Participant Roster Button */}
+        <button
+          onClick={() => {
+            setShowRoster(!showRoster);
+            if (!showRoster) setShowChat(false);
+          }}
+          className={`w-10 h-10 rounded-full relative flex items-center justify-center transition-all ${
+            showRoster
+              ? 'bg-[#00828a] text-white'
+              : 'bg-slate-100 hover:bg-slate-200 dark:bg-[#15262D] dark:hover:bg-[#1C333C] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#1A2F38]'
+          }`}
+          title="Participant roster"
+          aria-label="Participant roster"
+        >
+          <Users className="w-5 h-5" />
+          <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-[#00828a] text-white text-[10px] font-bold flex items-center justify-center border-2 border-white dark:border-[#0f172a]">
+            {1 + participantIds.length}
+          </span>
+        </button>
+
         {/* Chat Button */}
         <button
-          onClick={() => setShowChat(!showChat)}
+          onClick={() => { setShowChat(!showChat); if (!showChat) setShowRoster(false); }}
           className={`w-10 h-10 rounded-full relative flex items-center justify-center transition-all ${
             showChat
               ? 'bg-[#00828a] text-white'
@@ -946,7 +1237,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
         </button>
 
         <button
-          onClick={leaveCall}
+          onClick={handleLeaveClick}
           className="w-11 h-10 rounded-full flex items-center justify-center bg-[#ea4335] hover:bg-[#d93025] text-white shadow-md transition-all hover:scale-105 active:scale-95"
           title="Leave call"
         >
@@ -963,6 +1254,28 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
   {/* Corporate Meeting Header Bar with Glass Luster */}
     <header className="h-14 px-6 flex items-center justify-between border-b border-slate-200 dark:border-[#1A2F38] bg-white dark:bg-[#0B1418] z-30 shrink-0 transition-colors">
       {/* Left: Meeting title & recording badge */}
+      <div className="flex items-center gap-2">
+        {/* Connection status indicator */}
+        <div 
+          className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold border transition-all ${
+            connectionState === 'reconnecting'
+              ? 'bg-amber-500/10 border-amber-500/30 text-amber-500 animate-pulse'
+              : connectionState === 'failed'
+              ? 'bg-red-500/10 border-red-500/30 text-red-500'
+              : connectionState === 'recovered'
+              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-500'
+              : 'bg-slate-100 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300'
+          }`}
+          title={`Connection: ${connectionState}`}
+        >
+          {connectionState === 'reconnecting' ? (
+            <WifiOff className="w-3.5 h-3.5" />
+          ) : (
+            <Wifi className={`w-3.5 h-3.5 ${networkQuality === 'good' ? 'text-emerald-500' : 'text-amber-500'}`} />
+          )}
+          <span className="capitalize">{connectionState}</span>
+        </div>
+      </div>
       <div className="flex items-center gap-3">
         <span className="font-semibold text-sm text-slate-900 dark:text-slate-100 tracking-tight">Meeting Room</span>
         {isRecording && (
@@ -1050,12 +1363,24 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
             <CanvasWhiteboard onClose={() => setShowWhiteboard(false)} />
           )}
           {/* Logo removed for clean presentation */}
-          {/* Reconnecting overlay */}
+          {/* Reconnecting overlay with recovery action */}
           {isReconnecting && (
-            <div className="absolute inset-0 z-50 bg-black/70 backdrop-blur-sm flex flex-col items-center justify-center gap-4">
+            <div className="absolute inset-0 z-50 bg-black/70 backdrop-blur-sm flex flex-col items-center justify-center gap-4 p-6 text-center">
               <OrbitLoader size="lg" />
               <p className="text-white font-semibold text-lg">Reconnecting…</p>
-              <p className="text-white/60 text-sm">Your connection was interrupted. Hang tight.</p>
+              <p className="text-white/70 text-sm max-w-sm">
+                {reconnectError || "Your connection was interrupted. Attempting to restore video and audio…"}
+              </p>
+              {reconnectError && (
+                <div className="flex items-center gap-3 mt-2">
+                  <Button variant="outline" size="sm" onClick={() => { try { daily?.load(); } catch (_) { window.location.reload(); } }}>
+                    Retry Connection
+                  </Button>
+                  <Button variant="destructive" size="sm" onClick={() => leaveCall(false)}>
+                    Leave Call
+                  </Button>
+                </div>
+              )}
             </div>
           )}
           {screens.length > 0 ? (
@@ -1063,13 +1388,13 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
               <ScreenShareTile key={screen.screenId} screen={screen} className="w-full h-full absolute inset-0" />
             ))
           ) : mainSpeakerId ? (
-            <ParticipantTile id={mainSpeakerId} isLocal={mainSpeakerId === localSessionId} className="w-full h-full absolute inset-0 !m-0 !border-0 !rounded-none" />
+            <ParticipantTile id={mainSpeakerId} isLocal={mainSpeakerId === localSessionId} activeSpeakerId={activeSpeakerId} className="w-full h-full absolute inset-0 !m-0 !border-0 !rounded-none" />
           ) : null}
         </div>
         {/* Participant Sidebar — always visible, even in 2-person calls */}
         <div className="flex-1 lg:max-w-[320px] flex lg:flex-col gap-3 overflow-x-auto lg:overflow-y-auto min-h-[140px] lg:min-h-0 max-h-full items-center lg:items-stretch content-start scrollbar-thin scrollbar-thumb-[#28313b]">
           {sidebarParticipants.map(id => (
-            <ParticipantTile key={id} id={id} isLocal={id === localSessionId} className="w-64 min-w-[16rem] lg:w-full lg:min-w-0 shrink-0 m-0" />
+            <ParticipantTile key={id} id={id} isLocal={id === localSessionId} activeSpeakerId={activeSpeakerId} className="w-64 min-w-[16rem] lg:w-full lg:min-w-0 shrink-0 m-0" />
           ))}
           {/* Always show local self-view when we're the only person on screen */}
           {totalCount === 1 && mainSpeakerId === localSessionId && (
@@ -1101,7 +1426,17 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
   })()}
   </div> {/* End of Video Content Area */}
 
- {/* Chat Sidebar */}
+ {/* Participant Roster Sidebar */}
+      {showRoster && (
+        <div className="w-80 shrink-0 z-40 h-full">
+          <ParticipantRoster
+            onClose={() => setShowRoster(false)}
+            hostId={roomHostId}
+          />
+        </div>
+      )}
+
+      {/* Chat Sidebar */}
  {showChat && (
  <div className="w-80 border-l border-slate-200 dark:border-white/10 bg-white dark:bg-[#0d151c] flex flex-col shrink-0 animate-in slide-in-from-right shadow-2xl z-40 transition-colors">
  <div className="h-14 border-b border-primary/40 flex items-center justify-between px-4">
@@ -1180,8 +1515,8 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           <label className="text-sm font-medium">Copy Link</label>
           <div className="flex gap-2">
             {/* Fix #14: Strip ?t= token from the invite link so it's shareable */}
-            <Input readOnly value={window.location.origin + '/join/' + roomUrl.split('/').pop().split('?')[0]} className="bg-muted" />
-            <Button variant="secondary" onClick={() => navigator.clipboard.writeText(window.location.origin + '/join/' + roomUrl.split('/').pop().split('?')[0])} className="w-24">
+            <Input readOnly value={formatMeetingUrl(roomUrl.split('/').pop().split('?')[0])} className="bg-muted" />
+            <Button variant="secondary" onClick={() => navigator.clipboard.writeText(formatMeetingUrl(roomUrl.split('/').pop().split('?')[0]))} className="w-24">
               Copy
             </Button>
           </div>
@@ -1210,6 +1545,29 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           </div>
         </div>
       </div>
+    </DialogContent>
+  </Dialog>
+
+  {/* Host Leave vs End Meeting Modal */}
+  <Dialog open={showLeaveModal} onOpenChange={setShowLeaveModal}>
+    <DialogContent className="sm:max-w-md">
+      <DialogHeader>
+        <DialogTitle>Leave or End Meeting?</DialogTitle>
+        <DialogDescription>
+          As the host, you can leave the meeting while allowing other participants to continue, or end the meeting for everyone.
+        </DialogDescription>
+      </DialogHeader>
+      <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-4">
+        <Button variant="outline" onClick={() => setShowLeaveModal(false)}>
+          Cancel
+        </Button>
+        <Button variant="secondary" onClick={() => leaveCall(false)}>
+          Just Leave Call
+        </Button>
+        <Button variant="destructive" onClick={() => leaveCall(true)}>
+          End Meeting for All
+        </Button>
+      </DialogFooter>
     </DialogContent>
   </Dialog>
 
@@ -1312,17 +1670,31 @@ function ScreenShareTile({ screen, className }) {
  const audioRef = useRef(null);
 
  useEffect(() => {
- if (screen.screenVideo?.track && videoRef.current) {
-  videoRef.current.srcObject = new MediaStream([screen.screenVideo.track]);
-  videoRef.current.play().catch(() => {});
- }
+   const videoEl = videoRef.current;
+   if (screen.screenVideo?.track && videoEl) {
+     const stream = new MediaStream([screen.screenVideo.track]);
+     videoEl.srcObject = stream;
+     videoEl.play().catch(() => {});
+   }
+   return () => {
+     if (videoEl) {
+       videoEl.srcObject = null;
+     }
+   };
  }, [screen.screenVideo?.track]);
 
  useEffect(() => {
- if (!screen.local && screen.screenAudio?.track && audioRef.current) {
-  audioRef.current.srcObject = new MediaStream([screen.screenAudio.track]);
-  audioRef.current.play().catch(() => {});
- }
+   const audioEl = audioRef.current;
+   if (!screen.local && screen.screenAudio?.track && audioEl) {
+     const stream = new MediaStream([screen.screenAudio.track]);
+     audioEl.srcObject = stream;
+     audioEl.play().catch(() => {});
+   }
+   return () => {
+     if (audioEl) {
+       audioEl.srcObject = null;
+     }
+   };
  }, [screen.screenAudio?.track, screen.local]);
 
  return (
@@ -1356,7 +1728,7 @@ const avatarColors = [
   'bg-amber-500', 'bg-teal-500', 'bg-cyan-500'
 ];
 const vectorAvatars = Array.from({ length: 10 }, (_, i) => `https://api.dicebear.com/7.x/micah/svg?seed=OptavelUser${i + 1}&backgroundColor=transparent`);
-function ParticipantTile({ id, isLocal, className }) {
+function ParticipantTile({ id, isLocal, className, activeSpeakerId }) {
  const videoState = useVideoTrack(id);
  const audioState = useAudioTrack(id);
  const participant = useParticipant(id);
@@ -1401,17 +1773,31 @@ function ParticipantTile({ id, isLocal, className }) {
   const finalAvatarColor = customAvatarColor || avatarColor;
 
  useEffect(() => {
- if (videoState?.track && videoRef.current) {
-  videoRef.current.srcObject = new MediaStream([videoState.track]);
-  videoRef.current.play().catch(() => {});
- }
+   const videoEl = videoRef.current;
+   if (videoState?.track && videoEl) {
+     const stream = new MediaStream([videoState.track]);
+     videoEl.srcObject = stream;
+     videoEl.play().catch(() => {});
+   }
+   return () => {
+     if (videoEl) {
+       videoEl.srcObject = null;
+     }
+   };
  }, [videoState?.track]);
 
  useEffect(() => {
- if (!isLocal && audioState?.track && audioRef.current) {
-  audioRef.current.srcObject = new MediaStream([audioState.track]);
-  audioRef.current.play().catch(() => {});
- }
+   const audioEl = audioRef.current;
+   if (!isLocal && audioState?.track && audioEl) {
+     const stream = new MediaStream([audioState.track]);
+     audioEl.srcObject = stream;
+     audioEl.play().catch(() => {});
+   }
+   return () => {
+     if (audioEl) {
+       audioEl.srcObject = null;
+     }
+   };
  }, [audioState?.track, isLocal]);
 
  const togglePip = async () => {
@@ -1424,8 +1810,7 @@ function ParticipantTile({ id, isLocal, className }) {
   }
  };
 
- const activeSpeakerId = useActiveSpeakerId();
- const isSpeaking = activeSpeakerId === id || (isLocal && audioState?.state === 'playable');
+ const isSpeaking = Boolean(activeSpeakerId && activeSpeakerId === id && audioState?.state === 'playable');
  return (
  <div className={`relative bg-slate-100 dark:bg-[#101D22] rounded-2xl overflow-hidden group flex items-center justify-center border transition-all ${isSpeaking ? 'border-[#00beac] ring-2 ring-[#00beac]/50' : 'border-slate-200 dark:border-[#1A2F38]'} ${className || 'w-full h-full'}`}>
  {videoState?.state === 'playable' ? (
@@ -1466,215 +1851,310 @@ function ParticipantTile({ id, isLocal, className }) {
 
 // Wrapper to initialize Daily provider
 export default function VideoRoom({ roomUrl, userName, token, initialAudio = true, initialVideo = true, initialBackground, onLeave, isPipMode, togglePipMode, spaceId }) {
- const { id: routeId } = useParams();
- const [searchParams] = useSearchParams();
- const effectiveSpaceId = spaceId || searchParams.get('spaceId');
- const cleanRoomId = routeId ? routeId.replace(/^optavel\//i, '').replace(/^optalflow\//i, '') : '';
- const defaultUrl = roomUrl || (cleanRoomId ? 'https://optalflow.daily.co/' + cleanRoomId : null);
- const [resolvedRoomUrl, setResolvedRoomUrl] = useState(defaultUrl);
- const { user } = useAuth();
- const [daily, setDaily] = useState(null);
- const callRef = useRef(null);
+  const { id: routeId } = useParams();
+  const [searchParams] = useSearchParams();
+  const effectiveSpaceId = spaceId || searchParams.get('spaceId');
+  const rawRouteId = routeId ? (() => {
+    try { return decodeURIComponent(routeId); } catch (_) { return routeId; }
+  })() : '';
+  const cleanRoomId = rawRouteId ? rawRouteId.replace(/^optavel\//i, '').replace(/^optalflow\//i, '') : '';
+  
+  // Workstream A: No speculative unverified URL. If roomUrl is passed, use it; otherwise null.
+  const [resolvedRoomUrl, setResolvedRoomUrl] = useState(roomUrl || null);
+  const [meetingAccessToken, setMeetingAccessToken] = useState(token || null);
+  const [provisioningState, setProvisioningState] = useState(roomUrl ? 'ready' : (cleanRoomId ? 'resolving' : 'error'));
+  const [provisioningError, setProvisioningError] = useState(cleanRoomId || roomUrl ? null : 'No meeting room specified.');
+  const [retryCount, setRetryCount] = useState(0);
+  const [hasJoinedPreJoin, setHasJoinedPreJoin] = useState(false);
+  const [preJoinSettings, setPreJoinSettings] = useState(null);
 
- // Auto-resolve & ensure the room exists on Daily.co
- useEffect(() => {
-  if (roomUrl) {
-    setResolvedRoomUrl(roomUrl);
-    return;
-  }
-  if (!cleanRoomId) return;
 
-  let cancelled = false;
-  const ensureRoom = async () => {
-    try {
-      // Guarantee room exists on Daily.co by invoking create-daily-room (idempotent: gets or creates)
-      const { data: fnData, error: fnError } = await supabase.functions.invoke('create-daily-room', {
-        body: { roomName: cleanRoomId, privacy: 'public', companyId: user?.company_id || user?.user_metadata?.company_id }
-      });
+  const { user } = useAuth();
+  const [daily, setDaily] = useState(null);
+  const callRef = useRef(null);
 
-      if (!cancelled && !fnError && fnData?.url) {
-        setResolvedRoomUrl(fnData.url);
-        return;
-      }
+  // Authoritative room resolution & provisioning before calling Daily
+  useEffect(() => {
+    if (roomUrl) {
+      setResolvedRoomUrl(roomUrl);
+      setProvisioningState('ready');
+      setProvisioningError(null);
+      return;
+    }
+    if (!cleanRoomId) {
+      setProvisioningState('error');
+      setProvisioningError('Invalid or missing meeting room ID.');
+      return;
+    }
 
-      // Fallback: Check cached URL if function failed or unreachable
-      const { data: dbRoom } = await supabase
-        .from('video_rooms')
-        .select('daily_room_url')
-        .eq('daily_room_name', cleanRoomId)
-        .maybeSingle();
+    let cancelled = false;
+    const ensureRoom = async () => {
+      setProvisioningState('resolving');
+      setProvisioningError(null);
+      try {
+        // Guarantee room exists on Daily.co by invoking create-daily-room (authoritative backend)
+        const { data: fnData, error: fnError } = await supabase.functions.invoke('create-daily-room', {
+          body: { 
+            roomName: cleanRoomId, 
+            privacy: 'public', 
+            companyId: user?.company_id || user?.user_metadata?.company_id,
+            action: 'create'
+          }
+        });
 
-      if (!cancelled) {
-        if (dbRoom?.daily_room_url && !dbRoom.daily_room_url.includes('optavel.daily.co')) {
-          setResolvedRoomUrl(dbRoom.daily_room_url);
-        } else {
-          setResolvedRoomUrl(`https://optalflow.daily.co/${cleanRoomId}`);
+        if (!cancelled && !fnError && fnData?.url) {
+          setResolvedRoomUrl(fnData.url);
+
+          // If room requires token or caller is host/participant, request meeting access token securely
+          if (!token) {
+            try {
+              const { data: tokenData, error: tokenErr } = await supabase.functions.invoke('create-daily-room', {
+                body: { 
+                  roomName: cleanRoomId,
+                  action: 'token',
+                  companyId: user?.company_id || user?.user_metadata?.company_id 
+                }
+              });
+              if (!tokenErr && tokenData?.token) {
+                setMeetingAccessToken(tokenData.token);
+              }
+            } catch (_) {}
+          }
+
+          setProvisioningState('ready');
+          return;
         }
-      }
-    } catch (e) {
-      if (!cancelled) {
-        setResolvedRoomUrl(`https://optalflow.daily.co/${cleanRoomId}`);
-      }
-    }
-  };
 
-  ensureRoom();
-  return () => { cancelled = true; };
- }, [cleanRoomId, roomUrl]);
+        // Fallback: Check cached URL in video_rooms database
+        const { data: dbRoom } = await supabase
+          .from('video_rooms')
+          .select('daily_room_url')
+          .eq('daily_room_name', cleanRoomId)
+          .maybeSingle();
 
- useEffect(() => {
-  if (!resolvedRoomUrl) return;
-
-  let cancelled = false;
-
-  const initDaily = async () => {
-   if (cancelled) return;
-
-   // Destroy any pre-existing instance to prevent 'Duplicate DailyIframe instances' errors
-   try {
-    const existing = DailyIframe.getCallInstance();
-    if (existing) {
-     try { await existing.leave(); } catch (_) {}
-     try { existing.destroy(); } catch (_) {}
-    }
-   } catch (_) {}
-
-   // Also destroy our own tracked ref if it's still around
-   if (callRef.current) {
-    try { await callRef.current.leave(); } catch (_) {}
-    try { callRef.current.destroy(); } catch (_) {}
-    callRef.current = null;
-   }
-
-   if (cancelled) return;
-
-   const callObject = DailyIframe.createCallObject();
-   callRef.current = callObject;
-   setDaily(callObject);
-
-   // Always respect the choices made on the pre-join screen
-   const startMic = initialAudio;
-   const startCam = initialVideo;
-   
-   let parsedUrl;
-   let finalToken = token;
-   let cleanUrl = resolvedRoomUrl || '';
-   try {
-     if (resolvedRoomUrl) { parsedUrl = new URL(resolvedRoomUrl); } else { parsedUrl = null; }
-     const urlToken = parsedUrl.searchParams.get('t');
-     if (urlToken) {
-       finalToken = finalToken || urlToken;
-       // Daily usually wants the clean URL without the token in the 'url' option
-       parsedUrl.searchParams.delete('t');
-       cleanUrl = parsedUrl.toString();
-     }
-   } catch (e) {
-     console.warn("Invalid room URL", e);
-   }
-
-   const joinOpts = { url: cleanUrl, startAudioOff: !startMic, startVideoOff: !startCam };
-   if (typeof finalToken === 'string' && finalToken.length > 0) {
-    joinOpts.token = finalToken;
-   }
-   if (typeof userName === 'string' && userName.trim().length > 0) {
-    joinOpts.userName = userName.trim();
-   }
-
-   try {
-    // Fix #2: Do NOT call startCamera() before join() in call-object mode.
-    // Daily.co will request camera/mic automatically during join().
-    // Calling startCamera() first causes NotAllowedError on many browsers
-    // which aborts the whole join flow.
-
-    // Apply noise cancellation as an input setting — this is supported pre-join
-    try {
-      await callObject.updateInputSettings({
-        audio: {
-          processor: { type: 'noise-cancellation' },
-          settings: {
-            echoCancellation: true,
-            noiseSuppression: false,
-            autoGainControl: false,
+        if (!cancelled) {
+          if (dbRoom?.daily_room_url && !dbRoom.daily_room_url.includes('optavel.daily.co')) {
+            setResolvedRoomUrl(dbRoom.daily_room_url);
+            setProvisioningState('ready');
+          } else {
+            // If edge function returned an error and no valid DB record exists
+            setProvisioningState('error');
+            setProvisioningError(fnError?.message || fnData?.error || 'Unable to provision secure meeting room. Please check your connection and retry.');
           }
         }
-      });
-    } catch (e) { console.warn("Noise cancellation not supported:", e); }
-    
-    // Apply background before joining (supported pre-join)
-    if (initialBackground && initialBackground.type !== 'none') {
-        try {
-           if (initialBackground.type === 'background-blur') {
-             await callObject.updateInputSettings({ video: { processor: { type: 'background-blur', config: { strength: 0.5 } } } });
-           } else {
-             await callObject.updateInputSettings({ video: { processor: { type: 'background-image', config: { source: initialBackground.url } } } });
-           }
-        } catch(e) { console.error("Initial bg fail", e); }
-    }
+      } catch (err) {
+        if (!cancelled) {
+          setProvisioningState('error');
+          setProvisioningError('Network error while provisioning meeting room. Please check your connection.');
+        }
+      }
+    };
 
-    if (cancelled) return;
+    ensureRoom();
+    return () => { cancelled = true; };
+  }, [cleanRoomId, roomUrl, retryCount, user?.company_id, user?.user_metadata?.company_id]);
 
-    // Join the room — camera/mic are activated here
-    await callObject.join(joinOpts);
+  // Workstream D: Daily Call Object Lifecycle & Joining
+  useEffect(() => {
+    if (provisioningState !== 'ready' || !resolvedRoomUrl || !hasJoinedPreJoin) return;
 
-    // Fix #8: updateSendSettings is now applied in the joined-meeting event
-    // inside VideoRoomInner (after join succeeds) — see the useDailyEvent listener
+    let cancelled = false;
 
-   } catch (joinErr) {
-    console.warn('Joining error — attempting provisioning and fallback join.', joinErr);
-    if (cancelled) return;
-    try {
-      // If room did not exist, invoke create-daily-room to ensure it's registered on Daily.co
-      if (cleanRoomId) {
-        try {
-          const { data: createData } = await supabase.functions.invoke('create-daily-room', {
-            body: { roomName: cleanRoomId, privacy: 'public', companyId: user?.company_id || user?.user_metadata?.company_id }
-          });
-          if (createData?.url) cleanUrl = createData.url;
-        } catch (_) {}
+    const initDaily = async () => {
+      if (cancelled) return;
+
+      // Clean up any existing instances first
+      try {
+        const existing = DailyIframe.getCallInstance();
+        if (existing) {
+          try { await existing.leave(); } catch (_) {}
+          try { existing.destroy(); } catch (_) {}
+        }
+      } catch (_) {}
+
+      if (callRef.current) {
+        try { await callRef.current.leave(); } catch (_) {}
+        try { callRef.current.destroy(); } catch (_) {}
+        callRef.current = null;
       }
 
-      const joinPayload = { url: cleanUrl, userName: joinOpts.userName, startAudioOff: !startMic, startVideoOff: !startCam };
-      if (joinOpts.token) joinPayload.token = joinOpts.token;
-      await callObject.join(joinPayload);
-    } catch (e) { console.error('Fallback join also failed:', e); }
-   }
+      if (cancelled) return;
 
+      const callObject = DailyIframe.createCallObject();
+      callRef.current = callObject;
+      setDaily(callObject);
 
-   if (cancelled) return;
-    // Log meeting join
-    logAuditEvent({ action: 'meeting_created', user, details: `Joined Meeting Room: ${cleanUrl ? cleanUrl.split('/').pop() : 'Unknown'}` });
-  };
+      const startMic = preJoinSettings ? preJoinSettings.micOn : initialAudio;
+      const startCam = preJoinSettings ? preJoinSettings.videoOn : initialVideo;
+      const chosenBg = (preJoinSettings && preJoinSettings.backgroundConfig) ? preJoinSettings.backgroundConfig : initialBackground;
+      
+      let parsedUrl;
+      let finalToken = meetingAccessToken || token;
+      let cleanUrl = resolvedRoomUrl || '';
+      try {
+        if (resolvedRoomUrl) { parsedUrl = new URL(resolvedRoomUrl); }
+        const urlToken = parsedUrl ? parsedUrl.searchParams.get('t') : null;
+        if (urlToken) {
+          finalToken = finalToken || urlToken;
+          parsedUrl.searchParams.delete('t');
+          cleanUrl = parsedUrl.toString();
+        }
+      } catch (e) {
+        console.warn("Invalid room URL format", e);
+      }
 
-  initDaily().catch(console.error);
+      const joinOpts = { url: cleanUrl, startAudioOff: !startMic, startVideoOff: !startCam };
+      if (typeof finalToken === 'string' && finalToken.length > 0) {
+        joinOpts.token = finalToken;
+      }
+      if (typeof userName === 'string' && userName.trim().length > 0) {
+        joinOpts.userName = userName.trim();
+      }
 
-  return () => {
-   cancelled = true;
-   // Async cleanup: leave + destroy without blocking React
-   const cleanup = async () => {
-    const obj = callRef.current;
-    if (obj) {
-     callRef.current = null;
-     try { await obj.leave(); } catch (_) {}
-     try { obj.destroy(); } catch (_) {}
-    }
-   };
-   cleanup();
-   setDaily(null);
-  };
- }, [resolvedRoomUrl, token]);
+      try {
+        // Noise cancellation pre-join
+        try {
+          // Apply chosen audio/video input devices from prejoin if specified
+      if (preJoinSettings) {
+        try {
+          if (preJoinSettings.cameraDeviceId) {
+            await callObject.setInputDevicesAsync({ videoDeviceId: preJoinSettings.cameraDeviceId });
+          }
+          if (preJoinSettings.micDeviceId) {
+            await callObject.setInputDevicesAsync({ audioDeviceId: preJoinSettings.micDeviceId });
+          }
+        } catch (devErr) {
+          console.warn('Could not set custom input devices from pre-join:', devErr);
+        }
+      }
 
-  if (!daily || !resolvedRoomUrl) {
-   return (
-    <div className="flex flex-col h-full bg-slate-50 dark:bg-background rounded-xl items-center justify-center gap-4">
-      <ClipadLoader size="lg" text="Connecting to secure video server..." />
-    </div>
-   );
+      await callObject.updateInputSettings({
+            audio: {
+              processor: { type: 'noise-cancellation' },
+              settings: {
+                echoCancellation: true,
+                noiseSuppression: false,
+                autoGainControl: false,
+              }
+            }
+          });
+        } catch (e) { console.warn("Noise cancellation not supported:", e); }
+        
+        // Background effects pre-join
+        if (chosenBg && chosenBg.type !== 'none') {
+          try {
+            if (chosenBg.type === 'background-blur') {
+              await callObject.updateInputSettings({ video: { processor: { type: 'background-blur', config: { strength: 0.5 } } } });
+            } else {
+              await callObject.updateInputSettings({ video: { processor: { type: 'background-image', config: { source: chosenBg.url } } } });
+            }
+          } catch(e) { console.error("Initial bg fail", e); }
+        }
+
+        if (cancelled) return;
+
+        // Authoritative join
+        await callObject.join(joinOpts);
+
+        if (cancelled) return;
+        logAuditEvent({ action: 'meeting_created', user, details: `Joined Meeting Room: ${cleanUrl ? cleanUrl.split('/').pop() : 'Unknown'}` });
+      } catch (joinErr) {
+        console.error('Daily join failed:', joinErr);
+        if (cancelled) return;
+        try { callObject.destroy(); } catch (_) {}
+        callRef.current = null;
+        setDaily(null);
+        setProvisioningState('error');
+        setProvisioningError(joinErr?.message || 'Failed to join the meeting room. The room may have expired or network is blocked.');
+      }
+    };
+
+    initDaily().catch(console.error);
+
+    return () => {
+      cancelled = true;
+      const cleanup = async () => {
+        const obj = callRef.current;
+        if (obj) {
+          callRef.current = null;
+          try { await obj.leave(); } catch (_) {}
+          try { obj.destroy(); } catch (_) {}
+        }
+      };
+      cleanup();
+      setDaily(null);
+    };
+  }, [resolvedRoomUrl, provisioningState, hasJoinedPreJoin, preJoinSettings, meetingAccessToken, token, initialAudio, initialVideo, initialBackground, userName]);
+
+  // Error State Screen with explicit Retry and Return options
+  if (provisioningState === 'error') {
+    return (
+      <div className="flex flex-col h-full bg-slate-50 dark:bg-background rounded-xl items-center justify-center p-6 text-center">
+        <div className="w-14 h-14 rounded-full bg-destructive/10 text-destructive flex items-center justify-center mb-4">
+          <PhoneOff className="w-7 h-7" />
+        </div>
+        <h2 className="text-xl font-semibold mb-2">Unable to Join Meeting</h2>
+        <p className="text-muted-foreground text-sm max-w-md mb-6">
+          {provisioningError || 'An error occurred while connecting to the meeting room.'}
+        </p>
+        <div className="flex items-center gap-3">
+          <Button variant="outline" onClick={() => onLeave ? onLeave(null) : window.location.assign('/meetings')}>
+            Return to Meetings
+          </Button>
+          <Button onClick={() => { setProvisioningState('resolving'); setRetryCount(c => c + 1); }}>
+            Retry Connection
+          </Button>
+        </div>
+      </div>
+    );
   }
 
- return (
-  <DailyProvider callObject={daily}>
-   <VideoRoomInner roomUrl={resolvedRoomUrl} onLeave={onLeave} isPipMode={isPipMode} togglePipMode={togglePipMode} initialBackground={initialBackground} spaceId={effectiveSpaceId} initialAudio={initialAudio} initialVideo={initialVideo} />
-  </DailyProvider>
- );
-}
+  // Workstream A: Pre-Join Experience Screen
+  if (provisioningState === 'ready' && !hasJoinedPreJoin) {
+    const defaultDisplayName = (typeof userName === 'string' && userName.trim()) 
+      ? userName.trim() 
+      : (user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Guest');
 
+    return (
+      <PreJoinScreen
+        roomName={cleanRoomId || 'Meeting'}
+        defaultName={defaultDisplayName}
+        initialAudio={initialAudio}
+        initialVideo={initialVideo}
+        initialBackground={initialBackground}
+        onJoin={(settings) => {
+          setPreJoinSettings(settings);
+          setHasJoinedPreJoin(true);
+        }}
+        onLeave={() => {
+          if (onLeave) onLeave(null);
+          else window.location.assign('/meetings');
+        }}
+      />
+    );
+  }
+
+  // Provisioning / Connecting Screen
+  if (!daily || !resolvedRoomUrl || provisioningState !== 'ready') {
+    return (
+      <div className="flex flex-col h-full bg-slate-50 dark:bg-background rounded-xl items-center justify-center gap-4">
+        <ClipadLoader size="lg" text={provisioningState === 'resolving' ? "Provisioning secure meeting room..." : "Connecting to video server..."} />
+      </div>
+    );
+  }
+
+  return (
+    <DailyProvider callObject={daily}>
+      <VideoRoomInner 
+        roomUrl={resolvedRoomUrl} 
+        onLeave={onLeave} 
+        isPipMode={isPipMode} 
+        togglePipMode={togglePipMode} 
+        initialBackground={initialBackground} 
+        spaceId={effectiveSpaceId} 
+        initialAudio={initialAudio} 
+        initialVideo={initialVideo} 
+      />
+    </DailyProvider>
+  );
+}

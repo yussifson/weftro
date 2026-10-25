@@ -32,7 +32,7 @@ export default defineConfig({
   },
   plugins: [
     react(),
-    !process.env.VERCEL && electron({
+    (!process.env.VERCEL && !process.env.BUILD_WEB && process.env.ELECTRON === 'true') && electron({
       main: {
         entry: 'electron/main.js',
         vite: {
