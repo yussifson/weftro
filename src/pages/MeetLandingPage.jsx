@@ -26,6 +26,7 @@ import PaymentReceiptModal from '@/components/clipad/PaymentReceiptModal';
 import SupportAIChat from '@/components/clipad/SupportAIChat';
 import ClipadMobileNav from '@/components/clipad/ClipadMobileNav';
 import MarketingHeader from '@/components/clipad/MarketingHeader';
+import MarketingFooter from '@/components/clipad/MarketingFooter';
 
 
 const pillars = [
@@ -1020,41 +1021,7 @@ export default function MeetLandingPage() {
         </div>
 
         {/* ΓöÇΓöÇ FOOTER ΓöÇΓöÇ */}
-        <footer className="border-t border-border py-12 px-6 md:px-12 bg-slate-50 dark:bg-background/50">
-        <div className="max-w-7xl mx-auto space-y-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6 pb-8 border-b border-border/60">
-            <div className="flex items-center gap-3">
-              <CliPadLogo height={28} />
-              <span className="text-xs text-muted-foreground font-medium">&copy; {new Date().getFullYear()} Optavel Technologies. All rights reserved.</span>
-            </div>
-            
-            <div className="flex flex-wrap items-center justify-center gap-6 text-xs text-muted-foreground">
-              <a href="#hero" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="hover:text-foreground transition-colors font-medium">Home</a>
-              <a href="#features" className="hover:text-foreground transition-colors font-medium">Features</a>
-              <a href="#intelligence" className="hover:text-foreground transition-colors font-medium">Intelligence</a>
-              <a href="#pricing" className="hover:text-foreground transition-colors font-medium">Pricing</a>
-              <button type="button" onClick={() => setSupportPanel('chat')} className="hover:text-foreground transition-colors font-medium cursor-pointer">Support</button>
-            </div>
-          </div>
-
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-foreground uppercase tracking-wider text-[10px]">Quick Links:</span>
-              <div className="flex flex-wrap items-center gap-4">
-                <button type="button" onClick={() => navigate('/pricing')} className="hover:text-foreground hover:underline transition-colors cursor-pointer">Pricing Plans</button>
-                <button type="button" onClick={() => navigate('/security')} className="hover:text-foreground hover:underline transition-colors cursor-pointer">Security & Compliance</button>
-                <button type="button" onClick={() => navigate('/custom-pricing')} className="hover:text-foreground hover:underline transition-colors cursor-pointer">Enterprise Solutions</button>
-                <button type="button" onClick={() => navigate('/about')} className="hover:text-foreground hover:underline transition-colors cursor-pointer">About Weftro</button>
-                <button type="button" onClick={() => navigate('/developers')} className="hover:text-foreground hover:underline transition-colors cursor-pointer">Developer Platform</button>
-              </div>
-            </div>
-
-            <a href="https://optavel.com" target="_blank" rel="noreferrer" className="hover:text-foreground transition-colors flex items-center gap-1.5 font-medium">
-              <Globe className="w-3.5 h-3.5 text-primary" /> optavel.com
-            </a>
-          </div>
-        </div>
-      </footer>
+        <MarketingFooter onOpenSupport={(t) => setSupportPanel(t || "chat")} />
       
 
       {/* Share Link Dialog */}

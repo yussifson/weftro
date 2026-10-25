@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { CliPadLogo } from '@/components/ui/CliPadLogo';
 import MarketingHeader from '@/components/clipad/MarketingHeader';
+import MarketingFooter from '@/components/clipad/MarketingFooter';
 
 const INTEREST_TAGS = [
   'HD Meetings & Webinars',
@@ -588,6 +589,7 @@ export default function CliPadCustomPricing() {
           </div>
         )}
       </main>
+      <MarketingFooter />
     </div>
     </>
   );

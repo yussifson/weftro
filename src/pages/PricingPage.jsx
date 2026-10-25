@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
 import { CliPadLogo } from '@/components/ui/CliPadLogo';
 import MarketingHeader from '@/components/clipad/MarketingHeader';
+import MarketingFooter from '@/components/clipad/MarketingFooter';
 
 const plans = [
   {
@@ -128,19 +129,7 @@ export default function PricingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-border py-8 mt-16 bg-background">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-          <div className="flex items-center gap-2">
-            <CliPadLogo height={20} iconOnly />
-            <span>© {new Date().getFullYear()} Weftro by Optavel Technologies</span>
-          </div>
-          <div className="flex items-center gap-6">
-            <span className="cursor-pointer hover:text-foreground" onClick={() => navigate('/')}>Home</span>
-            <span className="cursor-pointer hover:text-foreground" onClick={() => navigate('/security')}>Security</span>
-            <span className="cursor-pointer hover:text-foreground" onClick={() => navigate('/login')}>Sign In</span>
-          </div>
-        </div>
-      </footer>
+      <MarketingFooter />
     </div>
   );
 }

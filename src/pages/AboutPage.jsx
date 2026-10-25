@@ -4,6 +4,7 @@ import SEO from '@/components/seo/SEO';
 import { Button } from '@/components/ui/button';
 import { CliPadLogo } from '@/components/ui/CliPadLogo';
 import MarketingHeader from '@/components/clipad/MarketingHeader';
+import MarketingFooter from '@/components/clipad/MarketingFooter';
 import {
   Brain,
   Building2,
@@ -334,20 +335,7 @@ export default function AboutPage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-border py-8 bg-[#091114] text-xs text-muted-foreground">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <CliPadLogo height={20} />
-            <span>&copy; {new Date().getFullYear()} Optavel Technologies. All rights reserved.</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <Link to="/pricing" className="hover:text-foreground">Pricing</Link>
-            <Link to="/security" className="hover:text-foreground">Security</Link>
-            <Link to="/custom-pricing" className="hover:text-foreground">Enterprise</Link>
-            <a href="https://weftro.com/sitemap.xml" className="hover:text-foreground">Sitemap</a>
-          </div>
-        </div>
-      </footer>
+      <MarketingFooter />
     </div>
   );
 }
