@@ -122,7 +122,7 @@ export default function ParticipantRoster({ onClose, hostId }) {
 
   return (
     <div 
-      className="w-80 border-l border-slate-200 dark:border-white/10 bg-white dark:bg-[#0d151c] flex flex-col shrink-0 animate-in slide-in-from-right shadow-2xl z-40 transition-colors h-full"
+      className="w-full sm:w-80 border-l border-slate-200 dark:border-white/10 bg-white dark:bg-[#0d151c] flex flex-col shrink-0 animate-in slide-in-from-right shadow-2xl z-40 transition-colors h-full"
       role="region"
       aria-label="Participants"
     >
