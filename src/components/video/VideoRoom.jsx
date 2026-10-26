@@ -724,13 +724,18 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
 
         if (shouldSave) {
           const roomTitle = roomUrl ? roomUrl.split('/').pop().split('?')[0].replace(/-/g, ' ') : 'Meeting';
+          const targetRoomName = roomUrl ? decodeURIComponent(roomUrl.split('/').pop().split('?')[0]) : '';
+          const companyId = user?.company_id || user?.user_metadata?.company_id || null;
+
           const payload = {
             title: `${roomTitle.charAt(0).toUpperCase() + roomTitle.slice(1)} - ${new Date().toLocaleDateString()}`,
             space_id: cleanSpaceId,
-            created_by: user?.id,
-            duration_seconds: meetingDuration,
-            participant_count: Math.max((participantIds?.length || 0) + 1, 1),
-            transcript: rawTranscript || null,
+            created_by: user?.id || null,
+            host_id: user?.id || null,
+            company_id: companyId,
+            duration: meetingDuration,
+            meeting_link: targetRoomName ? formatMeetingUrl(targetRoomName, { spaceId: cleanSpaceId }) : '',
+            daily_room_name: targetRoomName || null,
             ai_summary: hasContent ? 'Generating summary...' : 'No transcript recorded for this meeting.',
             status: 'completed',
           };
@@ -742,6 +747,10 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
             .insert(payload)
             .select()
             .single();
+
+          if (insertError) {
+            console.warn('Failed to insert into clipad_meeting_records:', insertError);
+          }
 
           if (!insertError && insertedMeeting) {
             logAuditEvent({ action: 'meeting_created', user, details: `Auto-saved meeting record: ${insertedMeeting.id}` });
@@ -857,8 +866,11 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           }
 
           const basePath = window.location.pathname.startsWith('/clipad') ? '/clipad' : '';
-          if (insertedMeeting) {
+          if (insertedMeeting?.id) {
             safeExit(`${basePath}/save-meeting/${insertedMeeting.id}${spaceId ? `?spaceId=${spaceId}` : ''}`);
+          } else if (isHost || endMeetingForEveryone) {
+            // Resilient Host Fallback: SaveMeetingPage natively supports loading/upserting by room name
+            safeExit(`${basePath}/save-meeting/${targetRoomName || cleanRoomId}${spaceId ? `?spaceId=${spaceId}` : ''}`);
           } else {
             safeExit(spaceId ? `/spaces/${spaceId}` : '/meetings');
           }
@@ -866,7 +878,13 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
         }
       } catch (e) {
         console.error('Failed to save meeting record:', e);
-        safeExit(spaceId ? `/spaces/${spaceId}` : '/meetings');
+        const targetRoomName = roomUrl ? decodeURIComponent(roomUrl.split('/').pop().split('?')[0]) : '';
+        const basePath = window.location.pathname.startsWith('/clipad') ? '/clipad' : '';
+        if (isHost || endMeetingForEveryone) {
+          safeExit(`${basePath}/save-meeting/${targetRoomName || cleanRoomId}${spaceId ? `?spaceId=${spaceId}` : ''}`);
+        } else {
+          safeExit(spaceId ? `/spaces/${spaceId}` : '/meetings');
+        }
         return;
       }
     }
@@ -1427,9 +1445,9 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           ) : null}
         </div>
         {/* Participant Sidebar — always visible, even in 2-person calls */}
-        <div className="flex-1 lg:max-w-[320px] flex flex-row lg:flex-col gap-3 overflow-x-auto lg:overflow-y-auto min-h-[140px] lg:min-h-0 max-h-full items-center lg:items-stretch content-start scrollbar-thin scrollbar-thumb-[#28313b] py-1 lg:py-0">
+        <div className="flex-1 lg:max-w-[320px] flex flex-row lg:flex-col gap-3 overflow-x-auto lg:overflow-y-auto min-h-[160px] lg:min-h-0 max-h-full items-stretch content-start scrollbar-thin scrollbar-thumb-[#28313b] py-1 lg:py-0">
           {sidebarParticipants.map(id => (
-            <ParticipantTile key={id} id={id} isLocal={id === localSessionId} activeSpeakerId={activeSpeakerId} className="w-64 min-w-[16rem] lg:w-full lg:min-w-0 shrink-0 m-0" />
+            <ParticipantTile key={id} id={id} isLocal={id === localSessionId} activeSpeakerId={activeSpeakerId} className="w-64 min-w-[16rem] lg:w-full lg:min-w-0 aspect-video shrink-0 m-0" />
           ))}
           {/* Always show local self-view when we're the only person on screen */}
           {totalCount === 1 && mainSpeakerId === localSessionId && (
@@ -1953,7 +1971,7 @@ function ParticipantTile({ id, isLocal, className, activeSpeakerId }) {
 
  const isSpeaking = Boolean(activeSpeakerId && activeSpeakerId === id && audioState?.state === 'playable');
  return (
- <div className={`relative bg-slate-100 dark:bg-[#101D22] rounded-2xl overflow-hidden group flex items-center justify-center border transition-all ${isSpeaking ? 'border-[#00beac] ring-2 ring-[#00beac]/50' : 'border-slate-200 dark:border-[#1A2F38]'} ${className || 'w-full h-full'}`}>
+ <div className={`relative bg-slate-100 dark:bg-[#101D22] rounded-2xl overflow-hidden group flex flex-col items-center justify-center border transition-all ${isSpeaking ? 'border-[#00beac] ring-2 ring-[#00beac]/50' : 'border-slate-200 dark:border-[#1A2F38]'} ${className || 'w-full h-full'}`}>
  {videoState?.state === 'playable' ? (
  <video 
  ref={videoRef}
@@ -1963,26 +1981,26 @@ function ParticipantTile({ id, isLocal, className, activeSpeakerId }) {
  className="w-full h-full object-cover rounded-2xl"
  />
  ) : customAvatarUrl ? (
- <div className="w-14 h-14 sm:w-20 sm:h-20 md:w-24 md:h-24 max-w-[40%] max-h-[40%] aspect-square rounded-full flex items-center justify-center shadow-md overflow-hidden shrink-0">
+ <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 aspect-square rounded-full flex items-center justify-center shadow-md overflow-hidden shrink-0 mb-4 sm:mb-6">
   <img src={customAvatarUrl} alt={displayName} className="w-full h-full object-cover" />
  </div>
  ) : (
- <div className={`w-14 h-14 sm:w-20 sm:h-20 md:w-24 md:h-24 max-w-[40%] max-h-[40%] aspect-square ${finalAvatarColor} rounded-full flex items-center justify-center shadow-md shrink-0`}>
- <span className="text-sm sm:text-2xl md:text-3xl text-white font-bold tracking-tight select-none">{initials}</span>
+ <div className={`w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 aspect-square ${finalAvatarColor} rounded-full flex items-center justify-center shadow-md shrink-0 mb-4 sm:mb-6`}>
+ <span className="text-sm sm:text-xl md:text-2xl text-white font-bold tracking-tight select-none">{initials}</span>
  </div>
  )}
  
  {!isLocal && <audio ref={audioRef} autoPlay />}
  
-  <div className={`absolute bottom-4 left-4 ${finalAvatarColor} px-3 py-1.5 rounded-lg flex items-center gap-2 shadow-sm border border-black/10 dark:border-white/10 transition-all z-10`}>
-  <span className="text-white text-xs font-bold tracking-wide">{displayName}</span>
-  {audioState?.state !== 'playable' && <MicOff className="w-3.5 h-3.5 text-white/90" />}
+  <div className="absolute bottom-2.5 left-2.5 max-w-[calc(100%-1.25rem)] bg-black/70 backdrop-blur-md px-2.5 py-1 rounded-md flex items-center gap-1.5 shadow-sm border border-white/10 transition-all z-10 truncate">
+  <span className="text-white text-xs font-semibold tracking-wide truncate">{displayName}</span>
+  {audioState?.state !== 'playable' && <MicOff className="w-3 h-3 text-red-400 shrink-0" />}
   </div>
 
   {videoState?.state === 'playable' && (
-    <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity z-20">
-      <Button variant="secondary" size="icon" className="w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 text-white border-0" onClick={togglePip} title="Picture in Picture">
-        <ExternalLink className="w-4 h-4" />
+    <div className="absolute top-2.5 right-2.5 opacity-0 group-hover:opacity-100 transition-opacity z-20">
+      <Button variant="secondary" size="icon" className="w-7 h-7 rounded-full bg-black/60 hover:bg-black/80 text-white border-0" onClick={togglePip} title="Picture in Picture">
+        <ExternalLink className="w-3.5 h-3.5" />
       </Button>
     </div>
   )}
