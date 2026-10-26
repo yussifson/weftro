@@ -187,6 +187,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
   const [isApplyingBg, setIsApplyingBg] = useState(false);
   const [showWhiteboard, setShowWhiteboard] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
+  const [isRemoteRecording, setIsRemoteRecording] = useState(false);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
   const recordingIntervalRef = useRef(null);
   const [meetingVideoUrl, setMeetingVideoUrl] = useState(null);
@@ -1987,6 +1988,8 @@ function ParticipantTile({ id, isLocal, className, activeSpeakerId }) {
 }
 
 // Wrapper to initialize Daily provider
+const isValidUUID = (str) => typeof str === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+
 export default function VideoRoom({ roomUrl, userName, token, initialAudio = true, initialVideo = true, initialBackground, onLeave, isPipMode, togglePipMode, spaceId }) {
   const { id: routeId } = useParams();
   const [searchParams] = useSearchParams();

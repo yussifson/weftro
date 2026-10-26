@@ -17,6 +17,7 @@ import LockWall from '@/components/clipad/LockWall';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/components/ui/use-toast';
 import { ingestDocumentChunks } from '@/lib/clipadChunkIngestionService';
+import { generateText } from '@/lib/cloudflareAI';
 
 function CopyButton({ text }) {
   const [copied, setCopied] = useState(false);
@@ -631,7 +632,7 @@ export default function MeetingRecord() {
                 <span className="text-[11px] font-semibold text-slate-500 dark:text-muted-foreground uppercase">Decisions</span>
               </div>
               <div className="text-center px-2 col-span-2 sm:col-span-1 border-t sm:border-t-0 sm:border-l border-slate-200 dark:border-border pt-2 sm:pt-0">
-                <span className="block text-xl font-black text-[#006065] dark:text-[#fad503]">{transcript.length || (meeting.raw_transcript ? '1' : '0')}</span>
+                <span className="block text-xl font-black text-[#006065] dark:text-[#fad503]">{transcript.length || ((meeting.transcript || meeting.raw_transcript) ? '1' : '0')}</span>
                 <span className="text-[11px] font-semibold text-slate-500 dark:text-muted-foreground uppercase">Dialogue</span>
               </div>
             </div>
@@ -642,7 +643,7 @@ export default function MeetingRecord() {
             {[
               { id: 'intelligence', label: 'Smart Moments & AI', icon: Zap, count: meeting.key_decisions?.length },
               { id: 'recording', label: 'Media Player', icon: Video, badge: meeting.video_url ? 'Ready' : null },
-              { id: 'transcript', label: 'Full Transcript', icon: FileText, count: transcript.length },
+              { id: 'transcript', label: 'Full Transcript', icon: FileText, count: transcript.length || ((meeting.transcript || meeting.raw_transcript) ? 1 : 0) },
               { id: 'discussion', label: 'Action Items & Notes', icon: MessageSquare, count: actionItems.length },
             ].map(tab => {
               const TabIcon = tab.icon;
@@ -870,10 +871,10 @@ export default function MeetingRecord() {
                   </h3>
                   <p className="text-xs text-slate-500 dark:text-muted-foreground">Indexed timestamped dialogue with speaker separation.</p>
                 </div>
-                <CopyButton text={transcript.map(t => `[${t.speaker}]: ${t.text}`).join('\n') || meeting.raw_transcript || ''} />
+                <CopyButton text={transcript.map(t => `[${t.speaker}]: ${t.text}`).join('\n') || meeting.transcript || meeting.raw_transcript || ''} />
               </div>
 
-              {transcript.length > 0 || meeting.raw_transcript ? (
+              {transcript.length > 0 || meeting.transcript || meeting.raw_transcript ? (
                 <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
                   {transcript.length > 0 ? (
                     transcript.map((seg, i) => (
@@ -893,7 +894,7 @@ export default function MeetingRecord() {
                     ))
                   ) : (
                     <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line p-4 rounded-xl bg-slate-50 dark:bg-slate-900/20">
-                      {meeting.raw_transcript}
+                      {meeting.transcript || meeting.raw_transcript}
                     </p>
                   )}
                 </div>
