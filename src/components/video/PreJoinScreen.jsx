@@ -124,7 +124,10 @@ export default function PreJoinScreen({ roomName, onJoin, defaultName = 'Guest',
     let animationFrame;
 
     try {
-      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      audioContext = new AudioCtx();
+      if (audioContext.state === 'suspended') { audioContext.resume().catch(() => {}); }
       analyser = audioContext.createAnalyser();
       analyser.smoothingTimeConstant = 0.8;
       analyser.fftSize = 256;
@@ -197,7 +200,7 @@ export default function PreJoinScreen({ roomName, onJoin, defaultName = 'Guest',
   };
 
   return (
-    <div className="w-full h-full min-h-full bg-slate-50 dark:bg-[#050810] flex flex-col md:flex-row items-center justify-center p-4 md:p-12 gap-4 md:gap-16 overflow-x-hidden overflow-y-auto relative">
+    <div className="w-full h-full min-h-full bg-[#f8fafc] dark:bg-[#0B1418] text-slate-900 dark:text-slate-100 flex flex-col md:flex-row items-center justify-center p-4 md:p-12 gap-4 md:gap-16 overflow-x-hidden overflow-y-auto relative">
       {/* Realistic Background Layers */}
       <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
         <div className="absolute -top-[20%] -left-[10%] w-[70vw] h-[70vw] rounded-full bg-primary/5 dark:bg-primary/10 blur-[120px]" />
@@ -218,7 +221,7 @@ export default function PreJoinScreen({ roomName, onJoin, defaultName = 'Guest',
           />
           
           {!isVideoOn && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-primary z-10">
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/95 dark:bg-[#101D22] z-10 border border-white/5">
               <div className="w-24 h-24 bg-black/10 rounded-full flex items-center justify-center mb-6 shadow-sm border border-black/5">
                 <VideoOff className="w-10 h-10 text-white/90" />
               </div>

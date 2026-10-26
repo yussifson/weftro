@@ -1,3 +1,4 @@
+const isValidUUID = (str) => typeof str === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/api/supabaseClient';
@@ -270,11 +271,11 @@ export default function CliPadDashboard() {
       try {
         await supabase.from('video_rooms').upsert({
           id: crypto.randomUUID(),
-          company_id: user?.company_id || user?.user_metadata?.company_id || null,
+          company_id: isValidUUID(user?.company_id || user?.user_metadata?.company_id) ? (user?.company_id || user?.user_metadata?.company_id) : null,
           daily_room_name: targetRoomName,
           daily_room_url: roomData?.url || `https://optalflow.daily.co/${targetRoomName}`,
           privacy_type: privacyType || 'public',
-          host_id: user?.id || null,
+          host_id: isValidUUID(user?.id) ? user.id : null,
           status: 'active',
           meeting_type: 'instant'
         });

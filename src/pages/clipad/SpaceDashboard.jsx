@@ -359,13 +359,13 @@ export default function SpaceDashboard() {
       try {
         await supabase.from('video_rooms').upsert({
           id: crypto.randomUUID(),
-          company_id: user?.company_id || user?.user_metadata?.company_id || null,
+          company_id: isValidUUID(user?.company_id || user?.user_metadata?.company_id) ? (user?.company_id || user?.user_metadata?.company_id) : null,
           daily_room_name: targetRoomName,
           daily_room_url: roomData?.url || `https://optalflow.daily.co/${targetRoomName}`,
           privacy_type: privacyType || 'public',
-          host_id: user?.id || null,
+          host_id: isValidUUID(user?.id) ? user.id : null,
           status: 'active',
-          space_id: spaceId,
+          space_id: isValidUUID(spaceId) ? spaceId : null,
           meeting_type: 'instant'
         });
       } catch (_) { /* db insert failed — meeting still works */ }
@@ -386,7 +386,7 @@ export default function SpaceDashboard() {
     setCreatingTask(true);
     try {
       const { data, error } = await supabase.from('clipad_action_items').insert({
-        space_id: spaceId,
+        space_id: isValidUUID(spaceId) ? spaceId : null,
         assigned_to: user.id,
         title: newTaskTitle.trim(),
         is_complete: false,
@@ -431,10 +431,10 @@ export default function SpaceDashboard() {
     const isMember = spaceMembers.some(m => m.user_id === profileId);
     try {
       if (isMember) {
-        await supabase.from('clipad_space_members').delete().match({ space_id: spaceId, user_id: profileId });
+        await supabase.from('clipad_space_members').delete().match({ space_id: isValidUUID(spaceId) ? spaceId : null, user_id: profileId });
         setSpaceMembers(prev => prev.filter(m => m.user_id !== profileId));
       } else {
-        const { data, error } = await supabase.from('clipad_space_members').insert({ space_id: spaceId, user_id: profileId }).select().single();
+        const { data, error } = await supabase.from('clipad_space_members').insert({ space_id: isValidUUID(spaceId) ? spaceId : null, user_id: profileId }).select().single();
         if (error) throw error;
         if (data) {
           setSpaceMembers(prev => [...prev, data]);

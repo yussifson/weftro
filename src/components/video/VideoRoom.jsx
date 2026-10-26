@@ -1,3 +1,4 @@
+const isValidUUID = (str) => typeof str === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import DailyIframe from '@daily-co/daily-js';
 import ParticipantRoster from './ParticipantRoster';
@@ -713,17 +714,19 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
         });
       }
 
-      // Auto-save meeting record if meeting had transcript content or lasted > 30 seconds
+      const cleanSpaceId = isValidUUID(spaceId) ? spaceId : null;
+      // Auto-save meeting record on conclusion or leave:
       try {
         const rawTranscript = transcriptData.map(t => `${t.name}: ${t.text}`).join('\n');
         const hasContent = rawTranscript.trim().length > 0;
-        const lastedLongEnough = meetingDuration >= 30;
+        const lastedLongEnough = meetingDuration >= 15;
+        const shouldSave = endMeetingForEveryone || isHost || hasContent || lastedLongEnough;
 
-        if (hasContent || lastedLongEnough) {
+        if (shouldSave) {
           const roomTitle = roomUrl ? roomUrl.split('/').pop().split('?')[0].replace(/-/g, ' ') : 'Meeting';
           const payload = {
             title: `${roomTitle.charAt(0).toUpperCase() + roomTitle.slice(1)} - ${new Date().toLocaleDateString()}`,
-            space_id: spaceId || null,
+            space_id: cleanSpaceId,
             created_by: user?.id,
             duration_seconds: meetingDuration,
             participant_count: Math.max((participantIds?.length || 0) + 1, 1),
@@ -827,7 +830,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
               // Primary: Atomic server-side RPC with strict host verification
               const { error: rpcErr } = await supabase.rpc('terminate_meeting', {
                 p_room_name: targetRoomName,
-                p_space_id: spaceId || null
+                p_space_id: isValidUUID(spaceId) ? spaceId : null
               });
               if (rpcErr) {
                 console.warn('terminate_meeting RPC call failed or unmigrated; attempting direct RLS update fallback:', rpcErr);
@@ -875,7 +878,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
         // Primary: Atomic server-side RPC with strict host verification
         const { error: rpcErr } = await supabase.rpc('terminate_meeting', {
           p_room_name: targetRoomName,
-          p_space_id: spaceId || null
+          p_space_id: isValidUUID(spaceId) ? spaceId : null
         });
         if (rpcErr) {
           console.warn('terminate_meeting RPC call failed or unmigrated; attempting direct RLS update fallback:', rpcErr);
@@ -1960,12 +1963,12 @@ function ParticipantTile({ id, isLocal, className, activeSpeakerId }) {
  className="w-full h-full object-cover rounded-2xl"
  />
  ) : customAvatarUrl ? (
- <div className="w-24 h-24 rounded-full flex items-center justify-center shadow-md overflow-hidden">
+ <div className="w-14 h-14 sm:w-20 sm:h-20 md:w-24 md:h-24 max-w-[40%] max-h-[40%] aspect-square rounded-full flex items-center justify-center shadow-md overflow-hidden shrink-0">
   <img src={customAvatarUrl} alt={displayName} className="w-full h-full object-cover" />
  </div>
  ) : (
- <div className={`w-24 h-24 ${finalAvatarColor} rounded-full flex items-center justify-center shadow-md`}>
- <span className="text-3xl text-white font-bold tracking-tight">{initials}</span>
+ <div className={`w-14 h-14 sm:w-20 sm:h-20 md:w-24 md:h-24 max-w-[40%] max-h-[40%] aspect-square ${finalAvatarColor} rounded-full flex items-center justify-center shadow-md shrink-0`}>
+ <span className="text-sm sm:text-2xl md:text-3xl text-white font-bold tracking-tight select-none">{initials}</span>
  </div>
  )}
  
@@ -1988,7 +1991,6 @@ function ParticipantTile({ id, isLocal, className, activeSpeakerId }) {
 }
 
 // Wrapper to initialize Daily provider
-const isValidUUID = (str) => typeof str === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
 
 export default function VideoRoom({ roomUrl, userName, token, initialAudio = true, initialVideo = true, initialBackground, onLeave, isPipMode, togglePipMode, spaceId }) {
   const { id: routeId } = useParams();

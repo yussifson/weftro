@@ -1,3 +1,4 @@
+const isValidUUID = (str) => typeof str === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -119,12 +120,12 @@ export default function ScheduleMeetingDialog({ open, onOpenChange, onScheduled 
 
       const _payload = {
         id: dbId,
-        company_id: companyId,
+        company_id: isValidUUID(companyId) ? companyId : null,
         title: title,
         description: `Scheduled meeting for ${scheduledStart.toLocaleString()}`,
         daily_room_url: realUrl,
         daily_room_name: roomName,
-        host_id: user.id,
+        host_id: isValidUUID(user?.id) ? user.id : null,
         status: 'scheduled',
         meeting_type: 'scheduled',
         privacy_type: isPrivate ? 'private' : 'public',

@@ -1,3 +1,4 @@
+const isValidUUID = (str) => typeof str === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import SEO from '@/components/seo/SEO';
@@ -355,7 +356,7 @@ export default function MeetLandingPage() {
 
             if (companyId) {
               supabase.from('company_subscriptions').upsert({
-                company_id: companyId,
+                company_id: isValidUUID(companyId) ? companyId : null,
                 plan_id: 'pro',
                 status: 'active',
                 paystack_customer_code: response.reference,
@@ -396,11 +397,11 @@ export default function MeetLandingPage() {
       try {
         await supabase.from('video_rooms').upsert({
           id: crypto.randomUUID(),
-          company_id: companyId || null,
+          company_id: isValidUUID(companyId) ? companyId : null,
           daily_room_name: targetRoomName,
           daily_room_url: roomData?.url || `https://optalflow.daily.co/${targetRoomName}`,
           privacy_type: 'public',
-          host_id: user?.id || null,
+          host_id: isValidUUID(user?.id) ? user.id : null,
           status: 'active',
           meeting_type: 'instant'
         });
