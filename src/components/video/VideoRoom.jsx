@@ -103,8 +103,8 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           .maybeSingle();
         if (active && dbRoom) {
           setRoomHostId(dbRoom.host_id || null);
-          if (user?.id) {
-            setIsHost(dbRoom.host_id === user.id);
+          if (user?.id && dbRoom.host_id === user.id) {
+            setIsHost(true);
           }
           // If meeting is already marked ended in DB upon arrival
           if (dbRoom.status === 'ended') {
@@ -317,6 +317,12 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
     }
   };
 
+  useDailyEvent('participant-updated', useCallback((ev) => {
+    if (ev?.participant?.local && ev.participant.owner) {
+      setIsHost(true);
+    }
+  }, []));
+
   useDailyEvent('joined-meeting', useCallback(() => {
    setJoined(true);
    setIsReconnecting(false);
@@ -341,7 +347,10 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
    }).catch(e => console.warn('updateSendSettings failed:', e));
    // Only attempt cloud transcription — silent failure is fine if not enabled
    const local = daily?.participants()?.local;
-   if (local?.owner && typeof daily?.startTranscription === 'function') {
+    if (local?.owner) {
+      setIsHost(true);
+    }
+    if (local?.owner && typeof daily?.startTranscription === 'function') {
       try {
         const tr = daily.startTranscription();
         if (tr && typeof tr.catch === 'function') tr.catch(() => {});
