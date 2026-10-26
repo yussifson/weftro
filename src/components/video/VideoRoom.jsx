@@ -189,6 +189,9 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
   const [showWhiteboard, setShowWhiteboard] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [isRemoteRecording, setIsRemoteRecording] = useState(false);
+  const [isCloudRecording, setIsCloudRecording] = useState(false);
+  const [cloudRecordingId, setCloudRecordingId] = useState(null);
+  const [isStartingRecording, setIsStartingRecording] = useState(false);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
   const recordingIntervalRef = useRef(null);
   const [meetingVideoUrl, setMeetingVideoUrl] = useState(null);
@@ -344,7 +347,22 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
         if (tr && typeof tr.catch === 'function') tr.catch(() => {});
       } catch (_) {}
     }
-  }, [daily, initialAudio, initialVideo]));
+
+    // Check if recording is already active in room
+    try {
+      if (typeof daily?.recordingState === 'function') {
+        const state = daily.recordingState();
+        if (state === 'record' || state === 'recording') {
+          setIsCloudRecording(true);
+          setIsRecording(true);
+          toast({
+            title: '⏺️ Recording in Progress',
+            description: 'Notice: This meeting is currently being recorded.',
+          });
+        }
+      }
+    } catch (_) {}
+  }, [daily, initialAudio, initialVideo, toast]));
 
   // Fix #18: Reuse a single AudioContext instead of creating one per sound
   const playSound = (type) => {
@@ -388,6 +406,23 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
       toast({
         title: "Participant Joined",
         description: `${ev.participant.user_name || 'Someone'} joined the meeting.`,
+      });
+      // If meeting is currently recording, notify the joining participant
+      if (isRecording || isCloudRecording) {
+        try {
+          daily?.sendAppMessage({ type: 'recording-in-progress', isRecording: true }, ev.participant.session_id);
+        } catch (_) {}
+      }
+    }
+  }, [toast, isRecording, isCloudRecording, daily]));
+
+  useDailyEvent('app-message', useCallback((ev) => {
+    if (ev?.data?.type === 'recording-in-progress') {
+      setIsCloudRecording(true);
+      setIsRecording(true);
+      toast({
+        title: '⏺️ Meeting in Progress is Being Recorded',
+        description: 'Notice: This meeting is being recorded by the host.',
       });
     }
   }, [toast]));
@@ -437,6 +472,57 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
     variant: 'destructive'
   });
  }, [toast]));
+
+ // Workstream: Native Cloud Recording Listeners
+ useDailyEvent('recording-started', useCallback((ev) => {
+   setIsCloudRecording(true);
+   setIsRecording(true);
+   if (ev?.recordingId) setCloudRecordingId(ev.recordingId);
+   toast({
+     title: '⏺️ Recording Started',
+     description: 'This meeting is now being recorded to the cloud.',
+   });
+ }, [toast]));
+
+ useDailyEvent('recording-stopped', useCallback(() => {
+   setIsCloudRecording(false);
+   setIsRecording(false);
+   toast({
+     title: '⏹️ Recording Stopped',
+     description: 'Cloud recording stopped. Video will be processed and saved.',
+   });
+ }, [toast]));
+
+ useDailyEvent('recording-error', useCallback((ev) => {
+   setIsCloudRecording(false);
+   setIsRecording(false);
+   setIsStartingRecording(false);
+   console.error('Daily cloud recording error:', ev);
+   toast({
+     title: 'Recording Error',
+     description: ev?.errorMsg || 'Cloud recording encountered an issue.',
+     variant: 'destructive'
+   });
+ }, [toast]));
+
+ useDailyEvent('recording-upload-completed', useCallback(async (ev) => {
+   console.log('Daily recording upload completed:', ev);
+   const recId = ev?.recordingId || cloudRecordingId;
+   if (recId) {
+     try {
+       const { data } = await supabase.functions.invoke('create-daily-room', {
+         body: { action: 'get-recording', recordingId: recId }
+       });
+       if (data?.download_url) {
+         setMeetingVideoUrl(data.download_url);
+         meetingVideoUrlRef.current = data.download_url;
+         toast({ title: 'Recording Processed', description: 'Cloud video is ready for playback.' });
+       }
+     } catch (err) {
+       console.warn('Could not auto-fetch recording url:', err);
+     }
+   }
+ }, [cloudRecordingId, toast]));
  // Workstream D & Phase 5: Resilient reconnection, media recovery & telemetry
  useDailyEvent('network-connection', useCallback((ev) => {
    if (ev.event === 'interrupted') {
@@ -833,7 +919,6 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           }
 
           // Authoritative room termination: ONLY if host ends the meeting for everyone
-          const targetRoomName = roomUrl ? decodeURIComponent(roomUrl.split('/').pop().split('?')[0]) : '';
           if (isHost && endMeetingForEveryone && targetRoomName) {
             try {
               // Primary: Atomic server-side RPC with strict host verification
@@ -1158,45 +1243,60 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           <PenTool className="w-5 h-5" />
         </button>
 
-        {/* Record Meeting */}
+        {/* Native Cloud Recording Primary Action */}
         <button
           onClick={async () => {
-            if (isRecording) {
-              if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-                mediaRecorderRef.current.stop();
+            if (isStartingRecording) return;
+            const targetRoomName = roomUrl ? decodeURIComponent(roomUrl.split('/').pop().split('?')[0]) : '';
+            if (isRecording || isCloudRecording) {
+              try {
+                setIsStartingRecording(true);
+                if (daily && typeof daily.stopRecording === 'function') {
+                  daily.stopRecording();
+                } else if (targetRoomName) {
+                  await supabase.functions.invoke('create-daily-room', {
+                    body: { action: 'stop-recording', roomName: targetRoomName }
+                  });
+                }
+              } catch (err) {
+                console.error('Failed to stop cloud recording:', err);
+                toast({ title: 'Recording Error', description: 'Failed to stop cloud recording.', variant: 'destructive' });
+              } finally {
+                setIsStartingRecording(false);
               }
-              setIsRecording(false);
             } else {
               try {
-                const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
-                const mr = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
-                recordedChunksRef.current = [];
-                mr.ondataavailable = (e) => { if (e.data.size > 0) recordedChunksRef.current.push(e.data); };
-                mr.onstop = () => {
-                  const blob = new Blob(recordedChunksRef.current, { type: 'video/webm' });
-                  const url = URL.createObjectURL(blob);
-                  const a = document.createElement('a');
-                  a.href = url;
-                  a.download = `meeting-${new Date().toISOString().slice(0, 10)}.webm`;
-                  a.click();
-                  stream.getTracks().forEach(t => t.stop());
-                };
-                mr.start(1000);
-                mediaRecorderRef.current = mr;
-                setIsRecording(true);
+                setIsStartingRecording(true);
+                toast({ title: 'Starting Cloud Recording', description: 'Initializing server recording...' });
+                if (daily && typeof daily.startRecording === 'function') {
+                  daily.startRecording({ layout: { preset: 'default' } });
+                } else if (targetRoomName) {
+                  const { data, error } = await supabase.functions.invoke('create-daily-room', {
+                    body: { action: 'start-recording', roomName: targetRoomName }
+                  });
+                  if (error || data?.error) {
+                    throw new Error(data?.error || error?.message || 'Could not start cloud recording');
+                  }
+                  setIsCloudRecording(true);
+                  setIsRecording(true);
+                }
               } catch (err) {
-                console.error('Failed to start recording:', err);
+                console.error('Failed to start cloud recording:', err);
+                toast({ title: 'Recording Error', description: err?.message || 'Failed to start cloud recording. Host authorization required.', variant: 'destructive' });
+              } finally {
+                setIsStartingRecording(false);
               }
             }
           }}
+          disabled={isStartingRecording}
           className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
-            isRecording
-              ? 'bg-[#ea4335] text-white animate-pulse'
+            isRecording || isCloudRecording
+              ? 'bg-[#ea4335] text-white shadow-lg animate-pulse'
               : 'bg-slate-100 hover:bg-slate-200 dark:bg-[#15262D] dark:hover:bg-[#1C333C] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#1A2F38]'
           }`}
-          title={isRecording ? "Stop recording" : "Record meeting"}
+          title={isRecording || isCloudRecording ? "Stop cloud recording" : "Record meeting (Cloud)"}
         >
-          <div className={`w-3 h-3 rounded-full ${isRecording ? 'bg-white' : 'bg-red-400'}`} />
+          <div className={`w-3.5 h-3.5 rounded-full ${isRecording || isCloudRecording ? 'bg-white' : 'bg-red-500'}`} />
         </button>
 
         {/* Participant Roster Button */}
@@ -1760,6 +1860,48 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
               <span>Dark Mode</span>
             </Button>
           </div>
+        </div>
+
+        {/* Optional Browser Screen Recording (client capture) */}
+        <div className="flex flex-col gap-2 pt-2 border-t border-slate-200 dark:border-border">
+          <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Local Screen Recording (Browser)</label>
+          <p className="text-xs text-muted-foreground">Optional browser-based screen capture. Saves a local WebM file to your device.</p>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={async () => {
+              if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+                mediaRecorderRef.current.stop();
+                toast({ title: 'Local Recording Stopped', description: 'WebM file downloaded.' });
+              } else {
+                try {
+                  const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+                  const mr = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
+                  recordedChunksRef.current = [];
+                  mr.ondataavailable = (e) => { if (e.data.size > 0) recordedChunksRef.current.push(e.data); };
+                  mr.onstop = () => {
+                    const blob = new Blob(recordedChunksRef.current, { type: 'video/webm' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `screen-record-${new Date().toISOString().slice(0, 10)}.webm`;
+                    a.click();
+                    stream.getTracks().forEach(t => t.stop());
+                  };
+                  mr.start(1000);
+                  mediaRecorderRef.current = mr;
+                  toast({ title: 'Local Screen Recording Started', description: 'Capturing selected window/screen.' });
+                } catch (err) {
+                  console.error('Local screen recording error:', err);
+                  toast({ title: 'Local Recording Error', description: err?.message || 'Permission denied.', variant: 'destructive' });
+                }
+              }
+            }}
+            className="w-full justify-start gap-2"
+          >
+            <MonitorUp className="w-4 h-4" />
+            <span>Record Screen (Local Download)</span>
+          </Button>
         </div>
         <div className="flex flex-col gap-2">
           <label className="text-sm font-medium">Vector Avatar</label>
