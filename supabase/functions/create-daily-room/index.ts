@@ -213,6 +213,7 @@ serve(async (req) => {
         properties: {
           room_name: roomName,
           is_owner: isHost, // Least privilege: Only authenticated host receives is_owner=true
+          enable_recording: isHost ? 'cloud' : undefined,
           exp: tokenExp,
           enable_screenshare: true,
           user_id: callerUser?.id || undefined,
@@ -275,6 +276,7 @@ serve(async (req) => {
       enable_chat: true,
       enable_screenshare: true,
       enable_knocking: privacy === 'private',
+      enable_recording: 'cloud',
       start_video_off: false,
       start_audio_off: false,
       exp: expirySeconds,

@@ -1275,48 +1275,54 @@ export default function RecordVideo() {
 
     try {
       const videoTitle = title.trim() || `Recording - ${new Date().toLocaleDateString()}`;
-      const fileName = `${user.id}/${Date.now()}.webm`;
+      const rawFileName = `${Date.now()}.webm`;
+      let publicUrl = null;
 
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      const tryTusUpload = () => new Promise((resolve, reject) => {
-        const upload = new tus.Upload(finalBlob, {
-          endpoint: `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/upload/resumable`,
-          retryDelays: [0, 2000, 5000, 10000],
-          headers: {
-            authorization: `Bearer ${session?.access_token}`,
-            'x-upsert': 'true', 
-          },
-          uploadDataDuringCreation: false, // CRITICAL FIX: Must be false to prevent 413 POST payload limit
-          removeFingerprintOnSuccess: true,
-          metadata: {
-            bucketName: 'clipad_videos',
-            objectName: fileName,
+      // Primary Strategy: Cloudflare R2 direct presigned upload (unlimited file size, no 50MB Supabase cap)
+      try {
+        const { data: presignData, error: presignError } = await supabase.functions.invoke('get-r2-upload-url', {
+          body: {
+            fileName: rawFileName,
             contentType: 'video/webm',
-            cacheControl: '3600',
-          },
-          chunkSize: 2 * 1024 * 1024, // 2MB per chunk payload for multi-gigabyte upload reliability
-          onError: function (error) {
-             reject(error);
-          },
-          onProgress: function (bytesUploaded, bytesTotal) {
-             const percentage = ((bytesUploaded / bytesTotal) * 100);
-             setUploadProgress(Math.min(percentage, 95));
-          },
-          onSuccess: function () {
-             resolve();
+            prefix: 'screen-recordings'
           }
         });
-        upload.start();
-      });
 
-      try {
-        await tryTusUpload();
-      } catch (tusErr) {
-        console.warn('TUS Resumable upload notice, using direct storage upload fallback:', tusErr);
-        setUploadProgress(40);
-        
-        // Direct upload fallback (handles Blobs up to Enterprise plan limits without TUS overhead)
+        if (presignError || !presignData?.uploadUrl) {
+          throw new Error(presignError?.message || 'Could not obtain R2 upload URL');
+        }
+
+        // Upload directly from browser to Cloudflare R2 with progress tracking via XMLHttpRequest
+        await new Promise((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          xhr.open('PUT', presignData.uploadUrl, true);
+          xhr.setRequestHeader('Content-Type', 'video/webm');
+
+          xhr.upload.onprogress = (e) => {
+            if (e.lengthComputable) {
+              const pct = (e.loaded / e.total) * 90;
+              setUploadProgress(Math.min(pct, 90));
+            }
+          };
+
+          xhr.onload = () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              publicUrl = presignData.publicUrl;
+              resolve();
+            } else {
+              reject(new Error(`R2 upload failed with status ${xhr.status}`));
+            }
+          };
+
+          xhr.onerror = () => reject(new Error('Network error during R2 upload'));
+          xhr.send(finalBlob);
+        });
+
+        setUploadProgress(95);
+      } catch (r2Err) {
+        console.warn('Cloudflare R2 upload fallback triggered:', r2Err);
+        // Secondary Strategy: Supabase Storage direct upload fallback
+        const fileName = `${user.id}/${Date.now()}.webm`;
         const { error: directUploadError } = await supabase.storage
           .from('clipad_videos')
           .upload(fileName, finalBlob, {
@@ -1328,10 +1334,10 @@ export default function RecordVideo() {
         if (directUploadError) {
           throw new Error(`Cloud upload failed: ${directUploadError.message}`);
         }
+        publicUrl = supabase.storage.from('clipad_videos').getPublicUrl(fileName).data.publicUrl;
       }
 
       setUploadProgress(95);
-      const publicUrl = supabase.storage.from('clipad_videos').getPublicUrl(fileName).data.publicUrl;
 
       const { data: videoRecord, error: dbError } = await supabase.from('clipad_videos').insert({
         id: id, // FIX: Map the cloud ID to the route ID
