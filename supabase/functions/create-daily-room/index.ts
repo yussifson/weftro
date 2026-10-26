@@ -27,7 +27,8 @@ serve(async (req) => {
       companyId, 
       dbId, 
       max_participants,
-      action = 'create' // 'create' | 'token'
+      recordingId,
+      action = 'create' // 'create' | 'token' | 'start-recording' | 'stop-recording' | 'get-recording' | 'list-recordings'
     } = await req.json()
 
     if (!DAILY_API_KEY) {
@@ -54,11 +55,112 @@ serve(async (req) => {
         const adminClient = createClient(supabaseUrl, supabaseServiceKey)
         const { data: profile } = await adminClient
           .from('profiles')
-          .select('id, company_id, role')
+          .select('id, company_id, role, full_name')
           .eq('id', callerUser.id)
           .maybeSingle()
         callerProfile = profile
       }
+    }
+
+    // Workstream: Native Cloud Recording Actions
+    if (action === 'start-recording') {
+      if (!roomName || !isValidDailyRoomName(roomName)) {
+        return new Response(JSON.stringify({ error: 'Valid roomName is required to start cloud recording' }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400,
+        })
+      }
+
+      const recRes = await fetch(`https://api.daily.co/v1/rooms/${roomName}/recordings/start`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${DAILY_API_KEY}`,
+        },
+        body: JSON.stringify({
+          layout: { preset: 'default' }
+        }),
+      })
+
+      const recData = await recRes.json()
+      if (recData.error) {
+        console.error('Daily start recording error:', recData.error, recData.info)
+        return new Response(JSON.stringify({ error: recData.info || recData.error || 'Failed to start cloud recording' }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400,
+        })
+      }
+
+      return new Response(JSON.stringify({ success: true, recording: recData }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      })
+    }
+
+    if (action === 'stop-recording') {
+      if (!roomName || !isValidDailyRoomName(roomName)) {
+        return new Response(JSON.stringify({ error: 'Valid roomName is required to stop cloud recording' }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400,
+        })
+      }
+
+      const stopRes = await fetch(`https://api.daily.co/v1/rooms/${roomName}/recordings/stop`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${DAILY_API_KEY}`,
+        },
+      })
+
+      const stopData = await stopRes.json()
+      return new Response(JSON.stringify({ success: true, result: stopData }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      })
+    }
+
+    if (action === 'get-recording') {
+      const recId = recordingId;
+      if (!recId) {
+        return new Response(JSON.stringify({ error: 'recordingId is required' }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400,
+        })
+      }
+
+      // Fetch recording details and download/stream link from Daily
+      const infoRes = await fetch(`https://api.daily.co/v1/recordings/${recId}`, {
+        headers: { Authorization: `Bearer ${DAILY_API_KEY}` }
+      })
+      const infoData = await infoRes.json()
+
+      const linkRes = await fetch(`https://api.daily.co/v1/recordings/${recId}/access-link`, {
+        headers: { Authorization: `Bearer ${DAILY_API_KEY}` }
+      })
+      const linkData = await linkRes.json()
+
+      return new Response(JSON.stringify({
+        recording: infoData,
+        download_url: linkData.download_link || null
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      })
+    }
+
+    if (action === 'list-recordings') {
+      const listUrl = roomName 
+        ? `https://api.daily.co/v1/recordings?room_name=${encodeURIComponent(roomName)}`
+        : `https://api.daily.co/v1/recordings`;
+      const listRes = await fetch(listUrl, {
+        headers: { Authorization: `Bearer ${DAILY_API_KEY}` }
+      })
+      const listData = await listRes.json()
+      return new Response(JSON.stringify(listData), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      })
     }
 
     // Workstream B: Meeting Access Token Issuance ('token' action)
