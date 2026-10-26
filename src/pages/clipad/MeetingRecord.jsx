@@ -160,12 +160,13 @@ export default function MeetingRecord() {
   const fetchMeeting = async () => {
     if (!meeting) setLoading(true);
     try {
-      const [meetingRes, actionsRes, transcriptRes, commentsRes, reactionsRes] = await Promise.all([
+      const [meetingRes, actionsRes, transcriptRes, commentsRes, reactionsRes, decisionsRes] = await Promise.all([
         supabase.from('clipad_meeting_records').select('*').eq('id', meetingId).single(),
         supabase.from('clipad_action_items').select('*').eq('meeting_id', meetingId).order('created_at', { ascending: true }),
         supabase.from('clipad_transcripts').select('*').eq('meeting_id', meetingId).order('start_time', { ascending: true }),
         supabase.from('clipad_meeting_comments').select('*').eq('meeting_id', meetingId).order('created_at', { ascending: true }),
         supabase.from('clipad_meeting_reactions').select('*').eq('meeting_id', meetingId),
+        supabase.from('clipad_decisions').select('*').eq('related_meeting_id', meetingId).order('created_at', { ascending: true }),
       ]);
       if (meetingRes.data) {
         const m = meetingRes.data;
@@ -349,53 +350,51 @@ export default function MeetingRecord() {
     if (!meeting) return;
     setGeneratingAI(true);
     try {
-      const transcriptText = transcript.map(t => `${t.speaker}: ${t.text}`).join('\n');
-      const { data, error } = await supabase.functions.invoke('ai-meeting-summary', {
-        body: {
-          meeting_id: meetingId,
-          transcript: transcriptText || meeting.raw_transcript || '',
-          title: meeting.title,
-        },
-      });
-      if (error) throw error;
-      if (data) {
-        setMeeting(prev => ({ ...prev, ...data }));
-        if (data.action_items?.length) {
-          let boardId = null;
-          if (meeting.space_id) {
-            let { data: board } = await supabase.from('clipad_task_boards').select('id').eq('space_id', meeting.space_id).limit(1).single();
-            if (!board) {
-              const { data: newBoard } = await supabase.from('clipad_task_boards').insert({ space_id: meeting.space_id, name: 'Main Board' }).select('id').single();
-              board = newBoard;
-            }
-            if (board) boardId = board.id;
-          }
+      const transcriptText = transcript.map(t => `${t.speaker || t.speaker_name || 'Speaker'}: ${t.text}`).join('\n');
+      const sourceText = transcriptText || meeting.transcript || meeting.raw_transcript || '';
+      
+      let summaryResult = null;
+      try {
+        const { generateText } = await import('@/lib/cloudflareAI');
+        const aiPrompt = `Analyze this meeting conversation and synthesize:
+1. Executive summary (2-3 paragraphs).
+2. Key decisions (list).
+3. Action items (list of { "title": "...", "owner": "..." }).
 
-          const inserts = data.action_items.map(ai => ({
-            meeting_id: meetingId,
-            board_id: boardId,
-            title: ai.title,
-            description: ai.context || null,
-            assignee_id: ai.owner || null,
-            status: 'todo',
-            source: 'ai_generated',
-          }));
-          const { data: newItems } = await supabase.from('clipad_tasks').insert(inserts).select();
-          if (newItems) setActionItems(prev => [...prev, ...newItems]);
-        }
+Conversation:
+${sourceText.substring(0, 5000)}`;
+
+        const rawSummary = await generateText([
+          { role: 'system', content: 'You are an executive meeting intelligence analyst.' },
+          { role: 'user', content: aiPrompt }
+        ]);
+        if (rawSummary) summaryResult = rawSummary;
+      } catch (e) {
+        console.warn('Direct AI generation error:', e);
+      }
+
+      if (summaryResult) {
+        await supabase.from('clipad_meeting_records')
+          .update({ ai_summary: summaryResult })
+          .eq('id', meetingId);
+        setMeeting(prev => ({ ...prev, ai_summary: summaryResult }));
+        toast({ title: 'Executive Summary Ready', description: 'AI has synthesized the meeting transcript.' });
+      } else {
+        toast({ title: 'AI Notice', description: 'Could not generate AI summary at this time.', variant: 'destructive' });
       }
     } catch (err) {
       console.error(err);
-      toast({ title: 'AI Generation Failed', description: 'Could not generate summary. Please try again later.', variant: 'destructive' });
+      toast({ title: 'AI Generation Failed', description: 'Could not generate summary.', variant: 'destructive' });
     } finally {
       setGeneratingAI(false);
     }
   };
 
   const getMeetingDuration = () => {
-    if (!meeting?.duration_seconds) return null;
-    const m = Math.floor(meeting.duration_seconds / 60);
-    const s = meeting.duration_seconds % 60;
+    const totalSecs = meeting?.duration ?? meeting?.duration_seconds;
+    if (typeof totalSecs !== 'number' || totalSecs <= 0) return null;
+    const m = Math.floor(totalSecs / 60);
+    const s = totalSecs % 60;
     return `${m}m ${s}s`;
   };
 

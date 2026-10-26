@@ -28,7 +28,8 @@ serve(async (req) => {
       dbId, 
       max_participants,
       recordingId,
-      action = 'create' // 'create' | 'token' | 'start-recording' | 'stop-recording' | 'get-recording' | 'list-recordings'
+      action = 'create', // 'create' | 'token' | 'start-recording' | 'stop-recording' | 'get-recording' | 'list-recordings' | 'save-meeting'
+      meetingPayload
     } = await req.json()
 
     if (!DAILY_API_KEY) {
@@ -161,6 +162,89 @@ serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,
       })
+    }
+
+    // Workstream: Save Meeting Record & Transcripts Authoritatively with Service Role
+    if (action === 'save-meeting') {
+      if (!meetingPayload) {
+        return new Response(JSON.stringify({ error: 'meetingPayload is required' }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400,
+        })
+      }
+
+      if (supabaseUrl && supabaseServiceKey) {
+        const adminDb = createClient(supabaseUrl, supabaseServiceKey)
+        const meetingId = meetingPayload.id || crypto.randomUUID()
+        
+        // Check if meeting already exists
+        const { data: existingMeeting } = await adminDb
+          .from('clipad_meeting_records')
+          .select('id, video_url')
+          .eq('id', meetingId)
+          .maybeSingle()
+
+        const recordData: Record<string, unknown> = {
+          id: meetingId,
+          title: meetingPayload.title || 'Meeting',
+          space_id: meetingPayload.space_id || null,
+          created_by: callerUser?.id || meetingPayload.created_by || null,
+          host_id: callerUser?.id || meetingPayload.host_id || null,
+          company_id: callerProfile?.company_id || meetingPayload.company_id || null,
+          duration: meetingPayload.duration || 0,
+          meeting_link: meetingPayload.meeting_link || '',
+          daily_room_name: meetingPayload.daily_room_name || roomName || null,
+          ai_summary: meetingPayload.ai_summary || null,
+          status: meetingPayload.status || 'completed',
+        }
+
+        if (meetingPayload.video_url) {
+          recordData.video_url = meetingPayload.video_url
+        }
+
+        let savedMeeting = null
+        if (existingMeeting) {
+          const { data, error: updateErr } = await adminDb
+            .from('clipad_meeting_records')
+            .update(recordData)
+            .eq('id', meetingId)
+            .select()
+            .single()
+          if (updateErr) throw updateErr
+          savedMeeting = data
+        } else {
+          const { data, error: insertErr } = await adminDb
+            .from('clipad_meeting_records')
+            .insert(recordData)
+            .select()
+            .single()
+          if (insertErr) throw insertErr
+          savedMeeting = data
+        }
+
+        // Insert transcripts if provided
+        if (Array.isArray(meetingPayload.transcripts) && meetingPayload.transcripts.length > 0) {
+          const transcriptInserts = meetingPayload.transcripts.map((t: { name?: string; speaker?: string; text?: string; start_time?: number; end_time?: number }) => ({
+            meeting_id: meetingId,
+            speaker_name: t.name || t.speaker || 'Speaker',
+            text: t.text || '',
+            start_time: typeof t.start_time === 'number' ? t.start_time : 0,
+            end_time: typeof t.end_time === 'number' ? t.end_time : 0,
+          }))
+          const { error: tErr } = await adminDb.from('clipad_transcripts').insert(transcriptInserts)
+          if (tErr) console.warn('Could not insert transcripts into clipad_transcripts:', tErr)
+        }
+
+        return new Response(JSON.stringify({ success: true, meeting: savedMeeting }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200,
+        })
+      } else {
+        return new Response(JSON.stringify({ error: 'Database service role key not available' }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 500,
+        })
+      }
     }
 
     // Workstream B: Meeting Access Token Issuance ('token' action)

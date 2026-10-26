@@ -22,7 +22,7 @@ import { Home, ArrowLeft, Mic, MicOff, Video as VideoIcon, VideoOff, PhoneOff, M
 import { Button} from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { detectDecisions, detectCommitments, writeOrgEvent } from '@/lib/clipadIntelligence';
+import { detectDecisions, detectCommitments, detectFollowUps, writeOrgEvent } from '@/lib/clipadIntelligence';
 import { useToast} from "@/components/ui/use-toast";
 import { OrbitLoader } from "@/components/ui/orbit-loader";
 import ClipadLoader from "@/components/ui/ClipadLoader";
@@ -102,9 +102,16 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           .eq('daily_room_name', targetRoomName)
           .maybeSingle();
         if (active && dbRoom) {
-          setRoomHostId(dbRoom.host_id || null);
-          if (user?.id && dbRoom.host_id === user.id) {
+          if (dbRoom.host_id) {
+            setRoomHostId(dbRoom.host_id);
+            if (user?.id && dbRoom.host_id === user.id) {
+              setIsHost(true);
+            }
+          } else if (user?.id) {
+            // Claim host if room had unassigned host
+            setRoomHostId(user.id);
             setIsHost(true);
+            await supabase.from('video_rooms').update({ host_id: user.id }).eq('id', dbRoom.id);
           }
           // If meeting is already marked ended in DB upon arrival
           if (dbRoom.status === 'ended') {
@@ -113,6 +120,10 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
             if (onLeave) onLeave(null);
             else navigate(spaceId ? `/spaces/${spaceId}` : '/meetings');
           }
+        } else if (active && user?.id) {
+          // If room record does not exist yet, user creating/entering is host
+          setIsHost(true);
+          setRoomHostId(user.id);
         }
       } catch (_) {}
     };
@@ -163,6 +174,13 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
  const [isInviteLoading, setIsInviteLoading] = useState(false);
  const [copiedLink, setCopiedLink] = useState(false);
  const { theme, changeTheme } = useTheme();
+  const localParticipant = daily?.participants()?.local;
+  const isLocalOwner = Boolean(localParticipant?.owner);
+  const isHostComputed = Boolean(
+    isHost ||
+    isLocalOwner ||
+    (user?.id && roomHostId && roomHostId === user.id)
+  );
 
   // Preserves active theme from ThemeContext / system settings
  const [showEmojis, setShowEmojis] = useState(false);
@@ -843,15 +861,42 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           };
           if (meetingVideoUrl) payload.video_url = meetingVideoUrl;
 
-          const db = supabase;
-          const { data: insertedMeeting, error: insertError } = await db
-            .from('clipad_meeting_records')
-            .insert(payload)
-            .select()
-            .single();
+          let insertedMeeting = null;
+          try {
+            // Service-role authoritatively saves meeting & transcripts to bypass RLS restrictions
+            const { data: fnSave, error: fnSaveErr } = await supabase.functions.invoke('create-daily-room', {
+              body: {
+                action: 'save-meeting',
+                meetingPayload: {
+                  ...payload,
+                  transcripts: transcriptData.map((t, idx) => ({
+                    speaker: t.name || 'Participant',
+                    text: t.text || '',
+                    start_time: idx * 5,
+                    end_time: (idx + 1) * 5
+                  }))
+                }
+              }
+            });
+            if (!fnSaveErr && fnSave?.meeting) {
+              insertedMeeting = fnSave.meeting;
+            }
+          } catch (fnErr) {
+            console.warn('Authoritative save-meeting function warning, trying direct insert:', fnErr);
+          }
 
-          if (insertError) {
-            console.warn('Failed to insert into clipad_meeting_records:', insertError);
+          if (!insertedMeeting) {
+            const db = supabase;
+            const { data: directMeeting, error: insertError } = await db
+              .from('clipad_meeting_records')
+              .insert(payload)
+              .select()
+              .single();
+            if (insertError) {
+              console.warn('Failed to insert into clipad_meeting_records:', insertError);
+            } else {
+              insertedMeeting = directMeeting;
+            }
           }
 
           if (!insertError && insertedMeeting) {
@@ -873,22 +918,39 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           if (hasContent && insertedMeeting) {
             (async () => {
               try {
-                const summary = "Meeting transcript captured successfully.";
+                let aiSummary = "Meeting transcript captured successfully.";
+                try {
+                  const { generateText } = await import('@/lib/cloudflareAI');
+                  const aiText = await generateText([
+                    { role: 'system', content: 'You are an executive meeting assistant. Provide a concise 2-3 paragraph summary highlighting the main discussion points, key decisions, and general consensus.' },
+                    { role: 'user', content: `Summarize this meeting transcript:\n\n${rawTranscript.substring(0, 5000)}` }
+                  ]);
+                  if (aiText && aiText.trim().length > 10) {
+                    aiSummary = aiText.trim();
+                  }
+                } catch (e) {
+                  console.warn('AI summary generation warning:', e);
+                }
+
                 await db.from('clipad_meeting_records')
-                  .update({ ai_summary: summary })
+                  .update({ ai_summary: aiSummary })
                   .eq('id', insertedMeeting.id);
 
-                // Extract action items
-                const actionItems = [];
-                if (actionItems && actionItems.length > 0) {
-                  const inserts = actionItems.map(ai => ({
-                    space_id: spaceId || null,
-                    title: ai.title,
-                    assigned_to: ai.owner || null,
-                    context: ai.context || null,
-                    is_complete: false,
-                  }));
-                  await db.from('clipad_action_items').insert(inserts);
+                // Extract action items via detectFollowUps
+                try {
+                  const followUps = await detectFollowUps(rawTranscript.trim(), { meeting_id: insertedMeeting.id, space_id: spaceId || null });
+                  if (followUps && followUps.length > 0) {
+                    const inserts = followUps.map(fu => ({
+                      meeting_id: insertedMeeting.id,
+                      space_id: spaceId || null,
+                      title: fu.commitment_text,
+                      context: fu.source_text || null,
+                      is_complete: false,
+                    }));
+                    await db.from('clipad_action_items').insert(inserts);
+                  }
+                } catch (fuErr) {
+                  console.warn('Action items auto-extraction warning:', fuErr);
                 }
 
                 const [foundDecisions, foundCommitments] = await Promise.all([
@@ -1080,28 +1142,65 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
     setAiResponse(null);
     toast({ title: "Weftro AI", description: "Generating meeting summary and action items..."});
     try {
-      // Fix #7: Use the ref (always up to date) and pass the real room name
       const meetingContext = transcriptDataRef.current.map(t => `${t.name}: ${t.text}`).join('\n');
-      const realRoomId = roomUrl.split('/').pop().split('?')[0];
+      const { generateText } = await import('@/lib/cloudflareAI');
+      const prompt = `You are Weftro AI, an expert executive meeting assistant.
+Analyze this meeting conversation and extract:
+1. summary: A 2-3 sentence executive summary.
+2. decisions: An array of key decisions made.
+3. actionItems: An array of objects with "assignee" and "task".
+4. sentiment: A 1-word sentiment description (Positive, Collaborative, Focused, Urgent, Constructive).
 
-      const { data, error } = await supabase.functions.invoke('clipad-ai-processor', {
-        body: { type: 'meeting', transcript: meetingContext, roomId: realRoomId, spaceId: spaceId || null }
-      });
+Return ONLY valid JSON matching this structure without Markdown formatting or fences:
+{
+  "summary": "...",
+  "decisions": ["..."],
+  "actionItems": [{"assignee": "...", "task": "..."}],
+  "sentiment": "..."
+}
 
-      if (error) throw error;
-      
+Conversation:
+${meetingContext}`;
+
+      const aiText = await generateText([
+        { role: 'system', content: 'You are an executive meeting synthesizer. Always return valid raw JSON only.' },
+        { role: 'user', content: prompt }
+      ]);
+
+      let parsed = null;
+      try {
+        const cleaned = (aiText || '').replace(/```json|```/g, '').trim();
+        parsed = JSON.parse(cleaned);
+      } catch (pErr) {
+        parsed = {
+          summary: aiText || 'Meeting discussion synthesized.',
+          decisions: [],
+          actionItems: [],
+          sentiment: 'Constructive'
+        };
+      }
+
+      const summaryText = parsed.summary || 'Meeting discussion synthesized.';
+      const decisionsList = Array.isArray(parsed.decisions) && parsed.decisions.length > 0
+        ? parsed.decisions.map(d => `<li>${typeof d === 'string' ? d : JSON.stringify(d)}</li>`).join('')
+        : '<li>No formal decisions recorded yet.</li>';
+      const actionItemsList = Array.isArray(parsed.actionItems) && parsed.actionItems.length > 0
+        ? parsed.actionItems.map(a => `<li><strong>${a.assignee || 'Team'}:</strong> ${a.task || a.title || 'Follow up'}</li>`).join('')
+        : '<li>No explicit action items assigned yet.</li>';
+      const sentimentText = parsed.sentiment || 'Productive';
+
       const formattedResponse = `
         <div class="space-y-4">
-          <p><strong>Summary:</strong> ${data.data.summary}</p>
-          <div><strong>Decisions:</strong> <ul class="list-disc pl-4">${data.data.decisions.map(d => `<li>${d}</li>`).join('')}</ul></div>
-          <div><strong>Action Items:</strong> <ul class="list-disc pl-4">${data.data.actionItems.map(a => `<li>${a.assignee}: ${a.task}</li>`).join('')}</ul></div>
-          <p><strong>Sentiment:</strong> ${data.data.sentiment}</p>
+          <p><strong>Summary:</strong> ${summaryText}</p>
+          <div><strong>Decisions:</strong> <ul class="list-disc pl-4">${decisionsList}</ul></div>
+          <div><strong>Action Items:</strong> <ul class="list-disc pl-4">${actionItemsList}</ul></div>
+          <p><strong>Sentiment:</strong> ${sentimentText}</p>
         </div>
       `;
       setAiResponse(formattedResponse);
     } catch (err) {
-      console.error(err);
-      toast({ title: "AI Error", description: "Failed to connect to AI backend.", variant: "destructive"});
+      console.error('AI assistant error:', err);
+      toast({ title: "AI Notice", description: "Could not process AI summary right now. Please try again.", variant: "destructive"});
     } finally {
       setIsAiLoading(false);
     }
@@ -1259,7 +1358,8 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
           <PenTool className="w-5 h-5" />
         </button>
 
-        {/* Native Cloud Recording Primary Action */}
+        {/* Native Cloud Recording Primary Action (Host Only) */}
+        {isHostComputed && (
         <button
           onClick={async () => {
             if (isStartingRecording) return;
@@ -1314,6 +1414,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
         >
           <div className={`w-3.5 h-3.5 rounded-full ${isRecording || isCloudRecording ? 'bg-white' : 'bg-red-500'}`} />
         </button>
+        )}
 
         {/* Participant Roster Button */}
         <button
@@ -1450,7 +1551,7 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
 
       {/* Right: Host End Meeting & Copy Link Button */}
       <div className="flex items-center gap-3">
-        {isHost && (
+        {isHostComputed && (
           <button
             onClick={() => setShowLeaveModal(true)}
             className="h-9 px-3.5 rounded-full text-xs font-bold flex items-center gap-1.5 transition-all bg-rose-600 hover:bg-rose-700 text-white shadow-md shadow-rose-600/20 active:scale-95"

@@ -292,7 +292,7 @@ Do not wrap in markdown or backticks.`
   const handleExportTranscript = () => {
     let txt = 'Meeting Transcript\n\n';
     transcripts.forEach(t => {
-      txt += `[${formatTime(t.start_time)}] ${t.speaker || 'Speaker'}: ${t.text}\n`;
+      txt += `[${formatTime(t.start_time)}] ${t.speaker || t.speaker_name || 'Speaker'}: ${t.text}\n`;
     });
     const blob = new Blob([txt], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
@@ -625,7 +625,7 @@ Do not wrap in markdown or backticks.`
                 transcripts.map((t, idx) => (
                   <div key={t.id || idx} className="group">
                     <div className="flex justify-between items-baseline mb-0.5">
-                      <span className="text-xs font-bold text-slate-700 dark:text-foreground">{t.speaker || 'Speaker'}</span>
+                      <span className="text-xs font-bold text-slate-700 dark:text-foreground">{t.speaker || t.speaker_name || 'Speaker'}</span>
                       <button onClick={() => seekTo(t.start_time)} className="text-[10px] text-slate-400 group-hover:text-primary transition-colors font-mono">
                         {formatTime(t.start_time)}
                       </button>
