@@ -394,18 +394,21 @@ export default function MeetLandingPage() {
 
       const targetRoomName = roomData?.name || roomData?.roomName || shortId;
 
-      try {
-        await supabase.from('video_rooms').upsert({
-          id: crypto.randomUUID(),
-          company_id: isValidUUID(companyId) ? companyId : null,
-          daily_room_name: targetRoomName,
-          daily_room_url: roomData?.url || `https://optalflow.daily.co/${targetRoomName}`,
-          privacy_type: 'public',
-          host_id: isValidUUID(user?.id) ? user.id : null,
-          status: 'active',
-          meeting_type: 'instant'
-        });
-      } catch (_) {}
+      // Note: create-daily-room edge function authoritatively provisions video_rooms via service role
+      if (isValidUUID(user?.id)) {
+        try {
+          await supabase.from('video_rooms').upsert({
+            id: crypto.randomUUID(),
+            company_id: isValidUUID(companyId) ? companyId : null,
+            daily_room_name: targetRoomName,
+            daily_room_url: roomData?.url || `https://optalflow.daily.co/${targetRoomName}`,
+            privacy_type: 'public',
+            host_id: user.id,
+            status: 'active',
+            meeting_type: 'instant'
+          });
+        } catch (_) {}
+      }
 
       if (type === 'instant') {
         navigate(`/join/${targetRoomName}`);

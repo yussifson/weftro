@@ -110,20 +110,22 @@ export default function MeetingsList() {
 
       const targetRoomName = roomData?.name || roomData?.roomName || roomName;
 
-      // Persist room record (best-effort, never blocks navigation)
-      try {
-        await supabase.from('video_rooms').upsert({
-          id: crypto.randomUUID(),
-          title: `Meeting ${targetRoomName}`,
-          company_id: isValidUUID(user?.company_id || user?.user_metadata?.company_id) ? (user?.company_id || user?.user_metadata?.company_id) : null,
-          daily_room_name: targetRoomName,
-          daily_room_url: roomData?.url || `https://optalflow.daily.co/${targetRoomName}`,
-          privacy_type: privacyType || 'public',
-          host_id: isValidUUID(user?.id) ? user.id : null,
-          status: 'active',
-          meeting_type: 'instant'
-        });
-      } catch (_) { /* db insert failed — meeting still works */ }
+      // Persist room record (best-effort, authenticated hosts only)
+      if (isValidUUID(user?.id)) {
+        try {
+          await supabase.from('video_rooms').upsert({
+            id: crypto.randomUUID(),
+            title: `Meeting ${targetRoomName}`,
+            company_id: isValidUUID(user?.company_id || user?.user_metadata?.company_id) ? (user?.company_id || user?.user_metadata?.company_id) : null,
+            daily_room_name: targetRoomName,
+            daily_room_url: roomData?.url || `https://optalflow.daily.co/${targetRoomName}`,
+            privacy_type: privacyType || 'public',
+            host_id: user.id,
+            status: 'active',
+            meeting_type: 'instant'
+          });
+        } catch (_) { /* db insert failed — meeting still works */ }
+      }
 
       navigate(`/join/${targetRoomName}` + (spaceId ? `?spaceId=${spaceId}` : ''));
     } catch (err) {

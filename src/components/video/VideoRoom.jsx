@@ -497,12 +497,19 @@ function VideoRoomInner({ roomUrl, onLeave, isPipMode, togglePipMode, initialBac
    setIsCloudRecording(false);
    setIsRecording(false);
    setIsStartingRecording(false);
-   console.error('Daily cloud recording error:', ev);
-   toast({
-     title: 'Recording Error',
-     description: ev?.errorMsg || 'Cloud recording encountered an issue.',
-     variant: 'destructive'
-   });
+   console.warn('Daily cloud recording notice:', ev);
+   if (ev?.errorMsg && ev.errorMsg.includes('not enabled')) {
+     toast({
+       title: 'Cloud Recording Not Enabled',
+       description: 'Cloud recording requires Daily domain recording enabled. You can use Local Screen Recording under More Options (⋯).',
+     });
+   } else {
+     toast({
+       title: 'Recording Error',
+       description: ev?.errorMsg || 'Cloud recording encountered an issue.',
+       variant: 'destructive'
+     });
+   }
  }, [toast]));
 
  useDailyEvent('recording-upload-completed', useCallback(async (ev) => {
