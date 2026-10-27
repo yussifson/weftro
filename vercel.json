@@ -44,6 +44,29 @@
       ]
     }
   ],
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.weftro.com" }],
+      "destination": "https://weftro.com/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/home",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/marketing",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/meet",
+      "destination": "/",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/mcp",
