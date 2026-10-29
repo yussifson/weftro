@@ -14,7 +14,7 @@ export const PLAN_LIMITS = {
     hasSLA: false,
     hasBrandedRooms: false,
     hasComplianceRecording: false,
-    hasVideoDownload: false,
+    hasVideoDownload: true,
   },
   pro: {
     maxParticipants: 25,

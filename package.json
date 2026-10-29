@@ -86,6 +86,7 @@
     "electron-updater": "^6.8.9",
     "embla-carousel-react": "^8.5.2",
     "emoji-picker-react": "^4.19.1",
+    "fix-webm-duration": "^1.0.6",
     "framer-motion": "^11.16.4",
     "html2canvas": "^1.4.1",
     "html2pdf.js": "^0.14.0",
@@ -105,6 +106,7 @@
     "papaparse": "^5.5.3",
     "pdfjs-dist": "^6.0.227",
     "pg": "^8.22.0",
+    "posthog-js": "^1.200.0",
     "qrcode.react": "^4.2.0",
     "react": "^18.2.0",
     "react-barcode": "^1.6.1",
@@ -131,8 +133,7 @@
     "tus-js-client": "^4.3.1",
     "uuid": "^14.0.1",
     "vaul": "^1.1.2",
-    "zod": "^3.24.2",
-    "posthog-js": "^1.200.0"
+    "zod": "^3.24.2"
   },
   "build": {
     "appId": "com.optavel.slate",
