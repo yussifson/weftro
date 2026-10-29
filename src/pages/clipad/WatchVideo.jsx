@@ -467,18 +467,6 @@ return <LockWall type={accessDenied.type} unlockAt={accessDenied.unlockAt || nul
       `}</style>
 
       <div style={{ fontFamily: "'Inter', sans-serif" }} className="min-h-full bg-slate-50 dark:bg-background text-slate-900 dark:text-slate-100 page-enter overflow-x-hidden pb-24 md:pb-8">
-        {/* Contextual Action Bar */}
-        <div className="flex items-center justify-between px-6 py-4 bg-white dark:bg-card border-b border-slate-200 dark:border-border shadow-sm mb-4">
-          <button onClick={() => navigate(-1)} className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/95 dark:bg-[#202c33]/95 backdrop-blur-md border border-black/5 dark:border-white/5 shadow-sm hover:shadow-md text-sm font-semibold text-slate-900 dark:text-foreground transition-all hover:-translate-y-0.5">
-            <ArrowLeft className="w-4 h-4 text-slate-500 dark:text-muted-foreground" /> Back
-          </button>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-500 dark:text-muted-foreground flex items-center gap-1 font-medium"><Eye className="w-3.5 h-3.5" /> {views} views</span>
-            <button onClick={copyShareLink} className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm transition-all border ${copied ? 'text-[#006065] dark:text-[#00beac] border-[#006065] dark:border-border/30 bg-[#006065] dark:bg-card' : 'text-slate-900 dark:text-foreground border-black/5 dark:border-white/5 bg-white/95 dark:bg-[#202c33]/95 hover:bg-black/5 dark:hover:bg-white/10'}`}>
-              {copied ? <><Check className="w-3.5 h-3.5" /> Copied!</> : <><Share2 className="w-3.5 h-3.5" /> Share</>}
-            </button>
-          </div>
-        </div>
 
         <VideoDownloadModal 
           open={showDownloadModal} 
@@ -488,377 +476,454 @@ return <LockWall type={accessDenied.type} unlockAt={accessDenied.unlockAt || nul
           videoTitle={video.title}
           spaceId={video.space_id}
         />
-        
-        <div className="max-w-7xl mx-auto md:px-8 md:py-6 grid grid-cols-1 lg:grid-cols-3 md:gap-8">
 
-          {/* Left: Video Player */}
-          <div className="lg:col-span-2 space-y-4 relative w-full">
-            {/* Player */}
-            <div ref={playerRef} className="sticky top-0 z-50 relative md:rounded-2xl overflow-hidden bg-black aspect-video group w-full shadow-lg">
-              <video
-                ref={videoRef}
-                src={video.video_url}
-                className="w-full h-full object-contain"
-                onTimeUpdate={handleTimeUpdate}
-                onLoadedMetadata={handleLoadedMetadata}
-                onDurationChange={handleLoadedMetadata}
-                onPlay={() => { setPlaying(true); setHasStartedPlaying(true); }}
-                onPlaying={() => { setPlaying(true); setHasStartedPlaying(true); }}
-                onPause={() => setPlaying(false)}
-                onEnded={() => setPlaying(false)}
-                controlsList="nodownload"
-                onContextMenu={(e) => e.preventDefault()}
-                disablePictureInPicture={false}
-              />
-
-              {/* Custom Thumbnail Overlay */}
-              {!hasStartedPlaying && (
-                <div className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-black cursor-pointer" onClick={togglePlay}>
-                  {video?.thumbnail_url ? (
-                    <img src={video.thumbnail_url} className="absolute inset-0 w-full h-full object-cover opacity-80" alt="Video Thumbnail" />
-                  ) : (
-                    <div className="absolute inset-0 w-full h-full opacity-90" style={{ background: getVideoColor(video?.id) }} />
-                  )}
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center shadow-2xl z-20 hover:scale-110 transition-transform">
-                    <Play className="w-8 h-8 sm:w-10 sm:h-10 text-white fill-white ml-1.5" />
-                  </div>
-                  <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur-md text-white text-xs font-mono font-medium px-2 py-1 rounded-md z-20 shadow-md">
-                    {video?.duration_seconds ? formatTime(video.duration_seconds) : formatTime(duration)}
-                  </div>
-                </div>
-              )}
-
-              {/* Floating reactions overlay */}
-              <div className="absolute inset-0 pointer-events-none overflow-hidden z-20">
-                {floatingReactions.map(r => (
-                  <FloatingReaction key={r.id} emoji={r.emoji} x={r.x} y={r.y} onDone={() => removeFloatingReaction(r.id)} />
-                ))}
-              </div>
-
-              {/* Click to play/pause on video surface */}
-              <div className="absolute inset-0 bottom-16 cursor-pointer z-10" onClick={togglePlay} />
-
-              {/* Controls overlay */}
-              <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30 pointer-events-none">
-                {/* Progress bar */}
-                <div className="px-4 mb-2 pointer-events-auto">
-                  {/* Comment markers on timeline */}
-                  <div className="relative h-1 mb-1">
-                    {comments.map(c => {
-                      const dur = duration && duration !== Infinity && !isNaN(duration) ? duration : (video?.duration_seconds || 1);
-                      return (
-                        <button
-                          key={c.id}
-                          onClick={() => seekTo(c.timestamp_seconds, true)}
-                          title={c.body}
-                          className="absolute top-0 w-2 h-2 -mt-0.5 rounded-full bg-indigo-400 hover:scale-150 transition-transform shadow-sm"
-                          style={{ left: `${(c.timestamp_seconds / dur) * 100}%` }}
-                        />
-                      );
-                    })}
-                  </div>
-                  <input
-                    type="range"
-                    min={0}
-                    step="any"
-                    max={duration && duration !== Infinity && !isNaN(duration) ? duration : (video?.duration_seconds || Math.max(100, currentTime))}
-                    value={currentTime}
-                    onPointerDown={() => setIsScrubbing(true)}
-                    onPointerUp={(e) => {
-                      setIsScrubbing(false);
-                      seekTo(Number(e.currentTarget.value), true);
-                    }}
-                    onInput={(e) => {
-                      const val = Number(e.target.value);
-                      setCurrentTime(val);
-                      if (videoRef.current) {
-                        videoRef.current.currentTime = val;
-                      }
-                    }}
-                    onChange={(e) => {
-                      seekTo(Number(e.target.value), true);
-                    }}
-                    onClick={e => e.stopPropagation()}
-                    className="w-full h-1.5 rounded-full accent-emerald-500 cursor-pointer bg-white/20 hover:h-2 transition-all"
-                  />
-                </div>
-
-                <div className="flex items-center gap-4 px-4 pb-4 pointer-events-auto">
-                  <button onClick={togglePlay} className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center hover:bg-white/30 hover:scale-105 transition-all shadow-lg border border-white/10">
-                    {playing ? <Pause className="w-4 h-4 text-white" fill="currentColor" /> : <Play className="w-4 h-4 text-white ml-0.5" fill="currentColor" />}
-                  </button>
-                  <button onClick={(e) => { e.stopPropagation(); skip(-10); }} className="text-white/80 hover:text-white transition-colors" title="Backward 10s">
-                    <RotateCcw className="w-5 h-5" />
-                  </button>
-                  <button onClick={(e) => { e.stopPropagation(); skip(10); }} className="text-white/80 hover:text-white transition-colors" title="Forward 10s">
-                    <RotateCw className="w-5 h-5" />
-                  </button>
-                  <button onClick={toggleMute} className="text-white/80 hover:text-white transition-colors ml-2">
-                    {muted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
-                  </button>
-                  <span className="text-white/90 text-sm font-mono font-medium ml-2">
-                    {formatTime(currentTime)} / {formatTime(duration && duration !== Infinity && !isNaN(duration) ? duration : video?.duration_seconds)}
-                  </span>
-                  <div className="flex-1" />
-                  {/* Emoji reaction bar in controls */}
-                  <div className="hidden sm:flex items-center gap-2 bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
-                    {EMOJIS.map(e => (
-                      <button key={e} onClick={(evt) => { evt.stopPropagation(); addReaction(e); }} className="text-lg hover:scale-125 transition-transform active:scale-150">{e}</button>
-                    ))}
-                  </div>
-                  <div className="hidden sm:block w-px h-5 bg-white/20 mx-2" />
-                  
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <button className="text-white/90 hover:text-white transition-colors text-sm font-bold bg-white/10 hover:bg-white/20 px-2 py-1 rounded-md" title="Playback Speed">
-                        {playbackRate}x
-                      </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-24 bg-white/10 backdrop-blur-xl border-white/10 text-white" align="end">
-                      {[0.5, 1, 1.25, 1.5, 2].map(rate => (
-                        <DropdownMenuItem key={rate} onClick={() => changeSpeed(rate)} className="hover:bg-white/20 cursor-pointer text-sm">
-                          {rate}x
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-
-                  <button onClick={(e) => { e.stopPropagation(); togglePiP(); }} className="text-white/80 hover:text-white transition-colors" title="Picture-in-Picture">
-                    <PictureInPicture className="w-5 h-5" />
-                  </button>
-                  <button onClick={(e) => { e.stopPropagation(); toggleFullScreen(); }} className="text-white/80 hover:text-white transition-colors" title="Full Screen">
-                    <Maximize2 className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
+        {/* YouTube-style: full-width video on mobile, centered container on desktop */}
+        <div className="w-full max-w-[1440px] mx-auto md:px-6 md:py-4">
+          {/* Top subtle navigation bar (Back button) */}
+          <div className="flex items-center justify-between pb-3 px-4 md:px-0">
+            <button
+              onClick={() => navigate(-1)}
+              className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-200/70 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/15 text-slate-800 dark:text-foreground text-xs font-semibold transition-all hover:scale-105 active:scale-95"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Back</span>
+            </button>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-slate-500 dark:text-muted-foreground flex items-center gap-1 font-medium">
+                <Eye className="w-3.5 h-3.5" /> {views} views
+              </span>
             </div>
-
-            {/* Video info & Actions (YouTube Style) */}
-            <div className="px-4 md:px-0">
-              <h1 className="text-xl md:text-2xl font-bold text-white dark:text-foreground mb-3 leading-tight">{video.title || 'Untitled Recording'}</h1>
-              
-              <div className="flex flex-col gap-4 mb-4">
-                {/* Creator and View info */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={video.creator?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${video.creator?.full_name}`}
-                      className="w-10 h-10 rounded-full bg-white/15 dark:bg-slate-700 object-cover border border-black/5 dark:border-white/5"
-                      alt="Creator"
-                    />
-                    <div className="flex flex-col">
-                      <span className="text-[15px] font-bold text-white dark:text-foreground">{video.creator?.full_name || 'Unknown'}</span>
-                      <span className="text-[12px] font-medium text-slate-500 dark:text-muted-foreground">{new Date(video.created_at).toLocaleDateString()}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Horizontal Action Bar */}
-                <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0 mask-edges">
-                  {/* Reactions / Likes */}
-                  <div className="flex items-center bg-white/10 dark:bg-white/5 rounded-full px-1.5 py-1 shrink-0 border border-black/5 dark:border-white/5">
-                    {EMOJIS.slice(0, 4).map(e => {
-                      const count = reactions.filter(r => {
-                        const cleanEmoji = r.emoji?.startsWith('[ANON]') ? r.emoji.slice(6) : r.emoji;
-                        return cleanEmoji === e;
-                      }).length;
-                      return (
-                        <button key={e} onClick={() => addReaction(e)} className="flex items-center gap-1.5 px-3 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 rounded-full transition-colors text-sm font-semibold">
-                          <span className="text-lg leading-none">{e}</span>
-                          {count > 0 && <span className="text-white/90 dark:text-foreground/50">{count}</span>}
-                        </button>
-                      );
-                    })}
-                  </div>
-                  
-                  {/* Share */}
-                  <button onClick={copyShareLink} className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 dark:bg-white/5 hover:bg-white/15 dark:hover:bg-white/10 transition-colors text-sm font-semibold text-white dark:text-foreground shrink-0 border border-black/5 dark:border-white/5">
-                    {copied ? <Check className="w-4 h-4" /> : <Share2 className="w-4 h-4" />} Share
-                  </button>
-                  
-                  {/* Download */}
-                  <button onClick={() => setShowDownloadModal(true)} className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 dark:bg-white/5 hover:bg-white/15 dark:hover:bg-white/10 transition-colors text-sm font-semibold text-white dark:text-foreground shrink-0 border border-black/5 dark:border-white/5">
-                    <Download className="w-4 h-4" /> Download
-                  </button>
-
-                  {/* Edit/More */}
-                  {canEdit && (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 dark:bg-white/5 hover:bg-white/15 dark:hover:bg-white/10 transition-colors text-sm font-semibold text-white dark:text-foreground shrink-0 border border-black/5 dark:border-white/5">
-                          <MoreHorizontal className="w-4 h-4" /> More
-                        </button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-40 rounded-xl">
-                        <DropdownMenuItem onClick={() => setShowEdit(true)} className="cursor-pointer gap-2">
-                          <Edit3 className="w-4 h-4" /> Edit Video
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={handleDeleteVideo} className="cursor-pointer gap-2 text-rose-500 focus:text-rose-500">
-                          <Trash2 className="w-4 h-4" /> Delete Video
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* AI Summary */}
-            {(() => {
-              if (!video.ai_summary) return null;
-              let summaryData;
-              try { summaryData = JSON.parse(video.ai_summary); }
-              catch { summaryData = { summary: video.ai_summary }; }
-              return (
-                <div className="p-6 rounded-2xl bg-indigo-50/50 dark:bg-indigo-500/10 backdrop-blur-3xl border border-indigo-100/50 dark:border-indigo-500/20 shadow-[0_8px_30px_rgba(0,0,0,0.12)] mt-6 mx-4 md:mx-0">
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center">
-                      <Sparkles className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                    </div>
-                    <span className="text-sm font-bold text-indigo-900 dark:text-indigo-300 uppercase tracking-wider">AI Copilot</span>
-                  </div>
-                  
-                  <div className="space-y-6">
-                    {summaryData.summary && (
-                      <div>
-                        <h4 className="text-xs font-semibold text-slate-500 dark:text-muted-foreground uppercase tracking-wider mb-2">Key Summary</h4>
-                        <p className="text-sm text-slate-900 dark:text-foreground leading-relaxed">{summaryData.summary}</p>
-                      </div>
-                    )}
-                    
-                    {summaryData.decisions?.length > 0 && (
-                      <div>
-                        <h4 className="text-xs font-semibold text-slate-500 dark:text-muted-foreground uppercase tracking-wider mb-2">Decisions Made</h4>
-                        <ul className="list-disc pl-5 space-y-1 text-sm text-slate-900 dark:text-foreground">
-                          {summaryData.decisions.map((d, i) => <li key={i}>{d}</li>)}
-                        </ul>
-                      </div>
-                    )}
-
-                    {summaryData.actionItems?.length > 0 && (
-                      <div>
-                        <h4 className="text-xs font-semibold text-slate-500 dark:text-muted-foreground uppercase tracking-wider mb-2">Action Items</h4>
-                        <div className="space-y-2">
-                          {summaryData.actionItems.map((a, i) => (
-                            <div key={i} className="flex items-start gap-3 p-3 rounded-xl bg-white/95 dark:bg-[#202c33]/95 border border-black/5 dark:border-white/5 shadow-[0_2px_10px_rgba(0,0,0,0.04)]">
-                              <div className="w-5 h-5 rounded-full border-2 border-white/20 dark:border-white/15 shrink-0" />
-                              <div className="flex-1 min-w-0">
-                                <p className="text-sm text-white dark:text-foreground font-medium">{a.task}</p>
-                                <p className="text-xs text-slate-500 dark:text-muted-foreground mt-0.5">Assignee: {a.assignee} {a.deadline && `• Due: ${a.deadline}`}</p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })()}
           </div>
 
-          {/* Right: Comments & Reactions */}
-          <div className="lg:col-span-1 flex flex-col gap-4 px-4 md:px-0">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Left Column (2 cols): Video Stage & Metadata */}
+            <div className="lg:col-span-2 space-y-4">
+              {/* Video Player — YouTube 16:9 Cinema Container */}
+              <div
+                ref={playerRef}
+                className="relative overflow-hidden bg-black aspect-video group w-full rounded-none md:rounded-2xl shadow-2xl border border-black/10 dark:border-white/5"
+              >
+                <video
+                  ref={videoRef}
+                  src={video.video_url}
+                  className="w-full h-full object-contain"
+                  onTimeUpdate={handleTimeUpdate}
+                  onLoadedMetadata={handleLoadedMetadata}
+                  onDurationChange={handleLoadedMetadata}
+                  onPlay={() => { setPlaying(true); setHasStartedPlaying(true); }}
+                  onPlaying={() => { setPlaying(true); setHasStartedPlaying(true); }}
+                  onPause={() => setPlaying(false)}
+                  onEnded={() => setPlaying(false)}
+                  controlsList="nodownload"
+                  onContextMenu={(e) => e.preventDefault()}
+                  disablePictureInPicture={false}
+                />
 
-            {/* Filter tabs */}
-            <div className="flex gap-1 p-1 bg-white/95 dark:bg-[#202c33]/95 rounded-xl border border-black/5 dark:border-white/5 shadow-sm">
-              {[['all','All'],['comments','Comments'],['reactions','Reactions']].map(([val, label]) => (
-                <button
-                  key={val}
-                  onClick={() => setActiveCommentFilter(val)}
-                  className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${activeCommentFilter === val ? 'bg-black/5 dark:bg-white/10 text-white dark:text-foreground shadow-sm' : 'text-slate-500 dark:text-muted-foreground hover:text-white/90 dark:hover:text-slate-200'}`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
+                {/* Custom Thumbnail Overlay */}
+                {!hasStartedPlaying && (
+                  <div className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-black cursor-pointer" onClick={togglePlay}>
+                    {video?.thumbnail_url ? (
+                      <img src={video.thumbnail_url} className="absolute inset-0 w-full h-full object-cover opacity-80" alt="Video Thumbnail" />
+                    ) : (
+                      <div className="absolute inset-0 w-full h-full opacity-90" style={{ background: getVideoColor(video?.id) }} />
+                    )}
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center shadow-2xl z-20 hover:scale-110 transition-transform">
+                      <Play className="w-8 h-8 sm:w-10 sm:h-10 text-white fill-white ml-1.5" />
+                    </div>
+                    <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur-md text-white text-xs font-mono font-medium px-2 py-1 rounded-md z-20 shadow-md">
+                      {video?.duration_seconds ? formatTime(video.duration_seconds) : formatTime(duration)}
+                    </div>
+                  </div>
+                )}
 
-            {/* Comment input */}
-            {user && (
-              <form onSubmit={submitComment}>
-                <div className="relative">
-                  <input
-                    value={commentText}
-                    onChange={e => setCommentText(e.target.value)}
-                    placeholder={`Comment at ${formatTime(currentTime)}…`}
-                    className="w-full pl-4 pr-12 py-3 rounded-xl bg-white/95 dark:bg-[#202c33]/95 border border-black/5 dark:border-white/5 text-white dark:text-foreground text-sm placeholder-slate-400 dark:placeholder-muted-foreground focus:outline-none focus:border-primary/50 shadow-[0_2px_10px_rgba(0,0,0,0.04)] transition-all"
-                  />
-                  <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                    <DictationButton onResult={txt => setCommentText(prev => (prev + ' ' + txt).trim())} isRecording={isRecording} setIsRecording={setIsRecording} />
-                    <button type="submit" disabled={submitting || !commentText.trim()} className="p-2 bg-[#006065] dark:bg-[#131A2C] hover:bg-[#004e52] text-white rounded-lg disabled:opacity-50 transition-colors shadow-sm">
-                      <Send className="w-4 h-4" />
+                {/* Floating reactions overlay */}
+                <div className="absolute inset-0 pointer-events-none overflow-hidden z-20">
+                  {floatingReactions.map(r => (
+                    <FloatingReaction key={r.id} emoji={r.emoji} x={r.x} y={r.y} onDone={() => removeFloatingReaction(r.id)} />
+                  ))}
+                </div>
+
+                {/* Click to play/pause on video surface */}
+                <div className="absolute inset-0 bottom-16 cursor-pointer z-10" onClick={togglePlay} />
+
+                {/* Controls overlay */}
+                <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30 pointer-events-none">
+                  {/* Progress bar */}
+                  <div className="px-4 mb-2 pointer-events-auto">
+                    {/* Comment markers on timeline */}
+                    <div className="relative h-1 mb-1">
+                      {comments.map(c => {
+                        const dur = duration && duration !== Infinity && !isNaN(duration) ? duration : (video?.duration_seconds || 1);
+                        return (
+                          <button
+                            key={c.id}
+                            onClick={() => seekTo(c.timestamp_seconds, true)}
+                            title={c.body}
+                            className="absolute top-0 w-2 h-2 -mt-0.5 rounded-full bg-indigo-400 hover:scale-150 transition-transform shadow-sm"
+                            style={{ left: `${(c.timestamp_seconds / dur) * 100}%` }}
+                          />
+                        );
+                      })}
+                    </div>
+                    <input
+                      type="range"
+                      min={0}
+                      step="any"
+                      max={duration && duration !== Infinity && !isNaN(duration) ? duration : (video?.duration_seconds || Math.max(100, currentTime))}
+                      value={currentTime}
+                      onPointerDown={() => setIsScrubbing(true)}
+                      onPointerUp={(e) => {
+                        setIsScrubbing(false);
+                        seekTo(Number(e.currentTarget.value), true);
+                      }}
+                      onInput={(e) => {
+                        const val = Number(e.target.value);
+                        setCurrentTime(val);
+                        if (videoRef.current) {
+                          videoRef.current.currentTime = val;
+                        }
+                      }}
+                      onChange={(e) => {
+                        seekTo(Number(e.target.value), true);
+                      }}
+                      onClick={e => e.stopPropagation()}
+                      className="w-full h-1.5 rounded-full accent-emerald-500 cursor-pointer bg-white/20 hover:h-2 transition-all"
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-4 px-4 pb-4 pointer-events-auto">
+                    <button onClick={togglePlay} className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center hover:bg-white/30 hover:scale-105 transition-all shadow-lg border border-white/10">
+                      {playing ? <Pause className="w-4 h-4 text-white" fill="currentColor" /> : <Play className="w-4 h-4 text-white ml-0.5" fill="currentColor" />}
+                    </button>
+                    <button onClick={(e) => { e.stopPropagation(); skip(-10); }} className="text-white/80 hover:text-white transition-colors" title="Backward 10s">
+                      <RotateCcw className="w-5 h-5" />
+                    </button>
+                    <button onClick={(e) => { e.stopPropagation(); skip(10); }} className="text-white/80 hover:text-white transition-colors" title="Forward 10s">
+                      <RotateCw className="w-5 h-5" />
+                    </button>
+                    <button onClick={toggleMute} className="text-white/80 hover:text-white transition-colors ml-2">
+                      {muted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+                    </button>
+                    <span className="text-white/90 text-sm font-mono font-medium ml-2">
+                      {formatTime(currentTime)} / {formatTime(duration && duration !== Infinity && !isNaN(duration) ? duration : video?.duration_seconds)}
+                    </span>
+                    <div className="flex-1" />
+                    {/* Emoji reaction bar in controls */}
+                    <div className="hidden sm:flex items-center gap-2 bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
+                      {EMOJIS.map(e => (
+                        <button key={e} onClick={(evt) => { evt.stopPropagation(); addReaction(e); }} className="text-lg hover:scale-125 transition-transform active:scale-150">{e}</button>
+                      ))}
+                    </div>
+                    <div className="hidden sm:block w-px h-5 bg-white/20 mx-2" />
+                    
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button className="text-white/90 hover:text-white transition-colors text-sm font-bold bg-white/10 hover:bg-white/20 px-2 py-1 rounded-md" title="Playback Speed">
+                          {playbackRate}x
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent className="w-24 bg-white/10 backdrop-blur-xl border-white/10 text-white" align="end">
+                        {[0.5, 1, 1.25, 1.5, 2].map(rate => (
+                          <DropdownMenuItem key={rate} onClick={() => changeSpeed(rate)} className="hover:bg-white/20 cursor-pointer text-sm">
+                            {rate}x
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    <button onClick={(e) => { e.stopPropagation(); togglePiP(); }} className="text-white/80 hover:text-white transition-colors" title="Picture-in-Picture">
+                      <PictureInPicture className="w-5 h-5" />
+                    </button>
+                    <button onClick={(e) => { e.stopPropagation(); toggleFullScreen(); }} className="text-white/80 hover:text-white transition-colors" title="Full Screen">
+                      <Maximize2 className="w-5 h-5" />
                     </button>
                   </div>
                 </div>
-                <div className="flex items-center justify-end mt-2 px-1">
-                  <label className="flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-muted-foreground cursor-pointer hover:text-white/90 dark:hover:text-white/50">
-                    <input type="checkbox" checked={isAnonymous} onChange={e => setIsAnonymous(e.target.checked)} className="rounded text-primary focus:ring-primary w-3.5 h-3.5" />
-                    Post Anonymously
-                  </label>
-                </div>
-              </form>
-            )}
+              </div>
 
-            {/* Comments list */}
-            <div className="flex-1 overflow-y-auto space-y-2 max-h-[60vh]">
-              {(activeCommentFilter === 'all' || activeCommentFilter === 'reactions') && reactions.length > 0 && (
-                <div className="flex flex-wrap gap-2 p-3 rounded-xl bg-white/95 dark:bg-[#202c33]/95 border border-black/5 dark:border-white/5 shadow-sm">
-                  {EMOJIS.map(e => {
-                    const count = reactions.filter(r => {
-                      const cleanEmoji = r.emoji?.startsWith('[ANON]') ? r.emoji.slice(6) : r.emoji;
-                      return cleanEmoji === e;
-                    }).length;
-                    if (!count) return null;
-                    return (
-                      <button key={e} onClick={() => addReaction(e)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/50 dark:bg-black/20 hover:bg-black/5 dark:hover:bg-white/5 text-sm font-medium transition-all shadow-sm border border-black/5 dark:border-white/5">
-                        {e} <span className="text-xs text-slate-500 dark:border-slate-400">{count}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
+              {/* Video Title & Actions (Exact YouTube Placement) */}
+              <div className="px-4 md:px-0 space-y-3">
+                <h1 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-foreground leading-snug">
+                  {video.title || 'Untitled Recording'}
+                </h1>
 
-              {(activeCommentFilter === 'all' || activeCommentFilter === 'comments') && (
-                comments.length === 0 ? (
-                  <div className="py-12 text-center bg-transparent rounded-2xl border border-dashed border-black/10 dark:border-white/10">
-                    <MessageSquare className="w-10 h-10 text-white/50 dark:text-foreground/90 mx-auto mb-3" />
-                    <p className="text-sm font-medium text-slate-500 dark:text-muted-foreground px-4">No comments yet. Pause the video and type to leave a timestamped comment.</p>
+                <div className="flex flex-wrap items-center justify-between gap-4 pb-3 border-b border-slate-200 dark:border-border/60">
+                  {/* Creator Info */}
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={video.creator?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${video.creator?.full_name}`}
+                      className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 object-cover ring-2 ring-primary/20"
+                      alt="Creator"
+                    />
+                    <div className="flex flex-col">
+                      <span className="text-sm font-bold text-slate-900 dark:text-foreground">
+                        {video.creator?.full_name || 'Anonymous User'}
+                      </span>
+                      <span className="text-xs text-slate-500 dark:text-muted-foreground">
+                        Published {new Date(video.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </span>
+                    </div>
                   </div>
-                ) : (
-                  comments.map(c => {
-                    const isAnon = c.content?.startsWith('[ANON]');
-                    const cleanContent = isAnon ? c.content.slice(6) : c.content;
-                    return (
-                    <div key={c.id} className="flex gap-3 p-4 rounded-xl bg-white/95 dark:bg-[#202c33]/95 border border-black/5 dark:border-white/5 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all group">
-                      {isAnon ? (
-                        <div className="w-8 h-8 rounded-full bg-white/15 dark:bg-slate-700 flex items-center justify-center shrink-0">
-                          <span className="text-xs font-bold text-slate-500 dark:text-muted-foreground">?</span>
-                        </div>
-                      ) : (
-                        <img
-                          src={c.author?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${c.author?.full_name || 'U'}`}
-                          className="w-8 h-8 rounded-full bg-white/15 dark:bg-slate-700 shrink-0 object-cover"
-                          alt="Author"
-                        />
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1.5">
-                          <span className="text-xs font-bold text-white dark:text-foreground">
-                            {isAnon ? 'Anonymous' : (c.author?.full_name || 'User')}
-                          </span>
+
+                  {/* YouTube-style Action Pill Buttons */}
+                  <div className="flex items-center gap-2 overflow-x-auto pb-1 max-w-full">
+                    {/* Reactions / Like Pills */}
+                    <div className="flex items-center bg-slate-100 dark:bg-white/10 rounded-full px-1.5 py-1 shrink-0 border border-slate-200/60 dark:border-white/5">
+                      {EMOJIS.slice(0, 4).map(e => {
+                        const count = reactions.filter(r => {
+                          const cleanEmoji = r.emoji?.startsWith('[ANON]') ? r.emoji.slice(6) : r.emoji;
+                          return cleanEmoji === e;
+                        }).length;
+                        return (
                           <button
-                            onClick={() => seekTo(c.timestamp_seconds)}
-                            className="text-[10px] font-bold font-mono text-primary hover:text-primary/80 transition-colors bg-primary/10 px-2 py-0.5 rounded-md"
+                            key={e}
+                            onClick={() => addReaction(e)}
+                            className="flex items-center gap-1 px-2.5 py-1 hover:bg-slate-200 dark:hover:bg-white/10 rounded-full transition-colors text-xs font-semibold"
                           >
-                            @{formatTime(c.timestamp_seconds)}
+                            <span className="text-base leading-none">{e}</span>
+                            {count > 0 && <span className="text-slate-700 dark:text-foreground/80">{count}</span>}
                           </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Share Button */}
+                    <button
+                      onClick={copyShareLink}
+                      className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/15 transition-all text-xs font-semibold text-slate-900 dark:text-foreground shrink-0 border border-slate-200/60 dark:border-white/5 active:scale-95"
+                    >
+                      {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Share2 className="w-3.5 h-3.5" />}
+                      <span>{copied ? 'Copied!' : 'Share'}</span>
+                    </button>
+
+                    {/* Download Button */}
+                    <button
+                      onClick={() => setShowDownloadModal(true)}
+                      className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/15 transition-all text-xs font-semibold text-slate-900 dark:text-foreground shrink-0 border border-slate-200/60 dark:border-white/5 active:scale-95"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>Download</span>
+                    </button>
+
+                    {/* Edit/More Dropdown */}
+                    {canEdit && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button className="flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/15 transition-all text-slate-900 dark:text-foreground shrink-0 border border-slate-200/60 dark:border-white/5">
+                            <MoreHorizontal className="w-4 h-4" />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-44 rounded-xl shadow-xl">
+                          <DropdownMenuItem onClick={() => setShowEdit(true)} className="cursor-pointer gap-2 text-xs">
+                            <Edit3 className="w-4 h-4" /> Edit Video Details
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={handleDeleteVideo} className="cursor-pointer gap-2 text-xs text-rose-500 focus:text-rose-500">
+                            <Trash2 className="w-4 h-4" /> Delete Video
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
+                  </div>
+                </div>
+
+                {/* Description Box (YouTube-style Gray Card) */}
+                <div className="p-4 rounded-xl bg-slate-100/90 dark:bg-white/5 border border-slate-200/60 dark:border-white/5 text-sm space-y-2">
+                  <div className="flex items-center gap-3 text-xs font-semibold text-slate-600 dark:text-muted-foreground">
+                    <span>{views} views</span>
+                    <span>•</span>
+                    <span>{new Date(video.created_at).toLocaleDateString()}</span>
+                    {video.visibility && (
+                      <>
+                        <span>•</span>
+                        <span className="capitalize px-2 py-0.5 rounded-md bg-slate-200 dark:bg-white/10 text-[10px] tracking-wide uppercase font-bold">
+                          {video.visibility}
+                        </span>
+                      </>
+                    )}
+                  </div>
+                  {video.description ? (
+                    <p className="text-slate-800 dark:text-slate-200 text-sm whitespace-pre-wrap leading-relaxed">
+                      {video.description}
+                    </p>
+                  ) : (
+                    <p className="text-slate-400 dark:text-muted-foreground text-xs italic">
+                      No description provided.
+                    </p>
+                  )}
+                </div>
+
+                {/* AI Summary Section */}
+                {(() => {
+                  if (!video.ai_summary) return null;
+                  let summaryData;
+                  try { summaryData = JSON.parse(video.ai_summary); }
+                  catch { summaryData = { summary: video.ai_summary }; }
+                  return (
+                    <div className="p-5 rounded-xl bg-indigo-50/70 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/20 shadow-sm mt-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center">
+                          <Sparkles className="w-3.5 h-3.5" />
                         </div>
-                        <p className="text-sm text-white/80 dark:text-foreground leading-snug">{cleanContent}</p>
+                        <span className="text-xs font-bold text-indigo-900 dark:text-indigo-300 uppercase tracking-wider">AI Executive Brief</span>
+                      </div>
+                      
+                      <div className="space-y-4">
+                        {summaryData.summary && (
+                          <div>
+                            <h4 className="text-xs font-semibold text-slate-500 dark:text-muted-foreground uppercase tracking-wider mb-1">Overview</h4>
+                            <p className="text-sm text-slate-800 dark:text-foreground leading-relaxed">{summaryData.summary}</p>
+                          </div>
+                        )}
+                        
+                        {summaryData.decisions?.length > 0 && (
+                          <div>
+                            <h4 className="text-xs font-semibold text-slate-500 dark:text-muted-foreground uppercase tracking-wider mb-1">Key Decisions</h4>
+                            <ul className="list-disc pl-5 space-y-1 text-sm text-slate-800 dark:text-foreground">
+                              {summaryData.decisions.map((d, i) => <li key={i}>{d}</li>)}
+                            </ul>
+                          </div>
+                        )}
+
+                        {summaryData.actionItems?.length > 0 && (
+                          <div>
+                            <h4 className="text-xs font-semibold text-slate-500 dark:text-muted-foreground uppercase tracking-wider mb-1">Action Items</h4>
+                            <div className="space-y-1.5">
+                              {summaryData.actionItems.map((a, i) => (
+                                <div key={i} className="flex items-start gap-2.5 p-2.5 rounded-lg bg-white dark:bg-card border border-slate-200/80 dark:border-border/80">
+                                  <div className="w-4 h-4 rounded-full border-2 border-primary/40 shrink-0 mt-0.5" />
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-xs font-semibold text-slate-900 dark:text-foreground">{a.task}</p>
+                                    <p className="text-[11px] text-slate-500 dark:text-muted-foreground">Assignee: {a.assignee} {a.deadline && `• Due: ${a.deadline}`}</p>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
-                  )})
-                )
-              )}
+                  );
+                })()}
+              </div>
+            </div>
+
+            {/* Right Column (1 col): YouTube-style Comments & Live Timeline Reactions Sidebar */}
+            <div className="lg:col-span-1 flex flex-col gap-4 px-4 md:px-0">
+              <div className="p-4 rounded-xl bg-white dark:bg-card border border-slate-200/80 dark:border-border shadow-sm space-y-4">
+                <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-border/60">
+                  <h3 className="font-bold text-sm text-slate-900 dark:text-foreground flex items-center gap-2">
+                    <MessageSquare className="w-4 h-4 text-primary" />
+                    <span>Comments ({comments.length})</span>
+                  </h3>
+                  <span className="text-xs font-mono text-primary font-semibold">
+                    @{formatTime(currentTime)}
+                  </span>
+                </div>
+
+                {/* Filter tabs */}
+                <div className="flex gap-1 p-1 bg-slate-100 dark:bg-white/5 rounded-lg border border-slate-200/60 dark:border-white/5">
+                  {[['all','All'],['comments','Comments'],['reactions','Reactions']].map(([val, label]) => (
+                    <button
+                      key={val}
+                      onClick={() => setActiveCommentFilter(val)}
+                      className={`flex-1 py-1.5 rounded-md text-xs font-bold transition-all ${activeCommentFilter === val ? 'bg-white dark:bg-card text-slate-900 dark:text-foreground shadow-xs' : 'text-slate-500 dark:text-muted-foreground hover:text-slate-800 dark:hover:text-foreground'}`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Comment input form */}
+                {user && (
+                  <form onSubmit={submitComment} className="space-y-2">
+                    <div className="relative">
+                      <input
+                        value={commentText}
+                        onChange={e => setCommentText(e.target.value)}
+                        placeholder={`Comment at ${formatTime(currentTime)}…`}
+                        className="w-full pl-3.5 pr-14 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-foreground text-xs placeholder-slate-400 dark:placeholder-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-xs transition-all"
+                      />
+                      <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                        <DictationButton onResult={txt => setCommentText(prev => (prev + ' ' + txt).trim())} isRecording={isRecording} setIsRecording={setIsRecording} />
+                        <button type="submit" disabled={submitting || !commentText.trim()} className="p-1.5 bg-primary hover:bg-primary/90 text-white rounded-lg disabled:opacity-50 transition-colors shadow-xs">
+                          <Send className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-end px-1">
+                      <label className="flex items-center gap-1.5 text-[11px] font-medium text-slate-500 dark:text-muted-foreground cursor-pointer hover:text-slate-700 dark:hover:text-foreground">
+                        <input type="checkbox" checked={isAnonymous} onChange={e => setIsAnonymous(e.target.checked)} className="rounded text-primary focus:ring-primary w-3 h-3" />
+                        Post Anonymously
+                      </label>
+                    </div>
+                  </form>
+                )}
+
+                {/* Comments Scrollable Stream */}
+                <div className="overflow-y-auto space-y-2.5 max-h-[500px] pr-1">
+                  {(activeCommentFilter === 'all' || activeCommentFilter === 'reactions') && reactions.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 p-2 rounded-lg bg-slate-50 dark:bg-white/5 border border-slate-200/50 dark:border-white/5">
+                      {EMOJIS.map(e => {
+                        const count = reactions.filter(r => {
+                          const cleanEmoji = r.emoji?.startsWith('[ANON]') ? r.emoji.slice(6) : r.emoji;
+                          return cleanEmoji === e;
+                        }).length;
+                        if (!count) return null;
+                        return (
+                          <button key={e} onClick={() => addReaction(e)} className="flex items-center gap-1 px-2 py-1 rounded-md bg-white dark:bg-card hover:bg-slate-100 text-xs font-medium shadow-xs border border-slate-200/60 dark:border-white/5">
+                            {e} <span className="text-[10px] text-slate-500">{count}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {(activeCommentFilter === 'all' || activeCommentFilter === 'comments') && (
+                    comments.length === 0 ? (
+                      <div className="py-10 text-center rounded-xl border border-dashed border-slate-200 dark:border-white/10">
+                        <MessageSquare className="w-8 h-8 text-slate-300 dark:text-muted-foreground mx-auto mb-2" />
+                        <p className="text-xs text-slate-500 dark:text-muted-foreground px-4">
+                          No comments yet. Pause anywhere and leave a timestamped note.
+                        </p>
+                      </div>
+                    ) : (
+                      comments.map(c => {
+                        const isAnon = c.content?.startsWith('[ANON]');
+                        const cleanContent = isAnon ? c.content.slice(6) : c.content;
+                        return (
+                          <div key={c.id} className="flex gap-2.5 p-2.5 rounded-lg bg-slate-50 dark:bg-white/5 border border-slate-200/60 dark:border-white/5 hover:border-primary/40 transition-all">
+                            {isAnon ? (
+                              <div className="w-7 h-7 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center shrink-0">
+                                <span className="text-[10px] font-bold text-slate-600 dark:text-muted-foreground">?</span>
+                              </div>
+                            ) : (
+                              <img
+                                src={c.author?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${c.author?.full_name || 'U'}`}
+                                className="w-7 h-7 rounded-full bg-slate-200 dark:bg-slate-700 shrink-0 object-cover"
+                                alt="Author"
+                              />
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-1.5 mb-0.5">
+                                <span className="text-xs font-bold text-slate-900 dark:text-foreground truncate">
+                                  {isAnon ? 'Anonymous' : (c.author?.full_name || 'User')}
+                                </span>
+                                <button
+                                  onClick={() => seekTo(c.timestamp_seconds)}
+                                  className="text-[10px] font-mono font-bold text-primary hover:underline bg-primary/10 px-1.5 py-0.2 rounded"
+                                >
+                                  {formatTime(c.timestamp_seconds)}
+                                </button>
+                              </div>
+                              <p className="text-xs text-slate-700 dark:text-slate-300 leading-snug">{cleanContent}</p>
+                            </div>
+                          </div>
+                        );
+                      })
+                    )
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
