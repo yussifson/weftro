@@ -228,7 +228,7 @@ export default function MeetLandingPage() {
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [receiptDetails, setDetails] = useState(null);
   const [showHumanForm, setShowHumanForm] = useState(false);
-  const [isFabOpen, setIsFabOpen] = useState(false);
+  // FAB removed per request
   
   const { user, isLoadingAuth } = useAuth();
   const companyId = useCompanyId();
@@ -956,73 +956,7 @@ export default function MeetLandingPage() {
           </div>
         </section>
 
-        {/* Corporate Floating Action Button (FAB) for Support */}
-        <div className="fixed bottom-8 md:bottom-10 right-6 z-50 flex flex-col items-end gap-3">
-          <AnimatePresence>
-            {isFabOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: 15, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 15, scale: 0.95 }}
-                transition={{ duration: 0.2 }}
-                className="w-64 p-3 rounded-2xl bg-card border border-border shadow-2xl space-y-2 backdrop-blur-xl"
-              >
-                <div className="px-3 py-2 border-b border-border/80">
-                  <p className="text-xs font-bold text-foreground">Optavel Enterprise Support</p>
-                  <p className="text-[11px] text-muted-foreground">Select how you'd like to reach us:</p>
-                </div>
 
-                <button
-                  onClick={() => {
-                    setSupportPanel('chat');
-                    setIsFabOpen(false);
-                  }}
-                  className="w-full flex items-center gap-3 p-3 rounded-xl bg-secondary/60 hover:bg-secondary text-left transition-colors border border-border/60"
-                >
-                  <div className="w-9 h-9 rounded-lg bg-primary/15 border border-primary/30 flex items-center justify-center text-primary shrink-0">
-                    <MessageSquare className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-foreground">Live Support Chat</p>
-                    <p className="text-[10px] text-muted-foreground">Real-time AI & agent help</p>
-                  </div>
-                </button>
-
-                <button
-                  onClick={() => {
-                    setSupportPanel('call');
-                    setIsFabOpen(false);
-                  }}
-                  className="w-full flex items-center gap-3 p-3 rounded-xl bg-secondary/60 hover:bg-secondary text-left transition-colors border border-border/60"
-                >
-                  <div className="w-9 h-9 rounded-lg bg-primary/15 border border-primary/30 flex items-center justify-center text-primary shrink-0">
-                    <PhoneCall className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-foreground">Request a Call</p>
-                    <p className="text-[10px] text-muted-foreground">Submit for a direct callback</p>
-                  </div>
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <button
-            type="button"
-            onClick={() => setIsFabOpen(prev => !prev)}
-            aria-label="Toggle Support Options"
-            className="flex items-center gap-2.5 px-4 py-3 rounded-full bg-[#0C5C3C] hover:bg-[#0C5C3C]/90 text-white font-bold shadow-2xl shadow-[#0C5C3C]/40 border border-[#0C5C3C]/60 transition-all hover:scale-105 active:scale-95"
-          >
-            {isFabOpen ? (
-              <X className="w-5 h-5" />
-            ) : (
-              <>
-                <MessageSquare className="w-5 h-5" />
-                <span className="text-xs tracking-wide">Need Help?</span>
-              </>
-            )}
-          </button>
-        </div>
 
         {/* ΓöÇΓöÇ FOOTER ΓöÇΓöÇ */}
         <MarketingFooter onOpenSupport={(t) => setSupportPanel(t || "chat")} />
