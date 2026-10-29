@@ -459,7 +459,7 @@ export default function MeetLandingPage() {
       <main id="hero" className="relative z-10 flex-1 flex flex-col md:flex-row items-center justify-center pt-24 pb-6 px-6 md:pt-28 md:pb-12 md:px-12 gap-12 md:gap-16 max-w-7xl mx-auto w-full">
         <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left space-y-6 max-w-xl">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-normal text-foreground leading-[1.12] tracking-tight">
-            The AI memory and intelligence layer for your entire company.
+            #1 Enterprise Intelligence Platform
           </h1>
           <p className="text-lg text-slate-300 dark:text-muted-foreground leading-relaxed">
             <strong>Weftro V3</strong> is an AI-powered enterprise intelligence platform developed by <strong>Optavel Technologies</strong> that helps companies connect, retrieve, and use knowledge across their business systems and compatible AI tools.
