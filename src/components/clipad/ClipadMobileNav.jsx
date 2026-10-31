@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
-import { Home, Layers, Video, Camera, User, MessageSquare, Bot, Sparkles, Menu, Settings, Shield, LogOut, X, Tag, Star, Phone, Globe, Search } from 'lucide-react';
+import { Home, Layers, Video, TerminalSquare, Camera, User, MessageSquare, Bot, Sparkles, Menu, Settings, Shield, LogOut, X, Tag, Star, Phone, Globe, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/lib/AuthContext';
-import { isAdmin } from '@/lib/constants';
+import { isAdmin, canAccessDeveloperPlatform } from '@/lib/constants';
 import { useTheme } from '@/lib/ThemeContext';
 import ThemeToggle from '@/components/layout/ThemeToggle';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -197,6 +197,19 @@ export default function ClipadMobileNav({ isMarketing = false, forceMobile = fal
                       <span className="text-[13px] font-medium text-slate-700 dark:text-muted-foreground">Enterprise</span>
                     </button>
                   )
+                )}
+
+                {/* Developer Platform (Admin and Developer only) */}
+                {canAccessDeveloperPlatform(user) && (
+                  <button
+                    onClick={() => { setIsMenuOpen(false); navigate(window.location.pathname.startsWith('/clipad') ? '/clipad/developers' : '/developers'); }}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[14px] hover:bg-amber-50/80 dark:hover:bg-amber-500/10 transition-colors group"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center group-hover:scale-105 transition-transform shadow-sm border border-amber-100/50 dark:border-transparent">
+                      <TerminalSquare className="w-4 h-4" />
+                    </div>
+                    <span className="text-[13px] font-medium text-slate-700 dark:text-muted-foreground">Developer</span>
+                  </button>
                 )}
 
                 {/* Optavel Account */}

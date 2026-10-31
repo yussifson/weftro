@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/lib/AuthContext';
+import { canAccessDeveloperPlatform } from '@/lib/constants';
 import { isV3FeatureEnabled, V3_FLAGS } from '@/lib/clipadV3Flags';
 import ConnectSettings from '@/components/clipad/features/ConnectSettings';
 import DeveloperAIAssistant from '@/components/clipad/features/DeveloperAIAssistant';
@@ -90,6 +91,26 @@ export default function DeveloperPlatform() {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  if (user && !canAccessDeveloperPlatform(user)) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[calc(100vh-64px)] p-6 text-center">
+        <div className="w-16 h-16 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center mb-4">
+          <TerminalSquare className="w-8 h-8" />
+        </div>
+        <h2 className="text-xl font-bold text-foreground mb-2">Developer Access Required</h2>
+        <p className="text-sm text-muted-foreground max-w-md mb-6">
+          Access to the Developer Platform requires an Admin or Developer role. Contact your workspace administrator to assign you the Developer role.
+        </p>
+        <button
+          onClick={() => navigate('/dashboard')}
+          className="px-4 py-2 bg-primary text-primary-foreground font-semibold rounded-xl text-sm shadow-sm hover:opacity-90 transition-opacity"
+        >
+          Return to Dashboard
+        </button>
+      </div>
+    );
+  }
 
   // Determine active tab from URL pathname
   const getActiveTab = () => {

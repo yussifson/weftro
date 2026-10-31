@@ -47,6 +47,8 @@ export const isSuperAdmin = (user) => user?.role === 'super_admin' || user?.user
 export const isCompanyAdmin = (user) => user?.role === "company_admin";
 export const isAdmin = (user) => ["super_admin", "admin", "company_admin"].includes(user?.role);
 export const isSpaceman = (user) => user?.role === 'spaceman';
+export const isDeveloper = (user) => user?.role === 'developer';
+export const canAccessDeveloperPlatform = (user) => isAdmin(user) || isDeveloper(user);
 // isSpacemanInSpace: true if user is a Spaceman AND is a member of this space
 // Spaceman rights are scoped to spaces they have been explicitly added to.
 export const isSpacemanInSpace = (user, spaceMembers) => {

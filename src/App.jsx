@@ -8,7 +8,7 @@ import { Toaster as HotToaster } from "react-hot-toast";
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClientInstance } from '@/lib/query-client';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
-import { isAdmin, isSuperAdmin } from '@/lib/constants';
+import { isAdmin, isSuperAdmin, canAccessDeveloperPlatform } from '@/lib/constants';
 import { ImpersonationProvider } from '@/lib/ImpersonationContext';
 import { ThemeProvider } from '@/lib/ThemeContext';
 import { VideoProvider } from '@/lib/VideoContext';
@@ -87,6 +87,12 @@ const AdminRoute = ({ children }) => {
   return children;
 };
 
+const DeveloperRoute = ({ children }) => {
+  const { user } = useAuth();
+  if (!user || !canAccessDeveloperPlatform(user)) return <Navigate to='/dashboard' replace />;
+  return children;
+};
+
 // Redirect / and unknown routes: logged-in → dashboard, guest → login
 const RootRedirect = () => {
   const { user } = useAuth();
@@ -149,8 +155,8 @@ function App() {
                           <Route path="/chat" element={<ClipadChat />} />
                           <Route path="/capture" element={<CapturePage />} />
                           <Route path="/integrations" element={<IntegrationsHub />} />
-                          <Route path="/developers" element={<DeveloperPlatform />} />
-                          <Route path="/developers/*" element={<DeveloperPlatform />} />
+                          <Route path="/developers" element={<DeveloperRoute><DeveloperPlatform /></DeveloperRoute>} />
+                          <Route path="/developers/*" element={<DeveloperRoute><DeveloperPlatform /></DeveloperRoute>} />
                           <Route path="/search" element={<SearchHub />} />
                           <Route path="/settings" element={<CliPadSettings />} />
                           

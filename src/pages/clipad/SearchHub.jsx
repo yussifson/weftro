@@ -1666,9 +1666,9 @@ Guidelines:
                                                 const match = part.match(/\[(?:Source:\s*)?#?(R?\d+)\]/i);
                                                 if (!match) return part;
                                                 const sourceIndex = match[1];
-                                                const validCitation = msg.citations?.valid?.find(c => String(c.index).toUpperCase() === String(sourceIndex).toUpperCase());
+                                                const validCitation = Array.isArray(msg.citations?.valid) ? msg.citations.valid.find(c => c && String(c.index || '').toUpperCase() === String(sourceIndex).toUpperCase()) : null;
                                                 const isVerified = !!validCitation;
-                                                const targetRecord = msg.sources?.find(s => String(s.index).toUpperCase() === String(sourceIndex).toUpperCase() || s.id === validCitation?.id);
+                                                const targetRecord = Array.isArray(msg.sources) ? msg.sources.find(s => s && ((s.index != null && String(s.index).toUpperCase() === String(sourceIndex).toUpperCase()) || (validCitation?.id && s.id === validCitation.id))) : null;
                                                 const isRelated = String(sourceIndex).toUpperCase().startsWith('R') || validCitation?.isRelatedEvidence;
 
                                                 return (

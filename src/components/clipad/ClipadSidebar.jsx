@@ -4,7 +4,7 @@ import { Code2, TerminalSquare, LayoutGrid, Folder, Shield, BarChart2, Network, 
 import { cn } from '@/lib/utils';
 import { CliPadLogo } from '@/components/ui/CliPadLogo';
 import { useAuth } from '@/lib/AuthContext';
-import { isAdmin } from '@/lib/constants';
+import { isAdmin, canAccessDeveloperPlatform } from '@/lib/constants';
 import PaystackAPI from '@/api/PaystackAPI';
 import { useToast } from '@/components/ui/use-toast';
 import {
@@ -231,7 +231,8 @@ export default function ClipadSidebar({ forceMobile }) {
 
       {/* Developer & User Profile Footer */}
       <div className={cn("p-3 border-t border-white/10 dark:border-white/5 bg-[#004e52] dark:bg-[#060B0D] text-white", isCollapsed ? "flex flex-col items-center gap-2" : "space-y-2")}>
-        {/* Static Developer Button */}
+        {/* Developer Platform Button (Admin and Developer roles only) */}
+        {canAccessDeveloperPlatform(user) && (
         <button
           onClick={() => navigate(window.location.pathname.startsWith('/clipad') ? '/clipad/developers' : '/developers')}
           className={cn(
@@ -248,6 +249,7 @@ export default function ClipadSidebar({ forceMobile }) {
           <TerminalSquare className={cn("shrink-0 transition-transform group-hover:scale-110", isCollapsed ? "w-5 h-5" : "w-4 h-4", (location.pathname.startsWith('/developers') || location.pathname.startsWith('/clipad/developers')) ? "text-[#fad503]" : "text-white/70 group-hover:text-white")} />
           {!isCollapsed && <span className="text-[13px] tracking-wide font-medium">Developer</span>}
         </button>
+        )}
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

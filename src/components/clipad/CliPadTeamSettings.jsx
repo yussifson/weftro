@@ -3,7 +3,7 @@ import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
 import { registerSchoolUser } from '@/api/authUtils';
 import { useToast } from '@/components/ui/use-toast';
-import { Users, Mail, UserPlus, Shield, User, X, CheckCircle, RefreshCcw, UserMinus, Rocket } from 'lucide-react';
+import { Users, Mail, UserPlus, Shield, User, X, CheckCircle, RefreshCcw, UserMinus, Rocket, Code2 } from 'lucide-react';
 import { getSubdomainAndBase, getMainAppUrl, getAccountsUrl } from '@/lib/domainUtils';
 
 export default function CliPadTeamSettings() {
@@ -323,6 +323,7 @@ export default function CliPadTeamSettings() {
               >
                 <option value="user">Member</option>
                 <option value="spaceman">🚀 Spaceman</option>
+                <option value="developer">💻 Developer</option>
                 <option value="company_admin">Admin</option>
               </select>
             </div>
@@ -380,6 +381,10 @@ export default function CliPadTeamSettings() {
                         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-teal-500/10 text-teal-600 dark:text-teal-400 text-xs font-semibold">
                           <Rocket className="w-3.5 h-3.5" /> Spaceman
                         </span>
+                      ) : member.role === 'developer' ? (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-semibold">
+                          <Code2 className="w-3.5 h-3.5" /> Developer
+                        </span>
                       ) : (
                         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-50 dark:bg-background0/10 text-slate-500 dark:text-muted-foreground text-xs font-semibold">
                           <User className="w-3.5 h-3.5" /> Member
@@ -391,6 +396,7 @@ export default function CliPadTeamSettings() {
                           value={
                             member.role === 'company_admin' || member.role === 'admin' ? 'company_admin'
                             : member.role === 'spaceman' ? 'spaceman'
+                            : member.role === 'developer' ? 'developer'
                             : 'user'
                           }
                           onChange={(e) => handleRoleChange(member.id, e.target.value)}
@@ -398,6 +404,7 @@ export default function CliPadTeamSettings() {
                         >
                           <option value="user">Member</option>
                           <option value="spaceman">🚀 Spaceman</option>
+                <option value="developer">💻 Developer</option>
                           <option value="company_admin">Admin</option>
                         </select>
                         <button
