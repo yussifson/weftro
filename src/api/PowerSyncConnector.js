@@ -411,9 +411,13 @@ let initPromise = null;
 export const initPowerSync = () => {
   if (!initPromise) {
     initPromise = (async () => {
-      const connector = new SupabaseConnector();
-      await powerSync.init();
-      await powerSync.connect(connector);
+      try {
+        const connector = new SupabaseConnector();
+        await powerSync.init();
+        await powerSync.connect(connector);
+      } catch (err) {
+        console.warn("[PowerSync] Database initialization deferred or running in fallback mode:", err);
+      }
     })();
   }
   return initPromise;

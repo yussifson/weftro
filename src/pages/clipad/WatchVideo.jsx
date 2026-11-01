@@ -59,6 +59,8 @@ export default function WatchVideo() {
   const [hasStartedPlaying, setHasStartedPlaying] = useState(false);
   const [muted, setMuted] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [isScrubbing, setIsScrubbing] = useState(false);
+  const playPromiseRef = useRef(null);
 
   const getVideoColor = (id) => {
     const colors = [
@@ -224,8 +226,6 @@ export default function WatchVideo() {
     finally { setLoading(false); }
   };
 
-  const [isScrubbing, setIsScrubbing] = useState(false);
-  const playPromiseRef = useRef(null);
 
   const handleTimeUpdate = useCallback(() => {
     if (videoRef.current && !isScrubbing) {

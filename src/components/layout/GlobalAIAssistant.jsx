@@ -1069,6 +1069,8 @@ RULES FOR MULTI-STEP REASONING & AUTOMATIONS:
 
 
 
+ if (!isOpen) return null;
+
  const ctx = PAGE_CONTEXT[location.pathname];
 
  // Render 
