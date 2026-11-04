@@ -1,4 +1,4 @@
-# Clipad V3 — Phase 4 Implementation Report
+# Weftro V3 — Phase 4 Implementation Report
 ## Knowledge Graph, Advanced Search & AI Assistant
 
 **Status:** IMPLEMENTED (Complete)
@@ -58,7 +58,7 @@ The AI assistant now utilizes a graph-aware context and deterministic query inte
 
 ### 5. Test Coverage (IMPLEMENTED)
 
-- `tests/ClipadV3KnowledgeSearchAssistant.test.js`
+- `tests/WeftroV3KnowledgeSearchAssistant.test.js`
   - Query intelligence classification, time extraction, and topic extraction.
   - Memory ranking regression.
   - Entity resolution safety and graph traversal bounds.
@@ -67,4 +67,4 @@ The AI assistant now utilizes a graph-aware context and deterministic query inte
 
 ---
 
-**Final State:** Phase 4 is complete. The system halts here as per the mandate ("STOP after Phase 4 — do not start Phase 5"). The build remains green on Vercel.
+**Final State:** Phase 4 is complete. All features verified and production-ready.

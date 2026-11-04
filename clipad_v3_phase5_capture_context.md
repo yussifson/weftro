@@ -1,4 +1,4 @@
-# Clipad V3 Phase 5: Capture System + Context Sessions
+# Weftro V3 Phase 5: Capture System + Context Sessions
 
 ## Architecture
 

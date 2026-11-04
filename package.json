@@ -1,7 +1,8 @@
 {
-  "name": "slate",
-  "private": true,
+  "name": "weftro",
+  "description": "Enterprise Knowledge Capture, Connected Intelligence & Async Collaboration Platform",
   "version": "1.0.1",
+  "private": true,
   "type": "module",
   "main": "dist-electron/main.js",
   "scripts": {
@@ -136,18 +137,18 @@
     "zod": "^3.24.2"
   },
   "build": {
-    "appId": "com.optavel.slate",
-    "productName": "Slate",
+    "appId": "com.weftro.desktop",
+    "productName": "Weftro",
     "publish": {
       "provider": "github",
-      "owner": "optavel",
-      "repo": "slate-desktop-releases"
+      "owner": "yussifson",
+      "repo": "weftro-desktop-releases"
     },
     "win": {
       "target": [
         "nsis"
       ],
-      "icon": "public/slate-logo.ico"
+      "icon": "public/clipad-logo.svg"
     },
     "nsis": {
       "oneClick": false,
